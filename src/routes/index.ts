@@ -1,10 +1,15 @@
+import ManagerDashboard from 'pages/manager/Dashboard';
 import { RouteProps } from 'react-router-dom';
-import LoginPage from '../pages/auth/LoginPage';
+import Login from '../pages/auth/Login';
 
-export const authRoutes: [RouteProps] = [
+export const routes: Array<RouteProps> = [
   {
     path: '/login',
     exact: true,
-    component: LoginPage,
+    component: Login,
+  },
+  {
+    path: '/manager',
+    component: ManagerDashboard,
   },
 ];
