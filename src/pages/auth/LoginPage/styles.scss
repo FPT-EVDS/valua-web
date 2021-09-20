@@ -1,4 +1,15 @@
 .container {
   background-image: url(../../../assets/images/stacked-waves-haikei.png);
+  background-repeat: no-repeat;
+  background-size: cover;
   width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
 }
