@@ -18,7 +18,7 @@ declare module '@mui/material/Button' {
   }
 }
 
-export const themeOptions = createTheme({
+const themeOptions = createTheme({
   palette: {
     primary: {
       main: '#1890ff',
@@ -32,3 +32,5 @@ export const themeOptions = createTheme({
     fontFamily: ['Poppins, Roboto'].join(','),
   },
 });
+
+export default themeOptions;

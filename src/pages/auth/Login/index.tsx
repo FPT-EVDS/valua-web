@@ -1,22 +1,21 @@
-import React from 'react';
-import { ReactComponent as Logo } from 'assets/images/logo.svg';
+import './styles.scss';
+
 import {
-  Card,
-  Typography,
-  CardContent,
-  TextField,
-  Link,
   Box,
   Button,
+  Card,
+  CardContent,
   Divider,
+  Link,
+  TextField,
+  Typography,
 } from '@mui/material';
-import './styles.scss';
+import { ReactComponent as Logo } from 'assets/images/logo.svg';
 import GoogleLoginButton from 'components/GoogleLoginButton';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 
-interface Props {}
-
-const LoginPage = (props: Props) => {
+const LoginPage = () => {
   const history = useHistory();
   return (
     <div className="container">

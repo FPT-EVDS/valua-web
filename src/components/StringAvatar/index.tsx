@@ -1,5 +1,5 @@
-import * as React from 'react';
 import Avatar, { AvatarProps } from '@mui/material/Avatar';
+import * as React from 'react';
 
 interface Props extends AvatarProps {
   name: string;
@@ -18,7 +18,7 @@ function stringToColor(string: string) {
 
   for (i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.substr(-2);
+    color += `00${value.toString(16)}`.slice(-2);
   }
   /* eslint-enable no-bitwise */
 
@@ -34,8 +34,8 @@ function stringAvatar(name: string) {
   };
 }
 
-const StringAvatar = (props: Props) => {
-  const newProps = Object.assign({}, props, stringAvatar(props.name));
+const StringAvatar = ({ name, ...rest }: Props) => {
+  const newProps = { ...rest, ...stringAvatar(name) };
   return <Avatar {...newProps} />;
 };
 

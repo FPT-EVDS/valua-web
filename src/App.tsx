@@ -1,21 +1,19 @@
-import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import { routes } from './routes';
 import './app.scss';
 
-interface Props {}
+import React from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
-const App = (props: Props) => {
-  return (
-    <div className="app">
-      <Switch>
-        {routes.map((route, index) => (
-          <Route {...route} />
-        ))}
-        <Redirect from="/" to="/login" />
-      </Switch>
-    </div>
-  );
-};
+import routes from './routes';
+
+const App = (): JSX.Element => (
+  <div className="app">
+    <Switch>
+      {routes.map(route => (
+        <Route {...route} />
+      ))}
+      <Redirect from="/" to="/login" />
+    </Switch>
+  </div>
+);
 
 export default App;

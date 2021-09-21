@@ -1,3 +1,5 @@
+import './styles.scss';
+
 import {
   List,
   ListItemButton,
@@ -7,26 +9,30 @@ import {
 } from '@mui/material';
 import logo from 'assets/images/logo.png';
 import React, { useState } from 'react';
-import './styles.scss';
+import { useHistory } from 'react-router-dom';
 
 export type DrawerItem = {
   name: string;
   icon: React.ReactNode;
   activeIcon: React.ReactNode;
+  to: string;
 };
 
 interface Props {
   items: Array<DrawerItem>;
 }
 
-const DrawerContent = ({ items }: Props) => {
+const DrawerContent = ({ items }: Props): JSX.Element => {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const history = useHistory();
 
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     index: number,
-  ) => {
+    to: string,
+  ): void => {
     setSelectedIndex(index);
+    history.push(to);
   };
 
   return (
@@ -35,11 +41,11 @@ const DrawerContent = ({ items }: Props) => {
         <img src={logo} alt="logo" className="logo" />
       </Toolbar>
       <List>
-        {items.map(({ name, icon, activeIcon }, index) => (
+        {items.map(({ name, icon, activeIcon, to }, index) => (
           <ListItemButton
             key={name}
             selected={selectedIndex === index}
-            onClick={event => handleListItemClick(event, index)}
+            onClick={event => handleListItemClick(event, index, to)}
           >
             <ListItemIcon>
               {selectedIndex === index ? activeIcon : icon}
