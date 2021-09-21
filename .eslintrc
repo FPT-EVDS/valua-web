@@ -4,6 +4,9 @@
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "eslint-comments/disable-enable-pair": "off",
-    "jsx-a11y/anchor-is-valid": "warn"
+    "jsx-a11y/anchor-is-valid": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "scanjs-rules/identifier_localStorage": "off",
+    "no-param-reassign": "off"
   }
 }

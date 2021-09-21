@@ -10,15 +10,43 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { red } from '@mui/material/colors';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useAppDispatch } from 'app/hooks';
+import { login } from 'app/userSlice';
 import { ReactComponent as Logo } from 'assets/images/logo.svg';
+import backgroundImage from 'assets/images/stacked-waves-haikei.png';
 import GoogleLoginButton from 'components/GoogleLoginButton';
-import React from 'react';
+import LoginDto from 'dtos/login.dtos';
+import { useFormik } from 'formik';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 const LoginPage = () => {
   const history = useHistory();
+  const [errorMessage, setErrorMessage] = useState('');
+  const dispatch = useAppDispatch();
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    onSubmit: async (payload: LoginDto) => {
+      try {
+        const result = await dispatch(login(payload));
+        unwrapResult(result);
+        history.push('/manager');
+      } catch (error) {
+        setErrorMessage(error);
+      }
+    },
+  });
+
   return (
-    <div className="container">
+    <div
+      className="container"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
       <Card sx={{ minWidth: '40%', minHeight: '60%', mx: 2 }}>
         <CardContent>
           <div className="logo">
@@ -43,21 +71,25 @@ const LoginPage = () => {
               alignItems: 'center',
             }}
           >
-            <Box component="form" noValidate>
+            <Box component="form" noValidate onSubmit={formik.handleSubmit}>
               <TextField
+                name="email"
                 margin="normal"
                 label="Email"
                 variant="outlined"
                 inputMode="email"
                 type="email"
+                onChange={formik.handleChange}
                 InputLabelProps={{
                   shrink: true,
                 }}
                 fullWidth
               />
               <TextField
+                name="password"
                 margin="normal"
                 label="Password"
+                onChange={formik.handleChange}
                 type="password"
                 variant="outlined"
                 InputLabelProps={{
@@ -65,6 +97,9 @@ const LoginPage = () => {
                 }}
                 fullWidth
               />
+              <Typography variant="subtitle1" component="div" color={red[500]}>
+                {errorMessage}
+              </Typography>
               <Box display="flex" justifyContent="right" my={1}>
                 <Link href="#" underline="hover">
                   Forgot your password?
@@ -74,7 +109,6 @@ const LoginPage = () => {
               <Button
                 type="submit"
                 fullWidth
-                onClick={() => history.push('/manager')}
                 variant="contained"
                 size="large"
                 sx={{ mt: 3, mb: 2 }}
