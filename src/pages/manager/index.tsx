@@ -19,12 +19,12 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Typography,
 } from '@mui/material';
+import { useAppSelector } from 'app/hooks';
 import DrawerContent, { DrawerItem } from 'components/CustomDrawer';
 import StringAvatar from 'components/StringAvatar';
 import React, { useState } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 
 import Account from './Account';
 import Camera from './Camera';
@@ -34,7 +34,9 @@ import Room from './Room';
 const ManagerDashboard = (): JSX.Element => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const user = useAppSelector(state => state.user.user);
   const drawerWidth = 240;
+  const history = useHistory();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget);
@@ -143,6 +145,15 @@ const ManagerDashboard = (): JSX.Element => {
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
               <MenuItem onClick={handleClose}>My account</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  // FIXME: FIX LOGOUT LOGIC HERE
+                  localStorage.removeItem('access_token');
+                  history.push('/');
+                }}
+              >
+                Log out
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>

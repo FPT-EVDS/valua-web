@@ -17,9 +17,9 @@ import { login } from 'app/userSlice';
 import { ReactComponent as Logo } from 'assets/images/logo.svg';
 import backgroundImage from 'assets/images/stacked-waves-haikei.png';
 import GoogleLoginButton from 'components/GoogleLoginButton';
-import LoginDto from 'dtos/login.dtos';
+import LoginDto from 'dtos/login.dto';
 import { useFormik } from 'formik';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 const LoginPage = () => {

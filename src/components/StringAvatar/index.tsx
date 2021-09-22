@@ -1,5 +1,5 @@
 import Avatar, { AvatarProps } from '@mui/material/Avatar';
-import * as React from 'react';
+import React from 'react';
 
 interface Props extends AvatarProps {
   name: string;

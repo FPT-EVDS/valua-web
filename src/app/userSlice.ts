@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
-import LoginDto from 'dtos/login.dtos';
-import User from 'models/user.models';
-import authServices from 'services/auth.services';
+import LoginDto from 'dtos/login.dto';
+import User from 'models/user.model';
+import authServices from 'services/auth.service';
+
+import { RootState } from './store';
 
 interface UserState {
   isLoading: boolean;
@@ -17,7 +19,7 @@ export const login = createAsyncThunk(
       const response = await authServices.login(payload);
       const { token } = response.data;
       localStorage.setItem('access_token', token);
-      return response;
+      return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
       return rejectWithValue(axiosError.response?.data);
@@ -55,5 +57,7 @@ export const userSlice = createSlice({
     },
   },
 });
+
+export const selectUser = (state: RootState) => state.user.user;
 
 export default userSlice.reducer;

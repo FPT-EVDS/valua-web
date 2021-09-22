@@ -1,6 +1,6 @@
-import { Role } from 'enums/role.enums';
+import { Role } from 'enums/role.enum';
 import React from 'react';
-import { Redirect, Route,RouteProps } from 'react-router-dom';
+import { Redirect, Route, RouteProps } from 'react-router-dom';
 
 interface Props extends RouteProps {
   requiredRoles: Array<Role>;

@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
-import LoginDto from 'dtos/login.dtos';
-import User from 'models/user.models';
+import LoginDto from 'dtos/login.dto';
+import User from 'models/user.model';
 
 import axiosClient from './axiosClient';
 

@@ -8,13 +8,12 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use(async config => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const customHeaders: any = {};
 
   const accessToken = localStorage.getItem('access_token');
   if (accessToken) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    customHeaders.Authorization = accessToken;
+    customHeaders.Authorization = `Bearer ${String(accessToken)}`;
   }
 
   return {
