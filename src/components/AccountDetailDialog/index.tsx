@@ -1,20 +1,34 @@
-import { Close } from '@mui/icons-material';
-import { DatePicker } from '@mui/lab';
-import { Box, Grid, IconButton, MenuItem, Slide } from '@mui/material';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
+import {
+  AccountCircle,
+  Close,
+  Email,
+  Home,
+  Image,
+  Phone,
+} from '@mui/icons-material';
+import { DatePicker, LoadingButton } from '@mui/lab';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Slide,
+  TextField,
+} from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useAppDispatch } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AppUserDto from 'dtos/appUser.dto';
 import Roles from 'enums/role.enum';
 import { addAccount } from 'features/account/accountSlice';
 import { useFormik } from 'formik';
 import Role from 'models/role.model';
+import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 
 interface Props {
@@ -68,15 +82,16 @@ const AccountDetailDialog: React.FC<Props> = ({
     email: '',
     fullName: '',
     gender: 0,
-    imageUrl: null,
+    imageUrl: '',
     phoneNumber: '',
     roleID: 1,
     studentId: '',
     classCode: '',
   },
 }) => {
-  const [errorMessage, setErrorMessage] = useState('');
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
+  const isLoading = useAppSelector(state => state.account.isLoading);
   const formik = useFormik({
     initialValues: initValues,
     onSubmit: async (payload: AppUserDto) => {
@@ -87,13 +102,21 @@ const AccountDetailDialog: React.FC<Props> = ({
           userRole: {
             roleID: payload.roleID,
           },
+          imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
           studentId: payload.studentId?.length === 0 ? null : payload.studentId,
           classCode: payload.classCode?.length === 0 ? null : payload.classCode,
         };
         const result = await dispatch(addAccount(data));
         unwrapResult(result);
+        enqueueSnackbar('Add account success', {
+          variant: 'success',
+          preventDuplicate: true,
+        });
       } catch (error) {
-        setErrorMessage(error);
+        enqueueSnackbar(error, {
+          variant: 'error',
+          preventDuplicate: true,
+        });
       }
     },
   });
@@ -134,10 +157,10 @@ const AccountDetailDialog: React.FC<Props> = ({
           </IconButton>
         </Grid>
       </DialogTitle>
-      <Box component="form" onSubmit={formik.handleSubmit}>
+      <Box component="form" onSubmit={formik.handleSubmit} pb={2}>
         <DialogContent>
           <Grid container spacing={2}>
-            <Grid item sm={12}>
+            <Grid item xs={12}>
               <TextField
                 name="userRole"
                 select
@@ -155,7 +178,7 @@ const AccountDetailDialog: React.FC<Props> = ({
                 ))}
               </TextField>
             </Grid>
-            <Grid item md={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 autoFocus
                 name="fullName"
@@ -167,10 +190,17 @@ const AccountDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountCircle />
+                    </InputAdornment>
+                  ),
+                }}
                 onChange={formik.handleChange}
               />
             </Grid>
-            <Grid item md={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 name="gender"
                 select
@@ -201,10 +231,17 @@ const AccountDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email />
+                    </InputAdornment>
+                  ),
+                }}
                 onChange={formik.handleChange}
               />
             </Grid>
-            <Grid item md={6}>
+            <Grid item xs={12} md={6}>
               <DatePicker
                 label="Birthdate"
                 value={formik.values.birthdate}
@@ -225,7 +262,7 @@ const AccountDetailDialog: React.FC<Props> = ({
                 )}
               />
             </Grid>
-            <Grid item md={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 name="phoneNumber"
                 autoFocus
@@ -236,6 +273,13 @@ const AccountDetailDialog: React.FC<Props> = ({
                 variant="outlined"
                 InputLabelProps={{
                   shrink: true,
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Phone />
+                    </InputAdornment>
+                  ),
                 }}
                 onChange={formik.handleChange}
               />
@@ -252,12 +296,42 @@ const AccountDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Home />
+                    </InputAdornment>
+                  ),
+                }}
+                onChange={formik.handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="imageUrl"
+                autoFocus
+                margin="dense"
+                label="Avatar"
+                fullWidth
+                value={formik.values.imageUrl}
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Image />
+                    </InputAdornment>
+                  ),
+                }}
+                helperText="Backend chua xu ly anh nên chịu khó up link ^^"
                 onChange={formik.handleChange}
               />
             </Grid>
             {formik.values.roleID === 3 && (
               <>
-                <Grid item md={6}>
+                <Grid item xs={12} md={6}>
                   <TextField
                     name="studentId"
                     autoFocus
@@ -291,8 +365,15 @@ const AccountDetailDialog: React.FC<Props> = ({
             )}
           </Grid>
         </DialogContent>
-        <DialogActions>
-          <Button type="submit">Create</Button>
+        <DialogActions sx={{ justifyContent: 'center' }}>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            sx={{ width: 150 }}
+            loading={isLoading}
+          >
+            Create
+          </LoadingButton>
         </DialogActions>
       </Box>
     </Dialog>

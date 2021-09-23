@@ -27,6 +27,10 @@ const themeOptions = createTheme({
       main: '#EA4335',
       contrastText: '#fff',
     },
+    secondary: {
+      main: '#fafafa',
+      contrastText: '#3A3B3F',
+    },
   },
   typography: {
     fontFamily: ['Poppins, Roboto'].join(','),

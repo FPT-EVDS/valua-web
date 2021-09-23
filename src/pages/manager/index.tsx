@@ -26,7 +26,8 @@ import StringAvatar from 'components/StringAvatar';
 import React, { useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 
-import Account from './Account';
+import AccountPage from './Account';
+import DetailAccountPage from './Account/DetailAccount';
 import Camera from './Camera';
 import Dashboard from './Dashboard';
 import Room from './Room';
@@ -94,6 +95,7 @@ const ManagerDashboard = (): JSX.Element => {
             size="large"
             edge="start"
             color="inherit"
+            onClick={handleDrawerToggle}
             aria-label="menu"
             sx={{ mr: 2, display: { sm: 'none' } }}
           >
@@ -197,9 +199,10 @@ const ManagerDashboard = (): JSX.Element => {
         <Toolbar />
         <Switch>
           <Route path="/manager/dashboard" component={Dashboard} />
-          <Route path="/manager/account" component={Account} />
-          <Route path="/manager/room" component={Room} />
-          <Route path="/manager/camera" component={Camera} />
+          <Route path="/manager/account" component={AccountPage} exact />
+          <Route path="/manager/account/:id" component={DetailAccountPage} />
+          <Route path="/manager/room" component={Room} exact />
+          <Route path="/manager/camera" component={Camera} exact />
         </Switch>
       </Box>
     </Box>

@@ -1,4 +1,10 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+  isPending,
+  isRejected,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import AccountDto from 'dtos/account.dto';
 import AppUserDto from 'dtos/appUser.dto';
@@ -80,53 +86,42 @@ export const accountSlice = createSlice({
   name: 'account',
   initialState,
   reducers: {},
-  extraReducers: {
-    [(getAccounts.pending.type,
-    addAccount.pending.type,
-    updateAccount.pending.type,
-    disableAccount.pending.type)]: state => {
-      state.isLoading = true;
-      state.error = '';
-    },
-    [(getAccounts.rejected.type,
-    addAccount.rejected.type,
-    updateAccount.rejected.type,
-    disableAccount.rejected.type)]: (state, action: PayloadAction<string>) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-    [getAccounts.fulfilled.type]: (
-      state,
-      action: PayloadAction<AccountDto>,
-    ) => {
-      state.current = action.payload;
-      state.error = '';
-      state.isLoading = false;
-    },
-    [addAccount.fulfilled.type]: (state, action: PayloadAction<Account>) => {
-      state.current.accounts = [...state.current.accounts, action.payload];
-      state.error = '';
-      state.isLoading = false;
-    },
-    [updateAccount.fulfilled.type]: (state, action: PayloadAction<Account>) => {
-      const index = state.current.accounts.findIndex(
-        account => account.appUserId === action.payload.appUserId,
-      );
-      state.current.accounts[index] = action.payload;
-      state.error = '';
-      state.isLoading = false;
-    },
-    [disableAccount.fulfilled.type]: (
-      state,
-      action: PayloadAction<DisableAppUser>,
-    ) => {
-      const index = state.current.accounts.findIndex(
-        account => account.appUserId === action.payload.appUserId,
-      );
-      state.current.accounts[index].isActive = action.payload.isActive;
-      state.error = '';
-      state.isLoading = false;
-    },
+  extraReducers: builder => {
+    builder
+      .addCase(getAccounts.fulfilled, (state, action) => {
+        state.current = action.payload;
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(addAccount.fulfilled, (state, action) => {
+        state.current.accounts.unshift(action.payload);
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(updateAccount.fulfilled, (state, action) => {
+        const index = state.current.accounts.findIndex(
+          account => account.appUserId === action.payload.appUserId,
+        );
+        state.current.accounts[index] = action.payload;
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(disableAccount.fulfilled, (state, action) => {
+        const index = state.current.accounts.findIndex(
+          account => account.appUserId === action.payload.appUserId,
+        );
+        state.current.accounts[index].isActive = action.payload.isActive;
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addMatcher(isPending, state => {
+        state.isLoading = true;
+        state.error = '';
+      });
   },
 });
 
