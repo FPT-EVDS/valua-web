@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import logo from 'assets/images/logo.png';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 export type DrawerItem = {
   name: string;
@@ -23,7 +23,9 @@ interface Props {
 }
 
 const DrawerContent = ({ items }: Props): JSX.Element => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { pathname } = useLocation();
+  const defaultIndex = items.findIndex(item => item.to === pathname);
+  const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
   const history = useHistory();
 
   const handleListItemClick = (
