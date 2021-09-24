@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/lab';
 import DateAdapter from '@mui/lab/AdapterDateFns';
 import { IconButton } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
-import ManagerDashboard from 'pages/Manager';
+import ManagerDashboard from './pages/manager';
 import React, { RefObject } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
