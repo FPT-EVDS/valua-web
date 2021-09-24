@@ -21,7 +21,6 @@ import {
   IconButton,
   InputAdornment,
   MenuItem,
-  Stack,
   TextField,
   Typography,
 } from '@mui/material';
@@ -46,7 +45,7 @@ interface ParamProps {
 
 const DetailAccountPage = () => {
   const dispatch = useAppDispatch();
-  const account = useAppSelector(state => state.detailAccount.account);
+  const { account, isLoading } = useAppSelector(state => state.detailAccount);
   const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
   const query = useQuery();
@@ -55,6 +54,7 @@ const DetailAccountPage = () => {
     String(query.get('edit')) === 'true',
   );
   const initialValues: AppUserDto = {
+    appUserId: null,
     address: '',
     birthdate: new Date(),
     email: '',
@@ -94,12 +94,16 @@ const DetailAccountPage = () => {
 
   const refreshFormValues = async () => {
     if (account) {
+      const roleIndex = accountRoles.findIndex(
+        role => role.roleID === account.role.roleID,
+      );
+      const userRole = accountRoles[roleIndex] || {
+        roleID: 0,
+        name: 'Manager',
+      };
       await formik.setValues({
         ...account,
-        userRole:
-          accountRoles[
-            accountRoles.findIndex(role => role.roleID === account.role.roleID)
-          ],
+        userRole,
       });
     }
   };
@@ -171,15 +175,17 @@ const DetailAccountPage = () => {
                 </Typography>
               }
               action={
-                <IconButton
-                  onClick={() => setIsEditable(prevState => !prevState)}
-                >
-                  {isEditable ? (
-                    <EditOff sx={{ fontSize: 20 }} />
-                  ) : (
-                    <Edit sx={{ fontSize: 20 }} />
-                  )}
-                </IconButton>
+                account?.isActive && (
+                  <IconButton
+                    onClick={() => setIsEditable(prevState => !prevState)}
+                  >
+                    {isEditable ? (
+                      <EditOff sx={{ fontSize: 20 }} />
+                    ) : (
+                      <Edit sx={{ fontSize: 20 }} />
+                    )}
+                  </IconButton>
+                )
               }
             />
             <Box component="form" onSubmit={formik.handleSubmit} pb={2}>
@@ -382,12 +388,21 @@ const DetailAccountPage = () => {
                   )}
                 </Grid>
               </CardContent>
-              <Divider />
-              <CardActions>
-                <LoadingButton type="submit" variant="contained">
-                  Update account
-                </LoadingButton>
-              </CardActions>
+              {account?.isActive && (
+                <>
+                  <Divider />
+                  <CardActions>
+                    <LoadingButton
+                      disabled={!isEditable}
+                      loading={isLoading}
+                      type="submit"
+                      variant="contained"
+                    >
+                      Update account
+                    </LoadingButton>
+                  </CardActions>
+                </>
+              )}
             </Box>
           </Card>
         </Grid>

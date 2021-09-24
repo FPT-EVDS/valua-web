@@ -1,6 +1,7 @@
 import Role from 'models/role.model';
 
 interface AppUserDto {
+  appUserId: string | null;
   fullName: string;
   email: string;
   phoneNumber: string;

@@ -17,6 +17,7 @@ export const getAccount = createAsyncThunk(
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
+      console.log(axiosError);
       return rejectWithValue(axiosError.response?.data);
     }
   },

@@ -65,10 +65,14 @@ const OverviewCard = ({ account, actionButtons }: Props) => (
         />
       </Stack>
     </CardContent>
-    <Divider />
-    <CardActions sx={{ justifyContent: 'space-between' }}>
-      {actionButtons}
-    </CardActions>
+    {account.isActive && (
+      <>
+        <Divider />
+        <CardActions sx={{ justifyContent: 'space-between' }}>
+          {actionButtons}
+        </CardActions>
+      </>
+    )}
   </Card>
 );
 

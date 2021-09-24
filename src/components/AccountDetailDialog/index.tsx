@@ -50,6 +50,7 @@ const AccountDetailDialog: React.FC<Props> = ({
   handleClose,
   title,
   initValues = {
+    appUserId: null,
     address: '',
     birthdate: new Date(),
     email: '',

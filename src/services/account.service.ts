@@ -20,7 +20,7 @@ const accountServices = {
     return axiosClient.post(url, payload);
   },
   updateAccount: (payload: AppUserDto): Promise<AxiosResponse<Account>> => {
-    const url = '/accounts';
+    const url = `/accounts/${String(payload.appUserId)}`;
     return axiosClient.put(url, payload);
   },
   disableAccount: (id: string): Promise<AxiosResponse<DisableAppUser>> => {
