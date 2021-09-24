@@ -1,7 +1,7 @@
 import Roles from 'enums/role.enum';
 import Role from 'models/role.model';
 
-const roles: Role[] = [
+const AccountRoles: Role[] = [
   {
     roleID: 1,
     roleName: Roles.ShiftManager,
@@ -16,4 +16,4 @@ const roles: Role[] = [
   },
 ];
 
-export default roles;
+export default AccountRoles;

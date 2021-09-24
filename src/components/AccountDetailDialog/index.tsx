@@ -23,11 +23,11 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import genders from 'configs/constants/genders.constant';
+import accountRoles from 'configs/constants/roles.constant';
 import AppUserDto from 'dtos/appUser.dto';
-import Roles from 'enums/role.enum';
 import { addAccount } from 'features/account/accountsSlice';
 import { useFormik } from 'formik';
-import Role from 'models/role.model';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 
@@ -45,32 +45,6 @@ const Transition = React.forwardRef(
   ),
 );
 
-const roles: Role[] = [
-  {
-    roleID: 1,
-    roleName: Roles.ShiftManager,
-  },
-  {
-    roleID: 2,
-    roleName: Roles.Staff,
-  },
-  {
-    roleID: 3,
-    roleName: Roles.Examinee,
-  },
-];
-
-const genders = [
-  {
-    value: 0,
-    label: 'Male',
-  },
-  {
-    value: 1,
-    label: 'Female',
-  },
-];
-
 const AccountDetailDialog: React.FC<Props> = ({
   open,
   handleClose,
@@ -83,7 +57,7 @@ const AccountDetailDialog: React.FC<Props> = ({
     gender: 0,
     imageUrl: '',
     phoneNumber: '',
-    userRole: roles[0],
+    userRole: accountRoles[0],
     studentId: '',
     classCode: '',
   },
@@ -95,16 +69,14 @@ const AccountDetailDialog: React.FC<Props> = ({
     initialValues: initValues,
     onSubmit: async (payload: AppUserDto) => {
       try {
-        // FIXME: BAD PRACTICES
-        console.log(payload);
-        // const data = {
-        //   ...payload,
-        //   imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
-        //   studentId: payload.studentId?.length === 0 ? null : payload.studentId,
-        //   classCode: payload.classCode?.length === 0 ? null : payload.classCode,
-        // };
-        // const result = await dispatch(addAccount(data));
-        // unwrapResult(result);
+        const data = {
+          ...payload,
+          imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
+          studentId: payload.studentId?.length === 0 ? null : payload.studentId,
+          classCode: payload.classCode?.length === 0 ? null : payload.classCode,
+        };
+        const result = await dispatch(addAccount(data));
+        unwrapResult(result);
         enqueueSnackbar('Add account success', {
           variant: 'success',
           preventDuplicate: true,
@@ -121,10 +93,10 @@ const AccountDetailDialog: React.FC<Props> = ({
   const handleChangeRole = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const roleIndex = roles.findIndex(
+    const roleIndex = accountRoles.findIndex(
       role => role.roleID === parseInt(event.target.value, 10),
     );
-    await formik.setFieldValue('userRole', roles[roleIndex]);
+    await formik.setFieldValue('userRole', accountRoles[roleIndex]);
   };
 
   const handleChangeGender = async (
@@ -171,7 +143,7 @@ const AccountDetailDialog: React.FC<Props> = ({
                 variant="outlined"
                 onChange={handleChangeRole}
               >
-                {roles.map(option => (
+                {accountRoles.map(option => (
                   <MenuItem key={option.roleID} value={option.roleID}>
                     {option.roleName}
                   </MenuItem>

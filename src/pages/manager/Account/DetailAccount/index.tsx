@@ -16,6 +16,7 @@ import { grey } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import OverviewCard from 'components/OverviewCard';
+import accountRoles from 'configs/constants/roles.constant';
 import AppUserDto from 'dtos/appUser.dto';
 import { updateAccount } from 'features/account/accountsSlice';
 import { getAccount } from 'features/account/detailAccountSlice';
@@ -39,35 +40,45 @@ const DetailAccountPage = () => {
   const [isEditable, setIsEditable] = useState(
     String(query.get('edit')) === 'true',
   );
-  const initialValues = account;
-  // const formik = useFormik({
-  //   initialValues,
-  //   onSubmit: async (payload: AppUserDto) => {
-  //     try {
-  //       // FIXME: BAD PRACTICES
-  //       const data = {
-  //         ...payload,
-  //         userRole: {
-  //           roleID: payload.roleID,
-  //         },
-  //         imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
-  //         studentId: payload.studentId?.length === 0 ? null : payload.studentId,
-  //         classCode: payload.classCode?.length === 0 ? null : payload.classCode,
-  //       };
-  //       const result = await dispatch(updateAccount(data));
-  //       unwrapResult(result);
-  //       enqueueSnackbar('Add account success', {
-  //         variant: 'success',
-  //         preventDuplicate: true,
-  //       });
-  //     } catch (error) {
-  //       enqueueSnackbar(error, {
-  //         variant: 'error',
-  //         preventDuplicate: true,
-  //       });
-  //     }
-  //   },
-  // });
+  const initialValues = {
+    address: '',
+    birthdate: new Date(),
+    email: '',
+    fullName: '',
+    gender: 0,
+    imageUrl: '',
+    phoneNumber: '',
+    userRole: accountRoles[0],
+    // userRole: roles[0],
+    studentId: '',
+    classCode: '',
+  };
+
+  const formik = useFormik({
+    initialValues,
+    onSubmit: async (payload: AppUserDto) => {
+      try {
+        // FIXME: BAD PRACTICES
+        const data = {
+          ...payload,
+          imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
+          studentId: payload.studentId?.length === 0 ? null : payload.studentId,
+          classCode: payload.classCode?.length === 0 ? null : payload.classCode,
+        };
+        const result = await dispatch(updateAccount(data));
+        unwrapResult(result);
+        enqueueSnackbar('Update account success', {
+          variant: 'success',
+          preventDuplicate: true,
+        });
+      } catch (error) {
+        enqueueSnackbar(error, {
+          variant: 'error',
+          preventDuplicate: true,
+        });
+      }
+    },
+  });
 
   const fetchAccount = async (appUserId: string) => {
     const actionResult = await dispatch(getAccount(appUserId));
