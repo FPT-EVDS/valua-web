@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@date-io/date-fns": "^2.11.0",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.0",
+    "@mui/lab": "^5.0.0-alpha.47",
     "@mui/material": "^5.0.0",
+    "@mui/styles": "^5.0.0",
+    "@mui/x-data-grid": "5.0.0-beta.1",
     "@reduxjs/toolkit": "^1.5.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -16,21 +20,31 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-redux": "^7.1.7",
+    "@types/react-router-dom": "^5.1.9",
+    "axios": "^0.21.4",
+    "date-fns": "^2.24.0",
+    "formik": "^2.2.9",
     "husky": "^7.0.2",
     "lint-staged": "^11.1.2",
-    "node-sass": "^6.0.1",
+    "lodash": "^4.17.21",
+    "node-sass": "4.14.1",
+    "notistack": "1.0.6-next.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-google-login": "^5.2.2",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
-    "typescript": "~4.1.5"
+    "typescript": "~4.1.5",
+    "yup": "^0.32.9"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "eslint": "eslint --color --ext .html,.js,.json,.jsx,.md,.ts,.tsx *.* src",
+    "eslint:fix": "npm run eslint -- --fix"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -46,5 +60,34 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint-config-adjunct": "^4.11.1",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-airbnb-typescript": "^14.0.0",
+    "eslint-config-auto": "^0.7.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-array-func": "^3.1.7",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-html": "^6.2.0",
+    "eslint-plugin-jest-async": "^1.0.3",
+    "eslint-plugin-jest-dom": "^3.9.2",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-lodash": "^7.3.0",
+    "eslint-plugin-lodash-fp": "^2.2.0-a1",
+    "eslint-plugin-markdown": "^2.2.1",
+    "eslint-plugin-no-constructor-bind": "^2.0.4",
+    "eslint-plugin-no-secrets": "^0.8.9",
+    "eslint-plugin-no-unsanitized": "^3.1.5",
+    "eslint-plugin-no-use-extend-native": "^0.5.0",
+    "eslint-plugin-optimize-regex": "^1.2.1",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-react-redux": "^3.3.2",
+    "eslint-plugin-scanjs-rules": "^0.2.1",
+    "eslint-plugin-security": "^1.4.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-sonarjs": "^0.10.0",
+    "eslint-plugin-switch-case": "^1.1.2",
+    "eslint-plugin-unicorn": "^36.0.0"
   }
 }
