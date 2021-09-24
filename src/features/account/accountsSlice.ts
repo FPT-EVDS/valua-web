@@ -1,8 +1,7 @@
 import {
   createAsyncThunk,
   createSlice,
-  isPending,
-  isRejected,
+  isAnyOf,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
@@ -113,14 +112,30 @@ export const accountsSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addMatcher(isPending, state => {
-        state.isLoading = true;
-        state.error = '';
-      });
+      .addMatcher(
+        isAnyOf(
+          getAccounts.rejected,
+          addAccount.rejected,
+          updateAccount.rejected,
+          disableAccount.rejected,
+        ),
+        (state, action: PayloadAction<string>) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          getAccounts.pending,
+          addAccount.pending,
+          updateAccount.pending,
+          disableAccount.pending,
+        ),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      );
   },
 });
 

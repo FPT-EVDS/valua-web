@@ -1,10 +1,4 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  isPending,
-  isRejected,
-  PayloadAction,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import Account from 'models/account.model';
 import accountServices from 'services/account.service';
@@ -46,11 +40,14 @@ export const detailAccountSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addMatcher(isPending, state => {
+      .addCase(
+        getAccount.rejected,
+        (state, action: PayloadAction<unknown | string>) => {
+          state.isLoading = false;
+          state.error = String(action.payload);
+        },
+      )
+      .addCase(getAccount.pending, state => {
         state.isLoading = true;
         state.error = '';
       });

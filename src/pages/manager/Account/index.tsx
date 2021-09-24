@@ -22,7 +22,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 const AccountPage = () => {
   const [open, setOpen] = useState(false);
   const history = useHistory();
-  const { path, url } = useRouteMatch();
+  const { url } = useRouteMatch();
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
       title: `Do you want to delete this account ?`,
@@ -34,7 +34,10 @@ const AccountPage = () => {
     });
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
-  const accounts = useAppSelector(state => state.account.current.accounts);
+  const {
+    isLoading,
+    current: { accounts },
+  } = useAppSelector(state => state.account);
   const rows: GridRowModel[] = accounts.map(account => ({
     ...account,
     role: account.role.roleName,
@@ -192,6 +195,7 @@ const AccountPage = () => {
         handleClose={() => setOpen(false)}
       />
       <EVDSDataGrid
+        isLoading={isLoading}
         title="Manage Accounts"
         columns={columns}
         rows={rows}

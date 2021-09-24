@@ -4,9 +4,9 @@ type Account = {
   appUserId: string;
   email: string;
   fullName: string;
-  gender: string;
+  gender: number;
   role: Role;
-  birthdate: string;
+  birthdate: Date;
   address: string;
   isActive: boolean;
   phoneNumber: string;

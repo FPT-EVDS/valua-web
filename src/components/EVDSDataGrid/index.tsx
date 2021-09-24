@@ -9,6 +9,7 @@ interface DataGridHeaderProps {
 }
 
 interface DataGridProps extends DataGridHeaderProps {
+  isLoading: boolean;
   rows: GridRowData[];
   columns: GridColumns;
 }
@@ -38,13 +39,20 @@ const EVDSDataGridHeader = ({ title, addButton }: DataGridHeaderProps) => (
   </Grid>
 );
 
-const EVDSDataGrid = ({ rows, columns, title, addButton }: DataGridProps) => (
+const EVDSDataGrid = ({
+  isLoading,
+  rows,
+  columns,
+  title,
+  addButton,
+}: DataGridProps) => (
   <>
     <EVDSDataGridHeader title={title} addButton={addButton} />
     <div style={{ height: 600, width: '100%' }}>
       <div style={{ display: 'flex', height: '100%' }}>
         <div style={{ flexGrow: 1 }}>
           <DataGrid
+            loading={isLoading}
             autoHeight
             disableSelectionOnClick
             disableColumnMenu
