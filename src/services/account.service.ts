@@ -11,6 +11,10 @@ const accountServices = {
     const url = `/accounts`;
     return axiosClient.get(url, { params: { numOfPage } });
   },
+  getAccount: (id: string): Promise<AxiosResponse<Account>> => {
+    const url = `/accounts/${id}`;
+    return axiosClient.get(url, { params: { id } });
+  },
   addAccount: (payload: AppUserDto): Promise<AxiosResponse<Account>> => {
     const url = '/accounts';
     return axiosClient.post(url, payload);

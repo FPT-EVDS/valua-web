@@ -13,11 +13,11 @@ import {
 import { red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
-import { login } from 'app/userSlice';
 import { ReactComponent as Logo } from 'assets/images/logo.svg';
 import backgroundImage from 'assets/images/stacked-waves-haikei.png';
 import GoogleLoginButton from 'components/GoogleLoginButton';
 import LoginDto from 'dtos/login.dto';
+import { login } from 'features/auth/authSlice';
 import { useFormik } from 'formik';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';

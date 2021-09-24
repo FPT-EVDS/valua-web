@@ -14,7 +14,7 @@ import AccountDetailDialog from 'components/AccountDetailDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import StringAvatar from 'components/StringAvatar';
-import { disableAccount, getAccounts } from 'features/account/accountSlice';
+import { disableAccount, getAccounts } from 'features/account/accountsSlice';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -47,7 +47,12 @@ const AccountPage = () => {
   };
 
   useEffect(() => {
-    fetchAccount(0).catch(error => console.log(error));
+    fetchAccount(0).catch(error =>
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      }),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

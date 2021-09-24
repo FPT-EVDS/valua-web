@@ -8,7 +8,6 @@ import {
 import { AxiosError } from 'axios';
 import AccountDto from 'dtos/account.dto';
 import AppUserDto from 'dtos/appUser.dto';
-import DisableAppUser from 'dtos/disableAppUser.dto';
 import Account from 'models/account.model';
 import accountServices from 'services/account.service';
 
@@ -20,9 +19,9 @@ interface AccountState {
 
 export const getAccounts = createAsyncThunk(
   'accounts',
-  async (payload: number, { rejectWithValue }) => {
+  async (numOfPage: number, { rejectWithValue }) => {
     try {
-      const response = await accountServices.getAccounts(payload);
+      const response = await accountServices.getAccounts(numOfPage);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -82,7 +81,7 @@ const initialState: AccountState = {
   },
 };
 
-export const accountSlice = createSlice({
+export const accountsSlice = createSlice({
   name: 'account',
   initialState,
   reducers: {},
@@ -125,4 +124,4 @@ export const accountSlice = createSlice({
   },
 });
 
-export default accountSlice.reducer;
+export default accountsSlice.reducer;

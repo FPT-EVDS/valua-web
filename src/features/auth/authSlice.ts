@@ -4,7 +4,7 @@ import LoginDto from 'dtos/login.dto';
 import User from 'models/user.model';
 import authServices from 'services/auth.service';
 
-import { RootState } from './store';
+import { RootState } from '../../app/store';
 
 interface UserState {
   isLoading: boolean;
@@ -34,7 +34,7 @@ const initialState: UserState = {
   user: null,
 };
 
-export const userSlice = createSlice({
+export const authSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {},
@@ -60,4 +60,4 @@ export const userSlice = createSlice({
 
 export const selectUser = (state: RootState) => state.user.user;
 
-export default userSlice.reducer;
+export default authSlice.reducer;

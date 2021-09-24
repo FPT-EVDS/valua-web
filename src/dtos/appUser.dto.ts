@@ -7,7 +7,7 @@ interface AppUserDto {
   birthdate: Date;
   address: string;
   gender: number;
-  roleID: number;
+  userRole: Role;
   imageUrl: string | null;
   studentId: string | null;
   classCode: string | null;

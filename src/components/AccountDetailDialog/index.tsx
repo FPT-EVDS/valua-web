@@ -25,11 +25,11 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AppUserDto from 'dtos/appUser.dto';
 import Roles from 'enums/role.enum';
-import { addAccount } from 'features/account/accountSlice';
+import { addAccount } from 'features/account/accountsSlice';
 import { useFormik } from 'formik';
 import Role from 'models/role.model';
 import { useSnackbar } from 'notistack';
-import React, { useState } from 'react';
+import React from 'react';
 
 interface Props {
   title: string;
@@ -45,7 +45,6 @@ const Transition = React.forwardRef(
   ),
 );
 
-// FIXME: Should be fetch from be
 const roles: Role[] = [
   {
     roleID: 1,
@@ -84,7 +83,7 @@ const AccountDetailDialog: React.FC<Props> = ({
     gender: 0,
     imageUrl: '',
     phoneNumber: '',
-    roleID: 1,
+    userRole: roles[0],
     studentId: '',
     classCode: '',
   },
@@ -97,17 +96,15 @@ const AccountDetailDialog: React.FC<Props> = ({
     onSubmit: async (payload: AppUserDto) => {
       try {
         // FIXME: BAD PRACTICES
-        const data = {
-          ...payload,
-          userRole: {
-            roleID: payload.roleID,
-          },
-          imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
-          studentId: payload.studentId?.length === 0 ? null : payload.studentId,
-          classCode: payload.classCode?.length === 0 ? null : payload.classCode,
-        };
-        const result = await dispatch(addAccount(data));
-        unwrapResult(result);
+        console.log(payload);
+        // const data = {
+        //   ...payload,
+        //   imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
+        //   studentId: payload.studentId?.length === 0 ? null : payload.studentId,
+        //   classCode: payload.classCode?.length === 0 ? null : payload.classCode,
+        // };
+        // const result = await dispatch(addAccount(data));
+        // unwrapResult(result);
         enqueueSnackbar('Add account success', {
           variant: 'success',
           preventDuplicate: true,
@@ -124,7 +121,10 @@ const AccountDetailDialog: React.FC<Props> = ({
   const handleChangeRole = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    await formik.setFieldValue('roleID', event.target.value);
+    const roleIndex = roles.findIndex(
+      role => role.roleID === parseInt(event.target.value, 10),
+    );
+    await formik.setFieldValue('userRole', roles[roleIndex]);
   };
 
   const handleChangeGender = async (
@@ -162,12 +162,12 @@ const AccountDetailDialog: React.FC<Props> = ({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                name="userRole"
+                name="userRole.roleID"
                 select
                 margin="dense"
                 label="Role"
                 fullWidth
-                value={formik.values.roleID}
+                value={formik.values.userRole.roleID}
                 variant="outlined"
                 onChange={handleChangeRole}
               >
@@ -329,7 +329,7 @@ const AccountDetailDialog: React.FC<Props> = ({
                 onChange={formik.handleChange}
               />
             </Grid>
-            {formik.values.roleID === 3 && (
+            {formik.values.userRole.roleID === 3 && (
               <>
                 <Grid item xs={12} md={6}>
                   <TextField
