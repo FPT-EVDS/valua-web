@@ -2,8 +2,8 @@ import Account from 'models/account.model';
 
 import PagingDto from './paging.dto';
 
-interface AccountDto extends PagingDto {
+interface AccountsDto extends PagingDto {
   accounts: Array<Account>;
 }
 
-export default AccountDto;
+export default AccountsDto;

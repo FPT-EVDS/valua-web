@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import React from 'react';
 
-const RoomPage = () => {
+const SubjectPage = () => {
   const rows: GridRowsProp = [
     { id: 1, col1: 'Hello', col2: 'World' },
     { id: 2, col1: 'DataGridPro', col2: 'is Awesome' },
@@ -17,7 +17,7 @@ const RoomPage = () => {
   return (
     <div>
       <Typography variant="h5" component="div" sx={{ mb: 4 }}>
-        Manage Rooms
+        Manage Subject
       </Typography>
       <div style={{ height: 600, width: '100%' }}>
         <div style={{ display: 'flex', height: '100%' }}>
@@ -30,4 +30,4 @@ const RoomPage = () => {
   );
 };
 
-export default RoomPage;
+export default SubjectPage;

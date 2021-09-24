@@ -1,6 +1,6 @@
-interface DisableAppUser {
+interface DisableAppUserDto {
   appUserId: string;
   isActive: boolean;
 }
 
-export default DisableAppUser;
+export default DisableAppUserDto;
