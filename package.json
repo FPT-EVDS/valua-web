@@ -89,5 +89,9 @@
     "eslint-plugin-sonarjs": "^0.10.0",
     "eslint-plugin-switch-case": "^1.1.2",
     "eslint-plugin-unicorn": "^36.0.0"
-  }
+  },
+  "main": "index.js",
+  "repository": "https://github.com/FPT-EVDS/evds-web.git",
+  "author": "Huy <nguyenhuuhuy203@gmail.com>",
+  "license": "MIT"
 }
