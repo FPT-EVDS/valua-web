@@ -42,19 +42,6 @@ export const addAccount = createAsyncThunk(
   },
 );
 
-export const updateAccount = createAsyncThunk(
-  'accounts/update',
-  async (payload: AppUserDto, { rejectWithValue }) => {
-    try {
-      const response = await accountServices.updateAccount(payload);
-      return response.data;
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      return rejectWithValue(axiosError.response?.data);
-    }
-  },
-);
-
 export const disableAccount = createAsyncThunk(
   'accounts/disable',
   async (appUserId: string, { rejectWithValue }) => {
@@ -96,14 +83,6 @@ export const accountsSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(updateAccount.fulfilled, (state, action) => {
-        const index = state.current.accounts.findIndex(
-          account => account.appUserId === action.payload.appUserId,
-        );
-        state.current.accounts[index] = action.payload;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addCase(disableAccount.fulfilled, (state, action) => {
         const index = state.current.accounts.findIndex(
           account => account.appUserId === action.payload.appUserId,
@@ -116,7 +95,6 @@ export const accountsSlice = createSlice({
         isAnyOf(
           getAccounts.rejected,
           addAccount.rejected,
-          updateAccount.rejected,
           disableAccount.rejected,
         ),
         (state, action: PayloadAction<string>) => {
@@ -128,7 +106,6 @@ export const accountsSlice = createSlice({
         isAnyOf(
           getAccounts.pending,
           addAccount.pending,
-          updateAccount.pending,
           disableAccount.pending,
         ),
         state => {

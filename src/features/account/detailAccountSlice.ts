@@ -1,5 +1,6 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import AppUserDto from 'dtos/appUser.dto';
 import Account from 'models/account.model';
 import accountServices from 'services/account.service';
 
@@ -17,7 +18,20 @@ export const getAccount = createAsyncThunk(
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
-      console.log(axiosError);
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const updateAccount = createAsyncThunk(
+  'updateAccountDetail',
+  async (payload: AppUserDto, { rejectWithValue }) => {
+    try {
+      const response = await accountServices.updateAccount(payload);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
       return rejectWithValue(axiosError.response?.data);
     }
   },
@@ -36,22 +50,25 @@ export const detailAccountSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getAccount.fulfilled, (state, action) => {
-        state.account = action.payload;
-        state.error = '';
-        state.isLoading = false;
-      })
-      .addCase(
-        getAccount.rejected,
-        (state, action: PayloadAction<unknown | string>) => {
+      .addMatcher(
+        isAnyOf(getAccount.fulfilled, updateAccount.fulfilled),
+        (state, action) => {
+          state.account = action.payload;
+          state.error = '';
           state.isLoading = false;
-          state.error = String(action.payload);
         },
       )
-      .addCase(getAccount.pending, state => {
+      .addMatcher(isAnyOf(getAccount.pending, updateAccount.pending), state => {
         state.isLoading = true;
         state.error = '';
-      });
+      })
+      .addMatcher(
+        isAnyOf(getAccount.rejected, updateAccount.rejected),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      );
   },
 });
 
