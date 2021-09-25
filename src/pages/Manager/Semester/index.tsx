@@ -1,5 +1,5 @@
 /* eslint-disable prefer-destructuring */
-import { Add, Delete, Edit } from '@mui/icons-material';
+import { Add, Delete, Description, Edit } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
@@ -13,18 +13,22 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
-import SubjectDetailDialog from 'components/SubjectDetailDialog';
-import SubjectDto from 'dtos/subject.dto';
-import { disableSubject, getSubjects } from 'features/subject/subjectsSlice';
+import SemesterDetailDialog from 'components/SemesterDetailDialog';
+import { add, format } from 'date-fns';
+import SemesterDto from 'dtos/semester.dto';
+import {
+  disableSemester,
+  getSemesters,
+} from 'features/semester/semestersSlice';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
-const SubjectPage = () => {
+const SemesterPage = () => {
   const [open, setOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this subject ?`,
+      title: `Do you want to delete this semester ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
@@ -35,25 +39,26 @@ const SubjectPage = () => {
   const dispatch = useAppDispatch();
   const {
     isLoading,
-    current: { subjects },
-  } = useAppSelector(state => state.subjects);
-  const rows: GridRowModel[] = subjects.map(subject => ({
-    ...subject,
-    id: subject.subjectId,
+    current: { semesters },
+  } = useAppSelector(state => state.semesters);
+  const rows: GridRowModel[] = semesters.map(semester => ({
+    ...semester,
+    id: semester.semesterId,
   }));
-  const [initialValues, setInitialValues] = useState<SubjectDto>({
-    subjectId: null,
-    subjectCode: '',
-    subjectName: '',
+  const [initialValues, setInitialValues] = useState<SemesterDto>({
+    semesterId: null,
+    semesterName: '',
+    beginDate: new Date(),
+    endDate: add(new Date(), { months: 1 }),
   });
 
-  const fetchSubjects = async (numOfPage: number) => {
-    const actionResult = await dispatch(getSubjects(numOfPage));
+  const fetchSemesters = async (numOfPage: number) => {
+    const actionResult = await dispatch(getSemesters(numOfPage));
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchSubjects(0).catch(error =>
+    fetchSemesters(0).catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
@@ -64,13 +69,13 @@ const SubjectPage = () => {
 
   useEffect(() => {
     setOpen(false);
-  }, [subjects]);
+  }, [semesters]);
 
-  const handleDeleteSubject = async (subject: string) => {
+  const handleDeleteSemester = async (semesterId: string) => {
     try {
-      const result = await dispatch(disableSubject(subject));
+      const result = await dispatch(disableSemester(semesterId));
       unwrapResult(result);
-      enqueueSnackbar('Disable subject success', {
+      enqueueSnackbar('Disable semester success', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -91,25 +96,35 @@ const SubjectPage = () => {
   };
 
   const showDeleteConfirmation = ({ getValue, id }: GridRowParams) => {
-    const subjectId = String(getValue(id, 'subjectId'));
-    const name = String(getValue(id, 'subjectName'));
+    const semesterId = String(getValue(id, 'semesterId'));
+    const name = String(getValue(id, 'semesterName'));
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove subject ${name}`,
-      handleAccept: () => handleDeleteSubject(subjectId),
+      title: `Do you want to remove semester ${name}`,
+      handleAccept: () => handleDeleteSemester(semesterId),
     }));
   };
 
   const columns: Array<GridColDef | GridActionsColDef> = [
-    { field: 'subjectId', hide: true },
+    { field: 'semesterId', hide: true },
+    { field: 'semesterName', headerName: 'Name', flex: 0.1, minWidth: 130 },
     {
-      field: 'subjectCode',
-      headerName: 'Subject Code',
+      field: 'beginDate',
+      headerName: 'Begin date',
       flex: 0.1,
       minWidth: 130,
+      valueFormatter: ({ id, field, getValue }) =>
+        format(new Date(String(getValue(id, field))), 'dd/MM/yyyy'),
     },
-    { field: 'subjectName', headerName: 'Name', flex: 0.1, minWidth: 130 },
+    {
+      field: 'endDate',
+      headerName: 'End date',
+      flex: 0.1,
+      minWidth: 130,
+      valueFormatter: ({ id, field, getValue }) =>
+        format(new Date(String(getValue(id, field))), 'dd/MM/yyyy'),
+    },
     {
       field: 'isActive',
       headerName: 'Status',
@@ -146,9 +161,14 @@ const SubjectPage = () => {
             showInMenu
             onClick={() => {
               setIsUpdate(true);
-              setInitialValues(params.row as SubjectDto);
+              setInitialValues(params.row as SemesterDto);
               setOpen(true);
             }}
+          />,
+          <GridActionsCellItem
+            label="View subjects"
+            icon={<Description />}
+            showInMenu
           />,
         ];
         if (!isActive) deleteItems.shift();
@@ -166,14 +186,14 @@ const SubjectPage = () => {
         setIsUpdate(false);
       }}
     >
-      Add subject
+      Add semester
     </Button>
   );
 
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
-      <SubjectDetailDialog
+      <SemesterDetailDialog
         open={open}
         handleClose={() => setOpen(false)}
         isUpdate={isUpdate}
@@ -181,7 +201,7 @@ const SubjectPage = () => {
       />
       <EVDSDataGrid
         isLoading={isLoading}
-        title="Manage Subjects"
+        title="Manage Semesters"
         columns={columns}
         rows={rows}
         addButton={<AddButton />}
@@ -191,4 +211,4 @@ const SubjectPage = () => {
   );
 };
 
-export default SubjectPage;
+export default SemesterPage;

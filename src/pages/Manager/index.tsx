@@ -1,12 +1,14 @@
 import {
+  Class,
+  ClassOutlined,
   Dashboard as DashboardIcon,
   DashboardOutlined,
   LocationOn,
   LocationOnOutlined,
   Menu as MenuIcon,
   Notifications,
-  Subject,
-  SubjectOutlined,
+  School,
+  SchoolOutlined,
   SupervisorAccount,
   SupervisorAccountOutlined,
   Videocam,
@@ -34,7 +36,47 @@ import Camera from './Camera';
 import Dashboard from './Dashboard';
 import RoomPage from './Room';
 import DetailRoomPage from './Room/DetailRoomPage';
+import SemesterPage from './Semester';
 import SubjectPage from './Subject';
+
+const drawerItems: Array<DrawerItem> = [
+  {
+    name: 'Dashboard',
+    icon: <DashboardOutlined />,
+    activeIcon: <DashboardIcon />,
+    to: '/manager/dashboard',
+  },
+  {
+    name: 'Account',
+    icon: <SupervisorAccountOutlined />,
+    activeIcon: <SupervisorAccount />,
+    to: '/manager/account',
+  },
+  {
+    name: 'Room',
+    icon: <LocationOnOutlined />,
+    activeIcon: <LocationOn />,
+    to: '/manager/room',
+  },
+  {
+    name: 'Camera',
+    icon: <VideocamOutlined />,
+    activeIcon: <Videocam />,
+    to: '/manager/camera',
+  },
+  {
+    name: 'Subject',
+    icon: <ClassOutlined />,
+    activeIcon: <Class />,
+    to: '/manager/subject',
+  },
+  {
+    name: 'Semester',
+    icon: <SchoolOutlined />,
+    activeIcon: <School />,
+    to: '/manager/semester',
+  },
+];
 
 const ManagerDashboard = (): JSX.Element => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -54,39 +96,6 @@ const ManagerDashboard = (): JSX.Element => {
   const handleDrawerToggle = (): void => {
     setMobileOpen(!mobileOpen);
   };
-
-  const drawerItems: Array<DrawerItem> = [
-    {
-      name: 'Dashboard',
-      icon: <DashboardOutlined />,
-      activeIcon: <DashboardIcon />,
-      to: '/manager/dashboard',
-    },
-    {
-      name: 'Account',
-      icon: <SupervisorAccountOutlined />,
-      activeIcon: <SupervisorAccount />,
-      to: '/manager/account',
-    },
-    {
-      name: 'Room',
-      icon: <LocationOnOutlined />,
-      activeIcon: <LocationOn />,
-      to: '/manager/room',
-    },
-    {
-      name: 'Camera',
-      icon: <VideocamOutlined />,
-      activeIcon: <Videocam />,
-      to: '/manager/camera',
-    },
-    {
-      name: 'Subject',
-      icon: <SubjectOutlined />,
-      activeIcon: <Subject />,
-      to: '/manager/subject',
-    },
-  ];
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -215,6 +224,7 @@ const ManagerDashboard = (): JSX.Element => {
           <Route path="/manager/room" component={RoomPage} exact />
           <Route path="/manager/room/:id" component={DetailRoomPage} exact />
           <Route path="/manager/camera" component={Camera} exact />
+          <Route path="/manager/semester" component={SemesterPage} exact />
           <Route path="/manager/subject" component={SubjectPage} exact />
           <Redirect from="/manager" to="/manager/dashboard" />
         </Switch>

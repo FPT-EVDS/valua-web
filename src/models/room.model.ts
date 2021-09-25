@@ -5,6 +5,6 @@ export default interface Room {
   floor: number;
   description: string;
   status: number;
-  createdDate: string;
-  lastModifiedDate: string;
+  createdDate: Date;
+  lastModifiedDate: Date;
 }

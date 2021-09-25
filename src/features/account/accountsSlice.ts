@@ -67,7 +67,7 @@ const initialState: AccountState = {
   },
 };
 
-export const accountsSlice = createSlice({
+export const accountSlice = createSlice({
   name: 'account',
   initialState,
   reducers: {},
@@ -116,4 +116,4 @@ export const accountsSlice = createSlice({
   },
 });
 
-export default accountsSlice.reducer;
+export default accountSlice.reducer;

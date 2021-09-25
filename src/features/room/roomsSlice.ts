@@ -67,8 +67,8 @@ const initialState: RoomState = {
   },
 };
 
-export const roomsSlice = createSlice({
-  name: 'account',
+export const roomSlice = createSlice({
+  name: 'room',
   initialState,
   reducers: {},
   extraReducers: builder => {
@@ -108,4 +108,4 @@ export const roomsSlice = createSlice({
   },
 });
 
-export default roomsSlice.reducer;
+export default roomSlice.reducer;
