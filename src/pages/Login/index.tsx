@@ -17,6 +17,7 @@ import { ReactComponent as Logo } from 'assets/images/logo.svg';
 import backgroundImage from 'assets/images/stacked-waves-haikei.png';
 import GoogleLoginButton from 'components/GoogleLoginButton';
 import LoginDto from 'dtos/login.dto';
+import Role from 'enums/role.enum';
 import { login } from 'features/auth/authSlice';
 import { useFormik } from 'formik';
 import React, { useState } from 'react';
@@ -34,10 +35,14 @@ const LoginPage = () => {
     onSubmit: async (payload: LoginDto) => {
       try {
         const result = await dispatch(login(payload));
-        unwrapResult(result);
-        history.push('/manager');
+        const user = unwrapResult(result);
+        if (user.role === Role.Manager) history.push('/manager');
+        else if (user.role === Role.ShiftManager)
+          history.push('/shift-manager');
+        else throw new Error('Invalid role');
       } catch (error) {
-        setErrorMessage(error);
+        if (error instanceof Error) setErrorMessage(error.message);
+        else setErrorMessage(error);
       }
     },
   });

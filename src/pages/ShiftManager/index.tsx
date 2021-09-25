@@ -1,18 +1,14 @@
 import {
-  Class,
-  ClassOutlined,
+  Announcement,
+  AnnouncementOutlined,
   Dashboard as DashboardIcon,
   DashboardOutlined,
-  LocationOn,
-  LocationOnOutlined,
+  Event,
+  EventOutlined,
   Menu as MenuIcon,
   Notifications,
-  School,
-  SchoolOutlined,
-  SupervisorAccount,
-  SupervisorAccountOutlined,
-  Videocam,
-  VideocamOutlined,
+  ReportProblem,
+  ReportProblemOutlined,
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -30,55 +26,39 @@ import DrawerContent, { DrawerItem } from 'components/CustomDrawer';
 import React, { useState } from 'react';
 import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 
-import AccountPage from './Account';
-import DetailAccountPage from './Account/DetailAccount';
-import Camera from './Camera';
-import Dashboard from './Dashboard';
-import RoomPage from './Room';
-import DetailRoomPage from './Room/DetailRoomPage';
-import SemesterPage from './Semester';
-import SubjectPage from './Subject';
+import DashboardPage from './Dashboard';
+import FeedbackPage from './Feedback';
+import ShiftPage from './Shift';
+import ViolationPage from './Violation';
 
 const drawerItems: Array<DrawerItem> = [
   {
     name: 'Dashboard',
     icon: <DashboardOutlined />,
     activeIcon: <DashboardIcon />,
-    to: '/manager/dashboard',
+    to: '/shift-manager/dashboard',
   },
   {
-    name: 'Account',
-    icon: <SupervisorAccountOutlined />,
-    activeIcon: <SupervisorAccount />,
-    to: '/manager/account',
+    name: 'Feedback',
+    icon: <AnnouncementOutlined />,
+    activeIcon: <Announcement />,
+    to: '/shift-manager/feedback',
   },
   {
-    name: 'Room',
-    icon: <LocationOnOutlined />,
-    activeIcon: <LocationOn />,
-    to: '/manager/room',
+    name: 'Shift',
+    icon: <EventOutlined />,
+    activeIcon: <Event />,
+    to: '/shift-manager/shift',
   },
   {
-    name: 'Camera',
-    icon: <VideocamOutlined />,
-    activeIcon: <Videocam />,
-    to: '/manager/camera',
-  },
-  {
-    name: 'Subject',
-    icon: <ClassOutlined />,
-    activeIcon: <Class />,
-    to: '/manager/subject',
-  },
-  {
-    name: 'Semester',
-    icon: <SchoolOutlined />,
-    activeIcon: <School />,
-    to: '/manager/semester',
+    name: 'Violation',
+    icon: <ReportProblemOutlined />,
+    activeIcon: <ReportProblem />,
+    to: '/shift-manager/violation',
   },
 ];
 
-const ManagerDashboard = (): JSX.Element => {
+const ShiftManagerDashboard = (): JSX.Element => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const user = useAppSelector(state => state.user.user);
@@ -222,19 +202,27 @@ const ManagerDashboard = (): JSX.Element => {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
         <Switch>
-          <Route path="/manager/dashboard" component={Dashboard} />
-          <Route path="/manager/account" component={AccountPage} exact />
-          <Route path="/manager/account/:id" component={DetailAccountPage} />
-          <Route path="/manager/room" component={RoomPage} exact />
-          <Route path="/manager/room/:id" component={DetailRoomPage} exact />
-          <Route path="/manager/camera" component={Camera} exact />
-          <Route path="/manager/semester" component={SemesterPage} exact />
-          <Route path="/manager/subject" component={SubjectPage} exact />
-          <Redirect from="/manager" to="/manager/dashboard" />
+          <Route
+            path="/shift-manager/dashboard"
+            component={DashboardPage}
+            exact
+          />
+          <Route
+            path="/shift-manager/feedback"
+            component={FeedbackPage}
+            exact
+          />
+          <Route path="/shift-manager/shift" component={ShiftPage} exact />
+          <Route
+            path="/shift-manager/violation"
+            component={ViolationPage}
+            exact
+          />
+          <Redirect from="/shift-manager" to="/shift-manager/dashboard" />
         </Switch>
       </Box>
     </Box>
   );
 };
 
-export default ManagerDashboard;
+export default ShiftManagerDashboard;

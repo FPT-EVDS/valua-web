@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 import LoginDto from 'dtos/login.dto';
+import Role from 'enums/role.enum';
 import User from 'models/user.model';
 import authServices from 'services/auth.service';
 
@@ -17,8 +18,9 @@ export const login = createAsyncThunk(
   async (payload: LoginDto, { rejectWithValue }) => {
     try {
       const response = await authServices.login(payload);
-      const { token } = response.data;
-      localStorage.setItem('access_token', token);
+      const { token, role } = response.data;
+      if (role === Role.Manager || role === Role.ShiftManager)
+        localStorage.setItem('access_token', token);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -47,11 +49,8 @@ export const authSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
-    [login.fulfilled.type]: (
-      state,
-      action: PayloadAction<AxiosResponse<User>>,
-    ) => {
-      state.user = action.payload.data;
+    [login.fulfilled.type]: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
       state.error = '';
       state.isLoading = false;
     },
