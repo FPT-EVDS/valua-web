@@ -2,25 +2,25 @@ import {
   createAsyncThunk,
   createSlice,
   isAnyOf,
-  PayloadAction,
+  PayloadAction
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import AccountsDto from 'dtos/accounts.dto';
-import AppUserDto from 'dtos/appUser.dto';
-import Account from 'models/account.model';
-import accountServices from 'services/account.service';
+import { SubjectDto } from 'dtos/subject.dto';
+import SubjectsDto from 'dtos/subjects.dto';
+import Subject from 'models/subject.model';
+import subjectServices from 'services/subject.service';
 
-interface AccountState {
+interface SubjectsState {
   isLoading: boolean;
   error: string;
-  current: AccountsDto;
+  current: SubjectsDto;
 }
 
-export const getAccounts = createAsyncThunk(
-  'accounts',
+export const getSubjects = createAsyncThunk(
+  'subjects',
   async (numOfPage: number, { rejectWithValue }) => {
     try {
-      const response = await accountServices.getAccounts(numOfPage);
+      const response = await subjectServices.getSubjects(numOfPage);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -29,11 +29,11 @@ export const getAccounts = createAsyncThunk(
   },
 );
 
-export const addAccount = createAsyncThunk(
-  'accounts/add',
-  async (payload: AppUserDto, { rejectWithValue }) => {
+export const addSubjects = createAsyncThunk(
+  'subjects/add',
+  async (payload: SubjectDto, { rejectWithValue }) => {
     try {
-      const response = await accountServices.addAccount(payload);
+      const response = await subjectServices.addSubject(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -42,11 +42,11 @@ export const addAccount = createAsyncThunk(
   },
 );
 
-export const disableAccount = createAsyncThunk(
-  'accounts/disable',
-  async (appUserId: string, { rejectWithValue }) => {
+export const disableSubject = createAsyncThunk(
+  'subjects/disable',
+  async (subjectId: string, { rejectWithValue }) => {
     try {
-      const response = await accountServices.disableAccount(appUserId);
+      const response = await subjectServices.disableSubject(subjectId);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -56,46 +56,46 @@ export const disableAccount = createAsyncThunk(
 );
 
 // Define the initial state using that type
-const initialState: AccountState = {
+const initialState: SubjectsState = {
   isLoading: false,
   error: '',
   current: {
-    accounts: [] as Account[],
+    subjects: [] as Subject[],
     currentPage: 0,
     totalItems: 0,
     totalPages: 0,
   },
 };
 
-export const accountSlice = createSlice({
-  name: 'account',
+export const subjectSlice = createSlice({
+  name: 'subject',
   initialState,
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getAccounts.fulfilled, (state, action) => {
+      .addCase(getSubjects.fulfilled, (state, action) => {
         state.current = action.payload;
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(addAccount.fulfilled, (state, action) => {
-        state.current.accounts.unshift(action.payload);
+      .addCase(addSubjects.fulfilled, (state, action) => {
+        state.current.subjects.unshift(action.payload);
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(disableAccount.fulfilled, (state, action) => {
-        const index = state.current.accounts.findIndex(
-          account => account.appUserId === action.payload.appUserId,
+      .addCase(disableSubject.fulfilled, (state, action) => {
+        const index = state.current.subjects.findIndex(
+          subject => subject.subjectId === action.payload.subjectId,
         );
-        state.current.accounts[index].isActive = action.payload.isActive;
+        state.current.subjects[index].isActive = action.payload.isActive;
         state.error = '';
         state.isLoading = false;
       })
       .addMatcher(
         isAnyOf(
-          getAccounts.rejected,
-          addAccount.rejected,
-          disableAccount.rejected,
+          getSubjects.rejected,
+          addSubjects.rejected,
+          disableSubject.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -104,9 +104,9 @@ export const accountSlice = createSlice({
       )
       .addMatcher(
         isAnyOf(
-          getAccounts.pending,
-          addAccount.pending,
-          disableAccount.pending,
+          getSubjects.pending,
+          addSubjects.pending,
+          disableSubject.pending,
         ),
         state => {
           state.isLoading = true;
@@ -116,4 +116,4 @@ export const accountSlice = createSlice({
   },
 });
 
-export default accountSlice.reducer;
+export default subjectSlice.reducer;

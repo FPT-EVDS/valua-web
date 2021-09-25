@@ -1,17 +1,21 @@
 import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
-import accountsReducer from 'features/account/accountsSlice';
+import accountReducer from 'features/account/accountsSlice';
 import detailAccountReducer from 'features/account/detailAccountSlice';
 import userReducer from 'features/auth/authSlice';
 import detailRoomReducer from 'features/room/detailRoomSlice';
-import roomsReducer from 'features/room/roomsSlice';
+import roomReducer from 'features/room/roomsSlice';
+import semesterReducer from 'features/semester/semestersSlice';
+import subjectReducer from 'features/subject/subjectsSlice';
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    account: accountsReducer,
+    account: accountReducer,
     detailAccount: detailAccountReducer,
-    room: roomsReducer,
+    room: roomReducer,
     detailRoom: detailRoomReducer,
+    subjects: subjectReducer,
+    semesters: semesterReducer,
   },
 });
 
