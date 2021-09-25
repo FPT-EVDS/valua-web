@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import DisableSubjectDto from 'dtos/disableSubject.dto';
-import { SubjectDto } from 'dtos/subject.dto';
+import SubjectDto from 'dtos/subject.dto';
 import SubjectsDto from 'dtos/subjects.dto';
 import Subject from 'models/subject.model';
 

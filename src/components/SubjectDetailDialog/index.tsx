@@ -1,4 +1,4 @@
-import { Close, Subject } from '@mui/icons-material';
+import { Class, Close } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Avatar,
@@ -15,18 +15,18 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { SubjectDto } from 'dtos/subject.dto';
-import { addSubject } from 'features/subject/subjectsSlice';
+import SubjectDto from 'dtos/subject.dto';
+import { addSubject, updateSubject } from 'features/subject/subjectsSlice';
 import { useFormik } from 'formik';
 import { useSnackbar } from 'notistack';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface Props {
-  title: string;
   open: boolean;
   handleClose: () => void;
   // eslint-disable-next-line react/require-default-props
   initialValues?: SubjectDto;
+  isUpdate: boolean;
 }
 
 const Transition = React.forwardRef(
@@ -38,12 +38,12 @@ const Transition = React.forwardRef(
 const SubjectDetailDialog: React.FC<Props> = ({
   open,
   handleClose,
-  title,
   initialValues = {
     subjectId: null,
     subjectCode: '',
     subjectName: '',
   },
+  isUpdate,
 }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
@@ -52,12 +52,18 @@ const SubjectDetailDialog: React.FC<Props> = ({
     initialValues,
     onSubmit: async (payload: SubjectDto) => {
       try {
-        const result = await dispatch(addSubject(payload));
+        const message = isUpdate
+          ? `Update subject ${String(payload.subjectName)} success`
+          : 'Add subject success';
+        const result = isUpdate
+          ? await dispatch(updateSubject(payload))
+          : await dispatch(addSubject(payload));
         unwrapResult(result);
-        enqueueSnackbar('Add subject success', {
+        enqueueSnackbar(message, {
           variant: 'success',
           preventDuplicate: true,
         });
+        formik.resetForm();
       } catch (error) {
         enqueueSnackbar(error, {
           variant: 'error',
@@ -66,6 +72,18 @@ const SubjectDetailDialog: React.FC<Props> = ({
       }
     },
   });
+
+  const refreshForm = async (values: SubjectDto) => formik.setValues(values);
+
+  useEffect(() => {
+    refreshForm(initialValues).catch(error =>
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues]);
 
   return (
     <Dialog
@@ -81,7 +99,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
           justifyContent="space-between"
           alignItems="center"
         >
-          {title}
+          {isUpdate ? 'Update subject' : 'Create subject'}
           <IconButton onClick={handleClose}>
             <Close />
           </IconButton>
@@ -100,7 +118,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
               }}
               variant="square"
             >
-              <Subject fontSize="large" />
+              <Class fontSize="large" />
             </Avatar>
           </Box>
           <Grid container spacing={2}>
@@ -143,7 +161,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
             sx={{ width: 150 }}
             loading={isLoading}
           >
-            Create
+            {isUpdate ? 'Update' : 'Create'}
           </LoadingButton>
         </DialogActions>
       </Box>

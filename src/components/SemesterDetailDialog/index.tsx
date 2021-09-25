@@ -198,7 +198,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
             sx={{ width: 150 }}
             loading={isLoading}
           >
-            Create
+            {isUpdate ? 'Update' : 'Create'}
           </LoadingButton>
         </DialogActions>
       </Box>

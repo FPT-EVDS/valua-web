@@ -2,10 +2,10 @@ import {
   createAsyncThunk,
   createSlice,
   isAnyOf,
-  PayloadAction
+  PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import { SubjectDto } from 'dtos/subject.dto';
+import SubjectDto from 'dtos/subject.dto';
 import SubjectsDto from 'dtos/subjects.dto';
 import Subject from 'models/subject.model';
 import subjectServices from 'services/subject.service';
@@ -34,6 +34,19 @@ export const addSubject = createAsyncThunk(
   async (payload: SubjectDto, { rejectWithValue }) => {
     try {
       const response = await subjectServices.addSubject(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const updateSubject = createAsyncThunk(
+  'subjects/update',
+  async (payload: SubjectDto, { rejectWithValue }) => {
+    try {
+      const response = await subjectServices.updateSubject(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -83,6 +96,14 @@ export const subjectSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(updateSubject.fulfilled, (state, action) => {
+        const index = state.current.subjects.findIndex(
+          subject => subject.subjectId === action.payload.subjectId,
+        );
+        state.current.subjects[index] = action.payload;
+        state.error = '';
+        state.isLoading = false;
+      })
       .addCase(disableSubject.fulfilled, (state, action) => {
         const index = state.current.subjects.findIndex(
           subject => subject.subjectId === action.payload.subjectId,
@@ -96,6 +117,7 @@ export const subjectSlice = createSlice({
           getSubjects.rejected,
           addSubject.rejected,
           disableSubject.rejected,
+          updateSubject.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -107,6 +129,7 @@ export const subjectSlice = createSlice({
           getSubjects.pending,
           addSubject.pending,
           disableSubject.pending,
+          updateSubject.pending,
         ),
         state => {
           state.isLoading = true;
