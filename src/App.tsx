@@ -6,6 +6,7 @@ import DateAdapter from '@mui/lab/AdapterDateFns';
 import { IconButton } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
 import ManagerDashboard from 'pages/Manager';
+import ShiftManagerDashboard from 'pages/ShiftManager';
 import React, { RefObject } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
@@ -34,6 +35,7 @@ const App = (): JSX.Element => {
           <Switch>
             <Route path="/login" exact component={Login} />
             <Route path="/manager" component={ManagerDashboard} />
+            <Route path="/shift-manager" component={ShiftManagerDashboard} />
             <Redirect from="/" to="/login" />
           </Switch>
         </LocalizationProvider>
