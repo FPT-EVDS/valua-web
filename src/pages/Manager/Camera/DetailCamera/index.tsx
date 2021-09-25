@@ -17,8 +17,8 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import OverviewCard from 'components/OverviewCard';
 import AppUserDto from 'dtos/appUser.dto';
-import { updateAccount } from 'features/account/accountsSlice';
-import { getAccount } from 'features/account/detailAccountSlice';
+import { updateCamera } from 'features/camera/camerasSlice';
+import { getCamera } from 'features/camera/detailCameraSlice';
 import { useFormik } from 'formik';
 import useQuery from 'hooks/useQuery';
 import { useSnackbar } from 'notistack';
@@ -42,7 +42,7 @@ const DetailCameraPage = () => {
   const initialValues = camera;
 
   const fetchCamera = async (cameraId: string) => {
-    const actionResult = await dispatch(getAccount(cameraId));
+    const actionResult = await dispatch(getCamera(cameraId));
     unwrapResult(actionResult);
   };
 
