@@ -1,13 +1,13 @@
 import { AxiosResponse } from 'axios';
-import AccountDto from 'dtos/account.dto';
+import AccountsDto from 'dtos/accounts.dto';
 import AppUserDto from 'dtos/appUser.dto';
-import DisableAppUser from 'dtos/disableAppUser.dto';
+import DisableAppUserDto from 'dtos/disableAppUser.dto';
 import Account from 'models/account.model';
 
 import axiosClient from './axiosClient';
 
 const accountServices = {
-  getAccounts: (numOfPage: number): Promise<AxiosResponse<AccountDto>> => {
+  getAccounts: (numOfPage: number): Promise<AxiosResponse<AccountsDto>> => {
     const url = `/accounts`;
     return axiosClient.get(url, { params: { numOfPage } });
   },
@@ -23,7 +23,7 @@ const accountServices = {
     const url = `/accounts/${String(payload.appUserId)}`;
     return axiosClient.put(url, payload);
   },
-  disableAccount: (id: string): Promise<AxiosResponse<DisableAppUser>> => {
+  disableAccount: (id: string): Promise<AxiosResponse<DisableAppUserDto>> => {
     const url = `/accounts/${id}`;
     return axiosClient.patch(url, [
       {

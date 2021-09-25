@@ -39,7 +39,7 @@ interface Props {
   isLoading: boolean;
 }
 
-const DetailAccountCard = ({ account, isLoading }: Props) => {
+const AccountDetailCard = ({ account, isLoading }: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
@@ -99,7 +99,12 @@ const DetailAccountCard = ({ account, isLoading }: Props) => {
   };
 
   useEffect(() => {
-    refreshFormValues().catch(error => console.log(error));
+    refreshFormValues().catch(error =>
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      }),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
@@ -127,7 +132,7 @@ const DetailAccountCard = ({ account, isLoading }: Props) => {
           )
         }
       />
-      <Box component="form" onSubmit={formik.handleSubmit} pb={2}>
+      <Box component="form" onSubmit={formik.handleSubmit}>
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
@@ -347,4 +352,4 @@ const DetailAccountCard = ({ account, isLoading }: Props) => {
   );
 };
 
-export default DetailAccountCard;
+export default AccountDetailCard;

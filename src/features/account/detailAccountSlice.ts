@@ -11,7 +11,7 @@ interface DetailAccountState {
 }
 
 export const getAccount = createAsyncThunk(
-  'getAccountDetail',
+  'detailAccount/detail',
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await accountServices.getAccount(id);
@@ -24,11 +24,10 @@ export const getAccount = createAsyncThunk(
 );
 
 export const updateAccount = createAsyncThunk(
-  'updateAccountDetail',
+  'detailAccount/update',
   async (payload: AppUserDto, { rejectWithValue }) => {
     try {
       const response = await accountServices.updateAccount(payload);
-      console.log(response.data);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;

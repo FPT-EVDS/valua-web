@@ -5,7 +5,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import AccountDto from 'dtos/account.dto';
+import AccountsDto from 'dtos/accounts.dto';
 import AppUserDto from 'dtos/appUser.dto';
 import Account from 'models/account.model';
 import accountServices from 'services/account.service';
@@ -13,7 +13,7 @@ import accountServices from 'services/account.service';
 interface AccountState {
   isLoading: boolean;
   error: string;
-  current: AccountDto;
+  current: AccountsDto;
 }
 
 export const getAccounts = createAsyncThunk(

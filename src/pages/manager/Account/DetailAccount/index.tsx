@@ -3,9 +3,10 @@ import { Box, Button, Grid } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import DetailAccountCard from 'components/DetailAccountCard';
-import OverviewCard from 'components/OverviewCard';
+import DetailAccountCard from 'components/AccountDetailCard';
+import AccountOverviewCard from 'components/AccountOverviewCard';
 import { getAccount } from 'features/account/detailAccountSlice';
+import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -15,6 +16,7 @@ interface ParamProps {
 
 const DetailAccountPage = () => {
   const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const { account, isLoading } = useAppSelector(state => state.detailAccount);
   const history = useHistory();
   const { id } = useParams<ParamProps>();
@@ -37,7 +39,12 @@ const DetailAccountPage = () => {
   );
 
   useEffect(() => {
-    fetchAccount(id).catch(error => console.log(error));
+    fetchAccount(id).catch(error =>
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      }),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -56,7 +63,7 @@ const DetailAccountPage = () => {
         {account && (
           <>
             <Grid item xs={12} md={9} lg={4}>
-              <OverviewCard
+              <AccountOverviewCard
                 account={account}
                 actionButtons={<GroupButtons />}
               />

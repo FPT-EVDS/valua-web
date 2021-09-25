@@ -5,6 +5,8 @@ import {
   LocationOnOutlined,
   Menu as MenuIcon,
   Notifications,
+  Subject,
+  SubjectOutlined,
   SupervisorAccount,
   SupervisorAccountOutlined,
   Videocam,
@@ -24,13 +26,15 @@ import { useAppSelector } from 'app/hooks';
 import DrawerContent, { DrawerItem } from 'components/CustomDrawer';
 import StringAvatar from 'components/StringAvatar';
 import React, { useState } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 
 import AccountPage from './Account';
 import DetailAccountPage from './Account/DetailAccount';
 import Camera from './Camera';
 import Dashboard from './Dashboard';
-import Room from './Room';
+import RoomPage from './Room';
+import DetailRoomPage from './Room/DetailRoomPage';
+import SubjectPage from './Subject';
 
 const ManagerDashboard = (): JSX.Element => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -76,6 +80,12 @@ const ManagerDashboard = (): JSX.Element => {
       activeIcon: <Videocam />,
       to: '/manager/camera',
     },
+    {
+      name: 'Subject',
+      icon: <SubjectOutlined />,
+      activeIcon: <Subject />,
+      to: '/manager/subject',
+    },
   ];
 
   return (
@@ -87,8 +97,9 @@ const ManagerDashboard = (): JSX.Element => {
           borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
+          backgroundColor: '#fff',
         }}
-        color="transparent"
+        color="inherit"
       >
         <Toolbar>
           <IconButton
@@ -102,7 +113,7 @@ const ManagerDashboard = (): JSX.Element => {
             <MenuIcon />
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ display: { xs: 'flex' } }}>
             <IconButton size="large" color="inherit">
               <Badge badgeContent={4} color="error">
                 <Notifications />
@@ -201,8 +212,11 @@ const ManagerDashboard = (): JSX.Element => {
           <Route path="/manager/dashboard" component={Dashboard} />
           <Route path="/manager/account" component={AccountPage} exact />
           <Route path="/manager/account/:id" component={DetailAccountPage} />
-          <Route path="/manager/room" component={Room} exact />
+          <Route path="/manager/room" component={RoomPage} exact />
+          <Route path="/manager/room/:id" component={DetailRoomPage} exact />
           <Route path="/manager/camera" component={Camera} exact />
+          <Route path="/manager/subject" component={SubjectPage} exact />
+          <Redirect from="/manager" to="/manager/dashboard" />
         </Switch>
       </Box>
     </Box>
