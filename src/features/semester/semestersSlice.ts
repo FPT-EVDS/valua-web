@@ -2,7 +2,7 @@ import {
   createAsyncThunk,
   createSlice,
   isAnyOf,
-  PayloadAction
+  PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import SemesterDto from 'dtos/semester.dto';
@@ -34,6 +34,19 @@ export const addSemester = createAsyncThunk(
   async (payload: SemesterDto, { rejectWithValue }) => {
     try {
       const response = await semesterServices.addSemester(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const updateSemester = createAsyncThunk(
+  'semesters/update',
+  async (payload: SemesterDto, { rejectWithValue }) => {
+    try {
+      const response = await semesterServices.updateSemester(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -79,7 +92,15 @@ export const semesterSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(addSemester.fulfilled, (state, action) => {
-        state.current.semesters.unshift(action.payload);
+        state.current.semesters.unshift({ ...action.payload, subjects: [] });
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(updateSemester.fulfilled, (state, action) => {
+        const index = state.current.semesters.findIndex(
+          semester => semester.semesterId === action.payload.semesterId,
+        );
+        state.current.semesters[index] = action.payload;
         state.error = '';
         state.isLoading = false;
       })
@@ -92,14 +113,24 @@ export const semesterSlice = createSlice({
         state.isLoading = false;
       })
       .addMatcher(
-        isAnyOf(getSemesters.rejected, addSemester.rejected, disableSemester.rejected),
+        isAnyOf(
+          getSemesters.rejected,
+          addSemester.rejected,
+          disableSemester.rejected,
+          updateSemester.rejected,
+        ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
           state.error = action.payload;
         },
       )
       .addMatcher(
-        isAnyOf(getSemesters.pending, addSemester.pending, disableSemester.pending),
+        isAnyOf(
+          getSemesters.pending,
+          addSemester.pending,
+          disableSemester.pending,
+          updateSemester.pending,
+        ),
         state => {
           state.isLoading = true;
           state.error = '';

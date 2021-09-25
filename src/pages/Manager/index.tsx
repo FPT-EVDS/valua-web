@@ -5,8 +5,8 @@ import {
   LocationOnOutlined,
   Menu as MenuIcon,
   Notifications,
-  Subject,
-  SubjectOutlined,
+  School,
+  SchoolOutlined,
   SupervisorAccount,
   SupervisorAccountOutlined,
   Videocam,
@@ -34,7 +34,7 @@ import Camera from './Camera';
 import Dashboard from './Dashboard';
 import RoomPage from './Room';
 import DetailRoomPage from './Room/DetailRoomPage';
-import SubjectPage from './Subject';
+import SemesterPage from './Semester';
 
 const ManagerDashboard = (): JSX.Element => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -81,10 +81,10 @@ const ManagerDashboard = (): JSX.Element => {
       to: '/manager/camera',
     },
     {
-      name: 'Subject',
-      icon: <SubjectOutlined />,
-      activeIcon: <Subject />,
-      to: '/manager/subject',
+      name: 'Semester',
+      icon: <SchoolOutlined />,
+      activeIcon: <School />,
+      to: '/manager/semester',
     },
   ];
 
@@ -215,7 +215,7 @@ const ManagerDashboard = (): JSX.Element => {
           <Route path="/manager/room" component={RoomPage} exact />
           <Route path="/manager/room/:id" component={DetailRoomPage} exact />
           <Route path="/manager/camera" component={Camera} exact />
-          <Route path="/manager/subject" component={SubjectPage} exact />
+          <Route path="/manager/semester" component={SemesterPage} exact />
           <Redirect from="/manager" to="/manager/dashboard" />
         </Switch>
       </Box>

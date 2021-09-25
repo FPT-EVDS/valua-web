@@ -29,7 +29,7 @@ export const getSubjects = createAsyncThunk(
   },
 );
 
-export const addSubjects = createAsyncThunk(
+export const addSubject = createAsyncThunk(
   'subjects/add',
   async (payload: SubjectDto, { rejectWithValue }) => {
     try {
@@ -78,7 +78,7 @@ export const subjectSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(addSubjects.fulfilled, (state, action) => {
+      .addCase(addSubject.fulfilled, (state, action) => {
         state.current.subjects.unshift(action.payload);
         state.error = '';
         state.isLoading = false;
@@ -94,7 +94,7 @@ export const subjectSlice = createSlice({
       .addMatcher(
         isAnyOf(
           getSubjects.rejected,
-          addSubjects.rejected,
+          addSubject.rejected,
           disableSubject.rejected,
         ),
         (state, action: PayloadAction<string>) => {
@@ -105,7 +105,7 @@ export const subjectSlice = createSlice({
       .addMatcher(
         isAnyOf(
           getSubjects.pending,
-          addSubjects.pending,
+          addSubject.pending,
           disableSubject.pending,
         ),
         state => {
