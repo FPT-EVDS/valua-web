@@ -33,6 +33,7 @@ import DetailAccountPage from './Account/DetailAccount';
 import Camera from './Camera';
 import Dashboard from './Dashboard';
 import RoomPage from './Room';
+import DetailRoomPage from './Room/DetailRoomPage';
 import SubjectPage from './Subject';
 
 const ManagerDashboard = (): JSX.Element => {
@@ -96,8 +97,9 @@ const ManagerDashboard = (): JSX.Element => {
           borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
+          backgroundColor: '#fff',
         }}
-        color="transparent"
+        color="inherit"
       >
         <Toolbar>
           <IconButton
@@ -111,7 +113,7 @@ const ManagerDashboard = (): JSX.Element => {
             <MenuIcon />
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ display: { xs: 'flex' } }}>
             <IconButton size="large" color="inherit">
               <Badge badgeContent={4} color="error">
                 <Notifications />
@@ -211,6 +213,7 @@ const ManagerDashboard = (): JSX.Element => {
           <Route path="/manager/account" component={AccountPage} exact />
           <Route path="/manager/account/:id" component={DetailAccountPage} />
           <Route path="/manager/room" component={RoomPage} exact />
+          <Route path="/manager/room/:id" component={DetailRoomPage} exact />
           <Route path="/manager/camera" component={Camera} exact />
           <Route path="/manager/subject" component={SubjectPage} exact />
         </Switch>

@@ -23,11 +23,24 @@ export const getRoom = createAsyncThunk(
   },
 );
 
-export const updateAccount = createAsyncThunk(
+export const updateRoom = createAsyncThunk(
   'detailRoom/update',
   async (payload: RoomDto, { rejectWithValue }) => {
     try {
       const response = await roomServices.updateRoom(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const disableRoom = createAsyncThunk(
+  'detailRoom/disable',
+  async (roomId: string, { rejectWithValue }) => {
+    try {
+      const response = await roomServices.disableRoom(roomId);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -49,22 +62,31 @@ export const detailRoomSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(disableRoom.fulfilled, (state, action) => {
+        if (state.room) state.room.status = action.payload.status;
+      })
       .addMatcher(
-        isAnyOf(getRoom.fulfilled, updateAccount.fulfilled),
+        isAnyOf(getRoom.fulfilled, updateRoom.fulfilled),
         (state, action) => {
           state.room = action.payload;
           state.error = '';
           state.isLoading = false;
         },
       )
-      .addMatcher(isAnyOf(getRoom.pending, updateAccount.pending), state => {
-        state.isLoading = true;
-        state.error = '';
-      })
-      .addMatcher(isAnyOf(getRoom.rejected, updateAccount.rejected), state => {
-        state.isLoading = true;
-        state.error = '';
-      });
+      .addMatcher(
+        isAnyOf(getRoom.pending, updateRoom.pending, disableRoom.pending),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      )
+      .addMatcher(
+        isAnyOf(getRoom.rejected, updateRoom.rejected, disableRoom.rejected),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      );
   },
 });
 

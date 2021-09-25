@@ -24,7 +24,9 @@ interface Props {
 
 const DrawerContent = ({ items }: Props): JSX.Element => {
   const { pathname } = useLocation();
-  const defaultIndex = items.findIndex(item => item.to === pathname);
+  const defaultIndex = items.findIndex(
+    item => item.to === pathname || pathname.includes(item.to),
+  );
   const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
   const history = useHistory();
 
