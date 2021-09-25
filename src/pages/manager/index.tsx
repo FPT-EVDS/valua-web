@@ -26,7 +26,7 @@ import { useAppSelector } from 'app/hooks';
 import DrawerContent, { DrawerItem } from 'components/CustomDrawer';
 import StringAvatar from 'components/StringAvatar';
 import React, { useState } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 
 import AccountPage from './Account';
 import DetailAccountPage from './Account/DetailAccount';
@@ -216,6 +216,7 @@ const ManagerDashboard = (): JSX.Element => {
           <Route path="/manager/room/:id" component={DetailRoomPage} exact />
           <Route path="/manager/camera" component={Camera} exact />
           <Route path="/manager/subject" component={SubjectPage} exact />
+          <Redirect from="/manager" to="/manager/dashboard" />
         </Switch>
       </Box>
     </Box>
