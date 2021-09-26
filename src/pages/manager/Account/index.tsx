@@ -1,5 +1,5 @@
 import { Delete, Description, Edit, PersonAdd } from '@mui/icons-material';
-import { Button, Typography } from '@mui/material';
+import { Avatar, Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -10,57 +10,47 @@ import {
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import CameraDetailDialog from 'components/CameraDetailDialog';
+import AccountDetailDialog from 'components/AccountDetailDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
-import Status from 'enums/status.enum';
-import { disableCamera, getCameras } from 'features/camera/camerasSlice';
-import useQuery from 'hooks/useQuery';
+import StringAvatar from 'components/StringAvatar';
+import { disableAccount, getAccounts } from 'features/account/accountsSlice';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
-interface ParamProps {
-  id: string;
-}
-
-const CameraPage = () => {
+const AccountPage = () => {
   const [open, setOpen] = useState(false);
-  const { url } = useRouteMatch();
-  const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useAppDispatch();
-  const cameras = useAppSelector(state => state.camera.current.cameras);
   const history = useHistory();
-  const query = useQuery();
-  const {
-    isLoading,
-    current: { accounts },
-  } = useAppSelector(state => state.account);
-  const { id } = useParams<ParamProps>();
-  const [isEditable, setIsEditable] = useState(
-    String(query.get('edit')) === 'true',
-  );
+  const { url } = useRouteMatch();
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this camera ?`,
+      title: `Do you want to delete this account ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const rows: GridRowModel[] = cameras.map(camera => ({
-    ...camera,
-    id: camera.cameraId,
+  const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useAppDispatch();
+  const {
+    isLoading,
+    current: { accounts },
+  } = useAppSelector(state => state.account);
+  const rows: GridRowModel[] = accounts.map(account => ({
+    ...account,
+    role: account.role.roleName,
+    id: account.appUserId,
   }));
 
-  const fetchCamera = async (numOfPage: number) => {
-    const actionResult = await dispatch(getCameras(numOfPage));
+  const fetchAccount = async (numOfPage: number) => {
+    const actionResult = await dispatch(getAccounts(numOfPage));
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchCamera(0).catch(error =>
+    fetchAccount(0).catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
@@ -69,11 +59,15 @@ const CameraPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDeleteAccount = async (cameraId: string) => {
+  useEffect(() => {
+    setOpen(false);
+  }, [accounts]);
+
+  const handleDeleteAccount = async (appUserId: string) => {
     try {
-      const result = await dispatch(disableCamera(cameraId));
+      const result = await dispatch(disableAccount(appUserId));
       unwrapResult(result);
-      enqueueSnackbar('Disable camera success', {
+      enqueueSnackbar('Disable account success', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -94,58 +88,57 @@ const CameraPage = () => {
   };
 
   const showDeleteConfirmation = ({ getValue, id }: GridRowParams) => {
-    const cameraId = String(getValue(id, 'cameraId'));
-    const name = String(getValue(id, 'cameraName'));
+    const appUserId = String(getValue(id, 'appUserId'));
+    const name = String(getValue(id, 'fullName'));
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove camera ${name}`,
-      handleAccept: () => handleDeleteAccount(cameraId),
+      title: `Do you want to remove account ${name}`,
+      handleAccept: () => handleDeleteAccount(appUserId),
     }));
   };
 
   const columns: Array<GridColDef | GridActionsColDef> = [
-    { field: 'cameraId', hide: true },
+    { field: 'appUserId', hide: true },
     {
-      field: 'cameraName',
-      headerName: 'Camera Name',
-      flex: 0.12,
-      minWidth: 130,
-    },
-    {
-      field: 'room',
-      headerName: 'Assigned Room',
-      flex: 0.115,
-      minWidth: 130,
-      renderCell: params => (
-        <Typography>
-          {params.row.room != null ? params.row.room.roomName : 'Not yet'}
-        </Typography>
-      ),
-    },
-    {
-      field: 'purchaseDate',
-      headerName: 'Purchased Date',
-      flex: 0.12,
-      minWidth: 130,
+      field: 'imageUrl',
+      sortable: false,
+      filterable: false,
       renderCell: params => {
-        const purchaseDate = new Date(params.row.purchaseDate);
-        return <Typography>{purchaseDate.toLocaleString()}</Typography>;
+        const imageUrl = String(params.getValue(params.id, 'imageUrl'));
+        const fullName = String(params.getValue(params.id, 'fullName'));
+        return (
+          <>
+            {imageUrl ? (
+              <Avatar alt={fullName} src={imageUrl} />
+            ) : (
+              <StringAvatar name={fullName} sx={{ justifyContent: 'center' }} />
+            )}
+          </>
+        );
       },
+      align: 'center',
+      headerName: '',
+      flex: 0.05,
+      minWidth: 64,
     },
+    { field: 'fullName', headerName: 'Name', flex: 0.2, minWidth: 130 },
+    { field: 'role', headerName: 'Role', flex: 0.1, minWidth: 130 },
+    { field: 'phoneNumber', headerName: 'Phone', flex: 0.2, minWidth: 130 },
+    { field: 'email', headerName: 'Email', flex: 0.2, minWidth: 130 },
     {
-      field: 'status',
+      field: 'isActive',
       headerName: 'Status',
       flex: 0.1,
       minWidth: 130,
       renderCell: params => {
-        const { status } = params.row;
+        const active = params.getValue(params.id, 'isActive');
         return (
           <Typography
             variant="subtitle1"
-            color={status === Status.isActive ? green[500] : red[500]}
+            color={active ? green[500] : red[500]}
           >
-            {status === Status.isActive ? 'Active' : 'Disable'}
+            {active ? 'Active' : 'Disable'}
           </Typography>
         );
       },
@@ -155,8 +148,8 @@ const CameraPage = () => {
       headerName: 'Actions',
       type: 'actions',
       getActions: params => {
-        const cameraId = String(params.getValue(params.id, 'cameraId'));
-        const status = params.getValue(params.id, 'status');
+        const appUserId = String(params.getValue(params.id, 'appUserId'));
+        const status = params.getValue(params.id, 'isActive');
         const deleteItems = [
           <GridActionsCellItem
             label="Delete"
@@ -168,13 +161,13 @@ const CameraPage = () => {
             label="Edit"
             icon={<Edit />}
             showInMenu
-            onClick={() => history.push(`${url}/${cameraId}?edit=true`)}
+            onClick={() => history.push(`${url}/${appUserId}?edit=true`)}
           />,
           <GridActionsCellItem
             label="View detail"
             icon={<Description />}
             showInMenu
-            onClick={() => history.push(`${url}/${cameraId}`)}
+            onClick={() => history.push(`${url}/${appUserId}`)}
           />,
         ];
         if (!status) deleteItems.shift();
@@ -183,19 +176,27 @@ const CameraPage = () => {
     },
   ];
 
-  const AddButton = () => <Button variant="contained">Add camera</Button>;
+  const AddButton = () => (
+    <Button
+      variant="contained"
+      startIcon={<PersonAdd />}
+      onClick={() => setOpen(true)}
+    >
+      Add account
+    </Button>
+  );
 
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
-      <CameraDetailDialog
-        title="Create camera"
+      <AccountDetailDialog
+        title="Create account"
         open={open}
         handleClose={() => setOpen(false)}
       />
       <EVDSDataGrid
         isLoading={isLoading}
-        title="Manage Camera"
+        title="Manage Accounts"
         columns={columns}
         rows={rows}
         addButton={<AddButton />}
@@ -204,4 +205,4 @@ const CameraPage = () => {
   );
 };
 
-export default CameraPage;
+export default AccountPage;

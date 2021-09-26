@@ -1,13 +1,13 @@
 import { AxiosResponse } from 'axios';
 import CameraDto from 'dtos/camera.dto';
-import Camera from 'models/camera.model';
+import CamerasDto from 'dtos/cameras.dto';
 import DisableCamera from 'dtos/disableCamera.dto';
-
+import Camera from 'models/camera.model';
 
 import axiosClient from './axiosClient';
 
-const accountServices = {
-  getCameras: (numOfPage: number): Promise<AxiosResponse<CameraDto>> => {
+const cameraServices = {
+  getCameras: (numOfPage: number): Promise<AxiosResponse<CamerasDto>> => {
     const url = `/cameras`;
     return axiosClient.get(url, { params: { numOfPage } });
   },
@@ -16,15 +16,15 @@ const accountServices = {
     return axiosClient.get(url, { params: { id } });
   },
   addCamera: (payload: CameraDto): Promise<AxiosResponse<Camera>> => {
-    const url = '/accounts';
+    const url = '/cameras';
     return axiosClient.post(url, payload);
   },
-  updateCamera: (payload: CameraDto): Promise<AxiosResponse<Camera>> => {
-    const url = '/accounts';
+  updateCamera: (payload: Camera): Promise<AxiosResponse<Camera>> => {
+    const url = '/cameras';
     return axiosClient.put(url, payload);
   },
   disableCamera: (id: string): Promise<AxiosResponse<DisableCamera>> => {
-    const url = `/accounts/${id}`;
+    const url = `/cameras/${id}`;
     return axiosClient.patch(url, [
       {
         op: 'replace',
@@ -35,4 +35,4 @@ const accountServices = {
   },
 };
 
-export default accountServices;
+export default cameraServices;

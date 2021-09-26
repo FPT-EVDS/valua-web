@@ -1,11 +1,13 @@
 import {
   createAsyncThunk,
   createSlice,
+  isAnyOf,
   isPending,
   isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import CameraDto from 'dtos/camera.dto';
 import Camera from 'models/camera.model';
 import cameraServices from 'services/camera.service';
 
@@ -16,10 +18,23 @@ interface DetailCameraState {
 }
 
 export const getCamera = createAsyncThunk(
-  'getAccountDetail',
+  'detailCamera/detail',
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await cameraServices.getCamera(id);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const updateCamera = createAsyncThunk(
+  'detailCamera/update',
+  async (payload: CameraDto, { rejectWithValue }) => {
+    try {
+      const response = await cameraServices.updateCamera(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -36,21 +51,24 @@ const initialState: DetailCameraState = {
 };
 
 export const detailCameraSlice = createSlice({
-  name: 'detailAccount',
+  name: 'detailCamera',
   initialState,
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getCamera.fulfilled, (state, action) => {
-        state.camera = action.payload;
+      .addMatcher(
+        isAnyOf(getCamera.fulfilled, updateCamera.fulfilled),
+        (state, action) => {
+          state.camera = action.payload;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
+      .addMatcher(isAnyOf(getCamera.pending, updateCamera.pending), state => {
+        state.isLoading = true;
         state.error = '';
-        state.isLoading = false;
       })
-      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addMatcher(isPending, state => {
+      .addMatcher(isAnyOf(getCamera.rejected, updateCamera.rejected), state => {
         state.isLoading = true;
         state.error = '';
       });

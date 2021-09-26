@@ -7,13 +7,14 @@ import {
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import CameraDto from 'dtos/camera.dto';
+import CamerasDto from 'dtos/cameras.dto';
 import Camera from 'models/camera.model';
 import cameraServices from 'services/camera.service';
 
 interface CameraState {
   isLoading: boolean;
   error: string;
-  current: CameraDto;
+  current: CamerasDto;
 }
 
 export const getCameras = createAsyncThunk(
@@ -34,19 +35,6 @@ export const addCamera = createAsyncThunk(
   async (payload: CameraDto, { rejectWithValue }) => {
     try {
       const response = await cameraServices.addCamera(payload);
-      return response.data;
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      return rejectWithValue(axiosError.response?.data);
-    }
-  },
-);
-
-export const updateCamera = createAsyncThunk(
-  'cameras/update',
-  async (payload: CameraDto, { rejectWithValue }) => {
-    try {
-      const response = await cameraServices.updateCamera(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -92,14 +80,6 @@ export const camerasSlice = createSlice({
       })
       .addCase(addCamera.fulfilled, (state, action) => {
         state.current.cameras.unshift(action.payload);
-        state.error = '';
-        state.isLoading = false;
-      })
-      .addCase(updateCamera.fulfilled, (state, action) => {
-        const index = state.current.cameras.findIndex(
-          camera => camera.cameraId === action.payload.cameraId,
-        );
-        state.current.cameras[index] = action.payload;
         state.error = '';
         state.isLoading = false;
       })

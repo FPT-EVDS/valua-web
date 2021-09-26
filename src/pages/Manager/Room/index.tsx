@@ -1,4 +1,5 @@
-import { Delete, Description, Edit, PersonAdd } from '@mui/icons-material';
+/* eslint-disable prefer-destructuring */
+import { Add, Delete, Description, Edit } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
@@ -10,57 +11,45 @@ import {
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import CameraDetailDialog from 'components/CameraDetailDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
-import Status from 'enums/status.enum';
-import { disableCamera, getCameras } from 'features/camera/camerasSlice';
-import useQuery from 'hooks/useQuery';
+import RoomDetailDialog from 'components/RoomDetailDialog';
+import { disableRoom, getRooms } from 'features/room/roomsSlice';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
-interface ParamProps {
-  id: string;
-}
-
-const CameraPage = () => {
+const RoomPage = () => {
   const [open, setOpen] = useState(false);
-  const { url } = useRouteMatch();
-  const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useAppDispatch();
-  const cameras = useAppSelector(state => state.camera.current.cameras);
   const history = useHistory();
-  const query = useQuery();
-  const {
-    isLoading,
-    current: { accounts },
-  } = useAppSelector(state => state.account);
-  const { id } = useParams<ParamProps>();
-  const [isEditable, setIsEditable] = useState(
-    String(query.get('edit')) === 'true',
-  );
+  const { url } = useRouteMatch();
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this camera ?`,
+      title: `Do you want to delete this room ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const rows: GridRowModel[] = cameras.map(camera => ({
-    ...camera,
-    id: camera.cameraId,
+  const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useAppDispatch();
+  const {
+    isLoading,
+    current: { rooms },
+  } = useAppSelector(state => state.room);
+  const rows: GridRowModel[] = rooms.map(room => ({
+    ...room,
+    id: room.roomId,
   }));
 
-  const fetchCamera = async (numOfPage: number) => {
-    const actionResult = await dispatch(getCameras(numOfPage));
+  const fetchRooms = async (numOfPage: number) => {
+    const actionResult = await dispatch(getRooms(numOfPage));
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchCamera(0).catch(error =>
+    fetchRooms(0).catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
@@ -69,11 +58,15 @@ const CameraPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDeleteAccount = async (cameraId: string) => {
+  useEffect(() => {
+    setOpen(false);
+  }, [rooms]);
+
+  const handleDeleteRoom = async (roomId: string) => {
     try {
-      const result = await dispatch(disableCamera(cameraId));
+      const result = await dispatch(disableRoom(roomId));
       unwrapResult(result);
-      enqueueSnackbar('Disable camera success', {
+      enqueueSnackbar('Disable room success', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -94,44 +87,26 @@ const CameraPage = () => {
   };
 
   const showDeleteConfirmation = ({ getValue, id }: GridRowParams) => {
-    const cameraId = String(getValue(id, 'cameraId'));
-    const name = String(getValue(id, 'cameraName'));
+    const roomId = String(getValue(id, 'roomId'));
+    const name = String(getValue(id, 'roomName'));
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove camera ${name}`,
-      handleAccept: () => handleDeleteAccount(cameraId),
+      title: `Do you want to remove room ${name}`,
+      handleAccept: () => handleDeleteRoom(roomId),
     }));
   };
 
   const columns: Array<GridColDef | GridActionsColDef> = [
-    { field: 'cameraId', hide: true },
+    { field: 'roomId', hide: true },
+    { field: 'roomName', headerName: 'Name', flex: 0.1, minWidth: 130 },
+    { field: 'floor', headerName: 'Floor', flex: 0.1, minWidth: 130 },
+    { field: 'seatCount', headerName: 'Seats Count', flex: 0.1, minWidth: 130 },
     {
-      field: 'cameraName',
-      headerName: 'Camera Name',
-      flex: 0.12,
+      field: 'description',
+      headerName: 'Description',
+      flex: 0.4,
       minWidth: 130,
-    },
-    {
-      field: 'room',
-      headerName: 'Assigned Room',
-      flex: 0.115,
-      minWidth: 130,
-      renderCell: params => (
-        <Typography>
-          {params.row.room != null ? params.row.room.roomName : 'Not yet'}
-        </Typography>
-      ),
-    },
-    {
-      field: 'purchaseDate',
-      headerName: 'Purchased Date',
-      flex: 0.12,
-      minWidth: 130,
-      renderCell: params => {
-        const purchaseDate = new Date(params.row.purchaseDate);
-        return <Typography>{purchaseDate.toLocaleString()}</Typography>;
-      },
     },
     {
       field: 'status',
@@ -139,13 +114,26 @@ const CameraPage = () => {
       flex: 0.1,
       minWidth: 130,
       renderCell: params => {
-        const { status } = params.row;
+        const active = params.getValue(params.id, 'status');
+        let color = '#1890ff';
+        let statusText = 'Active';
+        switch (active) {
+          case 1:
+            color = green[500];
+            statusText = 'Active';
+            break;
+
+          case 0:
+            color = red[500];
+            statusText = 'Disable';
+            break;
+
+          default:
+            break;
+        }
         return (
-          <Typography
-            variant="subtitle1"
-            color={status === Status.isActive ? green[500] : red[500]}
-          >
-            {status === Status.isActive ? 'Active' : 'Disable'}
+          <Typography variant="subtitle1" color={color}>
+            {statusText}
           </Typography>
         );
       },
@@ -155,7 +143,7 @@ const CameraPage = () => {
       headerName: 'Actions',
       type: 'actions',
       getActions: params => {
-        const cameraId = String(params.getValue(params.id, 'cameraId'));
+        const roomId = String(params.getValue(params.id, 'roomId'));
         const status = params.getValue(params.id, 'status');
         const deleteItems = [
           <GridActionsCellItem
@@ -168,13 +156,13 @@ const CameraPage = () => {
             label="Edit"
             icon={<Edit />}
             showInMenu
-            onClick={() => history.push(`${url}/${cameraId}?edit=true`)}
+            onClick={() => history.push(`${url}/${roomId}?edit=true`)}
           />,
           <GridActionsCellItem
             label="View detail"
             icon={<Description />}
             showInMenu
-            onClick={() => history.push(`${url}/${cameraId}`)}
+            onClick={() => history.push(`${url}/${roomId}`)}
           />,
         ];
         if (!status) deleteItems.shift();
@@ -183,19 +171,27 @@ const CameraPage = () => {
     },
   ];
 
-  const AddButton = () => <Button variant="contained">Add camera</Button>;
+  const AddButton = () => (
+    <Button
+      variant="contained"
+      startIcon={<Add />}
+      onClick={() => setOpen(true)}
+    >
+      Add room
+    </Button>
+  );
 
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
-      <CameraDetailDialog
-        title="Create camera"
+      <RoomDetailDialog
+        title="Create room"
         open={open}
         handleClose={() => setOpen(false)}
       />
       <EVDSDataGrid
         isLoading={isLoading}
-        title="Manage Camera"
+        title="Manage Rooms"
         columns={columns}
         rows={rows}
         addButton={<AddButton />}
@@ -204,4 +200,4 @@ const CameraPage = () => {
   );
 };
 
-export default CameraPage;
+export default RoomPage;

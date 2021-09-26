@@ -11,6 +11,7 @@ import React, { RefObject } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import Login from './pages/Login';
+import ManagerDashboard from './pages/manager';
 
 const App = (): JSX.Element => {
   const notistackRef: RefObject<SnackbarProvider> = React.createRef();
