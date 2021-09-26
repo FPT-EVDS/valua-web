@@ -1,4 +1,4 @@
-import { Delete, Description, Edit, PersonAdd } from '@mui/icons-material';
+import { Delete, Description, Edit } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
@@ -13,33 +13,24 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import CameraDetailDialog from 'components/CameraDetailDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
+import { format } from 'date-fns';
 import Status from 'enums/status.enum';
 import { disableCamera, getCameras } from 'features/camera/camerasSlice';
-import useQuery from 'hooks/useQuery';
+import Room from 'models/room.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
-
-interface ParamProps {
-  id: string;
-}
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const CameraPage = () => {
   const [open, setOpen] = useState(false);
   const { url } = useRouteMatch();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
-  const cameras = useAppSelector(state => state.camera.current.cameras);
   const history = useHistory();
-  const query = useQuery();
   const {
     isLoading,
-    current: { accounts },
-  } = useAppSelector(state => state.account);
-  const { id } = useParams<ParamProps>();
-  const [isEditable, setIsEditable] = useState(
-    String(query.get('edit')) === 'true',
-  );
+    current: { cameras },
+  } = useAppSelector(state => state.camera);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
       title: `Do you want to delete this camera ?`,
@@ -49,6 +40,7 @@ const CameraPage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
+
   const rows: GridRowModel[] = cameras.map(camera => ({
     ...camera,
     id: camera.cameraId,
@@ -117,11 +109,10 @@ const CameraPage = () => {
       headerName: 'Assigned Room',
       flex: 0.115,
       minWidth: 130,
-      renderCell: params => (
-        <Typography>
-          {params.row.room != null ? params.row.room.roomName : 'Not yet'}
-        </Typography>
-      ),
+      renderCell: params => {
+        const room: Room = params.getValue(params.id, params.field) as Room;
+        return <Typography>{room ? room.roomName : 'Not yet'}</Typography>;
+      },
     },
     {
       field: 'purchaseDate',
@@ -129,7 +120,10 @@ const CameraPage = () => {
       flex: 0.12,
       minWidth: 130,
       renderCell: params => {
-        const purchaseDate = new Date(params.row.purchaseDate);
+        const purchaseDate = format(
+          new Date(params.row.purchaseDate),
+          'dd/MM/yyyy',
+        );
         return <Typography>{purchaseDate.toLocaleString()}</Typography>;
       },
     },
@@ -183,7 +177,11 @@ const CameraPage = () => {
     },
   ];
 
-  const AddButton = () => <Button variant="contained">Add camera</Button>;
+  const AddButton = () => (
+    <Button variant="contained" onClick={() => setOpen(true)}>
+      Add camera
+    </Button>
+  );
 
   return (
     <div>

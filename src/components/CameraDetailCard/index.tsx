@@ -1,12 +1,4 @@
-import {
-  AccountCircle,
-  Edit,
-  EditOff,
-  Email,
-  Home,
-  Image,
-  Phone,
-} from '@mui/icons-material';
+import { AccountCircle, Edit, EditOff } from '@mui/icons-material';
 import { DatePicker, LoadingButton } from '@mui/lab';
 import {
   Box,
@@ -18,14 +10,11 @@ import {
   Grid,
   IconButton,
   InputAdornment,
-  MenuItem,
   TextField,
   Typography,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
-import genders from 'configs/constants/genders.constant';
-import CameraDto from 'dtos/camera.dto';
 import Status from 'enums/status.enum';
 import { updateCamera } from 'features/camera/detailCameraSlice';
 import { useFormik } from 'formik';
@@ -56,7 +45,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
         };
         const result = await dispatch(updateCamera(data));
         unwrapResult(result);
-        enqueueSnackbar('Update account success', {
+        enqueueSnackbar('Update camera success', {
           variant: 'success',
           preventDuplicate: true,
         });

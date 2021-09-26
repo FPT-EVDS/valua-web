@@ -1,12 +1,5 @@
-import {
-  AccountCircle,
-  Close,
-  Email,
-  Home,
-  Image,
-  Phone,
-} from '@mui/icons-material';
-import { DatePicker, LoadingButton } from '@mui/lab';
+import { Close } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
 import {
   Box,
   Dialog,
@@ -15,17 +8,12 @@ import {
   DialogTitle,
   Grid,
   IconButton,
-  InputAdornment,
-  MenuItem,
   Slide,
-  TextField,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import CameraDto from 'dtos/camera.dto';
-import Status from 'enums/status.enum';
-import { addAccount } from 'features/account/accountsSlice';
 import { addCamera } from 'features/camera/camerasSlice';
 import { useFormik } from 'formik';
 import { useSnackbar } from 'notistack';

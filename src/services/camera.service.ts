@@ -20,7 +20,7 @@ const cameraServices = {
     return axiosClient.post(url, payload);
   },
   updateCamera: (payload: Camera): Promise<AxiosResponse<Camera>> => {
-    const url = '/cameras';
+    const url = `/cameras/${payload.cameraId}`;
     return axiosClient.put(url, payload);
   },
   disableCamera: (id: string): Promise<AxiosResponse<DisableCamera>> => {
