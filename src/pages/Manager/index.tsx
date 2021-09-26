@@ -228,7 +228,12 @@ const ManagerDashboard = (): JSX.Element => {
           <Route path="/manager/account/:id" component={DetailAccountPage} />
           <Route path="/manager/room" component={RoomPage} exact />
           <Route path="/manager/room/:id" component={DetailRoomPage} exact />
-          <Route path="/manager/camera" component={Camera} exact />
+          <Route path="/manager/camera" component={CameraPage} exact />
+          <Route
+            path="/manager/camera/:id"
+            component={DetailCameraPage}
+            exact
+          />
           <Route path="/manager/semester" component={SemesterPage} exact />
           <Route path="/manager/subject" component={SubjectPage} exact />
           <Redirect from="/manager" to="/manager/dashboard" />

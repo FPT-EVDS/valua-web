@@ -6,6 +6,8 @@ import detailRoomReducer from 'features/room/detailRoomSlice';
 import roomReducer from 'features/room/roomsSlice';
 import semesterReducer from 'features/semester/semestersSlice';
 import subjectReducer from 'features/subject/subjectsSlice';
+import detailCameraReducer from 'features/camera/detailCameraSlice';
+import cameraReducer from 'features/camera/camerasSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +18,8 @@ export const store = configureStore({
     detailRoom: detailRoomReducer,
     subjects: subjectReducer,
     semesters: semesterReducer,
+    camera: cameraReducer,
+    detailCamera: detailCameraReducer,
   },
 });
 
