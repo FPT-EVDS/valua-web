@@ -1,15 +1,31 @@
 import { ChevronLeft } from '@mui/icons-material';
 import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Divider,
+  Grid,
+  IconButton,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import CameraDetailCard from 'components/CameraDetailCard';
+import CameraOverviewCard from 'components/CameraOverviewCard';
 import OverviewCard from 'components/OverviewCard';
 import { format } from 'date-fns';
+import AppUserDto from 'dtos/appUser.dto';
 import { getCamera } from 'features/camera/detailCameraSlice';
+import { useFormik } from 'formik';
+import useQuery from 'hooks/useQuery';
 import CameraM from 'models/camera.model';
 import { useSnackbar } from 'notistack';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 interface ParamProps {
@@ -24,20 +40,21 @@ const DetailCameraPage = () => {
   const dispatch = useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const history = useHistory();
+  const query = useQuery();
   const { id } = useParams<ParamProps>();
   const { camera, isLoading } = useAppSelector(state => state.detailCamera);
+  const [isEditable, setIsEditable] = useState(
+    String(query.get('edit')) === 'true',
+  );
+  const initialValues = camera;
+
   const fetchCamera = async (cameraId: string) => {
     const actionResult = await dispatch(getCamera(cameraId));
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchCamera(id).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    fetchCamera(id).catch(error => console.log(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
