@@ -33,6 +33,7 @@ import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import AccountPage from './Account';
 import DetailAccountPage from './Account/DetailAccount';
 import Camera from './Camera';
+import DetailCameraPage from './Camera/DetailCamera';
 import Dashboard from './Dashboard';
 import RoomPage from './Room';
 import DetailRoomPage from './Room/DetailRoomPage';
@@ -226,8 +227,9 @@ const ManagerDashboard = (): JSX.Element => {
           <Route path="/manager/account" component={AccountPage} exact />
           <Route path="/manager/account/:id" component={DetailAccountPage} />
           <Route path="/manager/room" component={RoomPage} exact />
-          <Route path="/manager/room/:id" component={DetailRoomPage} exact />
+          <Route path="/manager/room/:id" component={DetailRoomPage} />
           <Route path="/manager/camera" component={Camera} exact />
+          <Route path="/manager/camera/:id" component={DetailCameraPage} />
           <Route path="/manager/semester" component={SemesterPage} exact />
           <Route path="/manager/subject" component={SubjectPage} exact />
           <Redirect from="/manager" to="/manager/dashboard" />
