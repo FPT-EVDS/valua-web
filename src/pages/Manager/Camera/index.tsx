@@ -40,7 +40,6 @@ const CameraPage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-
   const rows: GridRowModel[] = cameras.map(camera => ({
     ...camera,
     id: camera.cameraId,

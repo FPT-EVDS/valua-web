@@ -3,7 +3,6 @@ import CameraDto from 'dtos/camera.dto';
 import CamerasDto from 'dtos/cameras.dto';
 import DisableCamera from 'dtos/disableCamera.dto';
 import Camera from 'models/camera.model';
-
 import axiosClient from './axiosClient';
 
 const cameraServices = {
