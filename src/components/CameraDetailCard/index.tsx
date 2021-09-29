@@ -67,7 +67,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
   };
 
   const handleChangePurchasedDate = async (selectedDate: Date | null) => {
-    await formik.setFieldValue('purchasedDate', selectedDate);
+    await formik.setFieldValue('purchasedate', selectedDate);
   };
 
   useEffect(() => {
@@ -156,7 +156,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                 renderInput={params => (
                   <TextField
                     {...params}
-                    name="purchasedDate"
+                    name="purchasedate"
                     autoFocus
                     margin="dense"
                     fullWidth

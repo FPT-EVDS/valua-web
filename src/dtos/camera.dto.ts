@@ -1,6 +1,6 @@
 import Room from 'models/room.model';
 
-interface CameraDto {
+export default interface CameraDto {
   cameraId: string;
   cameraName: string;
   configurationUrl: string;
@@ -11,5 +11,3 @@ interface CameraDto {
   status: number;
   description: string;
 }
-
-export default CameraDto;

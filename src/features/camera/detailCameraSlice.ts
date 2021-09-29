@@ -43,6 +43,32 @@ export const updateCamera = createAsyncThunk(
   },
 );
 
+export const disableCamera = createAsyncThunk(
+  'cameras/disable',
+  async (cameraId: string, { rejectWithValue }) => {
+    try {
+      const response = await cameraServices.disableCamera(cameraId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const activateCamera = createAsyncThunk(
+  'cameras/activate',
+  async (cameraId: string, { rejectWithValue }) => {
+    try {
+      const response = await cameraServices.activateCamera(cameraId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: DetailCameraState = {
   isLoading: false,

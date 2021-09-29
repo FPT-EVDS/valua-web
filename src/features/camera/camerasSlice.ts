@@ -56,6 +56,19 @@ export const disableCamera = createAsyncThunk(
   },
 );
 
+export const activateCamera = createAsyncThunk(
+  'cameras/activate',
+  async (cameraId: string, { rejectWithValue }) => {
+    try {
+      const response = await cameraServices.activateCamera(cameraId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 const initialState: CameraState = {
   isLoading: false,
   error: '',

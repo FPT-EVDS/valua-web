@@ -3,14 +3,16 @@ import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import CameraDetailCard from 'components/CameraDetailCard';
 import OverviewCard from 'components/OverviewCard';
 import { format } from 'date-fns';
 import { getCamera } from 'features/camera/detailCameraSlice';
 import CameraM from 'models/camera.model';
 import { useSnackbar } from 'notistack';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import Status from 'enums/status.enum';
 
 interface ParamProps {
   id: string;
@@ -26,6 +28,15 @@ const DetailCameraPage = () => {
   const history = useHistory();
   const { id } = useParams<ParamProps>();
   const { camera, isLoading } = useAppSelector(state => state.detailCamera);
+  const [confirmDialogProps, setConfirmDialogProps] =
+    useState<ConfirmDialogProps>({
+      title: `Do you want to delete this room ?`,
+      content: "This action can't be revert",
+      open: false,
+      handleClose: () =>
+        setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
+      handleAccept: () => null,
+    });
 
   const fetchCamera = async (cameraId: string) => {
     const actionResult = await dispatch(getCamera(cameraId));
@@ -50,16 +61,20 @@ const DetailCameraPage = () => {
     </Typography>
   );
 
-  const GroupButtons = () => (
+  const GroupButtons = ({ camera: { status } }: CameraProps) => (
     <>
-      <Button variant="text" color="error">
-        Disable camera
+      <Button
+        variant="text"
+        color={status == Status.isActive ? 'error' : 'success'}
+      >
+        {status == Status.isActive ? 'Disable camera' : 'Active camera'}
       </Button>
     </>
   );
 
   return (
     <div>
+      <ConfirmDialog {...confirmDialogProps} />
       <Box
         display="flex"
         alignItems="center"
@@ -78,7 +93,7 @@ const DetailCameraPage = () => {
                 icon={<VideoCameraBackIcon fontSize="large" />}
                 status={camera.status}
                 content={<OverviewContent camera={camera} />}
-                actionButtons={<GroupButtons />}
+                actionButtons={<GroupButtons camera={camera} />}
                 isSingleAction
               />
             </Grid>

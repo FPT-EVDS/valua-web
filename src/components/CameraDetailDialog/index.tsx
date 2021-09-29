@@ -1,7 +1,10 @@
+import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
 import { Close } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
+import { LoadingButton, DatePicker } from '@mui/lab';
 import {
   Box,
+  Avatar,
+  TextField,
   Dialog,
   DialogActions,
   DialogContent,
@@ -75,7 +78,7 @@ const CameraDetailDialog: React.FC<Props> = ({
   });
 
   const handleChangePurchasedDate = async (selectedDate: Date | null) => {
-    await formik.setFieldValue('purchaseDate', selectedDate);
+    await formik.setFieldValue('purchasedate', selectedDate);
   };
 
   return (
@@ -99,7 +102,94 @@ const CameraDetailDialog: React.FC<Props> = ({
         </Grid>
       </DialogTitle>
       <Box component="form" onSubmit={formik.handleSubmit} pb={2}>
-        <DialogContent />
+        <DialogContent>
+          <Box display="flex" justifyContent="center">
+            <Avatar
+              sx={{
+                bgcolor: '#1890ff',
+                mb: 2,
+                width: 150,
+                height: 150,
+                borderRadius: '3px',
+              }}
+              variant="square"
+            >
+              <VideoCameraBackIcon fontSize="large" />
+            </Avatar>
+          </Box>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                autoFocus
+                name="cameraName"
+                margin="dense"
+                label="Name"
+                fullWidth
+                variant="outlined"
+                value={formik.values.cameraName}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={formik.handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DatePicker
+                label="Purchased Date"
+                value={formik.values.purchaseDate}
+                inputFormat="dd/MM/yyyy"
+                onChange={date => handleChangePurchasedDate(date)}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    name="purchasedate"
+                    autoFocus
+                    margin="dense"
+                    fullWidth
+                    variant="outlined"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="description"
+                autoFocus
+                multiline
+                margin="dense"
+                label="Description"
+                rows={4}
+                value={formik.values.description}
+                fullWidth
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={formik.handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="configurationUrl"
+                autoFocus
+                multiline
+                margin="dense"
+                label="Configuration URL"
+                rows={4}
+                value={formik.values.configurationUrl}
+                fullWidth
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={formik.handleChange}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
           <LoadingButton
             type="submit"

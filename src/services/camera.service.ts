@@ -32,6 +32,16 @@ const cameraServices = {
       },
     ]);
   },
+  activateCamera: (id: string): Promise<AxiosResponse<DisableCamera>> => {
+    const url = `/cameras/${id}`;
+    return axiosClient.patch(url, [
+      {
+        op: 'replace',
+        path: '/status',
+        value: 2,
+      },
+    ]);
+  },
 };
 
 export default cameraServices;

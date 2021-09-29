@@ -1,4 +1,4 @@
-import { Delete, Description, Edit } from '@mui/icons-material';
+import { Add, Delete, Description, Done, Edit } from '@mui/icons-material';
 import { Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
@@ -15,7 +15,11 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import { format } from 'date-fns';
 import Status from 'enums/status.enum';
-import { disableCamera, getCameras } from 'features/camera/camerasSlice';
+import {
+  activateCamera,
+  disableCamera,
+  getCameras,
+} from 'features/camera/camerasSlice';
 import Room from 'models/room.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -84,6 +88,30 @@ const CameraPage = () => {
     }
   };
 
+  const handleActivateAccount = async (cameraId: string) => {
+    try {
+      const result = await dispatch(activateCamera(cameraId));
+      unwrapResult(result);
+      enqueueSnackbar('Active camera success', {
+        variant: 'success',
+        preventDuplicate: true,
+      });
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
+    } catch (error) {
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      });
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
+    }
+  };
+
   const showDeleteConfirmation = ({ getValue, id }: GridRowParams) => {
     const cameraId = String(getValue(id, 'cameraId'));
     const name = String(getValue(id, 'cameraName'));
@@ -92,6 +120,17 @@ const CameraPage = () => {
       open: true,
       title: `Do you want to remove camera ${name}`,
       handleAccept: () => handleDeleteAccount(cameraId),
+    }));
+  };
+
+  const showActiveConfirmation = ({ getValue, id }: GridRowParams) => {
+    const cameraId = String(getValue(id, 'cameraId'));
+    const name = String(getValue(id, 'cameraName'));
+    setConfirmDialogProps(prevState => ({
+      ...prevState,
+      open: true,
+      title: `Do you want to active camera ${name}`,
+      handleAccept: () => handleActivateAccount(cameraId),
     }));
   };
 
@@ -157,6 +196,12 @@ const CameraPage = () => {
             showInMenu
             onClick={() => showDeleteConfirmation(params)}
           />,
+          // <GridActionsCellItem
+          //   label="Active"
+          //   icon={<Done />}
+          //   showInMenu
+          //   onClick={() => showActiveConfirmation(params)}
+          // />,
           <GridActionsCellItem
             label="Edit"
             icon={<Edit />}
@@ -177,7 +222,11 @@ const CameraPage = () => {
   ];
 
   const AddButton = () => (
-    <Button variant="contained" onClick={() => setOpen(true)}>
+    <Button
+      variant="contained"
+      startIcon={<Add />}
+      onClick={() => setOpen(true)}
+    >
       Add camera
     </Button>
   );
