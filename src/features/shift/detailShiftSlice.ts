@@ -1,9 +1,7 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import AppUserDto from 'dtos/appUser.dto';
 import ShiftDto from 'dtos/shift.dto';
 import Shift from 'models/shift.model';
-import accountServices from 'services/account.service';
 import shiftServices from 'services/shift.service';
 
 interface DetailShiftState {
@@ -51,6 +49,19 @@ export const updateShift = createAsyncThunk(
   },
 );
 
+export const deleteShift = createAsyncThunk(
+  'detailShift/delete',
+  async (shiftId: string, { rejectWithValue }) => {
+    try {
+      const response = await shiftServices.disableShift(shiftId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: DetailShiftState = {
   isLoading: false,
@@ -61,9 +72,14 @@ const initialState: DetailShiftState = {
 export const detailShiftSlice = createSlice({
   name: 'detailShift',
   initialState,
-  reducers: {},
+  reducers: {
+    reset: () => initialState,
+  },
   extraReducers: builder => {
     builder
+      .addCase(deleteShift.fulfilled, state => {
+        state = initialState;
+      })
       .addMatcher(
         isAnyOf(getShift.fulfilled, addShift.fulfilled, updateShift.fulfilled),
         (state, action) => {
@@ -82,11 +98,13 @@ export const detailShiftSlice = createSlice({
       .addMatcher(
         isAnyOf(getShift.rejected, addShift.rejected, updateShift.rejected),
         state => {
-          state.isLoading = true;
+          state.isLoading = false;
           state.error = '';
         },
       );
   },
 });
+
+export const { reset } = detailShiftSlice.actions;
 
 export default detailShiftSlice.reducer;

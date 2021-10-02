@@ -13,7 +13,8 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import { format } from 'date-fns';
-import { disableShift, getShifts } from 'features/shift/shiftSlice';
+import { reset } from 'features/shift/detailShiftSlice';
+import { deleteShift, getShifts } from 'features/shift/shiftSlice';
 import Room from 'models/room.model';
 import Subject from 'models/subject.model';
 import { useSnackbar } from 'notistack';
@@ -21,7 +22,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const ShiftPage = () => {
-  const [open, setOpen] = useState(false);
   const history = useHistory();
   const { url } = useRouteMatch();
   const [confirmDialogProps, setConfirmDialogProps] =
@@ -59,13 +59,9 @@ const ShiftPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    setOpen(false);
-  }, [shifts]);
-
   const handleDeleteShift = async (shiftId: string) => {
     try {
-      const result = await dispatch(disableShift(shiftId));
+      const result = await dispatch(deleteShift(shiftId));
       unwrapResult(result);
       enqueueSnackbar('Disable shift success', {
         variant: 'success',
@@ -125,7 +121,7 @@ const ShiftPage = () => {
       flex: 0.1,
       minWidth: 130,
       valueFormatter: ({ id, field, getValue }) =>
-        format(new Date(String(getValue(id, field))), 'dd/MM/yyyy'),
+        format(new Date(String(getValue(id, field))), 'dd/MM/yyyy HH:mm'),
     },
     {
       field: 'finishTime',
@@ -133,7 +129,7 @@ const ShiftPage = () => {
       flex: 0.1,
       minWidth: 130,
       valueFormatter: ({ id, field, getValue }) =>
-        format(new Date(String(getValue(id, field))), 'dd/MM/yyyy'),
+        format(new Date(String(getValue(id, field))), 'dd/MM/yyyy HH:mm'),
     },
     {
       field: 'isActive',
@@ -189,7 +185,10 @@ const ShiftPage = () => {
     <Button
       variant="contained"
       startIcon={<Add />}
-      onClick={() => setOpen(true)}
+      onClick={() => {
+        dispatch(reset());
+        history.push('/shift-manager/shift/add');
+      }}
     >
       Add shift
     </Button>

@@ -33,6 +33,14 @@ const accountServices = {
       },
     ]);
   },
+  getAllStaffForShift: (): Promise<AxiosResponse<Account[]>> => {
+    const url = '/accounts/shiftManager/staff';
+    return axiosClient.get(url);
+  },
+  searchStaffForShift: (fullName: string): Promise<AxiosResponse<Account>> => {
+    const url = '/accounts/shiftManager/fullname';
+    return axiosClient.get(url, { params: { fullName } });
+  },
 };
 
 export default accountServices;

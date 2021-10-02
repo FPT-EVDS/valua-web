@@ -5,13 +5,9 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import SemesterDto from 'dtos/semester.dto';
-import SemestersDto from 'dtos/semesters.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftsDto from 'dtos/shifts.dto';
-import Semester from 'models/semester.model';
 import Shift from 'models/shift.model';
-import semesterServices from 'services/semester.service';
 import shiftServices from 'services/shift.service';
 
 interface ShiftsState {
@@ -46,8 +42,8 @@ export const updateShift = createAsyncThunk(
   },
 );
 
-export const disableShift = createAsyncThunk(
-  'shifts/disable',
+export const deleteShift = createAsyncThunk(
+  'shifts/delete',
   async (shiftId: string, { rejectWithValue }) => {
     try {
       const response = await shiftServices.disableShift(shiftId);
@@ -90,27 +86,23 @@ export const shiftslice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(disableShift.fulfilled, (state, action) => {
+      .addCase(deleteShift.fulfilled, (state, action) => {
         const index = state.current.shifts.findIndex(
           shift => shift.shiftId === action.payload.shiftId,
         );
-        state.current.shifts[index].isActive = action.payload.isActive;
+        if (index > -1) state.current.shifts.splice(index, 1);
         state.error = '';
         state.isLoading = false;
       })
       .addMatcher(
-        isAnyOf(
-          getShifts.rejected,
-          disableShift.rejected,
-          updateShift.rejected,
-        ),
+        isAnyOf(getShifts.rejected, deleteShift.rejected, updateShift.rejected),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
           state.error = action.payload;
         },
       )
       .addMatcher(
-        isAnyOf(getShifts.pending, disableShift.pending, updateShift.pending),
+        isAnyOf(getShifts.pending, deleteShift.pending, updateShift.pending),
         state => {
           state.isLoading = true;
           state.error = '';

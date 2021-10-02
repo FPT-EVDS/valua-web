@@ -24,6 +24,7 @@ const App = (): JSX.Element => {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         maxSnack={3}
         ref={notistackRef}
+        autoHideDuration={3000}
         action={key => (
           <IconButton onClick={onClickDismiss(key)} color="secondary">
             <Close />

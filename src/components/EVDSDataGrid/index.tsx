@@ -1,7 +1,18 @@
 /* eslint-disable react/require-default-props */
 import { FilterAlt } from '@mui/icons-material';
-import { Button, Grid, TextField, Typography } from '@mui/material';
-import { DataGrid, GridColumns, GridRowData } from '@mui/x-data-grid';
+import {
+  Button,
+  Grid,
+  LinearProgress,
+  TextField,
+  Typography,
+} from '@mui/material';
+import {
+  DataGrid,
+  GridColumns,
+  GridOverlay,
+  GridRowData,
+} from '@mui/x-data-grid';
 import React from 'react';
 
 interface DataGridHeaderProps {
@@ -48,6 +59,14 @@ const EVDSDataGridHeader = ({
   </Grid>
 );
 
+const CustomLoadingOverlay = () => (
+  <GridOverlay>
+    <div style={{ position: 'absolute', top: 0, width: '100%' }}>
+      <LinearProgress />
+    </div>
+  </GridOverlay>
+);
+
 const EVDSDataGrid = ({
   isLoading,
   rows,
@@ -74,6 +93,9 @@ const EVDSDataGrid = ({
             disableColumnSelector
             rows={rows}
             columns={columns}
+            components={{
+              LoadingOverlay: CustomLoadingOverlay,
+            }}
           />
         </div>
       </div>
