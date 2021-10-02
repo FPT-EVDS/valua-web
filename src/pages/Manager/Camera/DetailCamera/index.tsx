@@ -7,7 +7,7 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import CameraDetailCard from 'components/CameraDetailCard';
 import OverviewCard from 'components/OverviewCard';
 import { format } from 'date-fns';
-import { getCamera } from 'features/camera/detailCameraSlice';
+import { getCamera, disableCamera } from 'features/camera/detailCameraSlice';
 import CameraM from 'models/camera.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -30,7 +30,7 @@ const DetailCameraPage = () => {
   const { camera, isLoading } = useAppSelector(state => state.detailCamera);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this room ?`,
+      title: `Do you want to delete this camera ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
@@ -53,6 +53,30 @@ const DetailCameraPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleDeleteCamera = async (cameraId: string) => {
+    try {
+      const result = await dispatch(disableCamera(cameraId));
+      unwrapResult(result);
+      enqueueSnackbar('Disable camera success', {
+        variant: 'success',
+        preventDuplicate: true,
+      });
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
+    } catch (error) {
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      });
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
+    }
+  };
+
   const OverviewContent = ({ camera: { lastModifiedDate } }: CameraProps) => (
     <Typography gutterBottom color="text.secondary">
       Last Updated:{' '}
@@ -61,13 +85,22 @@ const DetailCameraPage = () => {
     </Typography>
   );
 
+  const showDeleteConfirmation = (cameraId: string) => {
+    setConfirmDialogProps(prevState => ({
+      ...prevState,
+      open: true,
+      handleAccept: () => handleDeleteCamera(cameraId),
+    }));
+  };
+
   const GroupButtons = ({ camera: { status } }: CameraProps) => (
     <>
       <Button
         variant="text"
-        color={status == Status.isReady ? 'success' : 'error'}
+        color={'error'}
+        onClick={() => showDeleteConfirmation(id)}
       >
-        {status == Status.isReady ? 'Active camera' : 'Disable camera'}
+        Disable room
       </Button>
     </>
   );

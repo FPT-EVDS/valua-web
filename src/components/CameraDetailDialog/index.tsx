@@ -27,7 +27,7 @@ interface Props {
   open: boolean;
   handleClose: () => void;
   // eslint-disable-next-line react/require-default-props
-  initValues?: CameraDto;
+  initialValues?: CameraDto;
 }
 
 const Transition = React.forwardRef(
@@ -40,7 +40,7 @@ const CameraDetailDialog: React.FC<Props> = ({
   open,
   handleClose,
   title,
-  initValues = {
+  initialValues = {
     cameraId: '',
     room: null,
     purchaseDate: new Date(),
@@ -56,7 +56,7 @@ const CameraDetailDialog: React.FC<Props> = ({
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.account.isLoading);
   const formik = useFormik({
-    initialValues: initValues,
+    initialValues,
     onSubmit: async (payload: CameraDto) => {
       try {
         const data = {

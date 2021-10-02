@@ -31,10 +31,12 @@ const CameraPage = () => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const history = useHistory();
+
   const {
     isLoading,
     current: { cameras },
   } = useAppSelector(state => state.camera);
+
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
       title: `Do you want to delete this camera ?`,
@@ -64,7 +66,11 @@ const CameraPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDeleteAccount = async (cameraId: string) => {
+  useEffect(() => {
+    setOpen(false);
+  }, [cameras]);
+
+  const handleDeleteCamera = async (cameraId: string) => {
     try {
       const result = await dispatch(disableCamera(cameraId));
       unwrapResult(result);
@@ -88,7 +94,7 @@ const CameraPage = () => {
     }
   };
 
-  const handleActivateAccount = async (cameraId: string) => {
+  const handleActivateCamera = async (cameraId: string) => {
     try {
       const result = await dispatch(activateCamera(cameraId));
       unwrapResult(result);
@@ -119,7 +125,7 @@ const CameraPage = () => {
       ...prevState,
       open: true,
       title: `Do you want to remove camera ${name}`,
-      handleAccept: () => handleDeleteAccount(cameraId),
+      handleAccept: () => handleDeleteCamera(cameraId),
     }));
   };
 
@@ -130,7 +136,7 @@ const CameraPage = () => {
       ...prevState,
       open: true,
       title: `Do you want to active camera ${name}`,
-      handleAccept: () => handleActivateAccount(cameraId),
+      handleAccept: () => handleActivateCamera(cameraId),
     }));
   };
 
@@ -175,9 +181,9 @@ const CameraPage = () => {
         return (
           <Typography
             variant="subtitle1"
-            color={status === Status.isReady ? green[500] : red[500]}
+            color={status === Status.isDisable ? red[500] : green[500]}
           >
-            {status === Status.isReady ? 'Active' : 'Disable'}
+            {status === Status.isDisable ? 'Disable' : 'Active'}
           </Typography>
         );
       },

@@ -124,13 +124,6 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AccountCircle />
-                    </InputAdornment>
-                  ),
-                }}
                 onChange={formik.handleChange}
                 disabled={!isEditable}
               />
@@ -148,7 +141,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                   shrink: true,
                 }}
                 onChange={formik.handleChange}
-                disabled={!isEditable}
+                disabled={true}
               />
             </Grid>
             <Grid item xs={12} md={6}>
