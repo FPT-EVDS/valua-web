@@ -175,9 +175,9 @@ const CameraPage = () => {
         return (
           <Typography
             variant="subtitle1"
-            color={status === Status.isActive ? green[500] : red[500]}
+            color={status === Status.isReady ? green[500] : red[500]}
           >
-            {status === Status.isActive ? 'Active' : 'Disable'}
+            {status === Status.isReady ? 'Active' : 'Disable'}
           </Typography>
         );
       },

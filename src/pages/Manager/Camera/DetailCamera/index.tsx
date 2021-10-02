@@ -65,9 +65,9 @@ const DetailCameraPage = () => {
     <>
       <Button
         variant="text"
-        color={status == Status.isActive ? 'error' : 'success'}
+        color={status == Status.isReady ? 'success' : 'error'}
       >
-        {status == Status.isActive ? 'Disable camera' : 'Active camera'}
+        {status == Status.isReady ? 'Active camera' : 'Disable camera'}
       </Button>
     </>
   );

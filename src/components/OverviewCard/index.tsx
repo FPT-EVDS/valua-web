@@ -33,11 +33,11 @@ const OverviewCard: React.FC<Props> = ({
 }: Props) => {
   let statusColor = '#1890ff';
   switch (status) {
-    case Status.isActive:
+    case Status.isReady:
       statusColor = green[500];
       break;
 
-    case Status.isPending:
+    case Status.isActive:
       statusColor = red[500];
       break;
     case Status.isDisable:

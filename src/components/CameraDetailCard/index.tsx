@@ -19,6 +19,7 @@ import Status from 'enums/status.enum';
 import { updateCamera } from 'features/camera/detailCameraSlice';
 import { useFormik } from 'formik';
 import useQuery from 'hooks/useQuery';
+import CameraDto from 'dtos/camera.dto';
 import Camera from 'models/camera.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -35,10 +36,10 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
   const [isEditable, setIsEditable] = useState(
     String(query.get('edit')) === 'true',
   );
-  const initialValues: Camera = { ...camera };
+  const initialValues: CameraDto = { ...camera };
   const formik = useFormik({
     initialValues,
-    onSubmit: async (payload: Camera) => {
+    onSubmit: async (payload: CameraDto) => {
       try {
         const data = {
           ...payload,
@@ -66,8 +67,12 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
     }
   };
 
-  const handleChangePurchasedDate = async (selectedDate: Date | null) => {
-    await formik.setFieldValue('purchasedate', selectedDate);
+  const handleChangePurchaseDate = async (selectedDate: Date | null) => {
+    await formik.setFieldValue('purchaseDate', selectedDate);
+  };
+
+  const handleChangeModifedDate = async (selectedDate: Date | null) => {
+    await formik.setFieldValue('lastModifiedDate', selectedDate);
   };
 
   useEffect(() => {
@@ -151,12 +156,12 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                 label="Purchased Date"
                 value={formik.values.purchaseDate}
                 inputFormat="dd/MM/yyyy"
-                onChange={date => handleChangePurchasedDate(date)}
+                onChange={date => handleChangePurchaseDate(date)}
                 disabled={!isEditable}
                 renderInput={params => (
                   <TextField
                     {...params}
-                    name="purchasedate"
+                    name="purchaseDate"
                     autoFocus
                     margin="dense"
                     fullWidth
@@ -174,7 +179,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                 label="Last Modified Date"
                 value={formik.values.purchaseDate}
                 inputFormat="dd/MM/yyyy"
-                onChange={date => handleChangePurchasedDate(date)}
+                onChange={date => handleChangeModifedDate(date)}
                 disabled={!isEditable}
                 renderInput={params => (
                   <TextField

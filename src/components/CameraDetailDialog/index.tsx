@@ -64,7 +64,7 @@ const CameraDetailDialog: React.FC<Props> = ({
         };
         const result = await dispatch(addCamera(data));
         unwrapResult(result);
-        enqueueSnackbar('Add account success', {
+        enqueueSnackbar('Add camera success', {
           variant: 'success',
           preventDuplicate: true,
         });
@@ -78,7 +78,7 @@ const CameraDetailDialog: React.FC<Props> = ({
   });
 
   const handleChangePurchasedDate = async (selectedDate: Date | null) => {
-    await formik.setFieldValue('purchasedate', selectedDate);
+    await formik.setFieldValue('purchaseDate', selectedDate);
   };
 
   return (
@@ -142,7 +142,7 @@ const CameraDetailDialog: React.FC<Props> = ({
                 renderInput={params => (
                   <TextField
                     {...params}
-                    name="purchasedate"
+                    name="purchaseDate"
                     autoFocus
                     margin="dense"
                     fullWidth
