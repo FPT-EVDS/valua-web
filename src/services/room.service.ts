@@ -33,6 +33,10 @@ const roomServices = {
       },
     ]);
   },
+  getRoomsForShift: (): Promise<AxiosResponse<Room[]>> => {
+    const url = '/rooms/shiftManager/roomReady';
+    return axiosClient.get(url);
+  },
 };
 
 export default roomServices;

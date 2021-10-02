@@ -29,6 +29,7 @@ import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import DashboardPage from './Dashboard';
 import FeedbackPage from './Feedback';
 import ShiftPage from './Shift';
+import DetailShiftPage from './Shift/DetailShift';
 import ViolationPage from './Violation';
 
 const drawerItems: Array<DrawerItem> = [
@@ -213,6 +214,12 @@ const ShiftManagerDashboard = (): JSX.Element => {
             exact
           />
           <Route path="/shift-manager/shift" component={ShiftPage} exact />
+          <Route
+            path="/shift-manager/shift/add"
+            component={DetailShiftPage}
+            exact
+          />
+          <Route path="/shift-manager/shift/:id" component={DetailShiftPage} />
           <Route
             path="/shift-manager/violation"
             component={ViolationPage}

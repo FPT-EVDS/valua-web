@@ -6,7 +6,6 @@ import Semester from 'models/semester.model';
 
 import axiosClient from './axiosClient';
 
-
 const semesterServices = {
   getSemesters: (numOfPage: number): Promise<AxiosResponse<SemestersDto>> => {
     const url = `/semesters`;
@@ -33,6 +32,10 @@ const semesterServices = {
         value: false,
       },
     ]);
+  },
+  getSemesterForShift: (): Promise<AxiosResponse<Semester[]>> => {
+    const url = '/semesters/shiftManager';
+    return axiosClient.get(url);
   },
 };
 

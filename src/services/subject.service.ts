@@ -33,6 +33,10 @@ const subjectServices = {
       },
     ]);
   },
+  getSubjectsForShift: (): Promise<AxiosResponse<Subject[]>> => {
+    const url = '/subjects/shiftManager';
+    return axiosClient.get(url);
+  },
 };
 
 export default subjectServices;
