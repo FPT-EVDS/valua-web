@@ -43,9 +43,11 @@ const CameraOverviewCard = ({ camera, actionButtons }: Props) => (
             <Typography
               display="inline"
               ml={0.5}
-              color={camera?.status === Status.isActive ? green[500] : red[500]}
+              color={
+                camera?.status === Status.isDisable ? green[500] : red[500]
+              }
             >
-              {camera?.status === Status.isActive ? 'Active' : 'Disable'}
+              {camera?.status === Status.isDisable ? 'Active' : 'Disable'}
             </Typography>
           </Box>
         </Box>

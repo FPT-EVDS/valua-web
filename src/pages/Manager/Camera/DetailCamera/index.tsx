@@ -3,14 +3,16 @@ import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import CameraDetailCard from 'components/CameraDetailCard';
 import OverviewCard from 'components/OverviewCard';
 import { format } from 'date-fns';
-import { getCamera } from 'features/camera/detailCameraSlice';
+import { getCamera, disableCamera } from 'features/camera/detailCameraSlice';
 import CameraM from 'models/camera.model';
 import { useSnackbar } from 'notistack';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+import Status from 'enums/status.enum';
 
 interface ParamProps {
   id: string;
@@ -26,6 +28,15 @@ const DetailCameraPage = () => {
   const history = useHistory();
   const { id } = useParams<ParamProps>();
   const { camera, isLoading } = useAppSelector(state => state.detailCamera);
+  const [confirmDialogProps, setConfirmDialogProps] =
+    useState<ConfirmDialogProps>({
+      title: `Do you want to delete this camera ?`,
+      content: "This action can't be revert",
+      open: false,
+      handleClose: () =>
+        setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
+      handleAccept: () => null,
+    });
 
   const fetchCamera = async (cameraId: string) => {
     const actionResult = await dispatch(getCamera(cameraId));
@@ -42,6 +53,30 @@ const DetailCameraPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleDeleteCamera = async (cameraId: string) => {
+    try {
+      const result = await dispatch(disableCamera(cameraId));
+      unwrapResult(result);
+      enqueueSnackbar('Disable camera success', {
+        variant: 'success',
+        preventDuplicate: true,
+      });
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
+    } catch (error) {
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      });
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
+    }
+  };
+
   const OverviewContent = ({ camera: { lastModifiedDate } }: CameraProps) => (
     <Typography gutterBottom color="text.secondary">
       Last Updated:{' '}
@@ -50,16 +85,29 @@ const DetailCameraPage = () => {
     </Typography>
   );
 
-  const GroupButtons = () => (
+  const showDeleteConfirmation = (cameraId: string) => {
+    setConfirmDialogProps(prevState => ({
+      ...prevState,
+      open: true,
+      handleAccept: () => handleDeleteCamera(cameraId),
+    }));
+  };
+
+  const GroupButtons = ({ camera: { status } }: CameraProps) => (
     <>
-      <Button variant="text" color="error">
-        Disable camera
+      <Button
+        variant="text"
+        color={'error'}
+        onClick={() => showDeleteConfirmation(id)}
+      >
+        Disable room
       </Button>
     </>
   );
 
   return (
     <div>
+      <ConfirmDialog {...confirmDialogProps} />
       <Box
         display="flex"
         alignItems="center"
@@ -78,7 +126,7 @@ const DetailCameraPage = () => {
                 icon={<VideoCameraBackIcon fontSize="large" />}
                 status={camera.status}
                 content={<OverviewContent camera={camera} />}
-                actionButtons={<GroupButtons />}
+                actionButtons={<GroupButtons camera={camera} />}
                 isSingleAction
               />
             </Grid>

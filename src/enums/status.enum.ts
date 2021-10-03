@@ -1,6 +1,7 @@
 export enum Status {
-  isActive = 2,
-  isDisable = 1,
+  isDisable = 0,
+  isActive = 1,
+  isReady = 2,
 }
 
 export default Status;

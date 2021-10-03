@@ -3,7 +3,6 @@ import CameraDto from 'dtos/camera.dto';
 import CamerasDto from 'dtos/cameras.dto';
 import DisableCamera from 'dtos/disableCamera.dto';
 import Camera from 'models/camera.model';
-
 import axiosClient from './axiosClient';
 
 const cameraServices = {
@@ -30,6 +29,16 @@ const cameraServices = {
         op: 'replace',
         path: '/status',
         value: 0,
+      },
+    ]);
+  },
+  activateCamera: (id: string): Promise<AxiosResponse<DisableCamera>> => {
+    const url = `/cameras/${id}`;
+    return axiosClient.patch(url, [
+      {
+        op: 'replace',
+        path: '/status',
+        value: 2,
       },
     ]);
   },

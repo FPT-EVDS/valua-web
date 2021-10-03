@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { green, red } from '@mui/material/colors';
+import Status from 'enums/status.enum';
 import React from 'react';
 
 interface Props {
@@ -32,14 +33,16 @@ const OverviewCard: React.FC<Props> = ({
 }: Props) => {
   let statusColor = '#1890ff';
   switch (status) {
-    case 1:
+    case Status.isReady:
       statusColor = green[500];
       break;
 
-    case 0:
+    case Status.isActive:
       statusColor = red[500];
       break;
-
+    case Status.isDisable:
+      statusColor = red[500];
+      break;
     default:
       break;
   }
