@@ -1,7 +1,9 @@
 import { AxiosResponse } from 'axios';
+import AddCameraRoomDto from 'dtos/addCameraRoom.dto';
 import DisableRoomDto from 'dtos/disableRoom.dto';
 import RoomDto from 'dtos/room.dto';
 import RoomsDto from 'dtos/rooms.dto';
+import Camera from 'models/camera.model';
 import Room from 'models/room.model';
 
 import axiosClient from './axiosClient';
@@ -36,6 +38,13 @@ const roomServices = {
   getRoomsForShift: (): Promise<AxiosResponse<Room[]>> => {
     const url = '/rooms/shiftManager/roomReady';
     return axiosClient.get(url);
+  },
+  addCameraToRoom: ({
+    roomId,
+    cameraId: cameraID,
+  }: AddCameraRoomDto): Promise<AxiosResponse<Camera>> => {
+    const url = `/rooms/${roomId}/addCamera`;
+    return axiosClient.post(url, { params: { cameraID } });
   },
 };
 

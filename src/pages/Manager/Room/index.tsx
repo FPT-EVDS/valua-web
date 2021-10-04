@@ -1,6 +1,12 @@
 /* eslint-disable prefer-destructuring */
-import { Add, Delete, Description, Edit } from '@mui/icons-material';
-import { Button, Typography } from '@mui/material';
+import {
+  Add,
+  Delete,
+  Description,
+  Edit,
+  FiberManualRecord,
+} from '@mui/icons-material';
+import { Box, Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -105,7 +111,7 @@ const RoomPage = () => {
     {
       field: 'description',
       headerName: 'Description',
-      flex: 0.4,
+      flex: 0.1,
       minWidth: 130,
     },
     {
@@ -116,7 +122,7 @@ const RoomPage = () => {
       renderCell: params => {
         const active = params.getValue(params.id, 'status');
         let color = '#1890ff';
-        let statusText = 'Active';
+        let statusText = 'Ready';
         switch (active) {
           case 1:
             color = green[500];
@@ -132,9 +138,12 @@ const RoomPage = () => {
             break;
         }
         return (
-          <Typography variant="subtitle1" color={color}>
-            {statusText}
-          </Typography>
+          <Box display="flex" alignItems="center">
+            <FiberManualRecord sx={{ color, fontSize: 12, marginRight: 1 }} />
+            <Typography variant="subtitle1" color={color}>
+              {statusText}
+            </Typography>
+          </Box>
         );
       },
     },

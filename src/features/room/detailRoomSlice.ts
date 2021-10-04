@@ -10,6 +10,11 @@ interface DetailRoomState {
   room: Room | null;
 }
 
+interface AddCameraRoomDto {
+  roomId: string;
+  cameraId: string;
+}
+
 export const getRoom = createAsyncThunk(
   'detailRoom/detail',
   async (id: string, { rejectWithValue }) => {
@@ -41,6 +46,19 @@ export const disableRoom = createAsyncThunk(
   async (roomId: string, { rejectWithValue }) => {
     try {
       const response = await roomServices.disableRoom(roomId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const addCameraToRoom = createAsyncThunk(
+  'detailRoom/addCamera',
+  async (payload: AddCameraRoomDto, { rejectWithValue }) => {
+    try {
+      const response = await roomServices.addCameraToRoom(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
