@@ -36,9 +36,11 @@ const LoginPage = () => {
       try {
         const result = await dispatch(login(payload));
         const user = unwrapResult(result);
-        if (user.role === Role.Manager) history.push('/manager');
-        else if (user.role === Role.ShiftManager)
-          history.push('/shift-manager');
+        const { token, role } = user;
+        if (role === Role.Manager || role === Role.ShiftManager)
+          localStorage.setItem('access_token', token);
+        if (role === Role.Manager) history.push('/manager');
+        else if (role === Role.ShiftManager) history.push('/shift-manager');
         else throw new Error('Invalid role');
       } catch (error) {
         if (error instanceof Error) setErrorMessage(error.message);
