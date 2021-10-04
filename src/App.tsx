@@ -13,12 +13,13 @@ import { SnackbarProvider } from 'notistack';
 import ManagerDashboard from 'pages/Manager';
 import ShiftManagerDashboard from 'pages/ShiftManager';
 import React, { RefObject, useEffect } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 
-import Login from './pages/Login';
+import LoginPage from './pages/Login';
 
 const App = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const history = useHistory();
   const notistackRef: RefObject<SnackbarProvider> = React.createRef();
   const onClickDismiss = (key: string | number) => () => {
     notistackRef.current?.closeSnackbar(key);
@@ -32,7 +33,10 @@ const App = (): JSX.Element => {
   useEffect(() => {
     const accessToken = localStorage.getItem('access_token');
     if (accessToken) {
-      handleGetProfile().catch(error => console.log(error));
+      handleGetProfile().catch(error => {
+        console.log(error);
+        history.push('/login');
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -64,7 +68,7 @@ const App = (): JSX.Element => {
               path="/shift-manager"
               component={ShiftManagerDashboard}
             />
-            <Route path="/login" exact component={Login} />
+            <Route path="/login" exact component={LoginPage} />
           </Switch>
         </LocalizationProvider>
       </SnackbarProvider>
