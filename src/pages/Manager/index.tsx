@@ -82,7 +82,7 @@ const drawerItems: Array<DrawerItem> = [
 const ManagerDashboard = (): JSX.Element => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const user = useAppSelector(state => state.user.user);
+  const user = useAppSelector(state => state.auth.user);
   const drawerWidth = 240;
   const history = useHistory();
 

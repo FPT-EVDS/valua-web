@@ -9,6 +9,10 @@ const authServices = {
     const url = '/authentication/login';
     return axiosClient.post(url, payload);
   },
+  getUserProfile: (): Promise<AxiosResponse<User>> => {
+    const url = '/authentication/profile';
+    return axiosClient.get(url);
+  },
 };
 
 export default authServices;

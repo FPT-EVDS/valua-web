@@ -4,19 +4,38 @@ import { Close } from '@mui/icons-material';
 import { LocalizationProvider } from '@mui/lab';
 import DateAdapter from '@mui/lab/AdapterDateFns';
 import { IconButton } from '@mui/material';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useAppDispatch } from 'app/hooks';
+import PrivateRoute from 'common/PrivateRoutes';
+import Role from 'enums/role.enum';
+import { getUserProfile } from 'features/auth/authSlice';
 import { SnackbarProvider } from 'notistack';
 import ManagerDashboard from 'pages/Manager';
 import ShiftManagerDashboard from 'pages/ShiftManager';
-import React, { RefObject } from 'react';
+import React, { RefObject, useEffect } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import Login from './pages/Login';
 
 const App = (): JSX.Element => {
+  const dispatch = useAppDispatch();
   const notistackRef: RefObject<SnackbarProvider> = React.createRef();
   const onClickDismiss = (key: string | number) => () => {
     notistackRef.current?.closeSnackbar(key);
   };
+
+  const handleGetProfile = async () => {
+    const result = await dispatch(getUserProfile());
+    unwrapResult(result);
+  };
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem('access_token');
+    if (accessToken) {
+      handleGetProfile().catch(error => console.log(error));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="app">
@@ -34,10 +53,18 @@ const App = (): JSX.Element => {
       >
         <LocalizationProvider dateAdapter={DateAdapter}>
           <Switch>
+            <PrivateRoute path="/" exact />
+            <PrivateRoute
+              requiredRole={Role.Manager}
+              path="/manager"
+              component={ManagerDashboard}
+            />
+            <PrivateRoute
+              requiredRole={Role.ShiftManager}
+              path="/shift-manager"
+              component={ShiftManagerDashboard}
+            />
             <Route path="/login" exact component={Login} />
-            <Route path="/manager" component={ManagerDashboard} />
-            <Route path="/shift-manager" component={ShiftManagerDashboard} />
-            <Redirect from="/" to="/login" />
           </Switch>
         </LocalizationProvider>
       </SnackbarProvider>

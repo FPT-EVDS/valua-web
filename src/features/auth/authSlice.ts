@@ -1,4 +1,11 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+  isAnyOf,
+  isPending,
+  isRejected,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import LoginDto from 'dtos/login.dto';
 import Role from 'enums/role.enum';
@@ -7,7 +14,7 @@ import authServices from 'services/auth.service';
 
 import { RootState } from '../../app/store';
 
-interface UserState {
+interface AuthState {
   isLoading: boolean;
   error: string;
   user: User | null;
@@ -29,34 +36,50 @@ export const login = createAsyncThunk(
   },
 );
 
+export const getUserProfile = createAsyncThunk(
+  'authentication/profile',
+  async (_payload, { rejectWithValue }) => {
+    try {
+      const response = await authServices.getUserProfile();
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
 // Define the initial state using that type
-const initialState: UserState = {
+const initialState: AuthState = {
   isLoading: false,
   error: '',
   user: null,
 };
 
 export const authSlice = createSlice({
-  name: 'user',
+  name: 'authentication',
   initialState,
   reducers: {},
-  extraReducers: {
-    [login.pending.type]: (state, action) => {
-      state.isLoading = true;
-      state.error = '';
-    },
-    [login.rejected.type]: (state, action: PayloadAction<string>) => {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-    [login.fulfilled.type]: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
-      state.error = '';
-      state.isLoading = false;
-    },
+  extraReducers: builder => {
+    builder
+      .addMatcher(
+        isAnyOf(login.fulfilled, getUserProfile.fulfilled),
+        (state, action) => {
+          state.user = action.payload;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
+      .addMatcher(isPending, state => {
+        state.isLoading = true;
+        state.error = '';
+      })
+      .addMatcher(isRejected, (state, action) => {
+        state.isLoading = false;
+        state.error = String(action.payload);
+      });
   },
 });
 
-export const selectUser = (state: RootState) => state.user.user;
+export const selectUser = (state: RootState) => state.auth.user;
 
 export default authSlice.reducer;
