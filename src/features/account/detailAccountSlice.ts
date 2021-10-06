@@ -1,4 +1,10 @@
-import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+  isAnyOf,
+  isPending,
+  isRejected,
+} from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import AppUserDto from 'dtos/appUser.dto';
 import Account from 'models/account.model';
@@ -36,6 +42,19 @@ export const updateAccount = createAsyncThunk(
   },
 );
 
+export const disableAccount = createAsyncThunk(
+  'detailAccount/disable',
+  async (appUserId: string, { rejectWithValue }) => {
+    try {
+      const response = await accountServices.disableAccount(appUserId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: DetailAccountState = {
   isLoading: false,
@@ -49,6 +68,9 @@ export const detailAccountSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(disableAccount.fulfilled, (state, action) => {
+        if (state.account) state.account.isActive = action.payload.isActive;
+      })
       .addMatcher(
         isAnyOf(getAccount.fulfilled, updateAccount.fulfilled),
         (state, action) => {
@@ -57,17 +79,14 @@ export const detailAccountSlice = createSlice({
           state.isLoading = false;
         },
       )
-      .addMatcher(isAnyOf(getAccount.pending, updateAccount.pending), state => {
+      .addMatcher(isPending, state => {
         state.isLoading = true;
         state.error = '';
       })
-      .addMatcher(
-        isAnyOf(getAccount.rejected, updateAccount.rejected),
-        state => {
-          state.isLoading = true;
-          state.error = '';
-        },
-      );
+      .addMatcher(isRejected, state => {
+        state.isLoading = true;
+        state.error = '';
+      });
   },
 });
 

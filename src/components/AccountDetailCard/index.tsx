@@ -26,6 +26,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import genders from 'configs/constants/genders.constant';
 import accountRoles from 'configs/constants/roles.constant';
+import { accountSchema } from 'configs/validations';
 import AppUserDto from 'dtos/appUser.dto';
 import { updateAccount } from 'features/account/detailAccountSlice';
 import { useFormik } from 'formik';
@@ -39,6 +40,7 @@ interface Props {
   isLoading: boolean;
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 const AccountDetailCard = ({ account, isLoading }: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
@@ -49,6 +51,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
   const initialValues: AppUserDto = { ...account, userRole: account.role };
   const formik = useFormik({
     initialValues,
+    validationSchema: accountSchema,
     onSubmit: async (payload: AppUserDto) => {
       try {
         const data = {
@@ -154,6 +157,10 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                     </InputAdornment>
                   ),
                 }}
+                error={
+                  formik.touched.fullName && Boolean(formik.errors.fullName)
+                }
+                helperText={formik.touched.fullName && formik.errors.fullName}
                 onChange={formik.handleChange}
                 disabled={!isEditable}
               />
@@ -169,6 +176,8 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                 variant="outlined"
                 onChange={handleChangeGender}
                 disabled={!isEditable}
+                error={formik.touched.gender && Boolean(formik.errors.gender)}
+                helperText={formik.touched.gender && formik.errors.gender}
               >
                 {genders.map(option => (
                   <MenuItem key={option.value} value={option.value}>
@@ -188,6 +197,8 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                 value={formik.values.email}
                 variant="outlined"
                 disabled={!isEditable}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -216,6 +227,13 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                     margin="dense"
                     fullWidth
                     disabled={!isEditable}
+                    error={
+                      formik.touched.birthdate &&
+                      Boolean(formik.errors.birthdate)
+                    }
+                    helperText={
+                      formik.touched.birthdate && formik.errors.birthdate
+                    }
                     variant="outlined"
                     InputLabelProps={{
                       shrink: true,
@@ -244,6 +262,13 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                     </InputAdornment>
                   ),
                 }}
+                error={
+                  formik.touched.phoneNumber &&
+                  Boolean(formik.errors.phoneNumber)
+                }
+                helperText={
+                  formik.touched.phoneNumber && formik.errors.phoneNumber
+                }
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -254,6 +279,8 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                 margin="dense"
                 disabled={!isEditable}
                 label="Address"
+                error={formik.touched.address && Boolean(formik.errors.address)}
+                helperText={formik.touched.address && formik.errors.address}
                 fullWidth
                 value={formik.values.address}
                 variant="outlined"
@@ -290,7 +317,10 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                     </InputAdornment>
                   ),
                 }}
-                helperText="Backend chua xu ly anh nên chịu khó up link ^^"
+                error={
+                  formik.touched.imageUrl && Boolean(formik.errors.imageUrl)
+                }
+                helperText={formik.touched.imageUrl && formik.errors.imageUrl}
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -309,6 +339,13 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    error={
+                      formik.touched.studentId &&
+                      Boolean(formik.errors.studentId)
+                    }
+                    helperText={
+                      formik.touched.studentId && formik.errors.studentId
+                    }
                     onChange={formik.handleChange}
                   />
                 </Grid>
@@ -325,6 +362,13 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    error={
+                      formik.touched.classCode &&
+                      Boolean(formik.errors.classCode)
+                    }
+                    helperText={
+                      formik.touched.classCode && formik.errors.classCode
+                    }
                     onChange={formik.handleChange}
                   />
                 </Grid>

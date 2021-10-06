@@ -25,6 +25,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import genders from 'configs/constants/genders.constant';
 import accountRoles from 'configs/constants/roles.constant';
+import { accountSchema } from 'configs/validations';
 import AppUserDto from 'dtos/appUser.dto';
 import { addAccount } from 'features/account/accountsSlice';
 import { useFormik } from 'formik';
@@ -35,8 +36,6 @@ interface Props {
   title: string;
   open: boolean;
   handleClose: () => void;
-  // eslint-disable-next-line react/require-default-props
-  initValues?: AppUserDto;
 }
 
 const Transition = React.forwardRef(
@@ -45,29 +44,26 @@ const Transition = React.forwardRef(
   ),
 );
 
-const AccountDetailDialog: React.FC<Props> = ({
-  open,
-  handleClose,
-  title,
-  initValues = {
-    appUserId: null,
-    address: '',
-    birthdate: new Date(),
-    email: '',
-    fullName: '',
-    gender: 0,
-    imageUrl: '',
-    phoneNumber: '',
-    userRole: accountRoles[0],
-    studentId: '',
-    classCode: '',
-  },
-}) => {
+// eslint-disable-next-line sonarjs/cognitive-complexity
+const AccountDetailDialog: React.FC<Props> = ({ open, handleClose, title }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.account.isLoading);
   const formik = useFormik({
-    initialValues: initValues,
+    initialValues: {
+      appUserId: null,
+      address: '',
+      birthdate: new Date(),
+      email: '',
+      fullName: '',
+      gender: 0,
+      imageUrl: '',
+      phoneNumber: '',
+      userRole: accountRoles[0],
+      studentId: '',
+      classCode: '',
+    },
+    validationSchema: accountSchema,
     onSubmit: async (payload: AppUserDto) => {
       try {
         const data = {
@@ -82,6 +78,7 @@ const AccountDetailDialog: React.FC<Props> = ({
           variant: 'success',
           preventDuplicate: true,
         });
+        handleClose();
       } catch (error) {
         enqueueSnackbar(error, {
           variant: 'error',
@@ -142,6 +139,14 @@ const AccountDetailDialog: React.FC<Props> = ({
                 fullWidth
                 value={formik.values.userRole.roleID}
                 variant="outlined"
+                error={
+                  formik.touched.userRole?.roleID &&
+                  Boolean(formik.errors.userRole?.roleID)
+                }
+                helperText={
+                  formik.touched.userRole?.roleID &&
+                  formik.errors.userRole?.roleID
+                }
                 onChange={handleChangeRole}
               >
                 {accountRoles.map(option => (
@@ -170,6 +175,10 @@ const AccountDetailDialog: React.FC<Props> = ({
                     </InputAdornment>
                   ),
                 }}
+                error={
+                  formik.touched.fullName && Boolean(formik.errors.fullName)
+                }
+                helperText={formik.touched.fullName && formik.errors.fullName}
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -182,6 +191,8 @@ const AccountDetailDialog: React.FC<Props> = ({
                 fullWidth
                 value={formik.values.gender}
                 variant="outlined"
+                error={formik.touched.gender && Boolean(formik.errors.gender)}
+                helperText={formik.touched.gender && formik.errors.gender}
                 onChange={handleChangeGender}
               >
                 {genders.map(option => (
@@ -211,6 +222,8 @@ const AccountDetailDialog: React.FC<Props> = ({
                     </InputAdornment>
                   ),
                 }}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -219,7 +232,7 @@ const AccountDetailDialog: React.FC<Props> = ({
                 label="Birthdate"
                 value={formik.values.birthdate}
                 inputFormat="dd/MM/yyyy"
-                onChange={date => handleChangeBirthdate(date)}
+                onChange={selectedDate => handleChangeBirthdate(selectedDate)}
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -227,6 +240,13 @@ const AccountDetailDialog: React.FC<Props> = ({
                     autoFocus
                     margin="dense"
                     fullWidth
+                    error={
+                      formik.touched.birthdate &&
+                      Boolean(formik.errors.birthdate)
+                    }
+                    helperText={
+                      formik.touched.birthdate && formik.errors.birthdate
+                    }
                     variant="outlined"
                     InputLabelProps={{
                       shrink: true,
@@ -254,6 +274,13 @@ const AccountDetailDialog: React.FC<Props> = ({
                     </InputAdornment>
                   ),
                 }}
+                error={
+                  formik.touched.phoneNumber &&
+                  Boolean(formik.errors.phoneNumber)
+                }
+                helperText={
+                  formik.touched.phoneNumber && formik.errors.phoneNumber
+                }
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -276,6 +303,8 @@ const AccountDetailDialog: React.FC<Props> = ({
                     </InputAdornment>
                   ),
                 }}
+                error={formik.touched.address && Boolean(formik.errors.address)}
+                helperText={formik.touched.address && formik.errors.address}
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -298,7 +327,10 @@ const AccountDetailDialog: React.FC<Props> = ({
                     </InputAdornment>
                   ),
                 }}
-                helperText="Backend chua xu ly anh nên chịu khó up link ^^"
+                error={
+                  formik.touched.imageUrl && Boolean(formik.errors.imageUrl)
+                }
+                helperText={formik.touched.imageUrl && formik.errors.imageUrl}
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -316,6 +348,13 @@ const AccountDetailDialog: React.FC<Props> = ({
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    error={
+                      formik.touched.studentId &&
+                      Boolean(formik.errors.studentId)
+                    }
+                    helperText={
+                      formik.touched.studentId && formik.errors.studentId
+                    }
                     onChange={formik.handleChange}
                   />
                 </Grid>
@@ -332,6 +371,13 @@ const AccountDetailDialog: React.FC<Props> = ({
                       shrink: true,
                     }}
                     onChange={formik.handleChange}
+                    error={
+                      formik.touched.classCode &&
+                      Boolean(formik.errors.classCode)
+                    }
+                    helperText={
+                      formik.touched.classCode && formik.errors.classCode
+                    }
                   />
                 </Grid>
               </>
