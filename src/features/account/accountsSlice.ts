@@ -2,11 +2,14 @@ import {
   createAsyncThunk,
   createSlice,
   isAnyOf,
+  isPending,
+  isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import AccountsDto from 'dtos/accounts.dto';
 import AppUserDto from 'dtos/appUser.dto';
+import { SearchByNameDto } from 'dtos/searchByName.dto';
 import Account from 'models/account.model';
 import accountServices from 'services/account.service';
 
@@ -21,6 +24,19 @@ export const getAccounts = createAsyncThunk(
   async (numOfPage: number, { rejectWithValue }) => {
     try {
       const response = await accountServices.getAccounts(numOfPage);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const searchByFullName = createAsyncThunk(
+  'accounts/searchByFullName',
+  async (payload: SearchByNameDto, { rejectWithValue }) => {
+    try {
+      const response = await accountServices.searchAccountsByFullName(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -73,14 +89,11 @@ export const accountSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getAccounts.fulfilled, (state, action) => {
-        state.current = action.payload;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addCase(addAccount.fulfilled, (state, action) => {
-        state.current.accounts.unshift(action.payload);
+        if (state.current.currentPage === 0)
+          state.current.accounts.unshift(action.payload);
         state.error = '';
+        state.current.totalItems += 1;
         state.isLoading = false;
       })
       .addCase(disableAccount.fulfilled, (state, action) => {
@@ -92,27 +105,21 @@ export const accountSlice = createSlice({
         state.isLoading = false;
       })
       .addMatcher(
-        isAnyOf(
-          getAccounts.rejected,
-          addAccount.rejected,
-          disableAccount.rejected,
-        ),
-        (state, action: PayloadAction<string>) => {
+        isAnyOf(getAccounts.fulfilled, searchByFullName.fulfilled),
+        (state, action) => {
+          state.current = action.payload;
+          state.error = '';
           state.isLoading = false;
-          state.error = action.payload;
         },
       )
-      .addMatcher(
-        isAnyOf(
-          getAccounts.pending,
-          addAccount.pending,
-          disableAccount.pending,
-        ),
-        state => {
-          state.isLoading = true;
-          state.error = '';
-        },
-      );
+      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addMatcher(isPending, state => {
+        state.isLoading = true;
+        state.error = '';
+      });
   },
 });
 

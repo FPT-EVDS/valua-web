@@ -1,5 +1,11 @@
-import { Delete, Description, Edit, PersonAdd } from '@mui/icons-material';
-import { Avatar, Button, Typography } from '@mui/material';
+import {
+  Delete,
+  Description,
+  Edit,
+  FiberManualRecord,
+  PersonAdd,
+} from '@mui/icons-material';
+import { Avatar, Box, Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -14,15 +20,20 @@ import AccountDetailDialog from 'components/AccountDetailDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import StringAvatar from 'components/StringAvatar';
-import { disableAccount, getAccounts } from 'features/account/accountsSlice';
+import {
+  disableAccount,
+  searchByFullName,
+} from 'features/account/accountsSlice';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const AccountPage = () => {
+  const DEFAULT_PAGE_SIZE = 10;
   const [open, setOpen] = useState(false);
   const history = useHistory();
   const { url } = useRouteMatch();
+  const [searchValue, setSearchValue] = useState('');
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
       title: `Do you want to delete this account ?`,
@@ -36,28 +47,29 @@ const AccountPage = () => {
   const dispatch = useAppDispatch();
   const {
     isLoading,
-    current: { accounts },
+    current: { accounts, totalItems },
   } = useAppSelector(state => state.account);
+  const [page, setPage] = React.useState(0);
   const rows: GridRowModel[] = accounts.map(account => ({
     ...account,
     role: account.role.roleName,
     id: account.appUserId,
   }));
 
-  const fetchAccount = async (numOfPage: number) => {
-    const actionResult = await dispatch(getAccounts(numOfPage));
+  const fetchAccount = async (name: string, numOfPage: number) => {
+    const actionResult = await dispatch(searchByFullName({ name, numOfPage }));
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchAccount(0).catch(error =>
+    fetchAccount(searchValue, page).catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     setOpen(false);
@@ -133,13 +145,14 @@ const AccountPage = () => {
       minWidth: 130,
       renderCell: params => {
         const active = params.getValue(params.id, 'isActive');
+        const color = active ? green[500] : red[500];
         return (
-          <Typography
-            variant="subtitle1"
-            color={active ? green[500] : red[500]}
-          >
-            {active ? 'Active' : 'Disable'}
-          </Typography>
+          <Box display="flex" alignItems="center">
+            <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
+            <Typography variant="subtitle1" color={color}>
+              {active ? 'Active' : 'Disable'}
+            </Typography>
+          </Box>
         );
       },
     },
@@ -186,6 +199,14 @@ const AccountPage = () => {
     </Button>
   );
 
+  const handleSearch = async (inputValue: string) => {
+    setSearchValue(inputValue);
+    const result = await dispatch(
+      searchByFullName({ name: inputValue, numOfPage: 0 }),
+    );
+    unwrapResult(result);
+  };
+
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
@@ -195,10 +216,18 @@ const AccountPage = () => {
         handleClose={() => setOpen(false)}
       />
       <EVDSDataGrid
+        pagination
+        paginationMode="server"
+        rowsPerPageOptions={[]}
+        pageSize={DEFAULT_PAGE_SIZE}
+        rowCount={totalItems}
         isLoading={isLoading}
         title="Manage Accounts"
+        handleSearch={handleSearch}
         columns={columns}
         rows={rows}
+        page={page}
+        onPageChange={newPage => setPage(newPage)}
         addButton={<AddButton />}
       />
     </div>

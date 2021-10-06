@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import AccountsDto from 'dtos/accounts.dto';
 import AppUserDto from 'dtos/appUser.dto';
 import DisableAppUserDto from 'dtos/disableAppUser.dto';
+import { SearchByNameDto } from 'dtos/searchByName.dto';
 import Account from 'models/account.model';
 
 import axiosClient from './axiosClient';
@@ -40,6 +41,13 @@ const accountServices = {
   searchStaffForShift: (fullName: string): Promise<AxiosResponse<Account>> => {
     const url = '/accounts/shiftManager/fullname';
     return axiosClient.get(url, { params: { fullName } });
+  },
+  searchAccountsByFullName: ({
+    numOfPage,
+    name,
+  }: SearchByNameDto): Promise<AxiosResponse<AccountsDto>> => {
+    const url = `/accounts/fullname`;
+    return axiosClient.get(url, { params: { numOfPage, fullName: name } });
   },
 };
 
