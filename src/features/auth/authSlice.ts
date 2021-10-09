@@ -65,14 +65,16 @@ export const authSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addMatcher(
-        isAnyOf(login.fulfilled, getUserProfile.fulfilled),
-        (state, action: PayloadAction<LoginUser>) => {
-          state.user = action.payload.appUser;
-          state.error = '';
-          state.isLoading = false;
-        },
-      )
+      .addCase(getUserProfile.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.user = action.payload.appUser;
+        state.error = '';
+        state.isLoading = false;
+      })
       .addMatcher(isPending, state => {
         state.isLoading = true;
         state.error = '';

@@ -151,7 +151,6 @@ const ShiftManagerDashboard = (): JSX.Element => {
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
               <MenuItem
                 onClick={() => {
                   // FIXME: FIX LOGOUT LOGIC HERE

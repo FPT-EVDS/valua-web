@@ -10,6 +10,7 @@ type User = {
   phoneNumber: string;
   profileImageUrl?: string | null;
   refreshToken?: string;
+  companyId: string;
 };
 
 export default User;
