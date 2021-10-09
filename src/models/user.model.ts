@@ -9,8 +9,7 @@ type User = {
   isActive: boolean;
   phoneNumber: string;
   profileImageUrl?: string | null;
-  token: string;
-  refreshToken?: string | null;
+  refreshToken?: string;
 };
 
 export default User;

@@ -8,6 +8,7 @@ import {
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import LoginDto from 'dtos/login.dto';
+import LoginUser from 'dtos/loginUser.dto';
 import Role from 'enums/role.enum';
 import User from 'models/user.model';
 import authServices from 'services/auth.service';
@@ -25,7 +26,10 @@ export const login = createAsyncThunk(
   async (payload: LoginDto, { rejectWithValue }) => {
     try {
       const response = await authServices.login(payload);
-      const { token, role } = response.data;
+      const {
+        appUser: { role },
+        token,
+      } = response.data;
       if (role === Role.Manager || role === Role.ShiftManager)
         localStorage.setItem('access_token', token);
       return response.data;
@@ -63,8 +67,8 @@ export const authSlice = createSlice({
     builder
       .addMatcher(
         isAnyOf(login.fulfilled, getUserProfile.fulfilled),
-        (state, action) => {
-          state.user = action.payload;
+        (state, action: PayloadAction<LoginUser>) => {
+          state.user = action.payload.appUser;
           state.error = '';
           state.isLoading = false;
         },

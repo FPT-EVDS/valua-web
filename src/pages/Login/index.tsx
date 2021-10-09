@@ -36,7 +36,10 @@ const LoginPage = () => {
       try {
         const result = await dispatch(login(payload));
         const user = unwrapResult(result);
-        const { token, role } = user;
+        const {
+          token,
+          appUser: { role },
+        } = user;
         if (role === Role.Manager || role === Role.ShiftManager)
           localStorage.setItem('access_token', token);
         if (role === Role.Manager) history.push('/manager');
