@@ -1,6 +1,6 @@
 /* eslint-disable prefer-destructuring */
 import { Add, Delete, Description, Edit } from '@mui/icons-material';
-import { Button, Typography } from '@mui/material';
+import { Button, Link, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -15,9 +15,14 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import RoomDetailDialog from 'components/RoomDetailDialog';
 import { disableRoom, getRooms } from 'features/room/roomsSlice';
+import Camera from 'models/camera.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import {
+  Link as RouterLink,
+  useHistory,
+  useRouteMatch,
+} from 'react-router-dom';
 
 const RoomPage = () => {
   const [open, setOpen] = useState(false);
@@ -38,10 +43,14 @@ const RoomPage = () => {
     isLoading,
     current: { rooms },
   } = useAppSelector(state => state.room);
-  const rows: GridRowModel[] = rooms.map(room => ({
-    ...room,
-    id: room.roomId,
-  }));
+  const rows: GridRowModel[] = rooms.map(roomWithCamera => {
+    const { room, camera } = roomWithCamera;
+    return {
+      ...room,
+      camera,
+      id: room.roomId,
+    };
+  });
 
   const fetchRooms = async (numOfPage: number) => {
     const actionResult = await dispatch(getRooms(numOfPage));
@@ -105,8 +114,31 @@ const RoomPage = () => {
     {
       field: 'description',
       headerName: 'Description',
-      flex: 0.4,
+      flex: 0.2,
       minWidth: 130,
+    },
+    {
+      field: 'camera',
+      headerName: 'Assigned Camera',
+      flex: 0.1,
+      minWidth: 130,
+      renderCell: params => {
+        const camera = params.getValue(
+          params.id,
+          params.field,
+        ) as Camera | null;
+        return camera ? (
+          <Link
+            component={RouterLink}
+            to={`/manager/camera/${camera.cameraId}`}
+            underline="hover"
+          >
+            {camera.cameraName}
+          </Link>
+        ) : (
+          <Typography>None</Typography>
+        );
+      },
     },
     {
       field: 'status',
