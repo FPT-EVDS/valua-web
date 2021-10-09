@@ -134,9 +134,10 @@ const AccountPage = () => {
       flex: 0.05,
       minWidth: 64,
     },
-    { field: 'fullName', headerName: 'Name', flex: 0.2, minWidth: 130 },
+    { field: 'companyId', headerName: 'ID', flex: 0.1, minWidth: 130 },
+    { field: 'fullName', headerName: 'Name', flex: 0.1, minWidth: 130 },
     { field: 'role', headerName: 'Role', flex: 0.1, minWidth: 130 },
-    { field: 'phoneNumber', headerName: 'Phone', flex: 0.2, minWidth: 130 },
+    { field: 'phoneNumber', headerName: 'Phone', flex: 0.1, minWidth: 130 },
     { field: 'email', headerName: 'Email', flex: 0.2, minWidth: 130 },
     {
       field: 'isActive',
@@ -210,11 +211,7 @@ const AccountPage = () => {
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
-      <AccountDetailDialog
-        title="Create account"
-        open={open}
-        handleClose={() => setOpen(false)}
-      />
+      <AccountDetailDialog open={open} handleClose={() => setOpen(false)} />
       <EVDSDataGrid
         pagination
         paginationMode="server"
