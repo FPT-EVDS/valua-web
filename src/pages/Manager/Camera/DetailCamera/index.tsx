@@ -100,7 +100,7 @@ const DetailCameraPage = () => {
         color={'error'}
         onClick={() => showDeleteConfirmation(id)}
       >
-        Disable room
+        Disable camera
       </Button>
     </>
   );

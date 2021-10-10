@@ -24,7 +24,7 @@ const CameraOverviewCard = ({ camera, actionButtons }: Props) => (
       <Stack direction="row" spacing={4} justifyContent="space-between">
         <Box>
           <Typography
-            sx={{ fontWeight: 'medium', fontSize: 24 }}
+            sx={{ fontWeight: 'medium', fontSize: 23 }}
             variant="h5"
             gutterBottom
           >
