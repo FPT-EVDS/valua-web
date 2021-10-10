@@ -2,6 +2,7 @@ import {
   createAsyncThunk,
   createSlice,
   isPending,
+  isAnyOf,
   isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
@@ -10,6 +11,7 @@ import CameraDto from 'dtos/camera.dto';
 import CamerasDto from 'dtos/cameras.dto';
 import Camera from 'models/camera.model';
 import cameraServices from 'services/camera.service';
+import { SearchCameraByNameDto } from 'dtos/searchCameraByName.dto';
 
 interface CameraState {
   isLoading: boolean;
@@ -22,6 +24,19 @@ export const getCameras = createAsyncThunk(
   async (numOfPage: number, { rejectWithValue }) => {
     try {
       const response = await cameraServices.getCameras(numOfPage);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const searchByName = createAsyncThunk(
+  'cameras/searchByName',
+  async (payload: SearchCameraByNameDto, { rejectWithValue }) => {
+    try {
+      const response = await cameraServices.searchCamerasByName(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -86,11 +101,6 @@ export const camerasSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getCameras.fulfilled, (state, action) => {
-        state.current = action.payload;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addCase(addCamera.fulfilled, (state, action) => {
         state.current.cameras.unshift(action.payload);
         state.error = '';
@@ -104,6 +114,14 @@ export const camerasSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addMatcher(
+        isAnyOf(getCameras.fulfilled, searchByName.fulfilled),
+        (state, action) => {
+          state.current = action.payload;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
       .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
         state.isLoading = false;
         state.error = action.payload;

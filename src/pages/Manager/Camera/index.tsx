@@ -1,5 +1,11 @@
-import { Add, Delete, Description, Done, Edit } from '@mui/icons-material';
-import { Button, Typography } from '@mui/material';
+import {
+  Add,
+  Delete,
+  Description,
+  Edit,
+  FiberManualRecord,
+} from '@mui/icons-material';
+import { Button, Typography, Box } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -19,6 +25,7 @@ import {
   activateCamera,
   disableCamera,
   getCameras,
+  searchByName,
 } from 'features/camera/camerasSlice';
 import Room from 'models/room.model';
 import { useSnackbar } from 'notistack';
@@ -26,15 +33,17 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const CameraPage = () => {
+  const DEFAULT_PAGE_SIZE = 20;
   const [open, setOpen] = useState(false);
   const { url } = useRouteMatch();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const history = useHistory();
-
+  const [page, setPage] = React.useState(0);
+  const [searchValue, setSearchValue] = useState('');
   const {
     isLoading,
-    current: { cameras },
+    current: { cameras, totalItems },
   } = useAppSelector(state => state.camera);
 
   const [confirmDialogProps, setConfirmDialogProps] =
@@ -51,20 +60,26 @@ const CameraPage = () => {
     id: camera.cameraId,
   }));
 
-  const fetchCamera = async (numOfPage: number) => {
-    const actionResult = await dispatch(getCameras(numOfPage));
+  const fetchCamera = async (
+    name: string,
+    numOfPage: number,
+    title: string,
+  ) => {
+    const actionResult = await dispatch(
+      searchByName({ name, numOfPage, title }),
+    );
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchCamera(0).catch(error =>
+    fetchCamera(searchValue, page, 'name').catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     setOpen(false);
@@ -178,13 +193,14 @@ const CameraPage = () => {
       minWidth: 130,
       renderCell: params => {
         const { status } = params.row;
+        const color = status == Status.isDisable ? red[500] : green[500];
         return (
-          <Typography
-            variant="subtitle1"
-            color={status === Status.isDisable ? red[500] : green[500]}
-          >
-            {status === Status.isDisable ? 'Disable' : 'Active'}
-          </Typography>
+          <Box display="flex" alignItems="center">
+            <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
+            <Typography variant="subtitle1" color={color}>
+              {status == Status.isDisable ? 'Disable' : 'Active'}
+            </Typography>
+          </Box>
         );
       },
     },
@@ -237,6 +253,15 @@ const CameraPage = () => {
     </Button>
   );
 
+  const handleSearch = async (inputValue: string) => {
+    setSearchValue(inputValue);
+    const result = await dispatch(
+      // FIXME: hard code title here
+      searchByName({ name: inputValue, numOfPage: 0, title: 'name' }),
+    );
+    unwrapResult(result);
+  };
+
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
@@ -246,10 +271,18 @@ const CameraPage = () => {
         handleClose={() => setOpen(false)}
       />
       <EVDSDataGrid
+        pagination
+        paginationMode="server"
+        rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
+        pageSize={DEFAULT_PAGE_SIZE}
         isLoading={isLoading}
+        rowCount={totalItems}
         title="Manage Camera"
         columns={columns}
         rows={rows}
+        page={page}
+        handleSearch={handleSearch}
+        onPageChange={newPage => setPage(newPage)}
         addButton={<AddButton />}
       />
     </div>

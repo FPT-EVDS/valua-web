@@ -21,12 +21,12 @@ import { addCamera } from 'features/camera/camerasSlice';
 import { useFormik } from 'formik';
 import { useSnackbar } from 'notistack';
 import React from 'react';
+import { cameraSchema } from 'configs/validations';
 
 interface Props {
   title: string;
   open: boolean;
   handleClose: () => void;
-  // eslint-disable-next-line react/require-default-props
   initialValues?: CameraDto;
 }
 
@@ -54,9 +54,10 @@ const CameraDetailDialog: React.FC<Props> = ({
 }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
-  const isLoading = useAppSelector(state => state.account.isLoading);
+  const isLoading = useAppSelector(state => state.camera.isLoading);
   const formik = useFormik({
     initialValues,
+    validationSchema: cameraSchema,
     onSubmit: async (payload: CameraDto) => {
       try {
         const data = {
@@ -130,6 +131,12 @@ const CameraDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.cameraName && Boolean(formik.errors.cameraName)
+                }
+                helperText={
+                  formik.touched.cameraName && formik.errors.cameraName
+                }
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -147,6 +154,13 @@ const CameraDetailDialog: React.FC<Props> = ({
                     margin="dense"
                     fullWidth
                     variant="outlined"
+                    error={
+                      formik.touched.purchaseDate &&
+                      Boolean(formik.errors.purchaseDate)
+                    }
+                    helperText={
+                      formik.touched.purchaseDate && formik.errors.purchaseDate
+                    }
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -182,6 +196,14 @@ const CameraDetailDialog: React.FC<Props> = ({
                 value={formik.values.configurationUrl}
                 fullWidth
                 variant="outlined"
+                error={
+                  formik.touched.configurationUrl &&
+                  Boolean(formik.errors.configurationUrl)
+                }
+                helperText={
+                  formik.touched.configurationUrl &&
+                  formik.errors.configurationUrl
+                }
                 InputLabelProps={{
                   shrink: true,
                 }}
