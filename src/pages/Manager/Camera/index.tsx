@@ -77,6 +77,7 @@ const CameraPage = () => {
         preventDuplicate: true,
       }),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   useEffect(() => {
