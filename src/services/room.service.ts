@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import DisableRoomDto from 'dtos/disableRoom.dto';
 import RoomDto from 'dtos/room.dto';
 import RoomsDto from 'dtos/rooms.dto';
+import { SearchByNameDto } from 'dtos/searchByName.dto';
 import Room from 'models/room.model';
 
 import axiosClient from './axiosClient';
@@ -36,6 +37,19 @@ const roomServices = {
   getRoomsForShift: (): Promise<AxiosResponse<Room[]>> => {
     const url = '/rooms/shiftManager/roomReady';
     return axiosClient.get(url);
+  },
+  searchRoomsByName: ({
+    numOfPage,
+    name,
+  }: SearchByNameDto): Promise<AxiosResponse<RoomsDto>> => {
+    const url = `/rooms`;
+    return axiosClient.get(url, {
+      params: {
+        page: numOfPage,
+        title: 'name',
+        search: name,
+      },
+    });
   },
 };
 
