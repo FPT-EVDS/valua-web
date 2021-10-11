@@ -1,4 +1,4 @@
-import { Close, Room, SupervisorAccount } from '@mui/icons-material';
+import { Close, Room } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Avatar,
