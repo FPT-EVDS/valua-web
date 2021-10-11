@@ -2,12 +2,15 @@ import {
   createAsyncThunk,
   createSlice,
   isAnyOf,
+  isPending,
+  isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import RoomDto from 'dtos/room.dto';
 import RoomsDto from 'dtos/rooms.dto';
 import RoomWithCamera from 'dtos/roomWithCamera.dto';
+import { SearchByNameDto } from 'dtos/searchByName.dto';
 import roomServices from 'services/room.service';
 
 interface RoomState {
@@ -55,6 +58,19 @@ export const disableRoom = createAsyncThunk(
   },
 );
 
+export const searchByRoomName = createAsyncThunk(
+  'rooms/searchByName',
+  async (payload: SearchByNameDto, { rejectWithValue }) => {
+    try {
+      const response = await roomServices.searchRoomsByName(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: RoomState = {
   isLoading: false,
@@ -73,13 +89,10 @@ export const roomSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getRooms.fulfilled, (state, action) => {
-        state.current = action.payload;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addCase(addRoom.fulfilled, (state, action) => {
-        state.current.rooms.unshift({ room: action.payload, camera: null });
+        if (state.current.currentPage === 0)
+          state.current.rooms.unshift({ room: action.payload, camera: null });
+        state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;
       })
@@ -93,19 +106,21 @@ export const roomSlice = createSlice({
         state.isLoading = false;
       })
       .addMatcher(
-        isAnyOf(getRooms.rejected, addRoom.rejected, disableRoom.rejected),
-        (state, action: PayloadAction<string>) => {
+        isAnyOf(getRooms.fulfilled, searchByRoomName.fulfilled),
+        (state, action) => {
+          state.current = action.payload;
+          state.error = '';
           state.isLoading = false;
-          state.error = action.payload;
         },
       )
-      .addMatcher(
-        isAnyOf(getRooms.pending, addRoom.pending, disableRoom.pending),
-        state => {
-          state.isLoading = true;
-          state.error = '';
-        },
-      );
+      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addMatcher(isPending, state => {
+        state.isLoading = true;
+        state.error = '';
+      });
   },
 });
 

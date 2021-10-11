@@ -1,6 +1,12 @@
 /* eslint-disable prefer-destructuring */
-import { Add, Delete, Description, Edit } from '@mui/icons-material';
-import { Button, Link, Typography } from '@mui/material';
+import {
+  Add,
+  Delete,
+  Description,
+  Edit,
+  FiberManualRecord,
+} from '@mui/icons-material';
+import { Box, Button, Link, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -14,7 +20,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import RoomDetailDialog from 'components/RoomDetailDialog';
-import { disableRoom, getRooms } from 'features/room/roomsSlice';
+import { disableRoom, searchByRoomName } from 'features/room/roomsSlice';
 import Camera from 'models/camera.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -25,7 +31,10 @@ import {
 } from 'react-router-dom';
 
 const RoomPage = () => {
+  const DEFAULT_PAGE_SIZE = 20;
   const [open, setOpen] = useState(false);
+  const [page, setPage] = React.useState(0);
+  const [searchValue, setSearchValue] = useState('');
   const history = useHistory();
   const { url } = useRouteMatch();
   const [confirmDialogProps, setConfirmDialogProps] =
@@ -41,7 +50,7 @@ const RoomPage = () => {
   const dispatch = useAppDispatch();
   const {
     isLoading,
-    current: { rooms },
+    current: { rooms, totalItems },
   } = useAppSelector(state => state.room);
   const rows: GridRowModel[] = rooms.map(roomWithCamera => {
     const { room, camera } = roomWithCamera;
@@ -52,20 +61,20 @@ const RoomPage = () => {
     };
   });
 
-  const fetchRooms = async (numOfPage: number) => {
-    const actionResult = await dispatch(getRooms(numOfPage));
+  const fetchRooms = async (name: string, numOfPage: number) => {
+    const actionResult = await dispatch(searchByRoomName({ name, numOfPage }));
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchRooms(0).catch(error =>
+    fetchRooms(searchValue, page).catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     setOpen(false);
@@ -148,7 +157,7 @@ const RoomPage = () => {
       renderCell: params => {
         const active = params.getValue(params.id, 'status');
         let color = '#1890ff';
-        let statusText = 'Active';
+        let statusText = 'Ready';
         switch (active) {
           case 1:
             color = green[500];
@@ -164,9 +173,12 @@ const RoomPage = () => {
             break;
         }
         return (
-          <Typography variant="subtitle1" color={color}>
-            {statusText}
-          </Typography>
+          <Box display="flex" alignItems="center">
+            <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
+            <Typography variant="subtitle1" color={color}>
+              {statusText}
+            </Typography>
+          </Box>
         );
       },
     },
@@ -213,6 +225,14 @@ const RoomPage = () => {
     </Button>
   );
 
+  const handleSearch = async (inputValue: string) => {
+    setSearchValue(inputValue);
+    const result = await dispatch(
+      searchByRoomName({ name: inputValue, numOfPage: 0 }),
+    );
+    unwrapResult(result);
+  };
+
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
@@ -222,10 +242,17 @@ const RoomPage = () => {
         handleClose={() => setOpen(false)}
       />
       <EVDSDataGrid
+        pagination
+        paginationMode="server"
+        rowsPerPageOptions={[]}
+        pageSize={DEFAULT_PAGE_SIZE}
+        rowCount={totalItems}
         isLoading={isLoading}
         title="Manage Rooms"
         columns={columns}
         rows={rows}
+        handleSearch={handleSearch}
+        onPageChange={newPage => setPage(newPage)}
         addButton={<AddButton />}
       />
     </div>

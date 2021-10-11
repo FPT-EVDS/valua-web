@@ -1,4 +1,4 @@
-import { Close, SupervisorAccount } from '@mui/icons-material';
+import { Close, Room, SupervisorAccount } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Avatar,
@@ -15,6 +15,7 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { roomSchema } from 'configs/validations';
 import RoomDto from 'dtos/room.dto';
 import { addRoom } from 'features/room/roomsSlice';
 import { useFormik } from 'formik';
@@ -52,6 +53,7 @@ const RoomDetailDialog: React.FC<Props> = ({
   const isLoading = useAppSelector(state => state.room.isLoading);
   const formik = useFormik({
     initialValues,
+    validationSchema: roomSchema,
     onSubmit: async (payload: RoomDto) => {
       try {
         const result = await dispatch(addRoom(payload));
@@ -60,6 +62,7 @@ const RoomDetailDialog: React.FC<Props> = ({
           variant: 'success',
           preventDuplicate: true,
         });
+        formik.resetForm();
       } catch (error) {
         enqueueSnackbar(error, {
           variant: 'error',
@@ -102,7 +105,7 @@ const RoomDetailDialog: React.FC<Props> = ({
               }}
               variant="square"
             >
-              <SupervisorAccount fontSize="large" />
+              <Room fontSize="large" />
             </Avatar>
           </Box>
           <Grid container spacing={2}>
@@ -118,6 +121,31 @@ const RoomDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.roomName && Boolean(formik.errors.roomName)
+                }
+                helperText={formik.touched.roomName && formik.errors.roomName}
+                onChange={formik.handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="seatCount"
+                autoFocus
+                margin="dense"
+                label="Seat count"
+                type="number"
+                inputMode="numeric"
+                fullWidth
+                value={formik.values.seatCount}
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                error={
+                  formik.touched.seatCount && Boolean(formik.errors.seatCount)
+                }
+                helperText={formik.touched.seatCount && formik.errors.seatCount}
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -135,6 +163,8 @@ const RoomDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={formik.touched.floor && Boolean(formik.errors.floor)}
+                helperText={formik.touched.floor && formik.errors.floor}
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -152,6 +182,13 @@ const RoomDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.description &&
+                  Boolean(formik.errors.description)
+                }
+                helperText={
+                  formik.touched.description && formik.errors.description
+                }
                 onChange={formik.handleChange}
               />
             </Grid>

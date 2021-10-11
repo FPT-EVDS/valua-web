@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
+import { roomSchema } from 'configs/validations';
 import RoomDto from 'dtos/room.dto';
 import { updateRoom } from 'features/room/detailRoomSlice';
 import { useFormik } from 'formik';
@@ -36,6 +37,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
   const initialValues: RoomDto = room;
   const formik = useFormik({
     initialValues,
+    validationSchema: roomSchema,
     onSubmit: async (payload: RoomDto) => {
       try {
         const result = await dispatch(updateRoom(payload));
@@ -96,7 +98,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
       <Box component="form" onSubmit={formik.handleSubmit}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 autoFocus
                 name="roomName"
@@ -108,10 +110,14 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.roomName && Boolean(formik.errors.roomName)
+                }
+                helperText={formik.touched.roomName && formik.errors.roomName}
                 onChange={formik.handleChange}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 name="floor"
                 autoFocus
@@ -125,6 +131,29 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={formik.touched.floor && Boolean(formik.errors.floor)}
+                helperText={formik.touched.floor && formik.errors.floor}
+                onChange={formik.handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                name="seatCount"
+                autoFocus
+                margin="dense"
+                label="Seat count"
+                type="number"
+                inputMode="numeric"
+                fullWidth
+                value={formik.values.seatCount}
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                error={
+                  formik.touched.seatCount && Boolean(formik.errors.seatCount)
+                }
+                helperText={formik.touched.seatCount && formik.errors.seatCount}
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -142,6 +171,13 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.description &&
+                  Boolean(formik.errors.description)
+                }
+                helperText={
+                  formik.touched.description && formik.errors.description
+                }
                 onChange={formik.handleChange}
               />
             </Grid>
