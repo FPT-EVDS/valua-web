@@ -13,7 +13,7 @@ type Account = {
   imageUrl: string | null;
   lastModifiedDate: Date;
   createdDate: Date;
-  studentId: string | null;
+  companyId: string | null;
   classCode: string | null;
 };
 

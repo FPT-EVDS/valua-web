@@ -31,17 +31,12 @@ const AccountOverviewCard = ({ account, actionButtons }: Props) => (
             {account?.fullName}
           </Typography>
           <Typography gutterBottom color="text.secondary">
-            Role: {account?.role.roleName}
+            ID: {account.companyId}
           </Typography>
           <Typography gutterBottom color="text.secondary">
-            Last Updated:{' '}
-            {account?.lastModifiedDate &&
-              format(
-                Date.parse(String(account.lastModifiedDate)),
-                'dd/MM/yyyy HH:mm',
-              )}
+            Role: {account?.role.roleName}
           </Typography>
-          <Box color="text.secondary">
+          <Box color="text.secondary" marginBottom={1}>
             Status:
             <Typography
               display="inline"
@@ -51,6 +46,14 @@ const AccountOverviewCard = ({ account, actionButtons }: Props) => (
               {account?.isActive ? 'Active' : 'Disable'}
             </Typography>
           </Box>
+          <Typography gutterBottom color="text.secondary">
+            Last Updated:{' '}
+            {account?.lastModifiedDate &&
+              format(
+                Date.parse(String(account.lastModifiedDate)),
+                'dd/MM/yyyy HH:mm',
+              )}
+          </Typography>
         </Box>
         <Avatar
           variant="square"

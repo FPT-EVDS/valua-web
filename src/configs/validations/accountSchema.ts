@@ -18,7 +18,7 @@ const accountSchema = object({
   phoneNumber: string()
     .defined('Phone number is required')
     .length(10, ValidationMessage.PHONE_LENGTH),
-  imageUrl: string().url(),
+  imageUrl: string().url().nullable(),
   userRole: object().shape({
     roleID: number(),
     roleName: string(),
@@ -30,13 +30,13 @@ const accountSchema = object({
       .max(10, `${ValidationMessage.MAX_LENGTH} 10`),
     otherwise: string().notRequired(),
   }),
-  studentId: string().when('userRole', {
-    is: (value: Role) => value.roleID === 3,
-    then: string()
-      .required('StudentID is required')
-      .max(10, `${ValidationMessage.MAX_LENGTH} 10`),
-    otherwise: string().notRequired(),
-  }),
+  companyId: string()
+    .max(10, `${ValidationMessage.MAX_LENGTH} 10`)
+    .when('userRole', {
+      is: (value: Role) => value.roleID === 3,
+      then: string().required('StudentID is required'),
+      otherwise: string().required('CompanyID is required'),
+    }),
 });
 
 export default accountSchema;

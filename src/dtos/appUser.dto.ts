@@ -10,7 +10,7 @@ interface AppUserDto {
   gender: number;
   userRole: Role;
   imageUrl: string | null;
-  studentId: string | null;
+  companyId: string | null;
   classCode: string | null;
 }
 

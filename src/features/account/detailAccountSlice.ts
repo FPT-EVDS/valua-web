@@ -84,7 +84,7 @@ export const detailAccountSlice = createSlice({
         state.error = '';
       })
       .addMatcher(isRejected, state => {
-        state.isLoading = true;
+        state.isLoading = false;
         state.error = '';
       });
   },

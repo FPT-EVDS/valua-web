@@ -29,7 +29,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const AccountPage = () => {
-  const DEFAULT_PAGE_SIZE = 10;
+  const DEFAULT_PAGE_SIZE = 20;
   const [open, setOpen] = useState(false);
   const history = useHistory();
   const { url } = useRouteMatch();
@@ -224,6 +224,7 @@ const AccountPage = () => {
         columns={columns}
         rows={rows}
         page={page}
+        rowHeight={54}
         onPageChange={newPage => setPage(newPage)}
         addButton={<AddButton />}
       />
