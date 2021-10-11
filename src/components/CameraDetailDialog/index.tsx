@@ -27,7 +27,6 @@ interface Props {
   title: string;
   open: boolean;
   handleClose: () => void;
-  initialValues?: CameraDto;
 }
 
 const Transition = React.forwardRef(
@@ -36,27 +35,22 @@ const Transition = React.forwardRef(
   ),
 );
 
-const CameraDetailDialog: React.FC<Props> = ({
-  open,
-  handleClose,
-  title,
-  initialValues = {
-    cameraId: '',
-    room: null,
-    purchaseDate: new Date(),
-    createdDate: new Date(),
-    lastModifiedDate: new Date(),
-    configurationUrl: '',
-    cameraName: '',
-    description: '',
-    status: 1,
-  },
-}) => {
+const CameraDetailDialog: React.FC<Props> = ({ open, handleClose, title }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.camera.isLoading);
   const formik = useFormik({
-    initialValues,
+    initialValues: {
+      cameraId: '',
+      room: null,
+      purchaseDate: new Date(),
+      createdDate: new Date(),
+      lastModifiedDate: new Date(),
+      configurationUrl: '',
+      cameraName: '',
+      description: '',
+      status: 1,
+    },
     validationSchema: cameraSchema,
     onSubmit: async (payload: CameraDto) => {
       try {
@@ -69,6 +63,8 @@ const CameraDetailDialog: React.FC<Props> = ({
           variant: 'success',
           preventDuplicate: true,
         });
+        formik.resetForm();
+        handleClose();
       } catch (error) {
         enqueueSnackbar(error, {
           variant: 'error',

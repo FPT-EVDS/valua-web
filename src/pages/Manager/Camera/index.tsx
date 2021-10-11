@@ -5,7 +5,7 @@ import {
   Edit,
   FiberManualRecord,
 } from '@mui/icons-material';
-import { Button, Typography, Box } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -24,7 +24,6 @@ import Status from 'enums/status.enum';
 import {
   activateCamera,
   disableCamera,
-  getCameras,
   searchByName,
 } from 'features/camera/camerasSlice';
 import Room from 'models/room.model';
@@ -78,7 +77,6 @@ const CameraPage = () => {
         preventDuplicate: true,
       }),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   useEffect(() => {

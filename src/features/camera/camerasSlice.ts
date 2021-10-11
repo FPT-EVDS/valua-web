@@ -1,17 +1,17 @@
 import {
   createAsyncThunk,
   createSlice,
-  isPending,
   isAnyOf,
+  isPending,
   isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import CameraDto from 'dtos/camera.dto';
 import CamerasDto from 'dtos/cameras.dto';
+import { SearchCameraByNameDto } from 'dtos/searchCameraByName.dto';
 import Camera from 'models/camera.model';
 import cameraServices from 'services/camera.service';
-import { SearchCameraByNameDto } from 'dtos/searchCameraByName.dto';
 
 interface CameraState {
   isLoading: boolean;
@@ -102,8 +102,10 @@ export const camerasSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(addCamera.fulfilled, (state, action) => {
-        state.current.cameras.unshift(action.payload);
+        if (state.current.currentPage === 0)
+          state.current.cameras.unshift(action.payload);
         state.error = '';
+        state.current.totalItems += 1;
         state.isLoading = false;
       })
       .addCase(disableCamera.fulfilled, (state, action) => {
