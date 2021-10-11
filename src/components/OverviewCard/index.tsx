@@ -34,15 +34,17 @@ const OverviewCard: React.FC<Props> = ({
   let statusColor = '#1890ff';
   switch (status) {
     case Status.isReady:
-      statusColor = green[500];
+      statusColor = '#1890ff';
       break;
 
     case Status.isActive:
-      statusColor = red[500];
+      statusColor = green[500];
       break;
+
     case Status.isDisable:
       statusColor = red[500];
       break;
+
     default:
       break;
   }

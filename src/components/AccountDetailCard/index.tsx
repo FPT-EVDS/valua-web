@@ -5,6 +5,7 @@ import {
   Email,
   Home,
   Image,
+  PermIdentity,
   Phone,
 } from '@mui/icons-material';
 import { DatePicker, LoadingButton } from '@mui/lab';
@@ -57,7 +58,6 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
         const data = {
           ...payload,
           imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
-          studentId: payload.studentId?.length === 0 ? null : payload.studentId,
           classCode: payload.classCode?.length === 0 ? null : payload.classCode,
         };
         const result = await dispatch(updateAccount(data));
@@ -120,7 +120,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
             variant="h5"
             gutterBottom
           >
-            Basic profile
+            Account information
           </Typography>
         }
         action={
@@ -138,6 +138,36 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
       <Box component="form" onSubmit={formik.handleSubmit}>
         <CardContent>
           <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                name="companyId"
+                autoFocus
+                margin="dense"
+                label={
+                  formik.values.userRole.roleID === 3
+                    ? 'Student ID'
+                    : 'Company ID'
+                }
+                fullWidth
+                value={formik.values.companyId}
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PermIdentity />
+                    </InputAdornment>
+                  ),
+                }}
+                error={
+                  formik.touched.companyId && Boolean(formik.errors.companyId)
+                }
+                helperText={formik.touched.companyId && formik.errors.companyId}
+                onChange={formik.handleChange}
+              />
+            </Grid>
             <Grid item xs={12} md={6}>
               <TextField
                 autoFocus
@@ -326,35 +356,12 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
             </Grid>
             {formik.values.userRole.roleID === 3 && (
               <>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    name="studentId"
-                    autoFocus
-                    margin="dense"
-                    label="Student ID"
-                    disabled={!isEditable}
-                    fullWidth
-                    value={formik.values.studentId}
-                    variant="outlined"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    error={
-                      formik.touched.studentId &&
-                      Boolean(formik.errors.studentId)
-                    }
-                    helperText={
-                      formik.touched.studentId && formik.errors.studentId
-                    }
-                    onChange={formik.handleChange}
-                  />
-                </Grid>
-                <Grid item md={6}>
+                <Grid item xs={12}>
                   <TextField
                     name="classCode"
                     autoFocus
                     margin="dense"
-                    label="Class"
+                    label="Class code"
                     fullWidth
                     disabled={!isEditable}
                     variant="outlined"
