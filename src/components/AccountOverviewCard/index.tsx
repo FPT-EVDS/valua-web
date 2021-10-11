@@ -31,9 +31,6 @@ const AccountOverviewCard = ({ account, actionButtons }: Props) => (
             {account?.fullName}
           </Typography>
           <Typography gutterBottom color="text.secondary">
-            ID: {account.companyId}
-          </Typography>
-          <Typography gutterBottom color="text.secondary">
             Role: {account?.role.roleName}
           </Typography>
           <Box color="text.secondary" marginBottom={1}>

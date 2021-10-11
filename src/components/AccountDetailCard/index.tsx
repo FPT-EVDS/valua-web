@@ -120,7 +120,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
             variant="h5"
             gutterBottom
           >
-            Basic profile
+            Account information
           </Typography>
         }
         action={
@@ -138,6 +138,36 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
       <Box component="form" onSubmit={formik.handleSubmit}>
         <CardContent>
           <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                name="companyId"
+                autoFocus
+                margin="dense"
+                label={
+                  formik.values.userRole.roleID === 3
+                    ? 'Student ID'
+                    : 'Company ID'
+                }
+                fullWidth
+                value={formik.values.companyId}
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PermIdentity />
+                    </InputAdornment>
+                  ),
+                }}
+                error={
+                  formik.touched.companyId && Boolean(formik.errors.companyId)
+                }
+                helperText={formik.touched.companyId && formik.errors.companyId}
+                onChange={formik.handleChange}
+              />
+            </Grid>
             <Grid item xs={12} md={6}>
               <TextField
                 autoFocus
