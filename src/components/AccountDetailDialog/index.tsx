@@ -6,6 +6,7 @@ import {
   Email,
   Home,
   Image,
+  PermIdentity,
   Phone,
 } from '@mui/icons-material';
 import { DatePicker, LoadingButton } from '@mui/lab';
@@ -122,7 +123,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
       imageUrl: '',
       phoneNumber: '',
       userRole: accountRoles[0],
-      studentId: '',
+      companyId: '',
       classCode: '',
     },
     validationSchema: accountSchema,
@@ -131,7 +132,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
         const data = {
           ...payload,
           imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
-          studentId: payload.studentId?.length === 0 ? null : payload.studentId,
           classCode: payload.classCode?.length === 0 ? null : payload.classCode,
         };
         const result = await dispatch(addAccount(data));
@@ -294,6 +294,39 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                       <Typography component="span" fontWeight="700">
                         {formik.values.userRole.roleName}
                       </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        name="companyId"
+                        autoFocus
+                        margin="dense"
+                        label={
+                          formik.values.userRole.roleID === 3
+                            ? 'Student ID'
+                            : 'Company ID'
+                        }
+                        fullWidth
+                        value={formik.values.companyId}
+                        variant="outlined"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <PermIdentity />
+                            </InputAdornment>
+                          ),
+                        }}
+                        error={
+                          formik.touched.companyId &&
+                          Boolean(formik.errors.companyId)
+                        }
+                        helperText={
+                          formik.touched.companyId && formik.errors.companyId
+                        }
+                        onChange={formik.handleChange}
+                      />
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField
@@ -496,35 +529,12 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     </Grid>
                     {formik.values.userRole.roleID === 3 && (
                       <>
-                        <Grid item xs={12} md={6}>
-                          <TextField
-                            name="studentId"
-                            autoFocus
-                            margin="dense"
-                            label="Student ID"
-                            fullWidth
-                            value={formik.values.studentId}
-                            variant="outlined"
-                            InputLabelProps={{
-                              shrink: true,
-                            }}
-                            error={
-                              formik.touched.studentId &&
-                              Boolean(formik.errors.studentId)
-                            }
-                            helperText={
-                              formik.touched.studentId &&
-                              formik.errors.studentId
-                            }
-                            onChange={formik.handleChange}
-                          />
-                        </Grid>
-                        <Grid item md={6}>
+                        <Grid item xs={12}>
                           <TextField
                             name="classCode"
                             autoFocus
                             margin="dense"
-                            label="Class"
+                            label="Class code"
                             fullWidth
                             variant="outlined"
                             value={formik.values.classCode}
