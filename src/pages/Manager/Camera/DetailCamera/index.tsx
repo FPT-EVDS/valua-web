@@ -1,17 +1,17 @@
-import { ChevronLeft } from '@mui/icons-material';
+import { ChevronLeft, Videocam } from '@mui/icons-material';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import CameraDetailCard from 'components/CameraDetailCard';
-import OverviewCard from 'components/OverviewCard';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
+import OverviewCard from 'components/OverviewCard';
+import { format } from 'date-fns';
 import { disableCamera, getCamera } from 'features/camera/detailCameraSlice';
+import Cameram from 'models/camera.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
-import { format } from 'date-fns';
-import Cameram from 'models/camera.model';
+
 interface ParamProps {
   id: string;
 }
@@ -47,6 +47,7 @@ const DetailCameraPage = () => {
         preventDuplicate: true,
       }),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDeleteCamera = async (cameraId: string) => {
@@ -85,7 +86,7 @@ const DetailCameraPage = () => {
     <>
       <Button
         variant="text"
-        color={'error'}
+        color="error"
         onClick={() => showDeleteConfirmation(id)}
       >
         Disable camera
@@ -119,7 +120,7 @@ const DetailCameraPage = () => {
             <Grid item xs={12} md={9} lg={4}>
               <OverviewCard
                 title={camera.cameraName}
-                icon={<VideoCameraBackIcon fontSize="large" />}
+                icon={<Videocam fontSize="large" />}
                 status={camera.status}
                 content={<OverviewContent camera={camera} />}
                 actionButtons={<GroupButtons />}

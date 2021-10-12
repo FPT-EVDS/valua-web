@@ -1,10 +1,8 @@
-import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
-import { Close } from '@mui/icons-material';
-import { LoadingButton, DatePicker } from '@mui/lab';
+import { Close, Videocam } from '@mui/icons-material';
+import { DatePicker, LoadingButton } from '@mui/lab';
 import {
-  Box,
   Avatar,
-  TextField,
+  Box,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,16 +10,17 @@ import {
   Grid,
   IconButton,
   Slide,
+  TextField,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { cameraSchema } from 'configs/validations';
 import CameraDto from 'dtos/camera.dto';
 import { addCamera } from 'features/camera/camerasSlice';
 import { useFormik } from 'formik';
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import { cameraSchema } from 'configs/validations';
 
 interface Props {
   title: string;
@@ -111,7 +110,7 @@ const CameraDetailDialog: React.FC<Props> = ({ open, handleClose, title }) => {
               }}
               variant="square"
             >
-              <VideoCameraBackIcon fontSize="large" />
+              <Videocam fontSize="large" />
             </Avatar>
           </Box>
           <Grid container spacing={2}>

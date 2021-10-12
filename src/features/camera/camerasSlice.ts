@@ -3,7 +3,6 @@ import {
   createSlice,
   isAnyOf,
   isPending,
-  isAnyOf,
   isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
@@ -13,7 +12,6 @@ import CamerasDto from 'dtos/cameras.dto';
 import { SearchCameraByNameDto } from 'dtos/searchCameraByName.dto';
 import Camera from 'models/camera.model';
 import cameraServices from 'services/camera.service';
-import { SearchCameraByNameDto } from 'dtos/searchCameraByName.dto';
 
 interface CameraState {
   isLoading: boolean;

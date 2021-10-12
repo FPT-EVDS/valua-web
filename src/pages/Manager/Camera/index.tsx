@@ -5,7 +5,7 @@ import {
   Edit,
   FiberManualRecord,
 } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Link, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -29,7 +29,11 @@ import {
 import Room from 'models/room.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import {
+  Link as RouterLink,
+  useHistory,
+  useRouteMatch,
+} from 'react-router-dom';
 
 const CameraPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
@@ -168,8 +172,18 @@ const CameraPage = () => {
       flex: 0.115,
       minWidth: 130,
       renderCell: params => {
-        const room: Room = params.getValue(params.id, params.field) as Room;
-        return <Typography>{room ? room.roomName : 'Not yet'}</Typography>;
+        const room = params.getValue(params.id, params.field) as Room;
+        return room ? (
+          <Link
+            component={RouterLink}
+            to={`/manager/room/${room.roomId}`}
+            underline="hover"
+          >
+            {room.roomName}
+          </Link>
+        ) : (
+          <Typography>None</Typography>
+        );
       },
     },
     {
@@ -192,12 +206,12 @@ const CameraPage = () => {
       minWidth: 130,
       renderCell: params => {
         const { status } = params.row;
-        const color = status == Status.isDisable ? red[500] : green[500];
+        const color = status === Status.isDisable ? red[500] : green[500];
         return (
           <Box display="flex" alignItems="center">
             <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
             <Typography variant="subtitle1" color={color}>
-              {status == Status.isDisable ? 'Disable' : 'Active'}
+              {status === Status.isDisable ? 'Disable' : 'Active'}
             </Typography>
           </Box>
         );
