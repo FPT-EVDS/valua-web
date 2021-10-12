@@ -1,14 +1,11 @@
 import {
   createAsyncThunk,
   createSlice,
-  isAnyOf,
   isPending,
   isRejected,
-  PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import LoginDto from 'dtos/login.dto';
-import LoginUser from 'dtos/loginUser.dto';
 import Role from 'enums/role.enum';
 import User from 'models/user.model';
 import authServices from 'services/auth.service';

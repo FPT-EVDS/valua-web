@@ -66,6 +66,7 @@ const AvatarWithText = ({
   color,
   title,
   handleClick,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ...props
 }: AvatarWithTextProps) => (
   <Box

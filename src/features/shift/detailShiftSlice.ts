@@ -78,6 +78,7 @@ export const detailShiftSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(deleteShift.fulfilled, state => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         state = initialState;
       })
       .addMatcher(

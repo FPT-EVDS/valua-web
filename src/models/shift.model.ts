@@ -8,6 +8,7 @@ export default interface Shift {
   shiftManager: Account;
   staff: Account;
   // FIXME: add exam seat type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   examSeats: any[];
   examRoom: Room;
   semester: Semester;

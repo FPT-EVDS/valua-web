@@ -21,9 +21,8 @@ const SemesterDropdown = ({ value, isEditable, onChange }: Props) => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchSemesters().catch(error => {
+    fetchSemesters().catch(() => {
       setIsLoading(false);
-      console.log(error);
     });
   }, []);
 

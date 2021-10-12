@@ -1,6 +1,5 @@
 import { ChevronLeft, SupervisorAccount } from '@mui/icons-material';
 import { Box, Button, Grid, Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';

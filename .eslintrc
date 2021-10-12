@@ -7,6 +7,12 @@
     "jsx-a11y/anchor-is-valid": "warn",
     "@typescript-eslint/no-unused-vars": "warn",
     "scanjs-rules/identifier_localStorage": "off",
-    "no-param-reassign": "off"
+    "object-shorthand": "warn",
+    "no-param-reassign": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "simple-import-sort/imports": "warn"
   }
 }

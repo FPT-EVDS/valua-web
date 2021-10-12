@@ -72,11 +72,6 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
     await formik.setFieldValue('purchaseDate', selectedDate);
   };
 
-  const handleChangeModifedDate = async (selectedDate: Date | null) => {
-    selectedDate = new Date();
-    await formik.setFieldValue('lastModifiedDate', selectedDate);
-  };
-
   useEffect(() => {
     refreshFormValues().catch(error =>
       enqueueSnackbar(error, {

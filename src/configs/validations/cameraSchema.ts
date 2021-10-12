@@ -1,6 +1,5 @@
 import ValidationMessage from 'enums/validationMessage';
-import Camera from 'models/camera.model';
-import { date, number, object, string } from 'yup';
+import { date, object, string } from 'yup';
 
 const cameraSchema = object({
   cameraName: string()
