@@ -1,4 +1,4 @@
-import { AccountCircle, Edit, EditOff } from '@mui/icons-material';
+import { Edit, EditOff } from '@mui/icons-material';
 import { DatePicker, LoadingButton } from '@mui/lab';
 import {
   Box,
@@ -9,21 +9,20 @@ import {
   Divider,
   Grid,
   IconButton,
-  InputAdornment,
   TextField,
   Typography,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
+import { cameraSchema } from 'configs/validations';
+import CameraDto from 'dtos/camera.dto';
 import Status from 'enums/status.enum';
 import { updateCamera } from 'features/camera/detailCameraSlice';
 import { useFormik } from 'formik';
 import useQuery from 'hooks/useQuery';
-import CameraDto from 'dtos/camera.dto';
 import Camera from 'models/camera.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { cameraSchema } from 'configs/validations';
 
 interface Props {
   camera: Camera;
@@ -101,7 +100,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
           </Typography>
         }
         action={
-          camera?.status === Status.isActive && (
+          camera?.status !== Status.isDisable && (
             <IconButton onClick={() => setIsEditable(prevState => !prevState)}>
               {isEditable ? (
                 <EditOff sx={{ fontSize: 20 }} />
@@ -150,10 +149,10 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                   shrink: true,
                 }}
                 onChange={formik.handleChange}
-                disabled={true}
+                disabled
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12}>
               <DatePicker
                 label="Purchased Date"
                 value={formik.values.purchaseDate}
@@ -168,29 +167,6 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                     margin="dense"
                     fullWidth
                     disabled={!isEditable}
-                    variant="outlined"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <DatePicker
-                label="Last Modified Date"
-                value={formik.values.lastModifiedDate}
-                inputFormat="dd/MM/yyyy"
-                onChange={date => handleChangeModifedDate(date)}
-                disabled={true}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    name="lastModifiedDate"
-                    autoFocus
-                    margin="dense"
-                    fullWidth
-                    disabled={false}
                     variant="outlined"
                     InputLabelProps={{
                       shrink: true,
@@ -241,7 +217,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
             </Grid>
           </Grid>
         </CardContent>
-        {camera?.status == Status.isActive && (
+        {camera?.status !== Status.isDisable && (
           <>
             <Divider />
             <CardActions>

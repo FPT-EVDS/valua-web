@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import {
   Add,
   Delete,
@@ -205,13 +206,28 @@ const CameraPage = () => {
       flex: 0.1,
       minWidth: 130,
       renderCell: params => {
-        const { status } = params.row;
-        const color = status === Status.isDisable ? red[500] : green[500];
+        const active = params.getValue(params.id, 'status');
+        let color = '#1890ff';
+        let statusText = 'Ready';
+        switch (active) {
+          case Status.isActive:
+            color = green[500];
+            statusText = 'Active';
+            break;
+
+          case Status.isDisable:
+            color = red[500];
+            statusText = 'Disable';
+            break;
+
+          default:
+            break;
+        }
         return (
           <Box display="flex" alignItems="center">
             <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
             <Typography variant="subtitle1" color={color}>
-              {status === Status.isDisable ? 'Disable' : 'Active'}
+              {statusText}
             </Typography>
           </Box>
         );
@@ -250,7 +266,9 @@ const CameraPage = () => {
             onClick={() => history.push(`${url}/${cameraId}`)}
           />,
         ];
-        if (!status) deleteItems.shift();
+        if (!status) {
+          deleteItems.splice(0, 2);
+        }
         return deleteItems;
       },
     },
