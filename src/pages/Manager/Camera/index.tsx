@@ -267,7 +267,7 @@ const CameraPage = () => {
           />,
         ];
         if (!status) {
-          deleteItems.splice(0, 2);
+          deleteItems.shift();
         }
         return deleteItems;
       },
