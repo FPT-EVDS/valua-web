@@ -8,7 +8,7 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use(async config => {
-  const customHeaders: any = {};
+  const customHeaders: Record<string, unknown> = {};
 
   const accessToken = localStorage.getItem('access_token');
   if (accessToken) {

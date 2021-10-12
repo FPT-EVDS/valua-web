@@ -224,7 +224,6 @@ const AccountPage = () => {
         columns={columns}
         rows={rows}
         page={page}
-        rowHeight={54}
         onPageChange={newPage => setPage(newPage)}
         addButton={<AddButton />}
       />

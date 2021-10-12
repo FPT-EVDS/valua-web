@@ -29,9 +29,8 @@ const StaffDropdown = ({ value, isEditable, onChange }: Props) => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchAccounts().catch(error => {
+    fetchAccounts().catch(() => {
       setIsLoading(false);
-      console.log(error);
     });
   }, []);
 

@@ -21,9 +21,8 @@ const SubjectDropdown = ({ value, isEditable, onChange }: Props) => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchSubjects().catch(error => {
+    fetchSubjects().catch(() => {
       setIsLoading(false);
-      console.log(error);
     });
   }, []);
 

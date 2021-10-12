@@ -33,8 +33,7 @@ const App = (): JSX.Element => {
   useEffect(() => {
     const accessToken = localStorage.getItem('access_token');
     if (accessToken) {
-      handleGetProfile().catch(error => {
-        console.log(error);
+      handleGetProfile().catch(() => {
         history.push('/login');
       });
     }

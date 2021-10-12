@@ -21,9 +21,8 @@ const RoomDropdown = ({ value, isEditable, onChange }: Props) => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchRooms().catch(error => {
+    fetchRooms().catch(() => {
       setIsLoading(false);
-      console.log(error);
     });
   }, []);
 

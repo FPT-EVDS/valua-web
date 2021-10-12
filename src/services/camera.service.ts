@@ -2,9 +2,10 @@ import { AxiosResponse } from 'axios';
 import CameraDto from 'dtos/camera.dto';
 import CamerasDto from 'dtos/cameras.dto';
 import DisableCamera from 'dtos/disableCamera.dto';
-import Camera from 'models/camera.model';
-import axiosClient from './axiosClient';
 import { SearchCameraByNameDto } from 'dtos/searchCameraByName.dto';
+import Camera from 'models/camera.model';
+
+import axiosClient from './axiosClient';
 
 const cameraServices = {
   getCameras: (numOfPage: number): Promise<AxiosResponse<CamerasDto>> => {
@@ -50,7 +51,7 @@ const cameraServices = {
   }: SearchCameraByNameDto): Promise<AxiosResponse<CamerasDto>> => {
     const url = `/cameras`;
     return axiosClient.get(url, {
-      params: { page: numOfPage, search: name, title: title },
+      params: { page: numOfPage, search: name, title },
     });
   },
 };

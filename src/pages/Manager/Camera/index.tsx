@@ -22,11 +22,7 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import { format } from 'date-fns';
 import Status from 'enums/status.enum';
-import {
-  activateCamera,
-  disableCamera,
-  searchByName,
-} from 'features/camera/camerasSlice';
+import { disableCamera, searchByName } from 'features/camera/camerasSlice';
 import Room from 'models/room.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -113,29 +109,29 @@ const CameraPage = () => {
     }
   };
 
-  const handleActivateCamera = async (cameraId: string) => {
-    try {
-      const result = await dispatch(activateCamera(cameraId));
-      unwrapResult(result);
-      enqueueSnackbar('Active camera success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
-      setConfirmDialogProps(prevState => ({
-        ...prevState,
-        open: false,
-      }));
-    } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
-      setConfirmDialogProps(prevState => ({
-        ...prevState,
-        open: false,
-      }));
-    }
-  };
+  // const handleActivateCamera = async (cameraId: string) => {
+  //   try {
+  //     const result = await dispatch(activateCamera(cameraId));
+  //     unwrapResult(result);
+  //     enqueueSnackbar('Active camera success', {
+  //       variant: 'success',
+  //       preventDuplicate: true,
+  //     });
+  //     setConfirmDialogProps(prevState => ({
+  //       ...prevState,
+  //       open: false,
+  //     }));
+  //   } catch (error) {
+  //     enqueueSnackbar(error, {
+  //       variant: 'error',
+  //       preventDuplicate: true,
+  //     });
+  //     setConfirmDialogProps(prevState => ({
+  //       ...prevState,
+  //       open: false,
+  //     }));
+  //   }
+  // };
 
   const showDeleteConfirmation = ({ getValue, id }: GridRowParams) => {
     const cameraId = String(getValue(id, 'cameraId'));
@@ -148,16 +144,16 @@ const CameraPage = () => {
     }));
   };
 
-  const showActiveConfirmation = ({ getValue, id }: GridRowParams) => {
-    const cameraId = String(getValue(id, 'cameraId'));
-    const name = String(getValue(id, 'cameraName'));
-    setConfirmDialogProps(prevState => ({
-      ...prevState,
-      open: true,
-      title: `Do you want to active camera ${name}`,
-      handleAccept: () => handleActivateCamera(cameraId),
-    }));
-  };
+  // const showActiveConfirmation = ({ getValue, id }: GridRowParams) => {
+  //   const cameraId = String(getValue(id, 'cameraId'));
+  //   const name = String(getValue(id, 'cameraName'));
+  //   setConfirmDialogProps(prevState => ({
+  //     ...prevState,
+  //     open: true,
+  //     title: `Do you want to active camera ${name}`,
+  //     handleAccept: () => handleActivateCamera(cameraId),
+  //   }));
+  // };
 
   const columns: Array<GridColDef | GridActionsColDef> = [
     { field: 'cameraId', hide: true },
