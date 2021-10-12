@@ -23,6 +23,7 @@ import CameraDto from 'dtos/camera.dto';
 import Camera from 'models/camera.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { cameraSchema } from 'configs/validations';
 
 interface Props {
   camera: Camera;
@@ -39,6 +40,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
   const initialValues: CameraDto = { ...camera };
   const formik = useFormik({
     initialValues,
+    validationSchema: cameraSchema,
     onSubmit: async (payload: CameraDto) => {
       try {
         const data = {
@@ -72,6 +74,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
   };
 
   const handleChangeModifedDate = async (selectedDate: Date | null) => {
+    selectedDate = new Date();
     await formik.setFieldValue('lastModifiedDate', selectedDate);
   };
 
@@ -121,6 +124,12 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                 fullWidth
                 variant="outlined"
                 value={formik.values.cameraName}
+                error={
+                  formik.touched.cameraName && Boolean(formik.errors.cameraName)
+                }
+                helperText={
+                  formik.touched.cameraName && formik.errors.cameraName
+                }
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -170,10 +179,10 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
             <Grid item xs={12} md={6}>
               <DatePicker
                 label="Last Modified Date"
-                value={formik.values.purchaseDate}
+                value={formik.values.lastModifiedDate}
                 inputFormat="dd/MM/yyyy"
                 onChange={date => handleChangeModifedDate(date)}
-                disabled={!isEditable}
+                disabled={true}
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -181,7 +190,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                     autoFocus
                     margin="dense"
                     fullWidth
-                    disabled={!isEditable}
+                    disabled={false}
                     variant="outlined"
                     InputLabelProps={{
                       shrink: true,
@@ -219,12 +228,20 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.configurationUrl &&
+                  Boolean(formik.errors.configurationUrl)
+                }
+                helperText={
+                  formik.touched.configurationUrl &&
+                  formik.errors.configurationUrl
+                }
                 onChange={formik.handleChange}
               />
             </Grid>
           </Grid>
         </CardContent>
-        {camera?.status === Status.isActive && (
+        {camera?.status == Status.isActive && (
           <>
             <Divider />
             <CardActions>

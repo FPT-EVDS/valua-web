@@ -1,6 +1,7 @@
 import {
   createAsyncThunk,
   createSlice,
+  isAnyOf,
   isPending,
   isRejected,
   PayloadAction,
@@ -8,6 +9,7 @@ import {
 import { AxiosError } from 'axios';
 import CameraDto from 'dtos/camera.dto';
 import CamerasDto from 'dtos/cameras.dto';
+import { SearchCameraByNameDto } from 'dtos/searchCameraByName.dto';
 import Camera from 'models/camera.model';
 import cameraServices from 'services/camera.service';
 
@@ -22,6 +24,19 @@ export const getCameras = createAsyncThunk(
   async (numOfPage: number, { rejectWithValue }) => {
     try {
       const response = await cameraServices.getCameras(numOfPage);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const searchByName = createAsyncThunk(
+  'cameras/searchByName',
+  async (payload: SearchCameraByNameDto, { rejectWithValue }) => {
+    try {
+      const response = await cameraServices.searchCamerasByName(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -86,14 +101,11 @@ export const camerasSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getCameras.fulfilled, (state, action) => {
-        state.current = action.payload;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addCase(addCamera.fulfilled, (state, action) => {
-        state.current.cameras.unshift(action.payload);
+        if (state.current.currentPage === 0)
+          state.current.cameras.unshift(action.payload);
         state.error = '';
+        state.current.totalItems += 1;
         state.isLoading = false;
       })
       .addCase(disableCamera.fulfilled, (state, action) => {
@@ -104,6 +116,14 @@ export const camerasSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addMatcher(
+        isAnyOf(getCameras.fulfilled, searchByName.fulfilled),
+        (state, action) => {
+          state.current = action.payload;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
       .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
         state.isLoading = false;
         state.error = action.payload;

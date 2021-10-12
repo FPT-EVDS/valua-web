@@ -4,7 +4,6 @@ import {
   isAnyOf,
   isPending,
   isRejected,
-  PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import CameraDto from 'dtos/camera.dto';
@@ -44,7 +43,7 @@ export const updateCamera = createAsyncThunk(
 );
 
 export const disableCamera = createAsyncThunk(
-  'cameras/disable',
+  'detailCamera/disable',
   async (cameraId: string, { rejectWithValue }) => {
     try {
       const response = await cameraServices.disableCamera(cameraId);
@@ -57,7 +56,7 @@ export const disableCamera = createAsyncThunk(
 );
 
 export const activateCamera = createAsyncThunk(
-  'cameras/activate',
+  'detailCamera/activate',
   async (cameraId: string, { rejectWithValue }) => {
     try {
       const response = await cameraServices.activateCamera(cameraId);
@@ -82,6 +81,9 @@ export const detailCameraSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(disableCamera.fulfilled, (state, action) => {
+        if (state.camera) state.camera.status = action.payload.status;
+      })
       .addMatcher(
         isAnyOf(getCamera.fulfilled, updateCamera.fulfilled),
         (state, action) => {
@@ -90,12 +92,12 @@ export const detailCameraSlice = createSlice({
           state.isLoading = false;
         },
       )
-      .addMatcher(isAnyOf(getCamera.pending, updateCamera.pending), state => {
+      .addMatcher(isPending, state => {
         state.isLoading = true;
         state.error = '';
       })
-      .addMatcher(isAnyOf(getCamera.rejected, updateCamera.rejected), state => {
-        state.isLoading = true;
+      .addMatcher(isRejected, state => {
+        state.isLoading = false;
         state.error = '';
       });
   },

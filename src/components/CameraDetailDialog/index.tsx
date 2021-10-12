@@ -1,10 +1,8 @@
-import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
-import { Close } from '@mui/icons-material';
-import { LoadingButton, DatePicker } from '@mui/lab';
+import { Close, Videocam } from '@mui/icons-material';
+import { DatePicker, LoadingButton } from '@mui/lab';
 import {
-  Box,
   Avatar,
-  TextField,
+  Box,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,10 +10,12 @@ import {
   Grid,
   IconButton,
   Slide,
+  TextField,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { cameraSchema } from 'configs/validations';
 import CameraDto from 'dtos/camera.dto';
 import { addCamera } from 'features/camera/camerasSlice';
 import { useFormik } from 'formik';
@@ -26,8 +26,6 @@ interface Props {
   title: string;
   open: boolean;
   handleClose: () => void;
-  // eslint-disable-next-line react/require-default-props
-  initialValues?: CameraDto;
 }
 
 const Transition = React.forwardRef(
@@ -36,27 +34,23 @@ const Transition = React.forwardRef(
   ),
 );
 
-const CameraDetailDialog: React.FC<Props> = ({
-  open,
-  handleClose,
-  title,
-  initialValues = {
-    cameraId: '',
-    room: null,
-    purchaseDate: new Date(),
-    createdDate: new Date(),
-    lastModifiedDate: new Date(),
-    configurationUrl: '',
-    cameraName: '',
-    description: '',
-    status: 1,
-  },
-}) => {
+const CameraDetailDialog: React.FC<Props> = ({ open, handleClose, title }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
-  const isLoading = useAppSelector(state => state.account.isLoading);
+  const isLoading = useAppSelector(state => state.camera.isLoading);
   const formik = useFormik({
-    initialValues,
+    initialValues: {
+      cameraId: '',
+      room: null,
+      purchaseDate: new Date(),
+      createdDate: new Date(),
+      lastModifiedDate: new Date(),
+      configurationUrl: '',
+      cameraName: '',
+      description: '',
+      status: 1,
+    },
+    validationSchema: cameraSchema,
     onSubmit: async (payload: CameraDto) => {
       try {
         const data = {
@@ -68,6 +62,8 @@ const CameraDetailDialog: React.FC<Props> = ({
           variant: 'success',
           preventDuplicate: true,
         });
+        formik.resetForm();
+        handleClose();
       } catch (error) {
         enqueueSnackbar(error, {
           variant: 'error',
@@ -114,7 +110,7 @@ const CameraDetailDialog: React.FC<Props> = ({
               }}
               variant="square"
             >
-              <VideoCameraBackIcon fontSize="large" />
+              <Videocam fontSize="large" />
             </Avatar>
           </Box>
           <Grid container spacing={2}>
@@ -130,6 +126,12 @@ const CameraDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.cameraName && Boolean(formik.errors.cameraName)
+                }
+                helperText={
+                  formik.touched.cameraName && formik.errors.cameraName
+                }
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -147,6 +149,13 @@ const CameraDetailDialog: React.FC<Props> = ({
                     margin="dense"
                     fullWidth
                     variant="outlined"
+                    error={
+                      formik.touched.purchaseDate &&
+                      Boolean(formik.errors.purchaseDate)
+                    }
+                    helperText={
+                      formik.touched.purchaseDate && formik.errors.purchaseDate
+                    }
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -182,6 +191,14 @@ const CameraDetailDialog: React.FC<Props> = ({
                 value={formik.values.configurationUrl}
                 fullWidth
                 variant="outlined"
+                error={
+                  formik.touched.configurationUrl &&
+                  Boolean(formik.errors.configurationUrl)
+                }
+                helperText={
+                  formik.touched.configurationUrl &&
+                  formik.errors.configurationUrl
+                }
                 InputLabelProps={{
                   shrink: true,
                 }}
