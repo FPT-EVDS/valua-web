@@ -3,6 +3,7 @@ import AddCameraRoomDto from 'dtos/addCameraRoom.dto';
 import DisableRoomDto from 'dtos/disableRoom.dto';
 import RoomDto from 'dtos/room.dto';
 import RoomsDto from 'dtos/rooms.dto';
+import RoomWithCamera from 'dtos/roomWithCamera.dto';
 import { SearchByNameDto } from 'dtos/searchByName.dto';
 import Camera from 'models/camera.model';
 import Room from 'models/room.model';
@@ -14,7 +15,7 @@ const roomServices = {
     const url = `/rooms`;
     return axiosClient.get(url, { params: { numOfPage } });
   },
-  getRoom: (id: string): Promise<AxiosResponse<Room>> => {
+  getRoom: (id: string): Promise<AxiosResponse<RoomWithCamera>> => {
     const url = `/rooms/${id}`;
     return axiosClient.get(url, { params: { id } });
   },
@@ -55,10 +56,14 @@ const roomServices = {
   },
   addCameraToRoom: ({
     roomId,
-    cameraId: cameraID,
+    cameraId,
   }: AddCameraRoomDto): Promise<AxiosResponse<Camera>> => {
     const url = `/rooms/${roomId}/addCamera`;
-    return axiosClient.post(url, { params: { cameraID } });
+    return axiosClient.post(url, { cameraId });
+  },
+  removeCameraFromRoom: (roomId: string): Promise<AxiosResponse<Camera>> => {
+    const url = `/rooms/${roomId}/removeCamera`;
+    return axiosClient.get(url);
   },
 };
 

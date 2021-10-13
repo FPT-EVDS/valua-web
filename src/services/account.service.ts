@@ -42,12 +42,14 @@ const accountServices = {
     const url = '/accounts/shiftManager/fullname';
     return axiosClient.get(url, { params: { fullName } });
   },
-  searchAccountsByFullName: ({
+  searchAccounts: ({
     numOfPage,
     name,
   }: SearchByNameDto): Promise<AxiosResponse<AccountsDto>> => {
-    const url = `/accounts/fullname`;
-    return axiosClient.get(url, { params: { numOfPage, fullName: name } });
+    const url = `/accounts/search`;
+    return axiosClient.get(url, {
+      params: { page: numOfPage, search: name },
+    });
   },
 };
 

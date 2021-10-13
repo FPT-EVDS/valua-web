@@ -36,7 +36,7 @@ export const searchByFullName = createAsyncThunk(
   'accounts/searchByFullName',
   async (payload: SearchByNameDto, { rejectWithValue }) => {
     try {
-      const response = await accountServices.searchAccountsByFullName(payload);
+      const response = await accountServices.searchAccounts(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;

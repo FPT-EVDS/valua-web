@@ -72,7 +72,13 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
   }, [room]);
 
   return (
-    <Card sx={{ minWidth: 275 }} elevation={2}>
+    <Card
+      sx={{
+        minWidth: 275,
+        height: '100%',
+      }}
+      elevation={2}
+    >
       <CardHeader
         title={
           <Typography
@@ -164,7 +170,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
                 multiline
                 margin="dense"
                 label="Description"
-                rows={4}
+                rows={8}
                 value={formik.values.description}
                 fullWidth
                 variant="outlined"

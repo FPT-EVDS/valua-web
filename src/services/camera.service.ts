@@ -44,7 +44,7 @@ const cameraServices = {
       },
     ]);
   },
-  searchCamerasByName: ({
+  searchCameras: ({
     numOfPage,
     title,
     name,

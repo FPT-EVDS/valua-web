@@ -191,7 +191,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                   justifyContent="space-between"
                   alignItems="center"
                 >
-                  <div />
+                  <IconButton sx={{ visibility: 'hidden' }} />
                   <Typography variant="h6">Choose account role</Typography>
                   <IconButton onClick={handleClose}>
                     <Close />
