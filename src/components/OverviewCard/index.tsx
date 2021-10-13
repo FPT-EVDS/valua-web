@@ -46,7 +46,6 @@ const OverviewCard: React.FC<Props> = ({
       break;
 
     default:
-      statusColor = '#1890ff';
       break;
   }
   return (
