@@ -42,11 +42,12 @@ const subjectServices = {
     search,
     page,
   }: SearchByNameDto): Promise<AxiosResponse<SubjectsDto>> => {
-    const url = `/subjects?page=0&title=name&seach=n`;
+    const url = `/subjects`;
     return axiosClient.get(url, {
       params: {
         page,
         search,
+        title: 'name',
       },
     });
   },
