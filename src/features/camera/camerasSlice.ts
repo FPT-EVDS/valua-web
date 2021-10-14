@@ -36,7 +36,7 @@ export const searchByName = createAsyncThunk(
   'cameras/searchByName',
   async (payload: SearchCameraByNameDto, { rejectWithValue }) => {
     try {
-      const response = await cameraServices.searchCamerasByName(payload);
+      const response = await cameraServices.searchCameras(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;

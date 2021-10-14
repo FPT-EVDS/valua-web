@@ -1,13 +1,19 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import RoomDto from 'dtos/room.dto';
-import Room from 'models/room.model';
+import RoomWithCamera from 'dtos/roomWithCamera.dto';
 import roomServices from 'services/room.service';
 
 interface DetailRoomState {
   isLoading: boolean;
   error: string;
-  room: Room | null;
+  roomWithCamera: RoomWithCamera | null;
+  canAddCamera: boolean;
+}
+
+interface AddCameraRoomDto {
+  roomId: string;
+  cameraId: string;
 }
 
 export const getRoom = createAsyncThunk(
@@ -49,30 +55,77 @@ export const disableRoom = createAsyncThunk(
   },
 );
 
+export const addCameraToRoom = createAsyncThunk(
+  'detailRoom/addCamera',
+  async (payload: AddCameraRoomDto, { rejectWithValue }) => {
+    try {
+      const response = await roomServices.addCameraToRoom(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const removeCameraFromRoom = createAsyncThunk(
+  'detailRoom/removeCamera',
+  async (roomId: string, { rejectWithValue }) => {
+    try {
+      const response = await roomServices.removeCameraFromRoom(roomId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: DetailRoomState = {
   isLoading: false,
   error: '',
-  room: null,
+  roomWithCamera: null,
+  canAddCamera: true,
 };
 
 export const detailRoomSlice = createSlice({
   name: 'detailRoom',
   initialState,
-  reducers: {},
+  reducers: {
+    enableAddCamera: state => {
+      state.canAddCamera = true;
+    },
+    disableAddCamera: state => {
+      state.canAddCamera = false;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(disableRoom.fulfilled, (state, action) => {
-        if (state.room) state.room.status = action.payload.status;
+        if (state.roomWithCamera)
+          state.roomWithCamera.room.status = action.payload.status;
       })
-      .addMatcher(
-        isAnyOf(getRoom.fulfilled, updateRoom.fulfilled),
-        (state, action) => {
-          state.room = action.payload;
-          state.error = '';
-          state.isLoading = false;
-        },
-      )
+      .addCase(addCameraToRoom.fulfilled, (state, action) => {
+        if (state.roomWithCamera) state.roomWithCamera.camera = action.payload;
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(removeCameraFromRoom.fulfilled, state => {
+        if (state.roomWithCamera) state.roomWithCamera.camera = null;
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(getRoom.fulfilled, (state, action) => {
+        state.roomWithCamera = action.payload;
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(updateRoom.fulfilled, (state, action) => {
+        if (state.roomWithCamera) state.roomWithCamera.room = action.payload;
+        state.error = '';
+        state.isLoading = false;
+      })
       .addMatcher(
         isAnyOf(getRoom.pending, updateRoom.pending, disableRoom.pending),
         state => {
@@ -89,5 +142,7 @@ export const detailRoomSlice = createSlice({
       );
   },
 });
+
+export const { enableAddCamera, disableAddCamera } = detailRoomSlice.actions;
 
 export default detailRoomSlice.reducer;

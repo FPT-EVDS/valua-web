@@ -1,9 +1,10 @@
-import { ChevronLeft, SupervisorAccount } from '@mui/icons-material';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { ChevronLeft, Room as RoomIcon } from '@mui/icons-material';
+import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import OverviewCard from 'components/OverviewCard';
+import RoomCameraCard from 'components/RoomCameraCard';
 import RoomDetailCard from 'components/RoomDetailCard';
 import { format } from 'date-fns';
 import { disableRoom, getRoom } from 'features/room/detailRoomSlice';
@@ -23,7 +24,9 @@ interface RoomProps {
 const DetailRoomPage = () => {
   const dispatch = useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const { room, isLoading } = useAppSelector(state => state.detailRoom);
+  const { roomWithCamera, isLoading } = useAppSelector(
+    state => state.detailRoom,
+  );
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
       title: `Do you want to delete this room ?`,
@@ -116,20 +119,26 @@ const DetailRoomPage = () => {
         <div>Back to room page</div>
       </Box>
       <Grid container mt={2} spacing={2}>
-        {room && (
+        {roomWithCamera && (
           <>
             <Grid item xs={12} md={9} lg={4}>
-              <OverviewCard
-                title={room.roomName}
-                icon={<SupervisorAccount fontSize="large" />}
-                status={room.status}
-                content={<OverviewContent room={room} />}
-                actionButtons={<GroupButtons />}
-                isSingleAction
-              />
+              <Stack spacing={3}>
+                <OverviewCard
+                  title={roomWithCamera.room.roomName}
+                  icon={<RoomIcon fontSize="large" />}
+                  status={roomWithCamera.room.status}
+                  content={<OverviewContent room={roomWithCamera.room} />}
+                  actionButtons={<GroupButtons />}
+                  isSingleAction
+                />
+                <RoomCameraCard />
+              </Stack>
             </Grid>
             <Grid item xs={12} lg={8}>
-              <RoomDetailCard isLoading={isLoading} room={room} />
+              <RoomDetailCard
+                isLoading={isLoading}
+                room={roomWithCamera.room}
+              />
             </Grid>
           </>
         )}

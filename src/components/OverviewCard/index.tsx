@@ -32,24 +32,28 @@ const OverviewCard: React.FC<Props> = ({
   isSingleAction = false,
 }: Props) => {
   let statusColor = '#1890ff';
+  let statusText = '';
   switch (status) {
     case Status.isReady:
       statusColor = '#1890ff';
+      statusText = 'Ready';
       break;
 
     case Status.isActive:
       statusColor = green[500];
+      statusText = 'Active';
       break;
 
     case Status.isDisable:
       statusColor = red[500];
+      statusText = 'Disable';
       break;
 
     default:
       break;
   }
   return (
-    <Card sx={{ minWidth: 275 }} elevation={2}>
+    <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Stack direction="row" spacing={4} justifyContent="space-between">
           <Box>
@@ -60,6 +64,12 @@ const OverviewCard: React.FC<Props> = ({
             >
               {title}
             </Typography>
+            <Box color="text.secondary" marginBottom={1}>
+              Status:
+              <Typography display="inline" ml={0.5} color={statusColor}>
+                {statusText}
+              </Typography>
+            </Box>
             {content}
           </Box>
           <Avatar
