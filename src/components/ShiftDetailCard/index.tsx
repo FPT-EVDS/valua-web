@@ -66,7 +66,7 @@ const ShiftDetailCard = ({ shift, isLoading, isUpdate }: Props) => {
             : await dispatch(updateShift(payload));
         const { shiftId } = unwrapResult(result);
         if (!isUpdate) {
-          enqueueSnackbar('Add shift success', {
+          enqueueSnackbar('Create shift success', {
             variant: 'success',
             preventDuplicate: true,
           });

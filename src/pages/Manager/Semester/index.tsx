@@ -186,7 +186,7 @@ const SemesterPage = () => {
         setIsUpdate(false);
       }}
     >
-      Add semester
+      Create semester
     </Button>
   );
 

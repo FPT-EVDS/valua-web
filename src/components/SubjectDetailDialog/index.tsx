@@ -15,6 +15,7 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { subjectSchema } from 'configs/validations';
 import SubjectDto from 'dtos/subject.dto';
 import { addSubject, updateSubject } from 'features/subject/subjectsSlice';
 import { useFormik } from 'formik';
@@ -50,11 +51,12 @@ const SubjectDetailDialog: React.FC<Props> = ({
   const isLoading = useAppSelector(state => state.subjects.isLoading);
   const formik = useFormik({
     initialValues,
+    validationSchema: subjectSchema,
     onSubmit: async (payload: SubjectDto) => {
       try {
         const message = isUpdate
           ? `Update subject ${String(payload.subjectName)} success`
-          : 'Add subject success';
+          : 'Create subject success';
         const result = isUpdate
           ? await dispatch(updateSubject(payload))
           : await dispatch(addSubject(payload));
@@ -64,6 +66,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
           preventDuplicate: true,
         });
         formik.resetForm();
+        handleClose();
       } catch (error) {
         enqueueSnackbar(error, {
           variant: 'error',
@@ -134,6 +137,13 @@ const SubjectDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.subjectCode &&
+                  Boolean(formik.errors.subjectCode)
+                }
+                helperText={
+                  formik.touched.subjectCode && formik.errors.subjectCode
+                }
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -149,6 +159,13 @@ const SubjectDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.subjectName &&
+                  Boolean(formik.errors.subjectName)
+                }
+                helperText={
+                  formik.touched.subjectName && formik.errors.subjectName
+                }
                 onChange={formik.handleChange}
               />
             </Grid>

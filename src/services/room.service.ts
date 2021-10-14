@@ -42,15 +42,15 @@ const roomServices = {
     return axiosClient.get(url);
   },
   searchRoomsByName: ({
-    numOfPage,
-    name,
+    page,
+    search,
   }: SearchByNameDto): Promise<AxiosResponse<RoomsDto>> => {
     const url = `/rooms`;
     return axiosClient.get(url, {
       params: {
-        page: numOfPage,
+        page,
         title: 'name',
-        search: name,
+        search,
       },
     });
   },

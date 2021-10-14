@@ -2,9 +2,12 @@ import {
   createAsyncThunk,
   createSlice,
   isAnyOf,
+  isPending,
+  isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import { SearchByNameDto } from 'dtos/searchByName.dto';
 import SubjectDto from 'dtos/subject.dto';
 import SubjectsDto from 'dtos/subjects.dto';
 import Subject from 'models/subject.model';
@@ -68,6 +71,19 @@ export const disableSubject = createAsyncThunk(
   },
 );
 
+export const searchBySubjectName = createAsyncThunk(
+  'rooms/searchByName',
+  async (payload: SearchByNameDto, { rejectWithValue }) => {
+    try {
+      const response = await subjectServices.searchSubjects(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: SubjectsState = {
   isLoading: false,
@@ -86,13 +102,10 @@ export const subjectSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getSubjects.fulfilled, (state, action) => {
-        state.current = action.payload;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addCase(addSubject.fulfilled, (state, action) => {
-        state.current.subjects.unshift(action.payload);
+        if (state.current.currentPage === 0)
+          state.current.subjects.unshift(action.payload);
+        state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;
       })
@@ -113,29 +126,21 @@ export const subjectSlice = createSlice({
         state.isLoading = false;
       })
       .addMatcher(
-        isAnyOf(
-          getSubjects.rejected,
-          addSubject.rejected,
-          disableSubject.rejected,
-          updateSubject.rejected,
-        ),
-        (state, action: PayloadAction<string>) => {
+        isAnyOf(getSubjects.fulfilled, searchBySubjectName.fulfilled),
+        (state, action) => {
+          state.current = action.payload;
+          state.error = '';
           state.isLoading = false;
-          state.error = action.payload;
         },
       )
-      .addMatcher(
-        isAnyOf(
-          getSubjects.pending,
-          addSubject.pending,
-          disableSubject.pending,
-          updateSubject.pending,
-        ),
-        state => {
-          state.isLoading = true;
-          state.error = '';
-        },
-      );
+      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addMatcher(isPending, state => {
+        state.isLoading = true;
+        state.error = '';
+      });
   },
 });
 

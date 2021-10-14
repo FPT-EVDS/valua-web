@@ -137,7 +137,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
         };
         const result = await dispatch(addAccount(data));
         unwrapResult(result);
-        enqueueSnackbar('Add account success', {
+        enqueueSnackbar('Create account success', {
           variant: 'success',
           preventDuplicate: true,
         });

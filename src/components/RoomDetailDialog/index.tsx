@@ -58,7 +58,7 @@ const RoomDetailDialog: React.FC<Props> = ({
       try {
         const result = await dispatch(addRoom(payload));
         unwrapResult(result);
-        enqueueSnackbar('Add room success', {
+        enqueueSnackbar('Create room success', {
           variant: 'success',
           preventDuplicate: true,
         });

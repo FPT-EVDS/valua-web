@@ -58,7 +58,7 @@ const CameraDetailDialog: React.FC<Props> = ({ open, handleClose, title }) => {
         };
         const result = await dispatch(addCamera(data));
         unwrapResult(result);
-        enqueueSnackbar('Add camera success', {
+        enqueueSnackbar('Create camera success', {
           variant: 'success',
           preventDuplicate: true,
         });

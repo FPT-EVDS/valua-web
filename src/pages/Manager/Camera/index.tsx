@@ -276,7 +276,7 @@ const CameraPage = () => {
       startIcon={<Add />}
       onClick={() => setOpen(true)}
     >
-      Add camera
+      Create camera
     </Button>
   );
 
