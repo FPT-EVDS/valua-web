@@ -37,8 +37,8 @@ const Transition = React.forwardRef(
 const AddCameraToRoomDialog: React.FC<Props> = ({ open, handleClose }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
-  const roomWithCamera = useAppSelector(
-    state => state.detailRoom.roomWithCamera,
+  const { roomWithCamera, canAddCamera } = useAppSelector(
+    state => state.detailRoom,
   );
   const {
     room: { roomId },
@@ -100,7 +100,12 @@ const AddCameraToRoomDialog: React.FC<Props> = ({ open, handleClose }) => {
           <CameraDropdown onChange={value => handleChangeCamera(value)} />
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
-          <LoadingButton type="submit" variant="contained" sx={{ width: 150 }}>
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            sx={{ width: 150 }}
+            disabled={!canAddCamera}
+          >
             Add
           </LoadingButton>
         </DialogActions>

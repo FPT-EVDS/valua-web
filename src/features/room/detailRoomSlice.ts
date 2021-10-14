@@ -8,6 +8,7 @@ interface DetailRoomState {
   isLoading: boolean;
   error: string;
   roomWithCamera: RoomWithCamera | null;
+  canAddCamera: boolean;
 }
 
 interface AddCameraRoomDto {
@@ -85,12 +86,20 @@ const initialState: DetailRoomState = {
   isLoading: false,
   error: '',
   roomWithCamera: null,
+  canAddCamera: true,
 };
 
 export const detailRoomSlice = createSlice({
   name: 'detailRoom',
   initialState,
-  reducers: {},
+  reducers: {
+    enableAddCamera: state => {
+      state.canAddCamera = true;
+    },
+    disableAddCamera: state => {
+      state.canAddCamera = false;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(disableRoom.fulfilled, (state, action) => {
@@ -133,5 +142,7 @@ export const detailRoomSlice = createSlice({
       );
   },
 });
+
+export const { enableAddCamera, disableAddCamera } = detailRoomSlice.actions;
 
 export default detailRoomSlice.reducer;

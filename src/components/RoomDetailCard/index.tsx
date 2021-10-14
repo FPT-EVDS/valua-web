@@ -106,7 +106,6 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
               <TextField
-                autoFocus
                 name="roomName"
                 margin="dense"
                 label="Name"
@@ -126,7 +125,6 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
             <Grid item xs={12} md={4}>
               <TextField
                 name="floor"
-                autoFocus
                 margin="dense"
                 label="Floor"
                 type="number"
@@ -145,7 +143,6 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
             <Grid item xs={12} md={4}>
               <TextField
                 name="seatCount"
-                autoFocus
                 margin="dense"
                 label="Seat count"
                 type="number"
@@ -166,7 +163,6 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
             <Grid item xs={12}>
               <TextField
                 name="description"
-                autoFocus
                 multiline
                 margin="dense"
                 label="Description"

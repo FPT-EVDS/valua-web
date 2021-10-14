@@ -1,4 +1,9 @@
 import { Autocomplete, TextField } from '@mui/material';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import {
+  disableAddCamera,
+  enableAddCamera,
+} from 'features/room/detailRoomSlice';
 import Camera from 'models/camera.model';
 import React, { useEffect, useState } from 'react';
 import cameraServices from 'services/camera.service';
@@ -8,6 +13,7 @@ interface Props {
 }
 
 const CameraDropdown = ({ onChange }: Props) => {
+  const dispatch = useAppDispatch();
   const [cameraOptions, setCameraOptions] = useState<Camera[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -17,7 +23,10 @@ const CameraDropdown = ({ onChange }: Props) => {
       name: '1',
       numOfPage: 0,
     });
-    setCameraOptions(response.data.cameras);
+    if (response.data.cameras.length > 0) {
+      setCameraOptions(response.data.cameras);
+      dispatch(enableAddCamera());
+    } else dispatch(disableAddCamera());
     setIsLoading(false);
   };
 
