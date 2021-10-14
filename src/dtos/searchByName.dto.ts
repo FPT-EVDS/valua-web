@@ -1,4 +1,4 @@
 export interface SearchByNameDto {
-  name: string;
-  numOfPage: number;
+  search: string;
+  page: number;
 }

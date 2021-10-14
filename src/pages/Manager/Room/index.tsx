@@ -61,8 +61,10 @@ const RoomPage = () => {
     };
   });
 
-  const fetchRooms = async (name: string, numOfPage: number) => {
-    const actionResult = await dispatch(searchByRoomName({ name, numOfPage }));
+  const fetchRooms = async (search: string, numOfPage: number) => {
+    const actionResult = await dispatch(
+      searchByRoomName({ search, page: numOfPage }),
+    );
     unwrapResult(actionResult);
   };
 
@@ -221,14 +223,14 @@ const RoomPage = () => {
       startIcon={<Add />}
       onClick={() => setOpen(true)}
     >
-      Add room
+      Create room
     </Button>
   );
 
   const handleSearch = async (inputValue: string) => {
     setSearchValue(inputValue);
     const result = await dispatch(
-      searchByRoomName({ name: inputValue, numOfPage: 0 }),
+      searchByRoomName({ search: inputValue, page: 0 }),
     );
     unwrapResult(result);
   };

@@ -56,8 +56,10 @@ const AccountPage = () => {
     id: account.appUserId,
   }));
 
-  const fetchAccount = async (name: string, numOfPage: number) => {
-    const actionResult = await dispatch(searchByFullName({ name, numOfPage }));
+  const fetchAccount = async (search: string, numOfPage: number) => {
+    const actionResult = await dispatch(
+      searchByFullName({ search, page: numOfPage }),
+    );
     unwrapResult(actionResult);
   };
 
@@ -196,14 +198,14 @@ const AccountPage = () => {
       startIcon={<PersonAdd />}
       onClick={() => setOpen(true)}
     >
-      Add account
+      Create account
     </Button>
   );
 
   const handleSearch = async (inputValue: string) => {
     setSearchValue(inputValue);
     const result = await dispatch(
-      searchByFullName({ name: inputValue, numOfPage: 0 }),
+      searchByFullName({ search: inputValue, page: 0 }),
     );
     unwrapResult(result);
   };

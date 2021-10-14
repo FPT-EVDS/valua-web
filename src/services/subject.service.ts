@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import DisableSubjectDto from 'dtos/disableSubject.dto';
+import { SearchByNameDto } from 'dtos/searchByName.dto';
 import SubjectDto from 'dtos/subject.dto';
 import SubjectsDto from 'dtos/subjects.dto';
 import Subject from 'models/subject.model';
@@ -36,6 +37,19 @@ const subjectServices = {
   getSubjectsForShift: (): Promise<AxiosResponse<Subject[]>> => {
     const url = '/subjects/shiftManager';
     return axiosClient.get(url);
+  },
+  searchSubjects: ({
+    search,
+    page,
+  }: SearchByNameDto): Promise<AxiosResponse<SubjectsDto>> => {
+    const url = `/subjects`;
+    return axiosClient.get(url, {
+      params: {
+        page,
+        search,
+        title: 'name',
+      },
+    });
   },
 };
 

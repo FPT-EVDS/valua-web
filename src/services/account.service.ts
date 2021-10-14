@@ -43,12 +43,12 @@ const accountServices = {
     return axiosClient.get(url, { params: { fullName } });
   },
   searchAccounts: ({
-    numOfPage,
-    name,
+    page,
+    search,
   }: SearchByNameDto): Promise<AxiosResponse<AccountsDto>> => {
     const url = `/accounts/search`;
     return axiosClient.get(url, {
-      params: { page: numOfPage, search: name },
+      params: { page, search },
     });
   },
 };
