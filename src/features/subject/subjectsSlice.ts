@@ -72,7 +72,7 @@ export const disableSubject = createAsyncThunk(
 );
 
 export const searchBySubjectName = createAsyncThunk(
-  'rooms/searchByName',
+  'subjects/searchByName',
   async (payload: SearchByNameDto, { rejectWithValue }) => {
     try {
       const response = await subjectServices.searchSubjects(payload);

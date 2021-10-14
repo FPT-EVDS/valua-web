@@ -18,7 +18,6 @@ import { SearchByNameDto } from 'dtos/searchByName.dto';
 import SubjectDto from 'dtos/subject.dto';
 import {
   disableSubject,
-  getSubjects,
   searchBySubjectName,
 } from 'features/subject/subjectsSlice';
 import { useSnackbar } from 'notistack';
