@@ -15,6 +15,7 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import semesterSchema from 'configs/validations/semesterSchema';
 import { add } from 'date-fns';
 import SemesterDto from 'dtos/semester.dto';
 import { addSemester, updateSemester } from 'features/semester/semestersSlice';
@@ -52,6 +53,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
   const isLoading = useAppSelector(state => state.semesters.isLoading);
   const formik = useFormik({
     initialValues,
+    validationSchema: semesterSchema,
     onSubmit: async (payload: SemesterDto) => {
       try {
         const message = isUpdate
@@ -66,6 +68,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
           preventDuplicate: true,
         });
         formik.resetForm();
+        handleClose();
       } catch (error) {
         enqueueSnackbar(error, {
           variant: 'error',
@@ -144,6 +147,13 @@ const SemesterDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.semesterName &&
+                  Boolean(formik.errors.semesterName)
+                }
+                helperText={
+                  formik.touched.semesterName && formik.errors.semesterName
+                }
                 onChange={formik.handleChange}
               />
             </Grid>
@@ -164,6 +174,13 @@ const SemesterDetailDialog: React.FC<Props> = ({
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    error={
+                      formik.touched.beginDate &&
+                      Boolean(formik.errors.beginDate)
+                    }
+                    helperText={
+                      formik.touched.beginDate && formik.errors.beginDate
+                    }
                   />
                 )}
               />
@@ -185,6 +202,10 @@ const SemesterDetailDialog: React.FC<Props> = ({
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    error={
+                      formik.touched.endDate && Boolean(formik.errors.endDate)
+                    }
+                    helperText={formik.touched.endDate && formik.errors.endDate}
                   />
                 )}
               />
