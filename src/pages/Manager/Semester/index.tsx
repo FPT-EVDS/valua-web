@@ -29,12 +29,15 @@ import {
 } from 'features/semester/semestersSlice';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const SemesterPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
   const [page, setPage] = useState(0);
   const [searchValue, setSearchValue] = useState('');
   const [open, setOpen] = useState(false);
+  const history = useHistory();
+  const { url } = useRouteMatch();
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
@@ -159,6 +162,7 @@ const SemesterPage = () => {
       headerName: 'Actions',
       type: 'actions',
       getActions: params => {
+        const semesterId = params.getValue(params.id, 'semesterId');
         const isActive = params.getValue(params.id, 'isActive');
         const deleteItems = [
           <GridActionsCellItem
@@ -171,16 +175,15 @@ const SemesterPage = () => {
             label="Edit"
             icon={<Edit />}
             showInMenu
-            onClick={() => {
-              setIsUpdate(true);
-              setInitialValues(params.row as SemesterDto);
-              setOpen(true);
-            }}
+            onClick={() =>
+              history.push(`${url}/${String(semesterId)}?edit=true`)
+            }
           />,
           <GridActionsCellItem
-            label="View subjects"
+            label="View detail"
             icon={<Description />}
             showInMenu
+            onClick={() => history.push(`${url}/${String(semesterId)}`)}
           />,
         ];
         if (!isActive) deleteItems.shift();

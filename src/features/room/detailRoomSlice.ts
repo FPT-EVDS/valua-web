@@ -1,4 +1,9 @@
-import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+  isPending,
+  isRejected,
+} from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import RoomDto from 'dtos/room.dto';
 import RoomWithCamera from 'dtos/roomWithCamera.dto';
@@ -126,20 +131,14 @@ export const detailRoomSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addMatcher(
-        isAnyOf(getRoom.pending, updateRoom.pending, disableRoom.pending),
-        state => {
-          state.isLoading = true;
-          state.error = '';
-        },
-      )
-      .addMatcher(
-        isAnyOf(getRoom.rejected, updateRoom.rejected, disableRoom.rejected),
-        state => {
-          state.isLoading = true;
-          state.error = '';
-        },
-      );
+      .addMatcher(isPending, state => {
+        state.isLoading = true;
+        state.error = '';
+      })
+      .addMatcher(isRejected, (state, action) => {
+        state.isLoading = true;
+        state.error = String(action.payload);
+      });
   },
 });
 

@@ -6,6 +6,7 @@ import cameraReducer from 'features/camera/camerasSlice';
 import detailCameraReducer from 'features/camera/detailCameraSlice';
 import detailRoomReducer from 'features/room/detailRoomSlice';
 import roomReducer from 'features/room/roomsSlice';
+import detailSemesterReducer from 'features/semester/detailSemesterSlice';
 import semesterReducer from 'features/semester/semestersSlice';
 import detailShiftReducer from 'features/shift/detailShiftSlice';
 import shiftReducer from 'features/shift/shiftSlice';
@@ -20,6 +21,7 @@ export const store = configureStore({
     detailRoom: detailRoomReducer,
     subjects: subjectReducer,
     semesters: semesterReducer,
+    detailSemester: detailSemesterReducer,
     camera: cameraReducer,
     detailCamera: detailCameraReducer,
     shift: shiftReducer,

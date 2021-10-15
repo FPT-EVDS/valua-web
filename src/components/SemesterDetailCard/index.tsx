@@ -1,74 +1,52 @@
-import { Close, School } from '@mui/icons-material';
+import { Edit, EditOff } from '@mui/icons-material';
 import { DatePicker, LoadingButton } from '@mui/lab';
 import {
-  Avatar,
   Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
   Grid,
   IconButton,
-  Slide,
   TextField,
+  Typography,
 } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
+import { green, red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useAppDispatch } from 'app/hooks';
 import { semesterSchema } from 'configs/validations';
-import { add } from 'date-fns';
 import SemesterDto from 'dtos/semester.dto';
-import { addSemester, updateSemester } from 'features/semester/semestersSlice';
+import { updateSemester } from 'features/semester/detailSemesterSlice';
 import { useFormik } from 'formik';
+import useQuery from 'hooks/useQuery';
+import Semester from 'models/semester.model';
 import { useSnackbar } from 'notistack';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
-  open: boolean;
-  handleClose: () => void;
-  // eslint-disable-next-line react/require-default-props
-  initialValues?: SemesterDto;
-  isUpdate: boolean;
+  semester: Semester;
+  isLoading: boolean;
 }
 
-const Transition = React.forwardRef(
-  (props: TransitionProps, ref: React.Ref<unknown>) => (
-    <Slide direction="up" ref={ref} {...props} />
-  ),
-);
-
-const SemesterDetailDialog: React.FC<Props> = ({
-  open,
-  handleClose,
-  initialValues = {
-    semesterId: null,
-    semesterName: '',
-    beginDate: new Date(),
-    endDate: add(new Date(), { months: 1 }),
-  },
-  isUpdate,
-}) => {
+const SemesterDetailCard = ({ semester, isLoading }: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
-  const isLoading = useAppSelector(state => state.semesters.isLoading);
+  const query = useQuery();
+  const [isEditable, setIsEditable] = useState(
+    String(query.get('edit')) === 'true',
+  );
+  const initialValues: SemesterDto = { ...semester };
   const formik = useFormik({
     initialValues,
     validationSchema: semesterSchema,
     onSubmit: async (payload: SemesterDto) => {
       try {
-        const message = isUpdate
-          ? `Update semester ${String(payload.semesterName)} success`
-          : 'Add semester success';
-        const result = isUpdate
-          ? await dispatch(updateSemester(payload))
-          : await dispatch(addSemester(payload));
+        const result = await dispatch(updateSemester(payload));
         unwrapResult(result);
-        enqueueSnackbar(message, {
+        enqueueSnackbar('Update semester success', {
           variant: 'success',
           preventDuplicate: true,
         });
-        formik.resetForm();
-        handleClose();
       } catch (error) {
         enqueueSnackbar(error, {
           variant: 'error',
@@ -78,17 +56,23 @@ const SemesterDetailDialog: React.FC<Props> = ({
     },
   });
 
-  const refreshForm = async (values: SemesterDto) => formik.setValues(values);
+  const refreshFormValues = async () => {
+    if (semester) {
+      await formik.setValues({
+        ...semester,
+      });
+    }
+  };
 
   useEffect(() => {
-    refreshForm(initialValues).catch(error =>
+    refreshFormValues().catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialValues]);
+  }, [semester]);
 
   const handleChangeBeginDate = async (selectedDate: Date | null) => {
     await formik.setFieldValue('beginDate', selectedDate);
@@ -99,41 +83,31 @@ const SemesterDetailDialog: React.FC<Props> = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      fullWidth
-      TransitionComponent={Transition}
-    >
-      <DialogTitle>
-        <Grid
-          container
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          {isUpdate ? 'Update semester' : 'Create semester'}
-          <IconButton onClick={handleClose}>
-            <Close />
-          </IconButton>
-        </Grid>
-      </DialogTitle>
+    <Card sx={{ minWidth: 275 }} elevation={2}>
+      <CardHeader
+        title={
+          <Typography
+            sx={{ fontWeight: 'medium', fontSize: 20 }}
+            variant="h5"
+            gutterBottom
+          >
+            Semester information
+          </Typography>
+        }
+        action={
+          semester.isActive && (
+            <IconButton onClick={() => setIsEditable(prevState => !prevState)}>
+              {isEditable ? (
+                <EditOff sx={{ fontSize: 20 }} />
+              ) : (
+                <Edit sx={{ fontSize: 20 }} />
+              )}
+            </IconButton>
+          )
+        }
+      />
       <Box component="form" onSubmit={formik.handleSubmit} pb={2}>
-        <DialogContent>
-          <Box display="flex" justifyContent="center">
-            <Avatar
-              sx={{
-                bgcolor: '#1890ff',
-                mb: 2,
-                width: 150,
-                height: 150,
-                borderRadius: '3px',
-              }}
-              variant="square"
-            >
-              <School fontSize="large" />
-            </Avatar>
-          </Box>
+        <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -147,6 +121,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                disabled={!isEditable}
                 error={
                   formik.touched.semesterName &&
                   Boolean(formik.errors.semesterName)
@@ -162,6 +137,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
                 label="Begin date"
                 value={formik.values.beginDate}
                 inputFormat="dd/MM/yyyy"
+                disabled={!isEditable}
                 onChange={handleChangeBeginDate}
                 renderInput={params => (
                   <TextField
@@ -191,6 +167,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
                 value={formik.values.endDate}
                 inputFormat="dd/MM/yyyy"
                 onChange={handleChangeEndDate}
+                disabled={!isEditable}
                 renderInput={params => (
                   <TextField
                     {...params}
@@ -211,20 +188,25 @@ const SemesterDetailDialog: React.FC<Props> = ({
               />
             </Grid>
           </Grid>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center' }}>
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            sx={{ width: 150 }}
-            loading={isLoading}
-          >
-            {isUpdate ? 'Update' : 'Create'}
-          </LoadingButton>
-        </DialogActions>
+        </CardContent>
+        {semester.isActive && (
+          <>
+            <CardActions sx={{ justifyContent: 'center' }}>
+              <LoadingButton
+                disabled={!isEditable}
+                loading={isLoading}
+                type="submit"
+                variant="contained"
+                sx={{ width: 150 }}
+              >
+                Update
+              </LoadingButton>
+            </CardActions>
+          </>
+        )}
       </Box>
-    </Dialog>
+    </Card>
   );
 };
 
-export default SemesterDetailDialog;
+export default SemesterDetailCard;
