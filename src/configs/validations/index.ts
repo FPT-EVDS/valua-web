@@ -5,3 +5,4 @@ import roomSchema from './roomSchema';
 import subjectSchema from './subjectSchema';
 
 export { accountSchema, cameraSchema, roomSchema, subjectSchema, appUserSchema };
+
