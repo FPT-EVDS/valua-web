@@ -4,7 +4,7 @@ import { date, object, ref, string } from 'yup';
 const semesterSchema = object({
   semesterName: string()
     .defined('Semester name is required')
-    .max(255, `${ValidationMessage.MAX_LENGTH} 255`),
+    .max(255, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`),
   beginDate: date().typeError('Invalid date').defined('Date is required'),
   endDate: date()
     .typeError('Invalid date')
