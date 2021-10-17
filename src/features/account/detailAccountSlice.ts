@@ -70,6 +70,8 @@ export const detailAccountSlice = createSlice({
     builder
       .addCase(disableAccount.fulfilled, (state, action) => {
         if (state.account) state.account.isActive = action.payload.isActive;
+        state.error = '';
+        state.isLoading = false;
       })
       .addMatcher(
         isAnyOf(getAccount.fulfilled, updateAccount.fulfilled),

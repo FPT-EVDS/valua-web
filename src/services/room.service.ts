@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import AddCameraRoomDto from 'dtos/addCameraRoom.dto';
+import AddCameraToRoomDto from 'dtos/addCameraToRoom.dto';
 import DisableRoomDto from 'dtos/disableRoom.dto';
 import RoomDto from 'dtos/room.dto';
 import RoomsDto from 'dtos/rooms.dto';
@@ -57,7 +57,7 @@ const roomServices = {
   addCameraToRoom: ({
     roomId,
     cameraId,
-  }: AddCameraRoomDto): Promise<AxiosResponse<Camera>> => {
+  }: AddCameraToRoomDto): Promise<AxiosResponse<Camera>> => {
     const url = `/rooms/${roomId}/addCamera`;
     return axiosClient.post(url, { cameraId });
   },

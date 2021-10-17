@@ -110,6 +110,8 @@ export const detailRoomSlice = createSlice({
       .addCase(disableRoom.fulfilled, (state, action) => {
         if (state.roomWithCamera)
           state.roomWithCamera.room.status = action.payload.status;
+        state.error = '';
+        state.isLoading = false;
       })
       .addCase(addCameraToRoom.fulfilled, (state, action) => {
         if (state.roomWithCamera) state.roomWithCamera.camera = action.payload;

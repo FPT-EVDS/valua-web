@@ -51,6 +51,17 @@ const subjectServices = {
       },
     });
   },
+  getAvailableSubjects: (
+    semesterID: string,
+  ): Promise<AxiosResponse<Subject[]>> => {
+    const url = `/subjects/available`;
+    return axiosClient.get(url, {
+      params: {
+        value: true,
+        semesterID,
+      },
+    });
+  },
 };
 
 export default subjectServices;

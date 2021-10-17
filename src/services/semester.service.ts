@@ -1,5 +1,7 @@
 import { AxiosResponse } from 'axios';
+import { AddSubjectToSemesterDto } from 'dtos/addSubjectToSemester.dto';
 import DisableSemesterDto from 'dtos/disableSemester.dto';
+import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto';
 import { SearchByNameDto } from 'dtos/searchByName.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
@@ -50,6 +52,20 @@ const semesterServices = {
         title: 'name',
       },
     });
+  },
+  addSubjects: (
+    payload: AddSubjectToSemesterDto,
+  ): Promise<AxiosResponse<Semester>> => {
+    const { semesterId, subjects } = payload;
+    const url = `/semesters/${semesterId}/addSubjects`;
+    return axiosClient.patch(url, subjects);
+  },
+  removeSubject: (
+    payload: RemoveSubjectFromSemesterDto,
+  ): Promise<AxiosResponse<Semester>> => {
+    const { semesterId, subjectId } = payload;
+    const url = `/semesters/${semesterId}/removeSubjects`;
+    return axiosClient.patch(url, { subjectId });
   },
 };
 

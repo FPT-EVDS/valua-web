@@ -86,6 +86,8 @@ export const detailShiftSlice = createSlice({
       .addCase(deleteShift.fulfilled, state => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         state = initialState;
+        state.error = '';
+        state.isLoading = false;
       })
       .addMatcher(
         isAnyOf(getShift.fulfilled, addShift.fulfilled, updateShift.fulfilled),
