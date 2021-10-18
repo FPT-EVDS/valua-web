@@ -24,13 +24,14 @@ import {
 import { useAppSelector } from 'app/hooks';
 import DrawerContent, { DrawerItem } from 'components/CustomDrawer';
 import React, { useState } from 'react';
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
+import { Link, Redirect, Route, Switch, useHistory } from 'react-router-dom';
 
 import DashboardPage from './Dashboard';
 import FeedbackPage from './Feedback';
 import ShiftPage from './Shift';
 import DetailShiftPage from './Shift/DetailShift';
 import ViolationPage from './Violation';
+import Profile from './Profile';
 
 const drawerItems: Array<DrawerItem> = [
   {
@@ -150,7 +151,9 @@ const ShiftManagerDashboard = (): JSX.Element => {
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem component={Link} to="/shift-manager/profile">
+                Profile
+              </MenuItem>
               <MenuItem
                 onClick={() => {
                   // FIXME: FIX LOGOUT LOGIC HERE
@@ -224,6 +227,7 @@ const ShiftManagerDashboard = (): JSX.Element => {
             component={ViolationPage}
             exact
           />
+          <Route path="/shift-manager/profile" component={Profile} exact />
           <Redirect from="/shift-manager" to="/shift-manager/dashboard" />
         </Switch>
       </Box>

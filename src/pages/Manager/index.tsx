@@ -12,7 +12,7 @@ import {
   SupervisorAccount,
   SupervisorAccountOutlined,
   Videocam,
-  VideocamOutlined,
+  VideocamOutlined
 } from '@mui/icons-material';
 import {
   AppBar,
@@ -23,23 +23,24 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Toolbar,
+  Toolbar
 } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
 import DrawerContent, { DrawerItem } from 'components/CustomDrawer';
 import React, { useState } from 'react';
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
-
+import { Link, Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import AccountPage from './Account';
 import DetailAccountPage from './Account/DetailAccount';
 import Camera from './Camera';
 import DetailCameraPage from './Camera/DetailCamera';
 import Dashboard from './Dashboard';
+import Profile from './Profile';
 import RoomPage from './Room';
 import DetailRoomPage from './Room/DetailRoomPage';
 import SemesterPage from './Semester';
 import DetailSemesterPage from './Semester/DetailSemester';
 import SubjectPage from './Subject';
+
 
 const drawerItems: Array<DrawerItem> = [
   {
@@ -171,7 +172,9 @@ const ManagerDashboard = (): JSX.Element => {
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem component={Link} to="/manager/profile">
+                Profile
+              </MenuItem>
               <MenuItem
                 onClick={() => {
                   // FIXME: FIX LOGOUT LOGIC HERE
@@ -237,6 +240,7 @@ const ManagerDashboard = (): JSX.Element => {
             exact
           />
           <Route path="/manager/subject" component={SubjectPage} exact />
+          <Route path="/manager/profile" component={Profile} exact />
           <Redirect from="/manager" to="/manager/dashboard" />
         </Switch>
       </Box>
