@@ -14,12 +14,12 @@ import {
 import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import CameraDropdown from 'components/CameraDropdown';
-import AddCameraToRoomDto from 'dtos/addCameraToRoom.dto';
-import RoomWithCamera from 'dtos/roomWithCamera.dto';
-import { addCameraToRoom } from 'features/room/detailRoomSlice';
+import SemesterSubjectDropdown from 'components/SemesterSubjectDropdown';
+import addSubjectsSchema from 'configs/validations/addSubjectsSchema';
+import { AddSubjectToSemesterDto } from 'dtos/addSubjectToSemester.dto';
+import { addSubjectsToSemester } from 'features/semester/detailSemesterSlice';
 import { useFormik } from 'formik';
-import Camera from 'models/camera.model';
+import Subject from 'models/subject.model';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 
@@ -34,28 +34,32 @@ const Transition = React.forwardRef(
   ),
 );
 
-const AddCameraToRoomDialog: React.FC<Props> = ({ open, handleClose }) => {
+const AddSubjectToSemesterDialog: React.FC<Props> = ({ open, handleClose }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
-  const { roomWithCamera, canAddCamera } = useAppSelector(
-    state => state.detailRoom,
+  const { semester, canAddSubjects } = useAppSelector(
+    state => state.detailSemester,
   );
-  const {
-    room: { roomId },
-  } = roomWithCamera as RoomWithCamera;
 
   const formik = useFormik({
     initialValues: {
-      cameraId: '',
-      roomId: '',
+      semesterId: semester ? semester.semesterId : '',
+      subjects: [],
     },
-    onSubmit: async (payload: AddCameraToRoomDto) => {
+    validationSchema: addSubjectsSchema,
+    onSubmit: async (payload: AddSubjectToSemesterDto) => {
       try {
         const result = await dispatch(
-          addCameraToRoom({ ...payload, roomId: String(roomId) }),
+          addSubjectsToSemester({
+            ...payload,
+            semesterId: String(semester?.semesterId),
+          }),
         );
         unwrapResult(result);
-        enqueueSnackbar('Add camera to room success', {
+        const message = `Add ${
+          formik.values.subjects.length
+        } subjects to ${String(semester?.semesterName)} success`;
+        enqueueSnackbar(message, {
           variant: 'success',
           preventDuplicate: true,
         });
@@ -70,8 +74,8 @@ const AddCameraToRoomDialog: React.FC<Props> = ({ open, handleClose }) => {
     },
   });
 
-  const handleChangeCamera = async (selectedCamera: Camera | null) => {
-    await formik.setFieldValue('cameraId', selectedCamera?.cameraId);
+  const handleChangeSubjects = async (selectedSubjects: Subject[] | null) => {
+    await formik.setFieldValue('subjects', selectedSubjects);
   };
 
   return (
@@ -89,7 +93,9 @@ const AddCameraToRoomDialog: React.FC<Props> = ({ open, handleClose }) => {
           alignItems="center"
         >
           <IconButton sx={{ visibility: 'hidden' }} />
-          <Typography variant="h6">Add camera to room</Typography>
+          <Typography variant="h6">
+            Add subjects to {semester?.semesterName}
+          </Typography>
           <IconButton onClick={handleClose}>
             <Close />
           </IconButton>
@@ -97,14 +103,19 @@ const AddCameraToRoomDialog: React.FC<Props> = ({ open, handleClose }) => {
       </DialogTitle>
       <Box component="form" pb={2} onSubmit={formik.handleSubmit}>
         <DialogContent>
-          <CameraDropdown onChange={value => handleChangeCamera(value)} />
+          <SemesterSubjectDropdown
+            touched={formik.touched}
+            errors={formik.errors}
+            semesterId={String(semester?.semesterId)}
+            onChange={value => handleChangeSubjects(value)}
+          />
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
           <LoadingButton
             type="submit"
             variant="contained"
             sx={{ width: 150 }}
-            disabled={!canAddCamera}
+            disabled={!canAddSubjects}
           >
             Add
           </LoadingButton>
@@ -114,4 +125,4 @@ const AddCameraToRoomDialog: React.FC<Props> = ({ open, handleClose }) => {
   );
 };
 
-export default AddCameraToRoomDialog;
+export default AddSubjectToSemesterDialog;

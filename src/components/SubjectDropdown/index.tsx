@@ -40,7 +40,7 @@ const SubjectDropdown = ({ value, isEditable, onChange }: Props) => {
         <TextField
           {...params}
           label="Subject"
-          name="beginTime"
+          name="subject"
           autoFocus
           margin="dense"
           fullWidth

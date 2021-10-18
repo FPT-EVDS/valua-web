@@ -1,6 +1,12 @@
 /* eslint-disable prefer-destructuring */
-import { Add, Delete, Description, Edit } from '@mui/icons-material';
-import { Button, Typography } from '@mui/material';
+import {
+  Add,
+  Delete,
+  Description,
+  Edit,
+  FiberManualRecord,
+} from '@mui/icons-material';
+import { Box, Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -15,16 +21,23 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import SemesterDetailDialog from 'components/SemesterDetailDialog';
 import { add, format } from 'date-fns';
+import { SearchByNameDto } from 'dtos/searchByName.dto';
 import SemesterDto from 'dtos/semester.dto';
 import {
   disableSemester,
-  getSemesters,
+  searchBySemesterName,
 } from 'features/semester/semestersSlice';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const SemesterPage = () => {
+  const DEFAULT_PAGE_SIZE = 20;
+  const [page, setPage] = useState(0);
+  const [searchValue, setSearchValue] = useState('');
   const [open, setOpen] = useState(false);
+  const history = useHistory();
+  const { url } = useRouteMatch();
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
@@ -39,7 +52,7 @@ const SemesterPage = () => {
   const dispatch = useAppDispatch();
   const {
     isLoading,
-    current: { semesters },
+    current: { semesters, totalItems },
   } = useAppSelector(state => state.semesters);
   const rows: GridRowModel[] = semesters.map(semester => ({
     ...semester,
@@ -52,13 +65,13 @@ const SemesterPage = () => {
     endDate: add(new Date(), { months: 1 }),
   });
 
-  const fetchSemesters = async (numOfPage: number) => {
-    const actionResult = await dispatch(getSemesters(numOfPage));
+  const fetchSemesters = async (payload: SearchByNameDto) => {
+    const actionResult = await dispatch(searchBySemesterName(payload));
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchSemesters(0).catch(error =>
+    fetchSemesters({ page, search: searchValue }).catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
@@ -130,15 +143,17 @@ const SemesterPage = () => {
       headerName: 'Status',
       flex: 0.1,
       minWidth: 130,
-      renderCell: ({ id, field, getValue }) => {
-        const isActive = getValue(id, field);
+      renderCell: params => {
+        const active = params.getValue(params.id, params.field);
+        const color = active ? green[500] : red[500];
+        const statusText = active ? 'Active' : 'Disable';
         return (
-          <Typography
-            variant="subtitle1"
-            color={isActive ? green[500] : red[500]}
-          >
-            {isActive ? 'Active' : 'Disable'}
-          </Typography>
+          <Box display="flex" alignItems="center">
+            <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
+            <Typography variant="subtitle1" color={color}>
+              {statusText}
+            </Typography>
+          </Box>
         );
       },
     },
@@ -147,6 +162,7 @@ const SemesterPage = () => {
       headerName: 'Actions',
       type: 'actions',
       getActions: params => {
+        const semesterId = params.getValue(params.id, 'semesterId');
         const isActive = params.getValue(params.id, 'isActive');
         const deleteItems = [
           <GridActionsCellItem
@@ -159,16 +175,15 @@ const SemesterPage = () => {
             label="Edit"
             icon={<Edit />}
             showInMenu
-            onClick={() => {
-              setIsUpdate(true);
-              setInitialValues(params.row as SemesterDto);
-              setOpen(true);
-            }}
+            onClick={() =>
+              history.push(`${url}/${String(semesterId)}?edit=true`)
+            }
           />,
           <GridActionsCellItem
-            label="View subjects"
+            label="View detail"
             icon={<Description />}
             showInMenu
+            onClick={() => history.push(`${url}/${String(semesterId)}`)}
           />,
         ];
         if (!isActive) deleteItems.shift();
@@ -190,6 +205,14 @@ const SemesterPage = () => {
     </Button>
   );
 
+  const handleSearch = async (inputValue: string) => {
+    setSearchValue(inputValue);
+    const result = await dispatch(
+      searchBySemesterName({ search: inputValue, page: 0 }),
+    );
+    unwrapResult(result);
+  };
+
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
@@ -200,6 +223,13 @@ const SemesterPage = () => {
         initialValues={initialValues}
       />
       <EVDSDataGrid
+        pagination
+        paginationMode="server"
+        rowsPerPageOptions={[]}
+        pageSize={DEFAULT_PAGE_SIZE}
+        rowCount={totalItems}
+        handleSearch={handleSearch}
+        onPageChange={newPage => setPage(newPage)}
         isLoading={isLoading}
         title="Manage Semesters"
         columns={columns}

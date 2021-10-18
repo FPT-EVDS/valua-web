@@ -70,6 +70,8 @@ export const detailAccountSlice = createSlice({
     builder
       .addCase(disableAccount.fulfilled, (state, action) => {
         if (state.account) state.account.isActive = action.payload.isActive;
+        state.error = '';
+        state.isLoading = false;
       })
       .addMatcher(
         isAnyOf(getAccount.fulfilled, updateAccount.fulfilled),
@@ -83,9 +85,9 @@ export const detailAccountSlice = createSlice({
         state.isLoading = true;
         state.error = '';
       })
-      .addMatcher(isRejected, state => {
+      .addMatcher(isRejected, (state, action) => {
         state.isLoading = false;
-        state.error = '';
+        state.error = String(action.payload);
       });
   },
 });
