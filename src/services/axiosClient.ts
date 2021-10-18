@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const axiosClient = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -25,6 +25,33 @@ axiosClient.interceptors.request.use(async config => {
     },
   };
 });
+
+const responseInterceptor = axiosClient.interceptors.response.use(
+  response => response,
+  async (errorResponse: AxiosError) => {
+    if (errorResponse.response?.status !== 401)
+      return Promise.reject(errorResponse);
+    axios.interceptors.response.eject(responseInterceptor);
+    const refreshToken = localStorage.getItem('refresh_token');
+    try {
+      if (refreshToken) {
+        const response = await axiosClient.get('/authentication/refreshToken', {
+          headers: {
+            refreshToken,
+          },
+        });
+        const { token } = response.data;
+        localStorage.setItem('access_token', token);
+        errorResponse.response.config.headers.Authorization = `Bearer ${String(
+          token,
+        )}`;
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+    return axiosClient(errorResponse.response.config);
+  },
+);
 
 // HOW TO CALL EXTERNAL API
 

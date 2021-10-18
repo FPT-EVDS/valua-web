@@ -9,7 +9,7 @@ type User = {
   isActive: boolean;
   phoneNumber: string;
   profileImageUrl?: string | null;
-  refreshToken?: string;
+  refreshToken: string;
   companyId: string;
 };
 
