@@ -18,7 +18,6 @@ const accountSchema = object({
   phoneNumber: string()
     .defined('Phone number is required')
     .length(10, ValidationMessage.PHONE_LENGTH),
-  imageUrl: string().url().nullable(),
   userRole: object().shape({
     roleID: number(),
     roleName: string(),

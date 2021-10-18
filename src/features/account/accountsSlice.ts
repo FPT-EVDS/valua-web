@@ -8,6 +8,7 @@ import {
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import AccountsDto from 'dtos/accounts.dto';
+import AddAccountDto from 'dtos/addAccount.dto';
 import AppUserDto from 'dtos/appUser.dto';
 import { SearchByNameDto } from 'dtos/searchByName.dto';
 import Account from 'models/account.model';
@@ -47,7 +48,7 @@ export const searchByFullName = createAsyncThunk(
 
 export const addAccount = createAsyncThunk(
   'accounts/add',
-  async (payload: AppUserDto, { rejectWithValue }) => {
+  async (payload: FormData, { rejectWithValue }) => {
     try {
       const response = await accountServices.addAccount(payload);
       return response.data;

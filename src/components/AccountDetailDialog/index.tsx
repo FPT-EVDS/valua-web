@@ -31,9 +31,11 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import examineeIcon from 'assets/images/examinee.png';
 import shiftManagerIcon from 'assets/images/shift-manager.png';
 import staffIcon from 'assets/images/staff.png';
+import AvatarFilePicker from 'components/AvatarFilePicker';
 import genders from 'configs/constants/genders.constant';
 import accountRoles from 'configs/constants/roles.constant';
 import { accountSchema } from 'configs/validations';
+import AddAccountDto from 'dtos/addAccount.dto';
 import AppUserDto from 'dtos/appUser.dto';
 import { addAccount } from 'features/account/accountsSlice';
 import { useFormik } from 'formik';
@@ -110,6 +112,7 @@ const rolesProps: AvatarWithTextProps[] = [
 // eslint-disable-next-line sonarjs/cognitive-complexity
 const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
   const [currentStep, setCurrentStep] = useState<number>(0);
+  const [disable, setDisable] = useState<boolean>(false);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.account.isLoading);
@@ -126,16 +129,24 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
       userRole: accountRoles[0],
       companyId: '',
       classCode: '',
+      image: null,
     },
     validationSchema: accountSchema,
     onSubmit: async (payload: AppUserDto) => {
       try {
-        const data = {
+        const accountData = {
           ...payload,
           imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
           classCode: payload.classCode?.length === 0 ? null : payload.classCode,
         };
-        const result = await dispatch(addAccount(data));
+        const { image } = formik.values;
+        const formData = new FormData();
+        const accountDataBlob = new Blob([JSON.stringify(accountData)], {
+          type: 'application/json',
+        });
+        formData.append('account', accountDataBlob);
+        if (image) formData.append('image', image as unknown as Blob);
+        const result = await dispatch(addAccount(formData));
         unwrapResult(result);
         enqueueSnackbar('Create account success', {
           variant: 'success',
@@ -161,6 +172,14 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
 
   const handleChangeBirthdate = async (selectedDate: Date | null) => {
     await formik.setFieldValue('birthdate', selectedDate);
+  };
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (event.target.files) {
+      await formik.setFieldValue('image', event.target.files[0]);
+    }
   };
 
   return (
@@ -266,27 +285,19 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                   </IconButton>
                 </Grid>
               </DialogTitle>
-              <Box component="form" onSubmit={formik.handleSubmit} pb={2}>
+              <Box
+                component="form"
+                encType="multipart/form-data"
+                onSubmit={formik.handleSubmit}
+                pb={2}
+              >
                 <DialogContent>
                   <Grid container spacing={2}>
                     <Grid item xs={12} display="flex" justifyContent="center">
-                      <label htmlFor="upload-image-button">
-                        <input
-                          accept="image/*"
-                          type="file"
-                          style={{ display: 'none' }}
-                          id="upload-image-button"
-                        />
-                        <IconButton component="span">
-                          <Avatar
-                            src={formik.values.imageUrl}
-                            variant="square"
-                            sx={{ width: 128, height: 128 }}
-                          >
-                            <AddPhotoAlternate />
-                          </Avatar>
-                        </IconButton>
-                      </label>
+                      <AvatarFilePicker
+                        name="imageUrl"
+                        onChange={handleFileUpload}
+                      />
                     </Grid>
                     <Grid item xs={12}>
                       <Typography component="span" sx={{ marginRight: 1 }}>
@@ -499,35 +510,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                         onChange={formik.handleChange}
                       />
                     </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        name="imageUrl"
-                        autoFocus
-                        margin="dense"
-                        label="Avatar"
-                        fullWidth
-                        value={formik.values.imageUrl}
-                        variant="outlined"
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Image />
-                            </InputAdornment>
-                          ),
-                        }}
-                        error={
-                          formik.touched.imageUrl &&
-                          Boolean(formik.errors.imageUrl)
-                        }
-                        helperText={
-                          formik.touched.imageUrl && formik.errors.imageUrl
-                        }
-                        onChange={formik.handleChange}
-                      />
-                    </Grid>
                     {formik.values.userRole.roleID === 3 && (
                       <>
                         <Grid item xs={12}>
@@ -563,6 +545,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     variant="contained"
                     sx={{ width: 150 }}
                     loading={isLoading}
+                    disabled={disable}
                   >
                     Create
                   </LoadingButton>

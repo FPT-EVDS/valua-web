@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import AccountsDto from 'dtos/accounts.dto';
+import AddAccountDto from 'dtos/addAccount.dto';
 import AppUserDto from 'dtos/appUser.dto';
 import AppUserDtoStatus from 'dtos/appUserDtoStatus';
 import { SearchByNameDto } from 'dtos/searchByName.dto';
@@ -16,9 +17,13 @@ const accountServices = {
     const url = `/accounts/${id}`;
     return axiosClient.get(url, { params: { id } });
   },
-  addAccount: (payload: AppUserDto): Promise<AxiosResponse<Account>> => {
+  addAccount: (payload: FormData): Promise<AxiosResponse<Account>> => {
     const url = '/accounts';
-    return axiosClient.post(url, payload);
+    return axiosClient.post(url, payload, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
   updateAccount: (payload: AppUserDto): Promise<AxiosResponse<Account>> => {
     const url = `/accounts/${String(payload.appUserId)}`;
