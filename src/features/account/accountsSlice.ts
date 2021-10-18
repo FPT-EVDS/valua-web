@@ -8,6 +8,7 @@ import {
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import AccountsDto from 'dtos/accounts.dto';
+import AddAccountDto from 'dtos/addAccount.dto';
 import AppUserDto from 'dtos/appUser.dto';
 import { SearchByNameDto } from 'dtos/searchByName.dto';
 import Account from 'models/account.model';
@@ -47,7 +48,7 @@ export const searchByFullName = createAsyncThunk(
 
 export const addAccount = createAsyncThunk(
   'accounts/add',
-  async (payload: AppUserDto, { rejectWithValue }) => {
+  async (payload: FormData, { rejectWithValue }) => {
     try {
       const response = await accountServices.addAccount(payload);
       return response.data;
@@ -63,6 +64,19 @@ export const disableAccount = createAsyncThunk(
   async (appUserId: string, { rejectWithValue }) => {
     try {
       const response = await accountServices.disableAccount(appUserId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const activeAccount = createAsyncThunk(
+  'accounts/active',
+  async (appUserId: string, { rejectWithValue }) => {
+    try {
+      const response = await accountServices.activeAccount(appUserId);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -96,18 +110,21 @@ export const accountSlice = createSlice({
         state.current.totalItems += 1;
         state.isLoading = false;
       })
-      .addCase(disableAccount.fulfilled, (state, action) => {
-        const index = state.current.accounts.findIndex(
-          account => account.appUserId === action.payload.appUserId,
-        );
-        state.current.accounts[index].isActive = action.payload.isActive;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addMatcher(
         isAnyOf(getAccounts.fulfilled, searchByFullName.fulfilled),
         (state, action) => {
           state.current = action.payload;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
+      .addMatcher(
+        isAnyOf(disableAccount.fulfilled, activeAccount.fulfilled),
+        (state, action) => {
+          const index = state.current.accounts.findIndex(
+            account => account.appUserId === action.payload.appUserId,
+          );
+          state.current.accounts[index].isActive = action.payload.isActive;
           state.error = '';
           state.isLoading = false;
         },

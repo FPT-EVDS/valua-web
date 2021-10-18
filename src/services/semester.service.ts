@@ -1,5 +1,8 @@
 import { AxiosResponse } from 'axios';
+import { AddSubjectToSemesterDto } from 'dtos/addSubjectToSemester.dto';
 import DisableSemesterDto from 'dtos/disableSemester.dto';
+import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto';
+import { SearchByNameDto } from 'dtos/searchByName.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
 import Semester from 'models/semester.model';
@@ -36,6 +39,33 @@ const semesterServices = {
   getSemesterForShift: (): Promise<AxiosResponse<Semester[]>> => {
     const url = '/semesters/shiftManager';
     return axiosClient.get(url);
+  },
+  searchSemestersByName: ({
+    page,
+    search,
+  }: SearchByNameDto): Promise<AxiosResponse<SemestersDto>> => {
+    const url = '/semesters';
+    return axiosClient.get(url, {
+      params: {
+        page,
+        search,
+        title: 'name',
+      },
+    });
+  },
+  addSubjects: (
+    payload: AddSubjectToSemesterDto,
+  ): Promise<AxiosResponse<Semester>> => {
+    const { semesterId, subjects } = payload;
+    const url = `/semesters/${semesterId}/addSubjects`;
+    return axiosClient.patch(url, subjects);
+  },
+  removeSubject: (
+    payload: RemoveSubjectFromSemesterDto,
+  ): Promise<AxiosResponse<Semester>> => {
+    const { semesterId, subjectId } = payload;
+    const url = `/semesters/${semesterId}/removeSubjects`;
+    return axiosClient.patch(url, { subjectId });
   },
 };
 

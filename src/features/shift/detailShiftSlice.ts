@@ -1,4 +1,10 @@
-import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+  isAnyOf,
+  isPending,
+  isRejected,
+} from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import ShiftDto from 'dtos/shift.dto';
 import Shift from 'models/shift.model';
@@ -80,6 +86,8 @@ export const detailShiftSlice = createSlice({
       .addCase(deleteShift.fulfilled, state => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         state = initialState;
+        state.error = '';
+        state.isLoading = false;
       })
       .addMatcher(
         isAnyOf(getShift.fulfilled, addShift.fulfilled, updateShift.fulfilled),
@@ -89,20 +97,14 @@ export const detailShiftSlice = createSlice({
           state.isLoading = false;
         },
       )
-      .addMatcher(
-        isAnyOf(getShift.pending, addShift.pending, updateShift.pending),
-        state => {
-          state.isLoading = true;
-          state.error = '';
-        },
-      )
-      .addMatcher(
-        isAnyOf(getShift.rejected, addShift.rejected, updateShift.rejected),
-        state => {
-          state.isLoading = false;
-          state.error = '';
-        },
-      );
+      .addMatcher(isPending, state => {
+        state.isLoading = true;
+        state.error = '';
+      })
+      .addMatcher(isRejected, (state, action) => {
+        state.isLoading = false;
+        state.error = String(action.payload);
+      });
   },
 });
 

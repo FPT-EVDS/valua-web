@@ -83,6 +83,8 @@ export const detailCameraSlice = createSlice({
     builder
       .addCase(disableCamera.fulfilled, (state, action) => {
         if (state.camera) state.camera.status = action.payload.status;
+        state.error = '';
+        state.isLoading = false;
       })
       .addMatcher(
         isAnyOf(getCamera.fulfilled, updateCamera.fulfilled),

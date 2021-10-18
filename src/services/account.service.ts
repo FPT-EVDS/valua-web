@@ -1,7 +1,8 @@
 import { AxiosResponse } from 'axios';
 import AccountsDto from 'dtos/accounts.dto';
+import AddAccountDto from 'dtos/addAccount.dto';
 import AppUserDto from 'dtos/appUser.dto';
-import DisableAppUserDto from 'dtos/disableAppUser.dto';
+import AppUserDtoStatus from 'dtos/appUserDtoStatus';
 import { SearchByNameDto } from 'dtos/searchByName.dto';
 import Account from 'models/account.model';
 
@@ -16,21 +17,35 @@ const accountServices = {
     const url = `/accounts/${id}`;
     return axiosClient.get(url, { params: { id } });
   },
-  addAccount: (payload: AppUserDto): Promise<AxiosResponse<Account>> => {
+  addAccount: (payload: FormData): Promise<AxiosResponse<Account>> => {
     const url = '/accounts';
-    return axiosClient.post(url, payload);
+    return axiosClient.post(url, payload, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
   updateAccount: (payload: AppUserDto): Promise<AxiosResponse<Account>> => {
     const url = `/accounts/${String(payload.appUserId)}`;
     return axiosClient.put(url, payload);
   },
-  disableAccount: (id: string): Promise<AxiosResponse<DisableAppUserDto>> => {
+  disableAccount: (id: string): Promise<AxiosResponse<AppUserDtoStatus>> => {
     const url = `/accounts/${id}`;
     return axiosClient.patch(url, [
       {
         op: 'replace',
         path: '/isActive',
         value: false,
+      },
+    ]);
+  },
+  activeAccount: (id: string): Promise<AxiosResponse<AppUserDtoStatus>> => {
+    const url = `/accounts/${id}`;
+    return axiosClient.patch(url, [
+      {
+        op: 'replace',
+        path: '/isActive',
+        value: true,
       },
     ]);
   },
@@ -46,7 +61,7 @@ const accountServices = {
     page,
     search,
   }: SearchByNameDto): Promise<AxiosResponse<AccountsDto>> => {
-    const url = `/accounts/search`;
+    const url = `/accounts`;
     return axiosClient.get(url, {
       params: { page, search },
     });

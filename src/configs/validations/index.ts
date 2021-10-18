@@ -1,8 +1,17 @@
 import accountSchema from './accountSchema';
 import appUserSchema from './appUserSchema';
+import addSubjectsSchema from './addSubjectsSchema';
 import cameraSchema from './cameraSchema';
 import roomSchema from './roomSchema';
+import semesterSchema from './semesterSchema';
 import subjectSchema from './subjectSchema';
 
-export { accountSchema, cameraSchema, roomSchema, subjectSchema, appUserSchema };
-
+export {
+  accountSchema,
+  addSubjectsSchema,
+  cameraSchema,
+  roomSchema,
+  semesterSchema,
+  subjectSchema,
+  appUserSchema,
+};

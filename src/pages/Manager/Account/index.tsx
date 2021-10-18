@@ -21,6 +21,7 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import StringAvatar from 'components/StringAvatar';
 import {
+  activeAccount,
   disableAccount,
   searchByFullName,
 } from 'features/account/accountsSlice';
@@ -101,6 +102,22 @@ const AccountPage = () => {
     }
   };
 
+  const handleActiveAccount = async (appUserId: string) => {
+    try {
+      const result = await dispatch(activeAccount(appUserId));
+      unwrapResult(result);
+      enqueueSnackbar('Enable account success', {
+        variant: 'success',
+        preventDuplicate: true,
+      });
+    } catch (error) {
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      });
+    }
+  };
+
   const showDeleteConfirmation = ({ getValue, id }: GridRowParams) => {
     const appUserId = String(getValue(id, 'appUserId'));
     const name = String(getValue(id, 'fullName'));
@@ -168,25 +185,31 @@ const AccountPage = () => {
         const status = params.getValue(params.id, 'isActive');
         const deleteItems = [
           <GridActionsCellItem
-            label="Delete"
-            icon={<Delete />}
+            label="View detail"
             showInMenu
-            onClick={() => showDeleteConfirmation(params)}
+            onClick={() => history.push(`${url}/${appUserId}`)}
           />,
           <GridActionsCellItem
             label="Edit"
-            icon={<Edit />}
             showInMenu
             onClick={() => history.push(`${url}/${appUserId}?edit=true`)}
           />,
           <GridActionsCellItem
-            label="View detail"
-            icon={<Description />}
+            label="Disable"
+            sx={{ color: red[500] }}
             showInMenu
-            onClick={() => history.push(`${url}/${appUserId}`)}
+            onClick={() => showDeleteConfirmation(params)}
           />,
         ];
-        if (!status) deleteItems.shift();
+        if (!status)
+          deleteItems[2] = (
+            <GridActionsCellItem
+              label="Enable"
+              sx={{ color: green[500] }}
+              showInMenu
+              onClick={() => handleActiveAccount(appUserId)}
+            />
+          );
         return deleteItems;
       },
     },

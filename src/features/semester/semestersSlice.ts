@@ -2,9 +2,12 @@ import {
   createAsyncThunk,
   createSlice,
   isAnyOf,
+  isPending,
+  isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import { SearchByNameDto } from 'dtos/searchByName.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
 import Semester from 'models/semester.model';
@@ -68,6 +71,19 @@ export const disableSemester = createAsyncThunk(
   },
 );
 
+export const searchBySemesterName = createAsyncThunk(
+  'semesters/searchByName',
+  async (payload: SearchByNameDto, { rejectWithValue }) => {
+    try {
+      const response = await semesterServices.searchSemestersByName(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: SemestersState = {
   isLoading: false,
@@ -86,13 +102,10 @@ export const semesterSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getSemesters.fulfilled, (state, action) => {
-        state.current = action.payload;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addCase(addSemester.fulfilled, (state, action) => {
-        state.current.semesters.unshift({ ...action.payload, subjects: [] });
+        if (state.current.currentPage === 0)
+          state.current.semesters.unshift({ ...action.payload, subjects: [] });
+        state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;
       })
@@ -113,29 +126,21 @@ export const semesterSlice = createSlice({
         state.isLoading = false;
       })
       .addMatcher(
-        isAnyOf(
-          getSemesters.rejected,
-          addSemester.rejected,
-          disableSemester.rejected,
-          updateSemester.rejected,
-        ),
-        (state, action: PayloadAction<string>) => {
+        isAnyOf(getSemesters.fulfilled, searchBySemesterName.fulfilled),
+        (state, action) => {
+          state.current = action.payload;
+          state.error = '';
           state.isLoading = false;
-          state.error = action.payload;
         },
       )
-      .addMatcher(
-        isAnyOf(
-          getSemesters.pending,
-          addSemester.pending,
-          disableSemester.pending,
-          updateSemester.pending,
-        ),
-        state => {
-          state.isLoading = true;
-          state.error = '';
-        },
-      );
+      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addMatcher(isPending, state => {
+        state.isLoading = true;
+        state.error = '';
+      });
   },
 });
 

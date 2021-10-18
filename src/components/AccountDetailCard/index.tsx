@@ -49,7 +49,11 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
   const [isEditable, setIsEditable] = useState(
     String(query.get('edit')) === 'true',
   );
-  const initialValues: AppUserDto = { ...account, userRole: account.role };
+  const initialValues: AppUserDto = {
+    ...account,
+    userRole: account.role,
+    companyId: account.companyId || '',
+  };
   const formik = useFormik({
     initialValues,
     validationSchema: accountSchema,
@@ -97,6 +101,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
       await formik.setValues({
         ...account,
         userRole,
+        companyId: account.companyId || '',
       });
     }
   };
@@ -154,6 +159,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                disabled
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -363,7 +369,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                     margin="dense"
                     label="Class code"
                     fullWidth
-                    disabled={!isEditable}
+                    disabled
                     variant="outlined"
                     value={formik.values.classCode}
                     InputLabelProps={{

@@ -38,6 +38,7 @@ import Profile from './Profile';
 import RoomPage from './Room';
 import DetailRoomPage from './Room/DetailRoomPage';
 import SemesterPage from './Semester';
+import DetailSemesterPage from './Semester/DetailSemester';
 import SubjectPage from './Subject';
 
 
@@ -233,6 +234,11 @@ const ManagerDashboard = (): JSX.Element => {
           <Route path="/manager/camera" component={Camera} exact />
           <Route path="/manager/camera/:id" component={DetailCameraPage} />
           <Route path="/manager/semester" component={SemesterPage} exact />
+          <Route
+            path="/manager/semester/:id"
+            component={DetailSemesterPage}
+            exact
+          />
           <Route path="/manager/subject" component={SubjectPage} exact />
           <Route path="/manager/profile" component={Profile} exact />
           <Redirect from="/manager" to="/manager/dashboard" />
