@@ -1,17 +1,11 @@
-import { ChevronLeft } from '@mui/icons-material';
-import { Avatar, Box, Button, Grid, Typography } from '@mui/material';
+import { Avatar, Button, Grid } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ProfileDetailCard from 'components/ProfileDetailCard';
 import ProfileOverviewCard from 'components/ProfileOverviewCard';
-import { format } from 'date-fns';
 import User from 'models/user.model';
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-
-interface UserProps {
-  user: User;
-}
 
 const Profile = () => {
   const dispatch = useAppDispatch();

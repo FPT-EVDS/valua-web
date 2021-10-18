@@ -236,6 +236,9 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
                 error={formik.touched.address && Boolean(formik.errors.address)}
                 helperText={formik.touched.address && formik.errors.address}
                 onChange={formik.handleChange}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
             </Grid>
           </Grid>

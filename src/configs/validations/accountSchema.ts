@@ -13,7 +13,7 @@ const accountSchema = object({
     .max(50, `${ValidationMessage.MAX_LENGTH} 50`),
   fullName: string()
     .defined('Fullname is required')
-    .max(255, `${ValidationMessage.MAX_LENGTH} 255`),
+    .max(255,value => `${ValidationMessage.MAX_LENGTH} ${value.max}`),
   gender: number().integer().defined('Gender is required').oneOf([0, 1]),
   phoneNumber: string()
     .defined('Phone number is required')
