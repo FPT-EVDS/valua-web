@@ -158,6 +158,7 @@ const ShiftManagerDashboard = (): JSX.Element => {
                 onClick={() => {
                   // FIXME: FIX LOGOUT LOGIC HERE
                   localStorage.removeItem('access_token');
+                  localStorage.removeItem('refresh_token');
                   history.push('/');
                 }}
               >

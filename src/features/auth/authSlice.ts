@@ -23,12 +23,6 @@ export const login = createAsyncThunk(
   async (payload: LoginDto, { rejectWithValue }) => {
     try {
       const response = await authServices.login(payload);
-      const {
-        appUser: { role },
-        token,
-      } = response.data;
-      if (role === Role.Manager || role === Role.ShiftManager)
-        localStorage.setItem('access_token', token);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;

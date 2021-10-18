@@ -38,10 +38,12 @@ const LoginPage = () => {
         const user = unwrapResult(result);
         const {
           token,
-          appUser: { role },
+          appUser: { role, refreshToken },
         } = user;
-        if (role === Role.Manager || role === Role.ShiftManager)
+        if (role === Role.Manager || role === Role.ShiftManager) {
           localStorage.setItem('access_token', token);
+          localStorage.setItem('refresh_token', refreshToken);
+        }
         if (role === Role.Manager) history.push('/manager');
         else if (role === Role.ShiftManager) history.push('/shift-manager');
         else throw new Error('Invalid role');
