@@ -71,6 +71,19 @@ export const disableAccount = createAsyncThunk(
   },
 );
 
+export const activeAccount = createAsyncThunk(
+  'accounts/active',
+  async (appUserId: string, { rejectWithValue }) => {
+    try {
+      const response = await accountServices.activeAccount(appUserId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: AccountState = {
   isLoading: false,
@@ -96,18 +109,21 @@ export const accountSlice = createSlice({
         state.current.totalItems += 1;
         state.isLoading = false;
       })
-      .addCase(disableAccount.fulfilled, (state, action) => {
-        const index = state.current.accounts.findIndex(
-          account => account.appUserId === action.payload.appUserId,
-        );
-        state.current.accounts[index].isActive = action.payload.isActive;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addMatcher(
         isAnyOf(getAccounts.fulfilled, searchByFullName.fulfilled),
         (state, action) => {
           state.current = action.payload;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
+      .addMatcher(
+        isAnyOf(disableAccount.fulfilled, activeAccount.fulfilled),
+        (state, action) => {
+          const index = state.current.accounts.findIndex(
+            account => account.appUserId === action.payload.appUserId,
+          );
+          state.current.accounts[index].isActive = action.payload.isActive;
           state.error = '';
           state.isLoading = false;
         },
