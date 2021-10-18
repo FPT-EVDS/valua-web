@@ -9,7 +9,7 @@ import {
 import { AxiosError } from 'axios';
 import CameraDto from 'dtos/camera.dto';
 import CamerasDto from 'dtos/cameras.dto';
-import { SearchCameraByNameDto } from 'dtos/searchCameraByName.dto';
+import { SearchCameraDto } from 'dtos/searchCameraByName.dto';
 import Camera from 'models/camera.model';
 import cameraServices from 'services/camera.service';
 
@@ -32,9 +32,9 @@ export const getCameras = createAsyncThunk(
   },
 );
 
-export const searchByName = createAsyncThunk(
-  'cameras/searchByName',
-  async (payload: SearchCameraByNameDto, { rejectWithValue }) => {
+export const searchCamera = createAsyncThunk(
+  'cameras/search',
+  async (payload: SearchCameraDto, { rejectWithValue }) => {
     try {
       const response = await cameraServices.searchCameras(payload);
       return response.data;
@@ -117,7 +117,7 @@ export const camerasSlice = createSlice({
         state.isLoading = false;
       })
       .addMatcher(
-        isAnyOf(getCameras.fulfilled, searchByName.fulfilled),
+        isAnyOf(getCameras.fulfilled, searchCamera.fulfilled),
         (state, action) => {
           state.current = action.payload;
           state.error = '';

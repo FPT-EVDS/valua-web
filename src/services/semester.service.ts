@@ -49,7 +49,6 @@ const semesterServices = {
       params: {
         page,
         search,
-        title: 'name',
       },
     });
   },

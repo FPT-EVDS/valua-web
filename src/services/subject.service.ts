@@ -47,7 +47,6 @@ const subjectServices = {
       params: {
         page,
         search,
-        title: 'name',
       },
     });
   },

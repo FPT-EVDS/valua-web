@@ -49,7 +49,6 @@ const roomServices = {
     return axiosClient.get(url, {
       params: {
         page,
-        title: 'name',
         search,
       },
     });
@@ -59,11 +58,11 @@ const roomServices = {
     cameraId,
   }: AddCameraToRoomDto): Promise<AxiosResponse<Camera>> => {
     const url = `/rooms/${roomId}/addCamera`;
-    return axiosClient.post(url, { cameraId });
+    return axiosClient.patch(url, { cameraId });
   },
   removeCameraFromRoom: (roomId: string): Promise<AxiosResponse<Camera>> => {
     const url = `/rooms/${roomId}/removeCamera`;
-    return axiosClient.get(url);
+    return axiosClient.patch(url);
   },
 };
 

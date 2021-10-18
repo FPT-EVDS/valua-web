@@ -1,5 +1,6 @@
 import { Autocomplete, TextField } from '@mui/material';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import Status from 'enums/status.enum';
 import {
   disableAddCamera,
   enableAddCamera,
@@ -19,9 +20,9 @@ const CameraDropdown = ({ onChange }: Props) => {
 
   const fetchCameras = async () => {
     const response = await cameraServices.searchCameras({
-      title: 'status',
-      name: '1',
-      numOfPage: 0,
+      search: '',
+      status: Status.isActive,
+      page: 0,
     });
     if (response.data.cameras.length > 0) {
       setCameraOptions(response.data.cameras);

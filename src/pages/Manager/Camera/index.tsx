@@ -22,7 +22,7 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import { format } from 'date-fns';
 import Status from 'enums/status.enum';
-import { disableCamera, searchByName } from 'features/camera/camerasSlice';
+import { disableCamera, searchCamera } from 'features/camera/camerasSlice';
 import Room from 'models/room.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -60,19 +60,15 @@ const CameraPage = () => {
     id: camera.cameraId,
   }));
 
-  const fetchCamera = async (
-    name: string,
-    numOfPage: number,
-    title: string,
-  ) => {
+  const fetchCamera = async (search: string, pageNum: number) => {
     const actionResult = await dispatch(
-      searchByName({ name, numOfPage, title }),
+      searchCamera({ search, page: pageNum }),
     );
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchCamera(searchValue, page, 'name').catch(error =>
+    fetchCamera(searchValue, page).catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
@@ -283,8 +279,7 @@ const CameraPage = () => {
   const handleSearch = async (inputValue: string) => {
     setSearchValue(inputValue);
     const result = await dispatch(
-      // FIXME: hard code title here
-      searchByName({ name: inputValue, numOfPage: 0, title: 'name' }),
+      searchCamera({ search: inputValue, page: 0 }),
     );
     unwrapResult(result);
   };
