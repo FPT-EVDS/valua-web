@@ -66,6 +66,10 @@ const accountServices = {
       params: { page, search },
     });
   },
+  resetPassword: (accountId: string): Promise<AxiosResponse<string>> => {
+    const url = `/accounts/reset/${accountId}`;
+    return axiosClient.post(url);
+  },
 };
 
 export default accountServices;

@@ -198,7 +198,7 @@ const SubjectPage = () => {
       <EVDSDataGrid
         pagination
         paginationMode="server"
-        rowsPerPageOptions={[]}
+        rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
         pageSize={DEFAULT_PAGE_SIZE}
         rowCount={totalItems}
         isLoading={isLoading}

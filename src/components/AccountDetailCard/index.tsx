@@ -333,33 +333,6 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                 onChange={formik.handleChange}
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="imageUrl"
-                autoFocus
-                margin="dense"
-                disabled={!isEditable}
-                label="Avatar"
-                fullWidth
-                value={formik.values.imageUrl || ''}
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Image />
-                    </InputAdornment>
-                  ),
-                }}
-                error={
-                  formik.touched.imageUrl && Boolean(formik.errors.imageUrl)
-                }
-                helperText={formik.touched.imageUrl && formik.errors.imageUrl}
-                onChange={formik.handleChange}
-              />
-            </Grid>
             {formik.values.userRole.roleID === 3 && (
               <>
                 <Grid item xs={12}>

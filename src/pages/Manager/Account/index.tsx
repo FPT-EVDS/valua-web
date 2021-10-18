@@ -1,10 +1,4 @@
-import {
-  Delete,
-  Description,
-  Edit,
-  FiberManualRecord,
-  PersonAdd,
-} from '@mui/icons-material';
+import { FiberManualRecord, PersonAdd } from '@mui/icons-material';
 import { Avatar, Box, Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
