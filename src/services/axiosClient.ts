@@ -1,5 +1,7 @@
 import axios, { AxiosError } from 'axios';
 
+let isAlreadyFetchingAccessToken = false;
+
 const axiosClient = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
   headers: {
@@ -34,19 +36,23 @@ const responseInterceptor = axiosClient.interceptors.response.use(
     axios.interceptors.response.eject(responseInterceptor);
     const refreshToken = localStorage.getItem('refresh_token');
     try {
-      if (refreshToken) {
+      if (!isAlreadyFetchingAccessToken && refreshToken) {
+        isAlreadyFetchingAccessToken = true;
         const response = await axiosClient.get('/authentication/refreshToken', {
           headers: {
             refreshToken,
           },
         });
         const { token } = response.data;
+        isAlreadyFetchingAccessToken = false;
         localStorage.setItem('access_token', token);
         errorResponse.response.config.headers.Authorization = `Bearer ${String(
           token,
         )}`;
       }
     } catch (error) {
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('access_token');
       return Promise.reject(error);
     }
     return axiosClient(errorResponse.response.config);
