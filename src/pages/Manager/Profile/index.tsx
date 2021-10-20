@@ -1,16 +1,10 @@
 import { Avatar, Button, Grid } from '@mui/material';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useAppSelector } from 'app/hooks';
 import ProfileDetailCard from 'components/ProfileDetailCard';
 import ProfileOverviewCard from 'components/ProfileOverviewCard';
-import User from 'models/user.model';
-import { useSnackbar } from 'notistack';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 
 const Profile = () => {
-  const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
-  const history = useHistory();
   const { user, isLoading } = useAppSelector(state => state.auth);
 
   const GroupButtons = () => (
@@ -45,7 +39,6 @@ const Profile = () => {
                     alt={`${String(user?.fullName)} avatar`}
                   />
                 }
-                id={user.appUserId}
                 role={user.role}
                 actionButtons={<GroupButtons />}
               />

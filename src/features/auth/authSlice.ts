@@ -3,13 +3,13 @@ import {
   createSlice,
   isAnyOf,
   isPending,
-  isRejected
+  isRejected,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import LoginDto from 'dtos/login.dto';
-import Role from 'enums/role.enum';
 import User from 'models/user.model';
 import authServices from 'services/auth.service';
+
 import { RootState } from '../../app/store';
 
 interface AuthState {

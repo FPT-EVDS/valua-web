@@ -11,7 +11,7 @@ import {
   IconButton,
   MenuItem,
   TextField,
-  Typography
+  Typography,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';

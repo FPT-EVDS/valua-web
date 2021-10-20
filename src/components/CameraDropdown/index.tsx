@@ -1,5 +1,5 @@
 import { Autocomplete, TextField } from '@mui/material';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useAppDispatch } from 'app/hooks';
 import Status from 'enums/status.enum';
 import {
   disableAddCamera,

@@ -25,7 +25,6 @@ import EVDSDataGrid from 'components/EVDSDataGrid';
 import StringAvatar from 'components/StringAvatar';
 import activeStatus from 'configs/constants/activeStatus';
 import accountRoles from 'configs/constants/roles.constant';
-import Role from 'enums/role.enum';
 import Status from 'enums/status.enum';
 import {
   activeAccount,
@@ -65,9 +64,7 @@ const AccountPage = () => {
     role: account.role.roleName,
     id: account.appUserId,
   }));
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    { field: 'lastModifiedDate', sort: 'desc' },
-  ]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const fetchAccount = () => {
     let sortParam = '';
@@ -85,12 +82,12 @@ const AccountPage = () => {
       }),
     )
       .then(result => unwrapResult(result))
-      .catch(error =>
+      .catch(error => {
         enqueueSnackbar(error, {
           variant: 'error',
           preventDuplicate: true,
-        }),
-      );
+        });
+      });
   };
 
   useEffect(() => {

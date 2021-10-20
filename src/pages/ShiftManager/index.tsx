@@ -10,7 +10,7 @@ import {
   ReportProblem,
   ReportProblemOutlined,
 } from '@mui/icons-material';
-import { AppBar, Badge, Box, Drawer, IconButton, Toolbar } from '@mui/material';
+import { AppBar, Badge, Box, IconButton, Toolbar } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
 import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';

@@ -1,4 +1,3 @@
-/* eslint-disable prefer-destructuring */
 import {
   Add,
   Delete,
@@ -58,12 +57,12 @@ const SemesterPage = () => {
     ...semester,
     id: semester.semesterId,
   }));
-  const [initialValues, setInitialValues] = useState<SemesterDto>({
+  const initialValues: SemesterDto = {
     semesterId: null,
     semesterName: '',
     beginDate: new Date(),
     endDate: add(new Date(), { months: 1 }),
-  });
+  };
 
   const fetchSemesters = async (payload: SearchByNameDto) => {
     const actionResult = await dispatch(searchBySemesterName(payload));

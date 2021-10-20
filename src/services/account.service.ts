@@ -1,10 +1,8 @@
-import SearchAccountDto from 'dtos/searchAcount.dto';
 import { AxiosResponse } from 'axios';
 import AccountsDto from 'dtos/accounts.dto';
-import AddAccountDto from 'dtos/addAccount.dto';
 import AppUserDto from 'dtos/appUser.dto';
 import AppUserDtoStatus from 'dtos/appUserDtoStatus';
-import { SearchByNameDto } from 'dtos/searchByName.dto';
+import SearchAccountDto from 'dtos/searchAcount.dto';
 import Account from 'models/account.model';
 
 import axiosClient from './axiosClient';
