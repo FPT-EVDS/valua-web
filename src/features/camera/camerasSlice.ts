@@ -9,7 +9,7 @@ import {
 import { AxiosError } from 'axios';
 import CameraDto from 'dtos/camera.dto';
 import CamerasDto from 'dtos/cameras.dto';
-import { SearchCameraDto } from 'dtos/searchCameraByName.dto';
+import { SearchCameraDto } from 'dtos/searchCamera.dto';
 import Camera from 'models/camera.model';
 import cameraServices from 'services/camera.service';
 

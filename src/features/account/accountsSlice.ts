@@ -8,9 +8,7 @@ import {
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import AccountsDto from 'dtos/accounts.dto';
-import AddAccountDto from 'dtos/addAccount.dto';
-import AppUserDto from 'dtos/appUser.dto';
-import { SearchByNameDto } from 'dtos/searchByName.dto';
+import SearchAccountDto from 'dtos/searchAcount.dto';
 import Account from 'models/account.model';
 import accountServices from 'services/account.service';
 
@@ -33,9 +31,9 @@ export const getAccounts = createAsyncThunk(
   },
 );
 
-export const searchByFullName = createAsyncThunk(
-  'accounts/searchByFullName',
-  async (payload: SearchByNameDto, { rejectWithValue }) => {
+export const searchAccount = createAsyncThunk(
+  'accounts/search',
+  async (payload: SearchAccountDto, { rejectWithValue }) => {
     try {
       const response = await accountServices.searchAccounts(payload);
       return response.data;
@@ -111,7 +109,7 @@ export const accountSlice = createSlice({
         state.isLoading = false;
       })
       .addMatcher(
-        isAnyOf(getAccounts.fulfilled, searchByFullName.fulfilled),
+        isAnyOf(getAccounts.fulfilled, searchAccount.fulfilled),
         (state, action) => {
           state.current = action.payload;
           state.error = '';

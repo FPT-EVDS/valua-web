@@ -1762,7 +1762,7 @@
   resolved "https://registry.yarnpkg.com/@mui/types/-/types-7.0.0.tgz#a7398502bc9c508875aafcbe28aea599b2c3d203"
   integrity sha512-M/tkF2pZ4uoPhZ8pnNhlVnOFtz6F3dnYKIsnj8MuXKT6d26IE2u0UjA8B0275ggN74dR9rlHG5xJt5jgDx/Ung==
 
-"@mui/utils@^5.0.0", "@mui/utils@^5.0.1":
+"@mui/utils@^5.0.1":
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@mui/utils/-/utils-5.0.1.tgz#d4f0f41b82db6ac273920a1b5b6a4de7879271f5"
   integrity sha512-GWO104N+o9KG5fKiTEYnAg7kONKEg3vLN+VROAU0f3it6lFGLCVPcQYex/1gJ4QAy96u6Ez8/Hmmhi1+3cX0tQ==
@@ -1773,12 +1773,12 @@
     prop-types "^15.7.2"
     react-is "^17.0.2"
 
-"@mui/x-data-grid@5.0.0-beta.1":
-  version "5.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@mui/x-data-grid/-/x-data-grid-5.0.0-beta.1.tgz#29fc77c95c772b3ace4f9a99f88753a6c88396f1"
-  integrity sha512-EPpCNZ2WPt4AsSTVxdLWRgeF8Z7GNpnPZtP8vhN+a1Xcm1a1zq8rGnFqkwWTzrm4vZa1Kf3aWyBjnMUgVey/bQ==
+"@mui/x-data-grid@5.0.0-beta.4":
+  version "5.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@mui/x-data-grid/-/x-data-grid-5.0.0-beta.4.tgz#69127170a433f541b38c67ec31fdb36ea1156b89"
+  integrity sha512-4jBroEUlyqzAXzBYtFLZttHVuM04FvraA08/+Z8YHmbv8BkcwkCRsXwpmJMVtV+DaAcN/B5EkR/Xs6VrYnSvZQ==
   dependencies:
-    "@mui/utils" "^5.0.0"
+    "@mui/utils" "^5.0.1"
     clsx "^1.1.1"
     prop-types "^15.7.2"
     reselect "^4.0.0"

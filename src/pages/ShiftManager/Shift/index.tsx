@@ -120,16 +120,16 @@ const ShiftPage = () => {
       headerName: 'Begin time',
       flex: 0.1,
       minWidth: 130,
-      valueFormatter: ({ id, field, getValue }) =>
-        format(new Date(String(getValue(id, field))), 'dd/MM/yyyy HH:mm'),
+      valueFormatter: ({ value }) =>
+        format(new Date(String(value)), 'dd/MM/yyyy HH:mm'),
     },
     {
       field: 'finishTime',
       headerName: 'Finish time',
       flex: 0.1,
       minWidth: 130,
-      valueFormatter: ({ id, field, getValue }) =>
-        format(new Date(String(getValue(id, field))), 'dd/MM/yyyy HH:mm'),
+      valueFormatter: ({ value }) =>
+        format(new Date(String(value)), 'dd/MM/yyyy HH:mm'),
     },
     {
       field: 'isActive',

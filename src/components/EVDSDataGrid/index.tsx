@@ -1,10 +1,14 @@
 /* eslint-disable react/require-default-props */
 import { FilterAlt, Search } from '@mui/icons-material';
 import {
+  alpha,
   Button,
   Grid,
   InputAdornment,
   LinearProgress,
+  Menu,
+  MenuProps,
+  styled,
   TextField,
   Typography,
 } from '@mui/material';
@@ -21,6 +25,7 @@ import React, { useState } from 'react';
 interface DataGridHeaderProps {
   title: string;
   addButton: React.ReactNode;
+  filterItems?: React.ReactNode;
   hasFilter?: boolean;
   handleSearch?: (searchValue: string) => void;
 }
@@ -32,13 +37,68 @@ interface CustomDataGridProps extends DataGridHeaderProps, DataGridProps {
   hasFilter?: boolean;
 }
 
+const StyledMenu = styled((props: MenuProps) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    minWidth: 200,
+    padding: 8,
+    color:
+      theme.palette.mode === 'light'
+        ? 'rgb(55, 65, 81)'
+        : theme.palette.grey[300],
+    boxShadow:
+      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+    '& .MuiMenu-list': {
+      padding: '4px 0',
+    },
+    '& .MuiMenuItem-root': {
+      '& .MuiSvgIcon-root': {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(1.5),
+      },
+      '&:active': {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          theme.palette.action.selectedOpacity,
+        ),
+      },
+    },
+  },
+}));
+
 const EVDSDataGridHeader = ({
   title,
   addButton,
   hasFilter,
   handleSearch,
+  filterItems,
 }: DataGridHeaderProps) => {
   const [searchValue, setSearchValue] = useState<string>('');
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleOnKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && handleSearch) {
@@ -78,9 +138,29 @@ const EVDSDataGridHeader = ({
           </Grid>
           {hasFilter && (
             <Grid item alignItems="stretch" display="flex">
-              <Button variant="outlined" startIcon={<FilterAlt />}>
+              <Button
+                variant="outlined"
+                startIcon={<FilterAlt />}
+                id="demo-customized-button"
+                aria-controls="demo-customized-menu"
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                disableElevation
+                onClick={handleClick}
+              >
                 Filter
               </Button>
+              <StyledMenu
+                id="demo-customized-menu"
+                MenuListProps={{
+                  'aria-labelledby': 'demo-customized-button',
+                }}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+              >
+                {filterItems}
+              </StyledMenu>
             </Grid>
           )}
           <Grid item alignItems="stretch" display="flex">
@@ -107,6 +187,7 @@ const EVDSDataGrid = ({
   title,
   addButton,
   hasFilter = false,
+  filterItems,
   handleSearch,
   ...otherProps
 }: CustomDataGridProps) => (
@@ -115,6 +196,7 @@ const EVDSDataGrid = ({
       title={title}
       addButton={addButton}
       hasFilter={hasFilter}
+      filterItems={filterItems}
       handleSearch={handleSearch}
     />
     <div style={{ height: 650, width: '100%' }}>
