@@ -10,28 +10,19 @@ import {
   ReportProblem,
   ReportProblemOutlined,
 } from '@mui/icons-material';
-import {
-  AppBar,
-  Avatar,
-  Badge,
-  Box,
-  Drawer,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-} from '@mui/material';
+import { AppBar, Badge, Box, Drawer, IconButton, Toolbar } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
-import DrawerContent, { DrawerItem } from 'components/CustomDrawer';
+import AvatarProfileMenu from 'components/AvatarProfileMenu';
+import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
 import React, { useState } from 'react';
-import { Link, Redirect, Route, Switch, useHistory } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 import DashboardPage from './Dashboard';
 import FeedbackPage from './Feedback';
+import Profile from './Profile';
 import ShiftPage from './Shift';
 import DetailShiftPage from './Shift/DetailShift';
 import ViolationPage from './Violation';
-import Profile from './Profile';
 
 const drawerItems: Array<DrawerItem> = [
   {
@@ -61,19 +52,9 @@ const drawerItems: Array<DrawerItem> = [
 ];
 
 const ShiftManagerDashboard = (): JSX.Element => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const user = useAppSelector(state => state.auth.user);
   const drawerWidth = 240;
-  const history = useHistory();
-
-  const handleMenu = (event: React.MouseEvent<HTMLElement>): void => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = (): void => {
-    setAnchorEl(null);
-  };
 
   const handleDrawerToggle = (): void => {
     setMobileOpen(!mobileOpen);
@@ -110,99 +91,19 @@ const ShiftManagerDashboard = (): JSX.Element => {
                 <Notifications />
               </Badge>
             </IconButton>
-            <IconButton size="large" onClick={handleMenu}>
-              <Avatar
-                src={String(user?.profileImageUrl)}
-                alt={String(user?.fullName)}
-                sx={{ bgcolor: '#1890ff' }}
-              />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              onClick={handleClose}
-              PaperProps={{
-                elevation: 0,
-                sx: {
-                  overflow: 'visible',
-                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                  mt: 1.5,
-                  '& .MuiAvatar-root': {
-                    width: 32,
-                    height: 32,
-                    ml: -0.5,
-                    mr: 1,
-                  },
-                  '&:before': {
-                    content: '""',
-                    display: 'block',
-                    position: 'absolute',
-                    top: 0,
-                    right: 28,
-                    width: 10,
-                    height: 10,
-                    bgcolor: 'background.paper',
-                    transform: 'translateY(-50%) rotate(45deg)',
-                    zIndex: 0,
-                  },
-                },
-              }}
-              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
-              <MenuItem component={Link} to="/shift-manager/profile">
-                Profile
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  // FIXME: FIX LOGOUT LOGIC HERE
-                  localStorage.removeItem('access_token');
-                  localStorage.removeItem('refresh_token');
-                  history.push('/');
-                }}
-              >
-                Log out
-              </MenuItem>
-            </Menu>
+            <AvatarProfileMenu
+              profileLink="/shift-manager/profile"
+              user={user}
+            />
           </Box>
         </Toolbar>
       </AppBar>
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-      >
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-            },
-          }}
-        >
-          <DrawerContent items={drawerItems} />
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-            },
-          }}
-          open
-        >
-          <DrawerContent items={drawerItems} />
-        </Drawer>
-      </Box>
+      <CustomDrawer
+        drawerWidth={drawerWidth}
+        items={drawerItems}
+        handleDrawerToggle={handleDrawerToggle}
+        mobileOpen={mobileOpen}
+      />
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
         <Switch>

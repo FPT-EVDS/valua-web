@@ -55,6 +55,19 @@ export const disableAccount = createAsyncThunk(
   },
 );
 
+export const activeAccount = createAsyncThunk(
+  'detailAccount/active',
+  async (appUserId: string, { rejectWithValue }) => {
+    try {
+      const response = await accountServices.activeAccount(appUserId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 export const resetPassword = createAsyncThunk(
   'detailAccount/resetPassword',
   async (appUserId: string, { rejectWithValue }) => {
@@ -81,15 +94,18 @@ export const detailAccountSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(disableAccount.fulfilled, (state, action) => {
-        if (state.account) state.account.isActive = action.payload.isActive;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addCase(resetPassword.fulfilled, state => {
         state.error = '';
         state.isLoading = false;
       })
+      .addMatcher(
+        isAnyOf(disableAccount.fulfilled, activeAccount.fulfilled),
+        (state, action) => {
+          if (state.account) state.account.isActive = action.payload.isActive;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
       .addMatcher(
         isAnyOf(getAccount.fulfilled, updateAccount.fulfilled),
         (state, action) => {

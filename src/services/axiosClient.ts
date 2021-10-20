@@ -1,6 +1,5 @@
-import axios, { AxiosError } from 'axios';
-
-let isAlreadyFetchingAccessToken = false;
+import axios from 'axios';
+import createAuthRefreshInterceptor from 'axios-auth-refresh';
 
 const axiosClient = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -28,36 +27,30 @@ axiosClient.interceptors.request.use(async config => {
   };
 });
 
-const responseInterceptor = axiosClient.interceptors.response.use(
-  response => response,
-  async (errorResponse: AxiosError) => {
-    if (errorResponse.response?.status !== 401)
-      return Promise.reject(errorResponse);
-    axios.interceptors.response.eject(responseInterceptor);
-    const refreshToken = localStorage.getItem('refresh_token');
-    try {
-      if (!isAlreadyFetchingAccessToken && refreshToken) {
-        isAlreadyFetchingAccessToken = true;
-        const response = await axiosClient.get('/authentication/refreshToken', {
-          headers: {
-            refreshToken,
-          },
-        });
-        const { token } = response.data;
-        isAlreadyFetchingAccessToken = false;
-        localStorage.setItem('access_token', token);
-        errorResponse.response.config.headers.Authorization = `Bearer ${String(
-          token,
-        )}`;
-      }
-    } catch (error) {
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('access_token');
-      return Promise.reject(error);
-    }
-    return axiosClient(errorResponse.response.config);
-  },
-);
+const refreshAuthLogic = async (failedRequest: {
+  response: { config: { headers: { [x: string]: string } } };
+}) => {
+  const refreshToken = localStorage.getItem('refresh_token');
+  try {
+    const response = await axiosClient.get('/authentication/refreshToken', {
+      headers: {
+        refreshToken,
+      },
+    });
+    const { token } = response.data;
+    localStorage.setItem('access_token', token);
+    failedRequest.response.config.headers.Authorization = `Bearer ${String(
+      token,
+    )}`;
+    return await Promise.resolve();
+  } catch (error) {
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('access_token');
+    return await Promise.reject(error);
+  }
+};
+
+createAuthRefreshInterceptor(axiosClient, refreshAuthLogic);
 
 // HOW TO CALL EXTERNAL API
 

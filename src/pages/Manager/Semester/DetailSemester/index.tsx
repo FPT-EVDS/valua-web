@@ -177,21 +177,19 @@ const DetailSemesterPage = () => {
       field: 'actions',
       headerName: 'Actions',
       type: 'actions',
+      hide: semester?.isActive !== true,
       getActions: ({ getValue, id: rowId }) => {
         const subjectCode = String(getValue(rowId, 'subjectCode'));
         const subjectId = String(getValue(rowId, 'subjectId'));
-        const isActive = getValue(rowId, 'isActive');
-        return isActive
-          ? [
-              <GridActionsCellItem
-                label="Delete"
-                icon={<Delete />}
-                onClick={() => {
-                  showDeleteSubjectConfirmation(subjectCode, subjectId);
-                }}
-              />,
-            ]
-          : [];
+        return [
+          <GridActionsCellItem
+            label="Delete"
+            icon={<Delete />}
+            onClick={() => {
+              showDeleteSubjectConfirmation(subjectCode, subjectId);
+            }}
+          />,
+        ];
       },
     },
   ];

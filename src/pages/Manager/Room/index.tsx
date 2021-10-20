@@ -147,7 +147,7 @@ const RoomPage = () => {
             {camera.cameraName}
           </Link>
         ) : (
-          <Typography>None</Typography>
+          <Typography>N/A</Typography>
         );
       },
     },

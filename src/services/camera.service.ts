@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 import CameraDto from 'dtos/camera.dto';
 import CamerasDto from 'dtos/cameras.dto';
 import DisableCamera from 'dtos/disableCamera.dto';
-import { SearchCameraDto } from 'dtos/searchCameraByName.dto';
+import { SearchCameraDto } from 'dtos/searchCamera.dto';
 import Camera from 'models/camera.model';
 
 import axiosClient from './axiosClient';

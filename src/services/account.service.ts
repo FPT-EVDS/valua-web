@@ -1,3 +1,4 @@
+import SearchAccountDto from 'dtos/searchAcount.dto';
 import { AxiosResponse } from 'axios';
 import AccountsDto from 'dtos/accounts.dto';
 import AddAccountDto from 'dtos/addAccount.dto';
@@ -60,10 +61,13 @@ const accountServices = {
   searchAccounts: ({
     page,
     search,
-  }: SearchByNameDto): Promise<AxiosResponse<AccountsDto>> => {
+    role,
+    sort,
+    status,
+  }: SearchAccountDto): Promise<AxiosResponse<AccountsDto>> => {
     const url = `/accounts`;
     return axiosClient.get(url, {
-      params: { page, search },
+      params: { page, search, role, sort, status },
     });
   },
   resetPassword: (accountId: string): Promise<AxiosResponse<string>> => {

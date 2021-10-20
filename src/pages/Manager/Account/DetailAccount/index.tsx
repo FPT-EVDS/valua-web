@@ -7,6 +7,7 @@ import DetailAccountCard from 'components/AccountDetailCard';
 import AccountOverviewCard from 'components/AccountOverviewCard';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import {
+  activeAccount,
   disableAccount,
   getAccount,
   resetPassword,
@@ -64,6 +65,22 @@ const DetailAccountPage = () => {
     }
   };
 
+  const handleActiveAccount = async (accountId: string) => {
+    try {
+      const result = await dispatch(activeAccount(accountId));
+      unwrapResult(result);
+      enqueueSnackbar('Active account success', {
+        variant: 'success',
+        preventDuplicate: true,
+      });
+    } catch (error) {
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      });
+    }
+  };
+
   const handleResetPassword = async (appUserId: string) => {
     try {
       const result = await dispatch(resetPassword(appUserId));
@@ -83,6 +100,7 @@ const DetailAccountPage = () => {
   const showDeleteConfirmation = (accountId: string) => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
+      title: `Do you want to disable ${String(account?.fullName)} ?`,
       open: true,
       handleAccept: () => handleDisableAccount(accountId),
     }));
@@ -92,21 +110,40 @@ const DetailAccountPage = () => {
     <>
       {!isLoading ? (
         <>
-          <Button variant="text">Upload picture</Button>
-          <Button
-            variant="text"
-            sx={{ color: grey[700] }}
-            onClick={() => handleResetPassword(id)}
-          >
-            Reset password
-          </Button>
-          <Button
-            variant="text"
-            color="error"
-            onClick={() => showDeleteConfirmation(id)}
-          >
-            Disable account
-          </Button>
+          {account?.isActive ? (
+            <>
+              <Button variant="text">Upload picture</Button>
+              <Button
+                variant="text"
+                sx={{ color: grey[700] }}
+                onClick={() => handleResetPassword(id)}
+              >
+                Reset password
+              </Button>
+              <Button
+                variant="text"
+                color="error"
+                onClick={() => showDeleteConfirmation(id)}
+              >
+                Disable account
+              </Button>
+            </>
+          ) : (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              sx={{ width: '100%' }}
+            >
+              <Button
+                variant="text"
+                color="success"
+                onClick={() => handleActiveAccount(id)}
+              >
+                Enable account
+              </Button>
+            </Box>
+          )}
         </>
       ) : (
         <Box
