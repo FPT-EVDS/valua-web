@@ -5,6 +5,6 @@ export default interface SearchAccountDto {
   search: string;
   page: number;
   status?: Status;
-  role?: Role;
+  role?: Role | string;
   sort?: string;
 }

@@ -80,7 +80,7 @@ const AccountPage = () => {
         search: searchValue,
         page,
         sort: sortParam.length > 0 ? sortParam : undefined,
-        role: filterRole as Role,
+        role: filterRole,
         status: filterStatus as unknown as Status,
       }),
     )
@@ -288,7 +288,6 @@ const AccountPage = () => {
       <Stack>
         <TextField
           name="status"
-          autoFocus
           select
           value={filterStatus}
           label="Status"
