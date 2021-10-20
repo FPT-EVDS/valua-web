@@ -1,5 +1,5 @@
 import ValidationMessage from 'enums/validationMessage';
-import { date, object, string, number } from 'yup';
+import { date, number,object, string } from 'yup';
 
 const appUserSchema = object({
   fullName: string()

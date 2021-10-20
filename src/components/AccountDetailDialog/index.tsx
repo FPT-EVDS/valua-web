@@ -1,11 +1,9 @@
 import {
   AccountCircle,
-  AddPhotoAlternate,
   ChevronLeft,
   Close,
   Email,
   Home,
-  Image,
   PermIdentity,
   Phone,
 } from '@mui/icons-material';
@@ -35,7 +33,6 @@ import AvatarFilePicker from 'components/AvatarFilePicker';
 import genders from 'configs/constants/genders.constant';
 import accountRoles from 'configs/constants/roles.constant';
 import { accountSchema } from 'configs/validations';
-import AddAccountDto from 'dtos/addAccount.dto';
 import AppUserDto from 'dtos/appUser.dto';
 import { addAccount } from 'features/account/accountsSlice';
 import { useFormik } from 'formik';
@@ -112,7 +109,6 @@ const rolesProps: AvatarWithTextProps[] = [
 // eslint-disable-next-line sonarjs/cognitive-complexity
 const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [disable, setDisable] = useState<boolean>(false);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.account.isLoading);
@@ -545,7 +541,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     variant="contained"
                     sx={{ width: 150 }}
                     loading={isLoading}
-                    disabled={disable}
                   >
                     Create
                   </LoadingButton>

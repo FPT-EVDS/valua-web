@@ -4,9 +4,8 @@ import {
   EditOff,
   Email,
   Home,
-  Image,
   PermIdentity,
-  Phone
+  Phone,
 } from '@mui/icons-material';
 import { DatePicker, LoadingButton } from '@mui/lab';
 import {
@@ -21,7 +20,7 @@ import {
   InputAdornment,
   MenuItem,
   TextField,
-  Typography
+  Typography,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';

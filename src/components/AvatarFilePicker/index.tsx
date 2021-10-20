@@ -11,10 +11,6 @@ const AvatarFilePicker = ({ name, onChange }: Props) => {
   const [image, setImageUrl] = useState<string | null>(null);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const cleanup = () => {
-    URL.revokeObjectURL(String(image));
-  };
-
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newImage = event.target?.files?.[0];
 

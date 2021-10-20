@@ -1,5 +1,7 @@
 import axios from 'axios';
-import createAuthRefreshInterceptor from 'axios-auth-refresh';
+import createAuthRefreshInterceptor, {
+  AxiosAuthRefreshRequestConfig,
+} from 'axios-auth-refresh';
 
 const axiosClient = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -36,7 +38,8 @@ const refreshAuthLogic = async (failedRequest: {
       headers: {
         refreshToken,
       },
-    });
+      skipAuthRefresh: true,
+    } as AxiosAuthRefreshRequestConfig);
     const { token } = response.data;
     localStorage.setItem('access_token', token);
     failedRequest.response.config.headers.Authorization = `Bearer ${String(
