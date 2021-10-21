@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import DisableShiftDto from 'dtos/disableShift.dto';
+import SearchParams from 'dtos/searchParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftsDto from 'dtos/shifts.dto';
 import Shift from 'models/shift.model';
@@ -7,9 +8,12 @@ import Shift from 'models/shift.model';
 import axiosClient from './axiosClient';
 
 const shiftServices = {
-  getShifts: (numOfPage: number): Promise<AxiosResponse<ShiftsDto>> => {
+  getShifts: ({
+    page,
+    sort,
+  }: SearchParams): Promise<AxiosResponse<ShiftsDto>> => {
     const url = `/shifts`;
-    return axiosClient.get(url, { params: { numOfPage } });
+    return axiosClient.get(url, { params: { page, sort } });
   },
   getShift: (id: string): Promise<AxiosResponse<Shift>> => {
     const url = `/shifts/${id}`;
@@ -28,7 +32,7 @@ const shiftServices = {
     return axiosClient.patch(url, [
       {
         op: 'replace',
-        path: '/isActive',
+        path: '/status',
         value: 0,
       },
     ]);

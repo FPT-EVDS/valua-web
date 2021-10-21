@@ -29,25 +29,25 @@ const drawerItems: Array<DrawerItem> = [
   {
     name: 'Dashboard',
     icon: <DashboardOutlined />,
-    activeIcon: <DashboardIcon />,
+    activeIcon: <DashboardIcon color="primary" />,
     to: '/shift-manager/dashboard',
   },
   {
     name: 'Feedback',
     icon: <AnnouncementOutlined />,
-    activeIcon: <Announcement />,
+    activeIcon: <Announcement color="primary" />,
     to: '/shift-manager/feedback',
   },
   {
     name: 'Shift',
     icon: <EventOutlined />,
-    activeIcon: <Event />,
+    activeIcon: <Event color="primary" />,
     to: '/shift-manager/shift',
   },
   {
     name: 'Violation',
     icon: <ReportProblemOutlined />,
-    activeIcon: <ReportProblem />,
+    activeIcon: <ReportProblem color="primary" />,
     to: '/shift-manager/violation',
   },
 ];

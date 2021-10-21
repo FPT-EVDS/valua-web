@@ -1,5 +1,6 @@
-import { Add, Delete, Description, Edit } from '@mui/icons-material';
-import { Button, Typography } from '@mui/material';
+/* eslint-disable prefer-destructuring */
+import { Add, FiberManualRecord } from '@mui/icons-material';
+import { Box, Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -7,63 +8,72 @@ import {
   GridColDef,
   GridRowModel,
   GridRowParams,
+  GridSortModel,
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
+import ShiftDetailDialog from 'components/ShiftDetailDialog';
 import { format } from 'date-fns';
-import { reset } from 'features/shift/detailShiftSlice';
+import Status from 'enums/status.enum';
 import { deleteShift, getShifts } from 'features/shift/shiftSlice';
-import Room from 'models/room.model';
-import Subject from 'models/subject.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const ShiftPage = () => {
+  const DEFAULT_PAGE_SIZE = 20;
   const history = useHistory();
   const { url } = useRouteMatch();
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this shift ?`,
+      title: `Do you want to disable this shift ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
+  const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(0);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
-    current: { shifts },
+    current: { shifts, totalItems },
   } = useAppSelector(state => state.shift);
   const rows: GridRowModel[] = shifts.map(shift => ({
     ...shift,
     id: shift.shiftId,
   }));
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const fetchShift = async (numOfPage: number) => {
-    const actionResult = await dispatch(getShifts(numOfPage));
-    unwrapResult(actionResult);
+  const fetchShift = () => {
+    let sortParam = '';
+    if (sortModel.length > 0) {
+      const { field, sort } = sortModel[0];
+      sortParam = `${field},${String(sort)}`;
+    }
+    dispatch(getShifts({ page, sort: sortParam }))
+      .then(result => unwrapResult(result))
+      .catch(error =>
+        enqueueSnackbar(error, {
+          variant: 'error',
+          preventDuplicate: true,
+        }),
+      );
   };
 
   useEffect(() => {
-    fetchShift(0).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    fetchShift();
+  }, [page, sortModel]);
 
   const handleDeleteShift = async (shiftId: string) => {
     try {
       const result = await dispatch(deleteShift(shiftId));
       unwrapResult(result);
-      enqueueSnackbar('Disable shift success', {
+      enqueueSnackbar('Delete shift success', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -88,33 +98,13 @@ const ShiftPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove this shift`,
+      title: `Do you want to disable this shift`,
       handleAccept: () => handleDeleteShift(shiftId),
     }));
   };
 
   const columns: Array<GridColDef | GridActionsColDef> = [
     { field: 'shiftId', hide: true },
-    {
-      field: 'subject',
-      headerName: 'Subject',
-      flex: 0.1,
-      minWidth: 130,
-      renderCell: ({ getValue, id, field }) => {
-        const subject: Subject = getValue(id, field) as Subject;
-        return <Typography>{subject.subjectCode}</Typography>;
-      },
-    },
-    {
-      field: 'examRoom',
-      headerName: 'Room name',
-      flex: 0.1,
-      minWidth: 130,
-      renderCell: ({ getValue, id, field }) => {
-        const room: Room = getValue(id, field) as Room;
-        return <Typography>{room.roomName}</Typography>;
-      },
-    },
     {
       field: 'beginTime',
       headerName: 'Begin time',
@@ -132,19 +122,42 @@ const ShiftPage = () => {
         format(new Date(String(value)), 'dd/MM/yyyy HH:mm'),
     },
     {
-      field: 'isActive',
+      field: 'description',
+      headerName: 'Description',
+      flex: 0.1,
+      minWidth: 130,
+      sortable: false,
+    },
+    {
+      field: 'status',
       headerName: 'Status',
       flex: 0.1,
       minWidth: 130,
-      renderCell: ({ id, field, getValue }) => {
-        const active = getValue(id, field);
+      renderCell: params => {
+        const active = params.getValue(params.id, 'status');
+        let color = '#1890ff';
+        let statusText = 'Ready';
+        switch (active) {
+          case 1:
+            color = green[500];
+            statusText = 'Active';
+            break;
+
+          case 0:
+            color = red[500];
+            statusText = 'Disable';
+            break;
+
+          default:
+            break;
+        }
         return (
-          <Typography
-            variant="subtitle1"
-            color={active ? green[500] : red[500]}
-          >
-            {active ? 'Active' : 'Disable'}
-          </Typography>
+          <Box display="flex" alignItems="center">
+            <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
+            <Typography variant="subtitle1" color={color}>
+              {statusText}
+            </Typography>
+          </Box>
         );
       },
     },
@@ -154,28 +167,26 @@ const ShiftPage = () => {
       type: 'actions',
       getActions: params => {
         const shiftId = params.getValue(params.id, 'shiftId') as string;
-        const status = params.getValue(params.id, 'isActive') as string;
+        const status = params.getValue(params.id, 'status') as Status;
         const deleteItems = [
           <GridActionsCellItem
-            label="Delete"
-            icon={<Delete />}
+            label="View detail"
             showInMenu
-            onClick={() => showDeleteConfirmation(params)}
+            onClick={() => history.push(`${url}/${shiftId}`)}
           />,
           <GridActionsCellItem
             label="Edit"
-            icon={<Edit />}
             showInMenu
             onClick={() => history.push(`${url}/${shiftId}?edit=true`)}
           />,
           <GridActionsCellItem
-            label="View detail"
-            icon={<Description />}
+            label="Delete"
             showInMenu
-            onClick={() => history.push(`${url}/${shiftId}`)}
+            sx={{ color: red[500] }}
+            onClick={() => showDeleteConfirmation(params)}
           />,
         ];
-        if (!status) deleteItems.shift();
+        if (status === Status.isDisable) deleteItems.pop();
         return deleteItems;
       },
     },
@@ -186,21 +197,35 @@ const ShiftPage = () => {
       variant="contained"
       startIcon={<Add />}
       onClick={() => {
-        dispatch(reset());
-        history.push('/shift-manager/shift/add');
+        setOpen(true);
       }}
     >
       Add shift
     </Button>
   );
 
+  const handleSortModelChange = (newModel: GridSortModel) => {
+    setSortModel(newModel);
+  };
+
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
+      <ShiftDetailDialog open={open} handleClose={() => setOpen(false)} />
       <EVDSDataGrid
+        pagination
+        rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
+        pageSize={DEFAULT_PAGE_SIZE}
+        sortingMode="server"
+        paginationMode="server"
+        sortModel={sortModel}
+        onSortModelChange={handleSortModelChange}
+        rowCount={totalItems}
         isLoading={isLoading}
         title="Manage Shifts"
         columns={columns}
+        page={page}
+        onPageChange={newPage => setPage(newPage)}
         rows={rows}
         addButton={<AddButton />}
       />

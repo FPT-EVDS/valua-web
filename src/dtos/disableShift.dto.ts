@@ -1,4 +1,6 @@
+import Status from 'enums/status.enum';
+
 export default interface DisableShiftDto {
   shiftId: string;
-  isActive: boolean;
+  status: Status;
 }

@@ -6,6 +6,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import SearchParams from 'dtos/searchParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftsDto from 'dtos/shifts.dto';
 import Shift from 'models/shift.model';
@@ -19,9 +20,9 @@ interface ShiftsState {
 
 export const getShifts = createAsyncThunk(
   'shifts',
-  async (numOfPage: number, { rejectWithValue }) => {
+  async (payload: SearchParams, { rejectWithValue }) => {
     try {
-      const response = await shiftServices.getShifts(numOfPage);
+      const response = await shiftServices.getShifts(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -56,6 +57,19 @@ export const deleteShift = createAsyncThunk(
   },
 );
 
+export const addShift = createAsyncThunk(
+  'shifts/add',
+  async (payload: ShiftDto, { rejectWithValue }) => {
+    try {
+      const response = await shiftServices.addShift(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: ShiftsState = {
   isLoading: false,
@@ -79,6 +93,13 @@ export const shiftslice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(addShift.fulfilled, (state, action) => {
+        if (state.current.currentPage === 0)
+          state.current.shifts.unshift(action.payload);
+        state.current.totalItems += 1;
+        state.error = '';
+        state.isLoading = false;
+      })
       .addCase(updateShift.fulfilled, (state, action) => {
         const index = state.current.shifts.findIndex(
           shift => shift.shiftId === action.payload.shiftId,
@@ -91,7 +112,7 @@ export const shiftslice = createSlice({
         const index = state.current.shifts.findIndex(
           shift => shift.shiftId === action.payload.shiftId,
         );
-        if (index > -1) state.current.shifts.splice(index, 1);
+        state.current.shifts[index].status = action.payload.status;
         state.error = '';
         state.isLoading = false;
       })

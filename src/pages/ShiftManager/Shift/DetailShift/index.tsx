@@ -121,23 +121,23 @@ const DetailShiftPage = () => {
         {shift && (
           <>
             <Grid item xs={12} md={9} lg={4}>
-              <OverviewCard
+              {/* <OverviewCard
                 title={`${shift.subject.subjectCode} ${shift.semester.semesterName}`}
                 icon={<Event fontSize="large" />}
                 status={shift.isActive === true ? 1 : 0}
                 content={<OverviewContent shift={shift} />}
                 actionButtons={<GroupButtons />}
                 isSingleAction
-              />
+              /> */}
             </Grid>
           </>
         )}
         <Grid item xs={12} lg={shift ? 8 : 12}>
-          <ShiftDetailCard
+          {/* <ShiftDetailCard
             shift={shift}
             isLoading={isLoading}
             isUpdate={!!shift}
-          />
+          /> */}
         </Grid>
       </Grid>
     </div>

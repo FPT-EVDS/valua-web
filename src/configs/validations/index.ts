@@ -4,6 +4,7 @@ import appUserSchema from './appUserSchema';
 import cameraSchema from './cameraSchema';
 import roomSchema from './roomSchema';
 import semesterSchema from './semesterSchema';
+import shiftSchema from './shiftSchema';
 import subjectSchema from './subjectSchema';
 
 export {
@@ -13,5 +14,6 @@ export {
   cameraSchema,
   roomSchema,
   semesterSchema,
+  shiftSchema,
   subjectSchema,
 };

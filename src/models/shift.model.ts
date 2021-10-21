@@ -1,22 +1,23 @@
-import Account from './account.model';
-import Room from './room.model';
-import Semester from './semester.model';
-import Subject from './subject.model';
+import Status from 'enums/status.enum';
 
 export default interface Shift {
-  shiftId: string;
-  shiftManager: Account;
-  staff: Account;
-  // FIXME: add exam seat type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  examSeats: any[];
-  examRoom: Room;
-  semester: Semester;
-  subject: Subject;
+  shiftId: string | null;
+  shiftManager: {
+    appUserId: string;
+    email: string;
+    fullName: string;
+    phoneNumber: string;
+    imageUrl: string;
+    companyId: string;
+  };
+  semester: {
+    semesterId: string;
+    semesterName: string;
+  };
   beginTime: Date;
   finishTime: Date;
   description: string;
-  isActive: boolean;
+  status: Status;
   createdDate: Date;
   lastModifiedDate: Date;
 }

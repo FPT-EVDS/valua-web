@@ -20,7 +20,7 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import SemesterDetailDialog from 'components/SemesterDetailDialog';
 import { add, format } from 'date-fns';
-import { SearchByNameDto } from 'dtos/searchByName.dto';
+import SearchByNameDto from 'dtos/searchByName.dto';
 import SemesterDto from 'dtos/semester.dto';
 import {
   disableSemester,

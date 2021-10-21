@@ -1,4 +1,4 @@
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, TextField, TextFieldProps } from '@mui/material';
 import Semester from 'models/semester.model';
 import React, { useEffect, useState } from 'react';
 import semesterServices from 'services/semester.service';
@@ -7,9 +7,16 @@ interface Props {
   value: Semester | null;
   isEditable: boolean;
   onChange: (semester: Semester | null) => void;
+  // eslint-disable-next-line react/require-default-props
+  textFieldProps?: TextFieldProps;
 }
 
-const SemesterDropdown = ({ value, isEditable, onChange }: Props) => {
+const SemesterDropdown = ({
+  value,
+  isEditable,
+  onChange,
+  textFieldProps,
+}: Props) => {
   const [semesterOptions, setSemesterOptions] = useState<Semester[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -39,7 +46,7 @@ const SemesterDropdown = ({ value, isEditable, onChange }: Props) => {
       renderInput={params => (
         <TextField
           {...params}
-          value={value}
+          {...textFieldProps}
           label="Semester"
           name="semester"
           autoFocus
@@ -51,6 +58,11 @@ const SemesterDropdown = ({ value, isEditable, onChange }: Props) => {
             shrink: true,
           }}
         />
+      )}
+      renderOption={(props, option) => (
+        <li {...props} key={option.semesterId}>
+          {option.semesterName}
+        </li>
       )}
     />
   );

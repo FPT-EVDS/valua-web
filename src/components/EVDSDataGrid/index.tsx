@@ -27,6 +27,7 @@ interface DataGridHeaderProps {
   addButton: React.ReactNode;
   filterItems?: React.ReactNode;
   hasFilter?: boolean;
+  hasSearch?: boolean;
   handleSearch?: (searchValue: string) => void;
 }
 
@@ -34,7 +35,6 @@ interface CustomDataGridProps extends DataGridHeaderProps, DataGridProps {
   isLoading: boolean;
   rows: GridRowData[];
   columns: GridColumns;
-  hasFilter?: boolean;
 }
 
 const StyledMenu = styled((props: MenuProps) => (
@@ -85,6 +85,7 @@ const EVDSDataGridHeader = ({
   title,
   addButton,
   hasFilter,
+  hasSearch,
   handleSearch,
   filterItems,
 }: DataGridHeaderProps) => {
@@ -119,23 +120,25 @@ const EVDSDataGridHeader = ({
       </Grid>
       <Grid item>
         <Grid container spacing={2} alignItems="center">
-          <Grid item>
-            <TextField
-              placeholder="Search here..."
-              type="search"
-              size="small"
-              onKeyDown={handleOnKeyDown}
-              onChange={handleChange}
-              value={searchValue}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search sx={{ width: 20, height: 20 }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid>
+          {hasSearch && (
+            <Grid item>
+              <TextField
+                placeholder="Search here..."
+                type="search"
+                size="small"
+                onKeyDown={handleOnKeyDown}
+                onChange={handleChange}
+                value={searchValue}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search sx={{ width: 20, height: 20 }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+          )}
           {hasFilter && (
             <Grid item alignItems="stretch" display="flex">
               <Button
