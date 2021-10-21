@@ -1,19 +1,12 @@
 import Status from 'enums/status.enum';
 
+import Account from './account.model';
+import Semester from './semester.model';
+
 export default interface Shift {
   shiftId: string | null;
-  shiftManager: {
-    appUserId: string;
-    email: string;
-    fullName: string;
-    phoneNumber: string;
-    imageUrl: string;
-    companyId: string;
-  };
-  semester: {
-    semesterId: string;
-    semesterName: string;
-  };
+  shiftManager: Account;
+  semester: Semester;
   beginTime: Date;
   finishTime: Date;
   description: string;

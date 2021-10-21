@@ -1,11 +1,9 @@
-import { ChevronLeft, Event } from '@mui/icons-material';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { ChevronLeft } from '@mui/icons-material';
+import { Box, CircularProgress, Grid } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
-import OverviewCard from 'components/OverviewCard';
 import ShiftDetailCard from 'components/ShiftDetailCard';
-import { format } from 'date-fns';
 import { deleteShift, getShift } from 'features/shift/detailShiftSlice';
 import Shift from 'models/shift.model';
 import { useSnackbar } from 'notistack';
@@ -14,10 +12,6 @@ import { useHistory, useParams } from 'react-router-dom';
 
 interface ParamProps {
   id: string;
-}
-
-interface ShiftProps {
-  shift: Shift;
 }
 
 const DetailShiftPage = () => {
@@ -52,17 +46,9 @@ const DetailShiftPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const OverviewContent = ({ shift: { lastModifiedDate } }: ShiftProps) => (
-    <Typography gutterBottom color="text.secondary">
-      Last Updated:{' '}
-      {lastModifiedDate &&
-        format(Date.parse(String(lastModifiedDate)), 'dd/MM/yyyy HH:mm')}
-    </Typography>
-  );
-
-  const handleDeleteRoom = async (roomId: string) => {
+  const handleDeleteShift = async (shiftId: string) => {
     try {
-      const result = await dispatch(deleteShift(roomId));
+      const result = await dispatch(deleteShift(shiftId));
       unwrapResult(result);
       enqueueSnackbar('Delete shift success', {
         variant: 'success',
@@ -85,25 +71,13 @@ const DetailShiftPage = () => {
     }
   };
 
-  const showDeleteConfirmation = (roomId: string) => {
+  const showDeleteConfirmation = (shiftId: string) => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      handleAccept: () => handleDeleteRoom(roomId),
+      handleAccept: () => handleDeleteShift(shiftId),
     }));
   };
-
-  const GroupButtons = () => (
-    <>
-      <Button
-        variant="text"
-        color="error"
-        onClick={() => showDeleteConfirmation(id)}
-      >
-        Delete shift
-      </Button>
-    </>
-  );
 
   return (
     <div>
@@ -118,27 +92,17 @@ const DetailShiftPage = () => {
         <div>Back to shift page</div>
       </Box>
       <Grid container mt={2} spacing={2}>
-        {shift && (
-          <>
-            <Grid item xs={12} md={9} lg={4}>
-              {/* <OverviewCard
-                title={`${shift.subject.subjectCode} ${shift.semester.semesterName}`}
-                icon={<Event fontSize="large" />}
-                status={shift.isActive === true ? 1 : 0}
-                content={<OverviewContent shift={shift} />}
-                actionButtons={<GroupButtons />}
-                isSingleAction
-              /> */}
-            </Grid>
-          </>
+        {shift ? (
+          <Grid item xs={12} lg={3}>
+            <ShiftDetailCard
+              shift={shift}
+              isLoading={isLoading}
+              handleDelete={showDeleteConfirmation}
+            />
+          </Grid>
+        ) : (
+          <CircularProgress />
         )}
-        <Grid item xs={12} lg={shift ? 8 : 12}>
-          {/* <ShiftDetailCard
-            shift={shift}
-            isLoading={isLoading}
-            isUpdate={!!shift}
-          /> */}
-        </Grid>
       </Grid>
     </div>
   );
