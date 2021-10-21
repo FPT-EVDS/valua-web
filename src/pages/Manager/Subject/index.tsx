@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import SubjectDetailDialog from 'components/SubjectDetailDialog';
-import { SearchByNameDto } from 'dtos/searchByName.dto';
+import SearchByNameDto from 'dtos/searchByName.dto';
 import SubjectDto from 'dtos/subject.dto';
 import {
   disableSubject,

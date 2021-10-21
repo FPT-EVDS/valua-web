@@ -10,7 +10,7 @@ import { AxiosError } from 'axios';
 import RoomDto from 'dtos/room.dto';
 import RoomsDto from 'dtos/rooms.dto';
 import RoomWithCamera from 'dtos/roomWithCamera.dto';
-import { SearchByNameDto } from 'dtos/searchByName.dto';
+import SearchByNameDto from 'dtos/searchByName.dto';
 import roomServices from 'services/room.service';
 
 interface RoomState {

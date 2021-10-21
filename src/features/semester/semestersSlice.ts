@@ -7,7 +7,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import { SearchByNameDto } from 'dtos/searchByName.dto';
+import SearchByNameDto from 'dtos/searchByName.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
 import Semester from 'models/semester.model';

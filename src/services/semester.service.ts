@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 import { AddSubjectToSemesterDto } from 'dtos/addSubjectToSemester.dto';
 import DisableSemesterDto from 'dtos/disableSemester.dto';
 import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto';
-import { SearchByNameDto } from 'dtos/searchByName.dto';
+import SearchByNameDto from 'dtos/searchByName.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
 import Semester from 'models/semester.model';

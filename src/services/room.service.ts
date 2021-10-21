@@ -4,7 +4,7 @@ import DisableRoomDto from 'dtos/disableRoom.dto';
 import RoomDto from 'dtos/room.dto';
 import RoomsDto from 'dtos/rooms.dto';
 import RoomWithCamera from 'dtos/roomWithCamera.dto';
-import { SearchByNameDto } from 'dtos/searchByName.dto';
+import SearchByNameDto from 'dtos/searchByName.dto';
 import Camera from 'models/camera.model';
 import Room from 'models/room.model';
 
