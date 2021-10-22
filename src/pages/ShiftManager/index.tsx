@@ -5,10 +5,12 @@ import {
   DashboardOutlined,
   Event,
   EventOutlined,
+  Group,
+  GroupOutlined,
   Menu as MenuIcon,
   Notifications,
   ReportProblem,
-  ReportProblemOutlined
+  ReportProblemOutlined,
 } from '@mui/icons-material';
 import { AppBar, Badge, Box, IconButton, Toolbar } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
@@ -16,14 +18,16 @@ import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
 import React, { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+
 import DashboardPage from './Dashboard';
+import ExamineePage from './Examinee';
+import FeedbackPage from './Feedback';
+import DetailFeedbackPage from './Feedback/DetailFeedback';
 import Profile from './Profile';
 import ShiftPage from './Shift';
 import DetailShiftPage from './Shift/DetailShift';
 import ViolationPage from './Violation';
 import DetailViolationPage from './Violation/DetailViolation';
-import FeedbackPage from './Feedback';
-import DetailFeedbackPage from './Feedback/DetailFeedback';
 
 const drawerItems: Array<DrawerItem> = [
   {
@@ -37,6 +41,12 @@ const drawerItems: Array<DrawerItem> = [
     icon: <AnnouncementOutlined />,
     activeIcon: <Announcement color="primary" />,
     to: '/shift-manager/feedback',
+  },
+  {
+    name: 'Examinee',
+    icon: <GroupOutlined />,
+    activeIcon: <Group color="primary" />,
+    to: '/shift-manager/examinee',
   },
   {
     name: 'Shift',
@@ -116,6 +126,11 @@ const ShiftManagerDashboard = (): JSX.Element => {
           <Route
             path="/shift-manager/feedback"
             component={FeedbackPage}
+            exact
+          />
+          <Route
+            path="/shift-manager/examinee"
+            component={ExamineePage}
             exact
           />
           <Route path="/shift-manager/shift" component={ShiftPage} exact />

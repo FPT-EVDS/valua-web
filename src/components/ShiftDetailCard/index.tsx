@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import { Edit, EditOff } from '@mui/icons-material';
 import { DateTimePicker } from '@mui/lab';
 import {
@@ -13,10 +14,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { green, red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import SemesterDropdown from 'components/SemesterDropdown';
 import { shiftSchema } from 'configs/validations';
+import { format } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
 import Status from 'enums/status.enum';
 import { updateShift } from 'features/shift/detailShiftSlice';
@@ -40,6 +43,28 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
   const [isEditable, setIsEditable] = useState(
     String(query.get('edit')) === 'true',
   );
+
+  let statusColor = '#1890ff';
+  let statusText = '';
+  switch (shift.status) {
+    case Status.isReady:
+      statusColor = '#1890ff';
+      statusText = 'Ready';
+      break;
+
+    case Status.isActive:
+      statusColor = green[500];
+      statusText = 'Active';
+      break;
+
+    case Status.isDisable:
+      statusColor = red[500];
+      statusText = 'Disable';
+      break;
+
+    default:
+      break;
+  }
 
   const initialValues: ShiftDto = shift;
   const formik = useFormik({
@@ -70,7 +95,9 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
     await formik.setFieldValue('finishTime', selectedDate);
   };
 
-  const handleChangeSemester = async (semester: Semester | null) => {
+  const handleChangeSemester = async (
+    semester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
+  ) => {
     await formik.setFieldValue('semester', semester);
   };
 
@@ -207,18 +234,32 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
                 onChange={formik.handleChange}
               />
             </Grid>
+            <Grid item xs={12}>
+              <Typography color="text.secondary">
+                Last updated date:{' '}
+                {format(new Date(shift.lastModifiedDate), 'dd/MM/yyyy HH:mm')}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Box color="text.secondary">
+                Status:
+                <Typography display="inline" ml={0.5} color={statusColor}>
+                  {statusText}
+                </Typography>
+              </Box>
+            </Grid>
           </Grid>
         </CardContent>
-        <CardActions sx={{ justifyContent: 'center' }}>
+        <CardActions sx={{ justifyContent: 'center', paddingBottom: 2 }}>
           {isLoading ? (
             <CircularProgress />
           ) : (
-            <>
+            <Box>
               <Button
                 disabled={!isEditable}
                 type="submit"
                 variant="contained"
-                sx={{ width: 150, marginRight: 1 }}
+                sx={{ width: 150, marginRight: 2 }}
               >
                 Update
               </Button>
@@ -231,7 +272,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
               >
                 Delete
               </Button>
-            </>
+            </Box>
           )}
         </CardActions>
       </Box>

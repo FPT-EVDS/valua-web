@@ -3,6 +3,7 @@ import { Box, CircularProgress, Grid } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
+import EVDSDataGrid from 'components/EVDSDataGrid';
 import ShiftDetailCard from 'components/ShiftDetailCard';
 import { deleteShift, getShift } from 'features/shift/detailShiftSlice';
 import Shift from 'models/shift.model';
@@ -93,13 +94,15 @@ const DetailShiftPage = () => {
       </Box>
       <Grid container mt={2} spacing={2}>
         {shift ? (
-          <Grid item xs={12} lg={3}>
-            <ShiftDetailCard
-              shift={shift}
-              isLoading={isLoading}
-              handleDelete={showDeleteConfirmation}
-            />
-          </Grid>
+          <>
+            <Grid item xs={12} lg={3}>
+              <ShiftDetailCard
+                shift={shift}
+                isLoading={isLoading}
+                handleDelete={showDeleteConfirmation}
+              />
+            </Grid>
+          </>
         ) : (
           <CircularProgress />
         )}

@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import semesterServices from 'services/semester.service';
 
 interface Props {
-  value: Semester | null;
+  value: Pick<Semester, 'semesterId' | 'semesterName'> | null;
   isEditable: boolean;
-  onChange: (semester: Semester | null) => void;
+  onChange: (
+    semester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
+  ) => void;
   // eslint-disable-next-line react/require-default-props
   textFieldProps?: TextFieldProps;
 }
@@ -64,6 +66,11 @@ const SemesterDropdown = ({
           {option.semesterName}
         </li>
       )}
+      ListboxProps={{
+        style: {
+          maxHeight: '320px',
+        },
+      }}
     />
   );
 };
