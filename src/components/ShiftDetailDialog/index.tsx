@@ -9,14 +9,13 @@ import {
   DialogTitle,
   Grid,
   IconButton,
-  Slide,
   TextField,
   Typography,
 } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import SemesterDropdown from 'components/SemesterDropdown';
+import SlideTransition from 'components/SlideTransition';
 import { shiftSchema } from 'configs/validations';
 import { add } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
@@ -32,12 +31,6 @@ interface Props {
   // eslint-disable-next-line react/require-default-props
   initialValues?: ShiftDto;
 }
-
-const Transition = React.forwardRef(
-  (props: TransitionProps, ref: React.Ref<unknown>) => (
-    <Slide direction="up" ref={ref} {...props} />
-  ),
-);
 
 const ShiftDetailDialog: React.FC<Props> = ({
   open,
@@ -83,7 +76,9 @@ const ShiftDetailDialog: React.FC<Props> = ({
     await formik.setFieldValue('finishTime', selectedDate);
   };
 
-  const handleChangeSemester = async (semester: Semester | null) => {
+  const handleChangeSemester = async (
+    semester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
+  ) => {
     await formik.setFieldValue('semester', semester);
   };
 
@@ -92,7 +87,7 @@ const ShiftDetailDialog: React.FC<Props> = ({
       open={open}
       onClose={handleClose}
       fullWidth
-      TransitionComponent={Transition}
+      TransitionComponent={SlideTransition}
     >
       <DialogTitle>
         <Grid

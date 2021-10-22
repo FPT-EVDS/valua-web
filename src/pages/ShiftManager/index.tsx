@@ -5,6 +5,8 @@ import {
   DashboardOutlined,
   Event,
   EventOutlined,
+  Group,
+  GroupOutlined,
   Menu as MenuIcon,
   Notifications,
   ReportProblem,
@@ -18,6 +20,7 @@ import React, { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import DashboardPage from './Dashboard';
+import ExamineePage from './Examinee';
 import FeedbackPage from './Feedback';
 import Profile from './Profile';
 import ShiftPage from './Shift';
@@ -36,6 +39,12 @@ const drawerItems: Array<DrawerItem> = [
     icon: <AnnouncementOutlined />,
     activeIcon: <Announcement color="primary" />,
     to: '/shift-manager/feedback',
+  },
+  {
+    name: 'Examinee',
+    icon: <GroupOutlined />,
+    activeIcon: <Group color="primary" />,
+    to: '/shift-manager/examinee',
   },
   {
     name: 'Shift',
@@ -115,6 +124,11 @@ const ShiftManagerDashboard = (): JSX.Element => {
           <Route
             path="/shift-manager/feedback"
             component={FeedbackPage}
+            exact
+          />
+          <Route
+            path="/shift-manager/examinee"
+            component={ExamineePage}
             exact
           />
           <Route path="/shift-manager/shift" component={ShiftPage} exact />

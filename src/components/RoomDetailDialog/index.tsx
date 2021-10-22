@@ -9,12 +9,11 @@ import {
   DialogTitle,
   Grid,
   IconButton,
-  Slide,
   TextField,
 } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import SlideTransition from 'components/SlideTransition';
 import { roomSchema } from 'configs/validations';
 import RoomDto from 'dtos/room.dto';
 import { addRoom } from 'features/room/roomsSlice';
@@ -29,12 +28,6 @@ interface Props {
   // eslint-disable-next-line react/require-default-props
   initialValues?: RoomDto;
 }
-
-const Transition = React.forwardRef(
-  (props: TransitionProps, ref: React.Ref<unknown>) => (
-    <Slide direction="up" ref={ref} {...props} />
-  ),
-);
 
 const RoomDetailDialog: React.FC<Props> = ({
   open,
@@ -77,7 +70,7 @@ const RoomDetailDialog: React.FC<Props> = ({
       open={open}
       onClose={handleClose}
       fullWidth
-      TransitionComponent={Transition}
+      TransitionComponent={SlideTransition}
     >
       <DialogTitle>
         <Grid

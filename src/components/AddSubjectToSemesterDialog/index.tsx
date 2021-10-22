@@ -8,13 +8,12 @@ import {
   DialogTitle,
   Grid,
   IconButton,
-  Slide,
   Typography,
 } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import SemesterSubjectDropdown from 'components/SemesterSubjectDropdown';
+import SlideTransition from 'components/SlideTransition';
 import addSubjectsSchema from 'configs/validations/addSubjectsSchema';
 import { AddSubjectToSemesterDto } from 'dtos/addSubjectToSemester.dto';
 import { addSubjectsToSemester } from 'features/semester/detailSemesterSlice';
@@ -27,12 +26,6 @@ interface Props {
   open: boolean;
   handleClose: () => void;
 }
-
-const Transition = React.forwardRef(
-  (props: TransitionProps, ref: React.Ref<unknown>) => (
-    <Slide direction="up" ref={ref} {...props} />
-  ),
-);
 
 const AddSubjectToSemesterDialog: React.FC<Props> = ({ open, handleClose }) => {
   const { enqueueSnackbar } = useSnackbar();
@@ -83,7 +76,7 @@ const AddSubjectToSemesterDialog: React.FC<Props> = ({ open, handleClose }) => {
       open={open}
       onClose={handleClose}
       fullWidth
-      TransitionComponent={Transition}
+      TransitionComponent={SlideTransition}
     >
       <DialogTitle>
         <Grid
