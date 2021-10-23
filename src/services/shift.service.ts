@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
 import DisableShiftDto from 'dtos/disableShift.dto';
-import SearchParams from 'dtos/searchParams.dto';
+import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftsDto from 'dtos/shifts.dto';
 import Shift from 'models/shift.model';
@@ -11,9 +11,12 @@ const shiftServices = {
   getShifts: ({
     page,
     sort,
-  }: SearchParams): Promise<AxiosResponse<ShiftsDto>> => {
+    semesterId,
+  }: SearchShiftParamsDto): Promise<AxiosResponse<ShiftsDto>> => {
     const url = `/shifts`;
-    return axiosClient.get(url, { params: { page, sort } });
+    return axiosClient.get(url, {
+      params: { page, sort, semester: semesterId },
+    });
   },
   getShift: (id: string): Promise<AxiosResponse<Shift>> => {
     const url = `/shifts/${id}`;

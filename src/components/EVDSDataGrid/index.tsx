@@ -25,7 +25,7 @@ import React, { useState } from 'react';
 
 interface DataGridHeaderProps {
   title: string;
-  addButton: React.ReactNode;
+  addButton?: React.ReactNode;
   leftActions?: React.ReactNode;
   filterItems?: React.ReactNode;
   hasFilter?: boolean;
@@ -95,6 +95,7 @@ const EVDSDataGridHeader = ({
   const [searchValue, setSearchValue] = useState<string>('');
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const spacing = hasSearch && (hasFilter || addButton) ? 2 : 0;
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -123,13 +124,14 @@ const EVDSDataGridHeader = ({
         <Box sx={{ width: 200 }}>{leftActions}</Box>
       </Grid>
       <Grid item>
-        <Grid container spacing={2} alignItems="center">
+        <Grid container spacing={spacing} alignItems="center">
           {hasSearch && (
             <Grid item>
               <TextField
                 placeholder="Search here..."
                 type="search"
                 size="small"
+                fullWidth
                 onKeyDown={handleOnKeyDown}
                 onChange={handleChange}
                 value={searchValue}
@@ -194,6 +196,7 @@ const EVDSDataGrid = ({
   title,
   addButton,
   hasFilter = false,
+  hasSearch = true,
   filterItems,
   leftActions,
   handleSearch,
@@ -203,6 +206,7 @@ const EVDSDataGrid = ({
     <EVDSDataGridHeader
       title={title}
       addButton={addButton}
+      hasSearch={hasSearch}
       hasFilter={hasFilter}
       filterItems={filterItems}
       handleSearch={handleSearch}

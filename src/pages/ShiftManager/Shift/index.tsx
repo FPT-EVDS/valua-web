@@ -14,10 +14,12 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
+import SemesterDropdown from 'components/SemesterDropdown';
 import ShiftDetailDialog from 'components/ShiftDetailDialog';
 import { format } from 'date-fns';
 import Status from 'enums/status.enum';
 import { deleteShift, getShifts } from 'features/shift/shiftSlice';
+import Semester from 'models/semester.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -37,6 +39,10 @@ const ShiftPage = () => {
     });
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(0);
+  const [semester, setSemester] = useState<Pick<
+    Semester,
+    'semesterId' | 'semesterName'
+  > | null>(null);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const {
@@ -55,7 +61,13 @@ const ShiftPage = () => {
       const { field, sort } = sortModel[0];
       sortParam = `${field},${String(sort)}`;
     }
-    dispatch(getShifts({ page, sort: sortParam }))
+    dispatch(
+      getShifts({
+        page,
+        sort: sortParam,
+        semesterId: semester?.semesterId,
+      }),
+    )
       .then(result => unwrapResult(result))
       .catch(error =>
         enqueueSnackbar(error, {
@@ -67,7 +79,7 @@ const ShiftPage = () => {
 
   useEffect(() => {
     fetchShift();
-  }, [page, sortModel]);
+  }, [page, sortModel, semester]);
 
   const handleDeleteShift = async (shiftId: string) => {
     try {
@@ -208,6 +220,12 @@ const ShiftPage = () => {
     setSortModel(newModel);
   };
 
+  const handleChangeSemester = (
+    selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
+  ) => {
+    setSemester(selectedSemester);
+  };
+
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
@@ -215,6 +233,17 @@ const ShiftPage = () => {
       <EVDSDataGrid
         pagination
         rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
+        leftActions={
+          <SemesterDropdown
+            payload={{ beginDate: new Date() }}
+            textFieldProps={{
+              size: 'small',
+            }}
+            isEditable
+            value={semester}
+            onChange={handleChangeSemester}
+          />
+        }
         pageSize={DEFAULT_PAGE_SIZE}
         sortingMode="server"
         paginationMode="server"

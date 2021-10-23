@@ -1,3 +1,4 @@
+import Semester from 'models/semester.model';
 import Subject from 'models/subject.model';
 import SubjectExaminee from 'models/subjectExaminee.model';
 
@@ -10,5 +11,6 @@ export default interface DetailSubjectExamineeDto
   totalUnassignedExaminees: number;
   totalExaminees: 2;
   subject: Pick<Subject, 'subjectId' | 'subjectCode' | 'subjectName'>;
+  semester: Pick<Semester, 'semesterId' | 'semesterName'>;
   examinees: Array<SubjectExaminee>;
 }
