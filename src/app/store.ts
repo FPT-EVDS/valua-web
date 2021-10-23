@@ -11,6 +11,7 @@ import semesterReducer from 'features/semester/semestersSlice';
 import detailShiftReducer from 'features/shift/detailShiftSlice';
 import shiftReducer from 'features/shift/shiftSlice';
 import subjectReducer from 'features/subject/subjectsSlice';
+import subjectExamineeReducer from 'features/subjectExaminee';
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ export const store = configureStore({
     detailCamera: detailCameraReducer,
     shift: shiftReducer,
     detailShift: detailShiftReducer,
+    subjectExaminee: subjectExamineeReducer,
   },
 });
 

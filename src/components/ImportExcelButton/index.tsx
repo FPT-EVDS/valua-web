@@ -13,10 +13,16 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useAppDispatch } from 'app/hooks';
 import CustomDropzone from 'components/CustomDropzone';
 import SlideTransition from 'components/SlideTransition';
-import React, { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import SubjectExamineesDto from 'dtos/subjectExaminees.dto';
+import { addExaminees } from 'features/subjectExaminee';
+import { useSnackbar } from 'notistack';
+import React, { useCallback, useState } from 'react';
+import { FileError, useDropzone } from 'react-dropzone';
+import subjectExamineesServices from 'services/subjectExaminees.service';
 import XLSX from 'xlsx';
 
 interface DropzoneDialogProps {
@@ -47,19 +53,44 @@ interface ExamineeProps {
 }
 
 const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
+  const [files, setFiles] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setFiles(prev => [...prev, ...acceptedFiles]);
+  }, []);
+
+  const handleValidation = ({ name, size, type }: File) => {
+    const isDuplicated = files.some(
+      file => file.name === name && file.size === size && file.type === type,
+    );
+    if (isDuplicated)
+      return {
+        code: 'duplicated',
+        message: `${name} already existed`,
+      } as FileError;
+    return null;
+  };
+
   const dropzone = useDropzone({
     accept:
       '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
     multiple: true,
+    onDrop,
+    noClick: true,
+    validator: handleValidation,
   });
   const themes = useTheme();
 
-  const handleProcessFiles = () => {
-    const files = dropzone.acceptedFiles;
-    const data: unknown[] = [];
+  const handleProcessFiles = async () => {
+    setIsLoading(true);
+    const data: SubjectExamineesDto[] = [];
     files.forEach(async file => {
+      const params = file.name.split(/_|\./g);
       const workbook = XLSX.read(await file.arrayBuffer());
-      workbook.SheetNames.forEach(sheet => {
+      workbook.SheetNames.forEach(async sheet => {
         const rowObject: ExamineeProps[] = XLSX.utils.sheet_to_json(
           workbook.Sheets[sheet],
           options,
@@ -67,13 +98,39 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
         // remove the header rows
         rowObject.shift();
         // get email column only
-        const emails = rowObject.map(row => ({
+        const examineeList = rowObject.map(row => ({
           email: row.email,
         }));
-        data.push(...emails);
+        data.push({
+          examineeList,
+          semesterName: params[0],
+          subjectCode: params[1],
+        });
       });
+      if (data.length > 0) {
+        try {
+          const result = await dispatch(addExaminees(data));
+          unwrapResult(result);
+          enqueueSnackbar(`Import ${files.length} file(s) success`, {
+            variant: 'success',
+            preventDuplicate: true,
+          });
+          setFiles([]);
+          handleClose();
+        } catch (error) {
+          setIsLoading(false);
+          enqueueSnackbar(error, {
+            variant: 'error',
+            preventDuplicate: true,
+          });
+        }
+      }
     });
-    console.log(data);
+    setIsLoading(false);
+  };
+
+  const handleRemoveFile = (removedIndex: number) => {
+    setFiles(files.filter((file, index) => index !== removedIndex));
   };
 
   return (
@@ -120,11 +177,16 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
               </Typography>
             </Typography>
           </Typography>
-          <CustomDropzone {...dropzone} />
+          <CustomDropzone
+            {...dropzone}
+            acceptedFiles={files}
+            handleRemoveFile={handleRemoveFile}
+          />
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
           <LoadingButton
             variant="contained"
+            loading={isLoading}
             sx={{ width: 200 }}
             onClick={handleProcessFiles}
           >

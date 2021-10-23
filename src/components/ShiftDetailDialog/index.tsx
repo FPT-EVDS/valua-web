@@ -129,6 +129,11 @@ const ShiftDetailDialog: React.FC<Props> = ({
                   error:
                     formik.touched.semester && Boolean(formik.errors.semester),
                   helperText: formik.touched.semester && formik.errors.semester,
+                  InputLabelProps: {
+                    shrink: true,
+                  },
+                  label: 'Semester',
+                  name: 'semester',
                 }}
               />
             </Grid>

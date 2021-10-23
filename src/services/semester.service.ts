@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import { AddSubjectToSemesterDto } from 'dtos/addSubjectToSemester.dto';
 import DisableSemesterDto from 'dtos/disableSemester.dto';
 import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto';
+import SearchByDateDto from 'dtos/searchByDate.dto';
 import SearchByNameDto from 'dtos/searchByName.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
@@ -36,9 +37,16 @@ const semesterServices = {
       },
     ]);
   },
-  getSemesterForShift: (): Promise<AxiosResponse<Semester[]>> => {
+  getSemesterForShift: (
+    payload?: SearchByDateDto,
+  ): Promise<AxiosResponse<Semester[]>> => {
     const url = '/semesters/shiftManager';
-    return axiosClient.get(url);
+    return axiosClient.get(url, {
+      params: {
+        beginDate: payload?.beginDate,
+        endDate: payload?.endDate,
+      },
+    });
   },
   searchSemestersByName: ({
     page,
