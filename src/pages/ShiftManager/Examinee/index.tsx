@@ -15,7 +15,7 @@ import EVDSDataGrid from 'components/EVDSDataGrid';
 import ImportExcelButton from 'components/ImportExcelButton';
 import SemesterDropdown from 'components/SemesterDropdown';
 import Status from 'enums/status.enum';
-import { searchSubjectBySemester } from 'features/subjectExaminee';
+import { searchSubjectBySemester } from 'features/subjectExaminee/subjectExamineeSlice';
 import Semester from 'models/semester.model';
 import Subject from 'models/subject.model';
 import { useSnackbar } from 'notistack';
@@ -171,18 +171,25 @@ const ExamineePage = () => {
       headerName: 'Actions',
       type: 'actions',
       getActions: params => {
-        const status = params.getValue(params.id, 'isReady') as boolean;
-        const deleteItems = [
-          <GridActionsCellItem label="View detail" showInMenu />,
-          <GridActionsCellItem label="Edit" showInMenu />,
+        const subject = params.getValue(params.id, 'subject') as Subject;
+        return [
+          <GridActionsCellItem
+            label="View detail"
+            showInMenu
+            onClick={() =>
+              history.push(
+                `${url}/subject?semesterId=${String(
+                  semester?.semesterId,
+                )}&subjectId=${subject.subjectId}`,
+              )
+            }
+          />,
           <GridActionsCellItem
             label="Delete"
             showInMenu
             sx={{ color: red[500] }}
           />,
         ];
-        if (!status) deleteItems.pop();
-        return deleteItems;
       },
     },
   ];

@@ -18,7 +18,7 @@ import { useAppDispatch } from 'app/hooks';
 import CustomDropzone from 'components/CustomDropzone';
 import SlideTransition from 'components/SlideTransition';
 import SubjectExamineesDto from 'dtos/subjectExaminees.dto';
-import { addExaminees } from 'features/subjectExaminee';
+import { addExaminees } from 'features/subjectExaminee/subjectExamineeSlice';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useState } from 'react';
 import { FileError, useDropzone } from 'react-dropzone';

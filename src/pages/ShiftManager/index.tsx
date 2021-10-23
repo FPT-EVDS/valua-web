@@ -21,6 +21,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 
 import DashboardPage from './Dashboard';
 import ExamineePage from './Examinee';
+import DetailExamineePage from './Examinee/DetailExaminee';
 import FeedbackPage from './Feedback';
 import DetailFeedbackPage from './Feedback/DetailFeedback';
 import Profile from './Profile';
@@ -131,6 +132,11 @@ const ShiftManagerDashboard = (): JSX.Element => {
           <Route
             path="/shift-manager/examinee"
             component={ExamineePage}
+            exact
+          />
+          <Route
+            path="/shift-manager/examinee/subject"
+            component={DetailExamineePage}
             exact
           />
           <Route path="/shift-manager/shift" component={ShiftPage} exact />

@@ -13,7 +13,8 @@ import semesterReducer from 'features/semester/semestersSlice';
 import detailShiftReducer from 'features/shift/detailShiftSlice';
 import shiftReducer from 'features/shift/shiftSlice';
 import subjectReducer from 'features/subject/subjectsSlice';
-import subjectExamineeReducer from 'features/subjectExaminee';
+import detailSubjectExamineeReducer from 'features/subjectExaminee/detailExamineeSubjectSlice';
+import subjectExamineeReducer from 'features/subjectExaminee/subjectExamineeSlice';
 import detailViolationReducer from 'features/violation/detailViolationSlice';
 import violationReducer from 'features/violation/violationsSlice';
 
@@ -36,6 +37,7 @@ export const store = configureStore({
     feedback: feedbackReducer,
     detailFeedback: detailFeedbackReducer,
     subjectExaminee: subjectExamineeReducer,
+    detailSubjectExaminee: detailSubjectExamineeReducer,
   },
 });
 

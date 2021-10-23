@@ -1,5 +1,5 @@
 export default interface SearchParams {
-  page: number;
+  page?: number;
   size?: number;
   sort?: string;
 }

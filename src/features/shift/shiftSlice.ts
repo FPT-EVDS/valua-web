@@ -6,7 +6,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import SearchParams from 'dtos/searchParams.dto';
+import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftsDto from 'dtos/shifts.dto';
 import Shift from 'models/shift.model';
@@ -20,7 +20,7 @@ interface ShiftsState {
 
 export const getShifts = createAsyncThunk(
   'shifts',
-  async (payload: SearchParams, { rejectWithValue }) => {
+  async (payload: SearchShiftParamsDto, { rejectWithValue }) => {
     try {
       const response = await shiftServices.getShifts(payload);
       return response.data;
@@ -114,6 +114,14 @@ export const shiftslice = createSlice({
         );
         state.current.shifts[index].status = action.payload.status;
         state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(getShifts.rejected, (state, action) => {
+        if (
+          String(action.payload) === 'There is no shift in this semester yet!'
+        )
+          state.current = initialState.current;
+        state.error = String(action.payload);
         state.isLoading = false;
       })
       .addMatcher(isRejected, (state, action: PayloadAction<string>) => {

@@ -3,6 +3,7 @@ import AddedExamineeSubject from 'dtos/addedExamineeSubject.dto';
 import DetailSubjectExamineeDto from 'dtos/detailSubjectExaminee';
 import ExamineeSubject from 'dtos/examineeSubject.dto';
 import SearchParams from 'dtos/searchParams.dto';
+import { SearchSubjectExamineeParams } from 'dtos/searchSubjectExamineeParams.dto';
 import SubjectExamineesDto from 'dtos/subjectExaminees.dto';
 
 import axiosClient from './axiosClient';
@@ -25,18 +26,13 @@ const subjectExamineesServices = {
     const url = '/subjectExaminees';
     return axiosClient.get(url, { params: { page, semesterId, size, sort } });
   },
-  getDetail: ({
-    semesterId,
-    subjectId,
-  }: {
-    semesterId: string;
-    subjectId: string;
-  }): Promise<AxiosResponse<DetailSubjectExamineeDto>> => {
+  getDetail: (
+    payload: SearchSubjectExamineeParams,
+  ): Promise<AxiosResponse<DetailSubjectExamineeDto>> => {
     const url = '/subjectExaminees/subject';
     return axiosClient.get(url, {
       params: {
-        semesterId,
-        subjectId,
+        ...payload,
       },
     });
   },
