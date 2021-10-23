@@ -1,4 +1,6 @@
+/* eslint-disable react/require-default-props */
 import { Autocomplete, TextField, TextFieldProps } from '@mui/material';
+import SearchByDateDto from 'dtos/searchByDate.dto';
 import Semester from 'models/semester.model';
 import React, { useEffect, useState } from 'react';
 import semesterServices from 'services/semester.service';
@@ -9,8 +11,8 @@ interface Props {
   onChange: (
     semester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => void;
-  // eslint-disable-next-line react/require-default-props
   textFieldProps?: TextFieldProps;
+  payload?: SearchByDateDto;
 }
 
 const SemesterDropdown = ({
@@ -18,13 +20,15 @@ const SemesterDropdown = ({
   isEditable,
   onChange,
   textFieldProps,
+  payload,
 }: Props) => {
   const [semesterOptions, setSemesterOptions] = useState<Semester[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchSemesters = async () => {
-    const response = await semesterServices.getSemesterForShift();
+    const response = await semesterServices.getSemesterForShift(payload);
     setSemesterOptions(response.data);
+    if (value === null) onChange(response.data[0]);
     setIsLoading(false);
   };
 
@@ -49,16 +53,10 @@ const SemesterDropdown = ({
         <TextField
           {...params}
           {...textFieldProps}
-          label="Semester"
-          name="semester"
-          autoFocus
           margin="dense"
           fullWidth
           disabled={!isEditable}
           variant="outlined"
-          InputLabelProps={{
-            shrink: true,
-          }}
         />
       )}
       renderOption={(props, option) => (

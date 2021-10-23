@@ -2,6 +2,7 @@
 import { FilterAlt, Search } from '@mui/icons-material';
 import {
   alpha,
+  Box,
   Button,
   Grid,
   InputAdornment,
@@ -25,6 +26,7 @@ import React, { useState } from 'react';
 interface DataGridHeaderProps {
   title: string;
   addButton: React.ReactNode;
+  leftActions?: React.ReactNode;
   filterItems?: React.ReactNode;
   hasFilter?: boolean;
   hasSearch?: boolean;
@@ -88,6 +90,7 @@ const EVDSDataGridHeader = ({
   hasSearch,
   handleSearch,
   filterItems,
+  leftActions,
 }: DataGridHeaderProps) => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -113,10 +116,11 @@ const EVDSDataGridHeader = ({
 
   return (
     <Grid container justifyContent="space-between" alignItems="center" mb={2}>
-      <Grid item>
-        <Typography variant="h5" component="div">
+      <Grid item display="flex" alignItems="center">
+        <Typography variant="h5" component="div" sx={{ marginRight: 2 }}>
           {title}
         </Typography>
+        <Box sx={{ width: 200 }}>{leftActions}</Box>
       </Grid>
       <Grid item>
         <Grid container spacing={2} alignItems="center">
@@ -191,6 +195,7 @@ const EVDSDataGrid = ({
   addButton,
   hasFilter = false,
   filterItems,
+  leftActions,
   handleSearch,
   ...otherProps
 }: CustomDataGridProps) => (
@@ -201,6 +206,7 @@ const EVDSDataGrid = ({
       hasFilter={hasFilter}
       filterItems={filterItems}
       handleSearch={handleSearch}
+      leftActions={leftActions}
     />
     <div style={{ height: 650, width: '100%' }}>
       <div style={{ display: 'flex', height: '100%' }}>

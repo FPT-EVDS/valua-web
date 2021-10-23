@@ -1,5 +1,5 @@
 export default interface SubjectExamineesDto {
-  semesterId: string;
-  subjectId: string;
+  semesterName: string;
+  subjectCode: string;
   examineeList: Array<{ email: string }>;
 }

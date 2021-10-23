@@ -4,6 +4,8 @@ import detailAccountReducer from 'features/account/detailAccountSlice';
 import authReducer from 'features/auth/authSlice';
 import cameraReducer from 'features/camera/camerasSlice';
 import detailCameraReducer from 'features/camera/detailCameraSlice';
+import detailFeedbackReducer from 'features/feedback/detailFeedbackSlice';
+import feedbackReducer from 'features/feedback/feedbacksSlice';
 import detailRoomReducer from 'features/room/detailRoomSlice';
 import roomReducer from 'features/room/roomsSlice';
 import detailSemesterReducer from 'features/semester/detailSemesterSlice';
@@ -11,10 +13,9 @@ import semesterReducer from 'features/semester/semestersSlice';
 import detailShiftReducer from 'features/shift/detailShiftSlice';
 import shiftReducer from 'features/shift/shiftSlice';
 import subjectReducer from 'features/subject/subjectsSlice';
+import subjectExamineeReducer from 'features/subjectExaminee';
 import detailViolationReducer from 'features/violation/detailViolationSlice';
 import violationReducer from 'features/violation/violationsSlice';
-import feedbackReducer from 'features/feedback/feedbacksSlice';
-import detailFeedbackReducer from 'features/feedback/detailFeedbackSlice';
 
 export const store = configureStore({
   reducer: {
@@ -34,6 +35,7 @@ export const store = configureStore({
     detailViolation: detailViolationReducer,
     feedback: feedbackReducer,
     detailFeedback: detailFeedbackReducer,
+    subjectExaminee: subjectExamineeReducer,
   },
 });
 
