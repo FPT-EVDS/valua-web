@@ -6,6 +6,7 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  Stack,
   TextField,
   Typography,
 } from '@mui/material';
@@ -19,8 +20,9 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import EVDSDataGrid from 'components/EVDSDataGrid';
+import ExamineeDetailCard from 'components/ExamineeDetailCard';
+import ExamineePieChart from 'components/ExamineePieChart';
 import StringAvatar from 'components/StringAvatar';
-import DetailSubjectExamineeDto from 'dtos/detailSubjectExaminee';
 import { getExamineeSubjectDetail } from 'features/subjectExaminee/detailExamineeSubjectSlice';
 import useQuery from 'hooks/useQuery';
 import { useSnackbar } from 'notistack';
@@ -114,11 +116,12 @@ const DetailExamineePage = () => {
     {
       field: 'isActive',
       headerName: 'Status',
+      flex: 0.1,
       minWidth: 130,
       renderCell: params => {
         const active = params.getValue(params.id, params.field);
         const color = active ? green[500] : red[500];
-        const statusText = active ? 'Active' : 'Disable';
+        const statusText = active ? 'Assigned' : 'Not assigned';
         return (
           <Box display="flex" alignItems="center">
             <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
@@ -154,45 +157,28 @@ const DetailExamineePage = () => {
         {examineeSubject && (
           <>
             <Grid item xs={12} md={9} lg={3}>
-              <Card sx={{ minWidth: 275 }} elevation={2}>
-                <CardHeader
-                  title={
-                    <Typography
-                      sx={{ fontWeight: 'medium', fontSize: 20 }}
-                      variant="h5"
-                      gutterBottom
-                    >
-                      Subject&apos;s information
-                    </Typography>
-                  }
-                />
-                <Box>
-                  <CardContent>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <TextField
-                          label="Semester"
-                          fullWidth
-                          value={examineeSubject.semester.semesterName}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <TextField
-                          label="Subject"
-                          fullWidth
-                          value={examineeSubject.subject.subjectName}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
+              <Stack spacing={3}>
+                <ExamineeDetailCard examineeSubject={examineeSubject} />
+                <Card sx={{ minWidth: 275 }} elevation={2}>
+                  <CardHeader
+                    title={
+                      <Typography
+                        sx={{ fontWeight: 'medium', fontSize: 16 }}
+                        variant="h5"
+                        gutterBottom
+                      >
+                        Examinee&apos;s information
+                      </Typography>
+                    }
+                  />
+                  <CardContent sx={{ height: 300 }}>
+                    <ExamineePieChart
+                      totalExaminees={examineeSubject.totalItems}
+                      totalUnassigned={examineeSubject.totalUnassignedExaminees}
+                    />
                   </CardContent>
-                </Box>
-              </Card>
+                </Card>
+              </Stack>
             </Grid>
             <Grid item xs={12} lg={9}>
               <EVDSDataGrid
