@@ -28,7 +28,9 @@ const SemesterDropdown = ({
   const fetchSemesters = async () => {
     const response = await semesterServices.getSemesterForShift(payload);
     setSemesterOptions(response.data);
-    if (value === null) onChange(response.data[0]);
+    if (value) {
+      onChange(value);
+    } else onChange(response.data[0]);
     setIsLoading(false);
   };
 

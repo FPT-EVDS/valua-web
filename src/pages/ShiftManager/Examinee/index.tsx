@@ -15,7 +15,10 @@ import EVDSDataGrid from 'components/EVDSDataGrid';
 import ImportExcelButton from 'components/ImportExcelButton';
 import SemesterDropdown from 'components/SemesterDropdown';
 import Status from 'enums/status.enum';
-import { searchSubjectBySemester } from 'features/subjectExaminee/subjectExamineeSlice';
+import {
+  searchSubjectBySemester,
+  updateSelectedSemester,
+} from 'features/subjectExaminee/subjectExamineeSlice';
 import Semester from 'models/semester.model';
 import Subject from 'models/subject.model';
 import { useSnackbar } from 'notistack';
@@ -37,15 +40,12 @@ const ExamineePage = () => {
     });
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(0);
-  const [semester, setSemester] = useState<Pick<
-    Semester,
-    'semesterId' | 'semesterName'
-  > | null>(null);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
     current: { subjects: examineeSubjects, totalItems },
+    selectedSemester,
   } = useAppSelector(state => state.subjectExaminee);
   const rows: GridRowModel[] = examineeSubjects.map(examineeSubject => ({
     ...examineeSubject,
@@ -59,12 +59,12 @@ const ExamineePage = () => {
       const { field, sort } = sortModel[0];
       sortParam = `${field},${String(sort)}`;
     }
-    if (semester)
+    if (selectedSemester)
       dispatch(
         searchSubjectBySemester({
           page,
           sort: sortParam,
-          semesterId: semester.semesterId,
+          semesterId: selectedSemester.semesterId,
         }),
       )
         .then(result => unwrapResult(result))
@@ -78,7 +78,7 @@ const ExamineePage = () => {
 
   useEffect(() => {
     fetchExamineeSubject();
-  }, [page, sortModel, semester]);
+  }, [page, sortModel, selectedSemester]);
 
   // const handleDeleteSubject = async (shiftId: string) => {
   //   try {
@@ -179,7 +179,7 @@ const ExamineePage = () => {
             onClick={() =>
               history.push(
                 `${url}/subject?semesterId=${String(
-                  semester?.semesterId,
+                  selectedSemester?.semesterId,
                 )}&subjectId=${subject.subjectId}`,
               )
             }
@@ -199,9 +199,9 @@ const ExamineePage = () => {
   };
 
   const handleChangeSemester = (
-    selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
+    semester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
-    setSemester(selectedSemester);
+    dispatch(updateSelectedSemester(semester));
   };
 
   return (
@@ -216,7 +216,7 @@ const ExamineePage = () => {
               size: 'small',
             }}
             isEditable
-            value={semester}
+            value={selectedSemester}
             onChange={handleChangeSemester}
           />
         }

@@ -9,10 +9,12 @@ import { AxiosError } from 'axios';
 import ExamineeSubject from 'dtos/examineeSubject.dto';
 import SearchParams from 'dtos/searchParams.dto';
 import SubjectExamineesDto from 'dtos/subjectExaminees.dto';
+import Semester from 'models/semester.model';
 import subjectExamineesServices from 'services/subjectExaminees.service';
 
 interface SubjectsState {
   isLoading: boolean;
+  selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null;
   error: string;
   current: ExamineeSubject;
 }
@@ -50,6 +52,7 @@ export const addExaminees = createAsyncThunk(
 const initialState: SubjectsState = {
   isLoading: false,
   error: '',
+  selectedSemester: null,
   current: {
     subjects: [],
     currentPage: 0,
@@ -61,7 +64,17 @@ const initialState: SubjectsState = {
 export const subjectExamineeSlice = createSlice({
   name: 'subjectExaminee',
   initialState,
-  reducers: {},
+  reducers: {
+    updateSelectedSemester: (
+      state,
+      action: PayloadAction<Pick<
+        Semester,
+        'semesterId' | 'semesterName'
+      > | null>,
+    ) => {
+      state.selectedSemester = action.payload;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(searchSubjectBySemester.fulfilled, (state, action) => {
@@ -95,5 +108,7 @@ export const subjectExamineeSlice = createSlice({
       });
   },
 });
+
+export const { updateSelectedSemester } = subjectExamineeSlice.actions;
 
 export default subjectExamineeSlice.reducer;
