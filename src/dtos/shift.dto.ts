@@ -5,5 +5,4 @@ export default interface ShiftDto {
   semester: Pick<Semester, 'semesterId' | 'semesterName'> | null;
   beginTime: Date;
   finishTime: Date;
-  description: string;
 }

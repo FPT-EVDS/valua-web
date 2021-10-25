@@ -17,7 +17,6 @@ export default interface Shift {
   semester: Pick<Semester, 'semesterId' | 'semesterName'>;
   beginTime: Date;
   finishTime: Date;
-  description: string;
   status: Status;
   createdDate: Date;
   lastModifiedDate: Date;
