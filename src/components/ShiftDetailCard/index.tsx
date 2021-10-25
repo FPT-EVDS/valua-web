@@ -130,7 +130,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           </Typography>
         }
         action={
-          shift.status === Status.isActive && (
+          shift.status !== Status.isDisable && (
             <IconButton onClick={() => setIsEditable(prevState => !prevState)}>
               {isEditable ? (
                 <EditOff sx={{ fontSize: 20 }} />

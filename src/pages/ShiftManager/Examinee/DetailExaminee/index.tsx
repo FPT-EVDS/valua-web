@@ -7,7 +7,6 @@ import {
   CardHeader,
   Grid,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import { green, red } from '@mui/material/colors';
@@ -44,7 +43,7 @@ const DetailExamineePage = () => {
   const [page, setPage] = useState(0);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const fetchSemester = () => {
+  const fetchDetailExamineeSubject = () => {
     let sortParam = '';
     if (sortModel.length > 0) {
       const { field, sort } = sortModel[0];
@@ -70,7 +69,7 @@ const DetailExamineePage = () => {
   };
 
   useEffect(() => {
-    fetchSemester();
+    fetchDetailExamineeSubject();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue, page]);
 
@@ -104,8 +103,8 @@ const DetailExamineePage = () => {
       },
     },
     { field: 'companyId', headerName: 'ID', flex: 0.1, minWidth: 130 },
-    { field: 'fullName', headerName: 'Full name', flex: 0.1, minWidth: 130 },
-    { field: 'email', headerName: 'Email', flex: 0.1, minWidth: 130 },
+    { field: 'fullName', headerName: 'Full name', flex: 0.2, minWidth: 130 },
+    { field: 'email', headerName: 'Email', flex: 0.2, minWidth: 130 },
     {
       field: 'phoneNumber',
       headerName: 'Phone number',
@@ -116,7 +115,7 @@ const DetailExamineePage = () => {
     {
       field: 'isActive',
       headerName: 'Status',
-      flex: 0.1,
+      flex: 0.2,
       minWidth: 130,
       renderCell: params => {
         const active = params.getValue(params.id, params.field);
@@ -145,8 +144,10 @@ const DetailExamineePage = () => {
   return (
     <div>
       <Box
+        width={250}
         display="flex"
         alignItems="center"
+        justifyContent="start"
         onClick={() => history.push('/shift-manager/examinee')}
         sx={{ cursor: 'pointer' }}
       >
@@ -159,45 +160,51 @@ const DetailExamineePage = () => {
             <Grid item xs={12} md={9} lg={3}>
               <Stack spacing={3}>
                 <ExamineeDetailCard examineeSubject={examineeSubject} />
-                <Card sx={{ minWidth: 275 }} elevation={2}>
-                  <CardHeader
-                    title={
-                      <Typography
-                        sx={{ fontWeight: 'medium', fontSize: 16 }}
-                        variant="h5"
-                        gutterBottom
-                      >
-                        Examinee&apos;s information
-                      </Typography>
-                    }
-                  />
-                  <CardContent sx={{ height: 300 }}>
-                    <ExamineePieChart
-                      totalExaminees={examineeSubject.totalItems}
-                      totalUnassigned={examineeSubject.totalUnassignedExaminees}
+                {examineeSubject.totalItems > 0 && (
+                  <Card sx={{ minWidth: 275 }} elevation={2}>
+                    <CardHeader
+                      title={
+                        <Typography
+                          sx={{ fontWeight: 'medium', fontSize: 16 }}
+                          variant="h5"
+                          gutterBottom
+                        >
+                          Examinee&apos;s information
+                        </Typography>
+                      }
                     />
-                  </CardContent>
-                </Card>
+                    <CardContent sx={{ height: 300 }}>
+                      <ExamineePieChart
+                        totalExaminees={examineeSubject.totalItems}
+                        totalUnassigned={
+                          examineeSubject.totalUnassignedExaminees
+                        }
+                      />
+                    </CardContent>
+                  </Card>
+                )}
               </Stack>
             </Grid>
             <Grid item xs={12} lg={9}>
-              <EVDSDataGrid
-                pagination
-                rowHeight={60}
-                rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
-                pageSize={DEFAULT_PAGE_SIZE}
-                sortingMode="server"
-                sortModel={sortModel}
-                onSortModelChange={handleSortModelChange}
-                rowCount={examineeSubject.totalItems}
-                isLoading={isLoading}
-                title="Examinee list"
-                handleSearch={handleSearch}
-                columns={columns}
-                rows={rows}
-                page={page}
-                onPageChange={newPage => setPage(newPage)}
-              />
+              {examineeSubject && (
+                <EVDSDataGrid
+                  pagination
+                  rowHeight={60}
+                  rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
+                  pageSize={DEFAULT_PAGE_SIZE}
+                  sortingMode="server"
+                  sortModel={sortModel}
+                  onSortModelChange={handleSortModelChange}
+                  rowCount={examineeSubject.totalItems}
+                  isLoading={isLoading}
+                  title="Examinee list"
+                  handleSearch={handleSearch}
+                  columns={columns}
+                  rows={rows}
+                  page={page}
+                  onPageChange={newPage => setPage(newPage)}
+                />
+              )}
             </Grid>
           </>
         )}
