@@ -50,9 +50,8 @@ const ShiftPage = () => {
   const dispatch = useAppDispatch();
   const {
     isLoading,
-    current: { shifts, totalItems },
+    current: { shifts, totalItems, selectedDate },
     semester,
-    startDate,
     activeShiftDates,
   } = useAppSelector(state => state.shift);
   const rows: GridRowModel[] = shifts.map(shift => ({
@@ -79,12 +78,9 @@ const ShiftPage = () => {
           page,
           sort: sortParam,
           semesterId: semester?.semesterId,
-          date: startDate ? new Date(startDate) : new Date(),
+          date: selectedDate ? new Date(selectedDate) : undefined,
         }),
       )
-        .then(result => unwrapResult(result))
-        .catch(error => showErrorMessage(error));
-      dispatch(getShiftCalendar(semester.semesterId))
         .then(result => unwrapResult(result))
         .catch(error => showErrorMessage(error));
     }
@@ -92,7 +88,14 @@ const ShiftPage = () => {
 
   useEffect(() => {
     fetchShift();
-  }, [page, sortModel, semester, startDate]);
+  }, [page, sortModel, semester, selectedDate]);
+
+  useEffect(() => {
+    if (semester)
+      dispatch(getShiftCalendar(semester.semesterId))
+        .then(result => unwrapResult(result))
+        .catch(error => showErrorMessage(error));
+  }, [semester]);
 
   const handleDeleteShift = async (shiftId: string) => {
     try {
@@ -216,13 +219,11 @@ const ShiftPage = () => {
 
   const AddButton = () => (
     <Stack direction="row" spacing={2} alignItems="center">
-      {activeShiftDates && (
-        <ShiftDatepicker
-          activeDate={activeShiftDates}
-          handleChangeDate={handleChangeDate}
-          value={startDate ? new Date(startDate) : new Date()}
-        />
-      )}
+      <ShiftDatepicker
+        activeDate={activeShiftDates}
+        handleChangeDate={handleChangeDate}
+        value={selectedDate ? new Date(selectedDate) : new Date()}
+      />
       <Button
         variant="contained"
         startIcon={<Add />}
@@ -265,7 +266,6 @@ const ShiftPage = () => {
         }
         pageSize={DEFAULT_PAGE_SIZE}
         sortingMode="server"
-        paginationMode="server"
         sortModel={sortModel}
         onSortModelChange={handleSortModelChange}
         rowCount={totalItems}

@@ -16,7 +16,7 @@ interface DetailExamineeSubjectState {
 }
 
 export const getExamineeSubjectDetail = createAsyncThunk(
-  'detailShift/detail',
+  'examineeSubjectDetail/detail',
   async (payload: SearchSubjectExamineeParams, { rejectWithValue }) => {
     try {
       const response = await subjectExamineesServices.getDetail(payload);
@@ -36,7 +36,7 @@ const initialState: DetailExamineeSubjectState = {
 };
 
 export const detailShiftSlice = createSlice({
-  name: 'detailShift',
+  name: 'examineeSubjectDetail',
   initialState,
   reducers: {},
   extraReducers: builder => {

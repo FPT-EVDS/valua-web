@@ -6,6 +6,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import { format } from 'date-fns';
 import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftsDto from 'dtos/shifts.dto';
@@ -19,7 +20,6 @@ interface ShiftsState {
   current: ShiftsDto;
   semester: Pick<Semester, 'semesterId' | 'semesterName'> | null;
   activeShiftDates: Record<string, number> | null;
-  startDate: Date | string | null;
 }
 
 export const getShifts = createAsyncThunk(
@@ -91,10 +91,10 @@ export const addShift = createAsyncThunk(
 const initialState: ShiftsState = {
   isLoading: false,
   semester: null,
-  startDate: null,
   activeShiftDates: null,
   error: '',
   current: {
+    selectedDate: null,
     shifts: [] as Shift[],
     currentPage: 0,
     totalItems: 0,
@@ -114,9 +114,13 @@ export const shiftSlice = createSlice({
       > | null>,
     ) => {
       state.semester = action.payload;
+      state.current.selectedDate = null;
     },
     updateShiftStartDate: (state, action: PayloadAction<string | null>) => {
-      state.startDate = String(action.payload);
+      state.current.selectedDate = format(
+        new Date(String(action.payload)),
+        'yyyy-MM-dd',
+      );
     },
   },
   extraReducers: builder => {
@@ -132,8 +136,7 @@ export const shiftSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(addShift.fulfilled, (state, action) => {
-        if (state.current.currentPage === 0)
-          state.current.shifts.unshift(action.payload);
+        state.current.shifts.unshift(action.payload);
         state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;
@@ -154,13 +157,11 @@ export const shiftSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(getShifts.rejected, (state, action) => {
-        if (
-          String(action.payload) === 'There is no shift in this semester yet!'
-        )
-          state.current = initialState.current;
-        state.error = String(action.payload);
+      .addCase(getShiftCalendar.rejected, (state, action) => {
+        state.current = initialState.current;
+        state.activeShiftDates = null;
         state.isLoading = false;
+        state.error = String(action.payload);
       })
       .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
         state.isLoading = false;
