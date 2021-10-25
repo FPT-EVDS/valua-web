@@ -1,6 +1,6 @@
 /* eslint-disable prefer-destructuring */
 import { Add, FiberManualRecord } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -15,10 +15,17 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import SemesterDropdown from 'components/SemesterDropdown';
+import ShiftDatepicker from 'components/ShiftDatepicker';
 import ShiftDetailDialog from 'components/ShiftDetailDialog';
 import { format } from 'date-fns';
 import Status from 'enums/status.enum';
-import { deleteShift, getShifts } from 'features/shift/shiftSlice';
+import {
+  deleteShift,
+  getShiftCalendar,
+  getShifts,
+  updateShiftSemester,
+  updateShiftStartDate,
+} from 'features/shift/shiftSlice';
 import Semester from 'models/semester.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -39,15 +46,14 @@ const ShiftPage = () => {
     });
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(0);
-  const [semester, setSemester] = useState<Pick<
-    Semester,
-    'semesterId' | 'semesterName'
-  > | null>(null);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
     current: { shifts, totalItems },
+    semester,
+    startDate,
+    activeShiftDates,
   } = useAppSelector(state => state.shift);
   const rows: GridRowModel[] = shifts.map(shift => ({
     ...shift,
@@ -55,31 +61,38 @@ const ShiftPage = () => {
   }));
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
+  const showErrorMessage = (error: string) =>
+    enqueueSnackbar(error, {
+      variant: 'error',
+      preventDuplicate: true,
+    });
+
   const fetchShift = () => {
     let sortParam = '';
     if (sortModel.length > 0) {
       const { field, sort } = sortModel[0];
       sortParam = `${field},${String(sort)}`;
     }
-    dispatch(
-      getShifts({
-        page,
-        sort: sortParam,
-        semesterId: semester?.semesterId,
-      }),
-    )
-      .then(result => unwrapResult(result))
-      .catch(error =>
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
+    if (semester) {
+      dispatch(
+        getShifts({
+          page,
+          sort: sortParam,
+          semesterId: semester?.semesterId,
+          date: startDate ? new Date(startDate) : new Date(),
         }),
-      );
+      )
+        .then(result => unwrapResult(result))
+        .catch(error => showErrorMessage(error));
+      dispatch(getShiftCalendar(semester.semesterId))
+        .then(result => unwrapResult(result))
+        .catch(error => showErrorMessage(error));
+    }
   };
 
   useEffect(() => {
     fetchShift();
-  }, [page, sortModel, semester]);
+  }, [page, sortModel, semester, startDate]);
 
   const handleDeleteShift = async (shiftId: string) => {
     try {
@@ -204,16 +217,29 @@ const ShiftPage = () => {
     },
   ];
 
+  const handleChangeDate = (date: Date | null) => {
+    dispatch(updateShiftStartDate(String(date)));
+  };
+
   const AddButton = () => (
-    <Button
-      variant="contained"
-      startIcon={<Add />}
-      onClick={() => {
-        setOpen(true);
-      }}
-    >
-      Add shift
-    </Button>
+    <Stack direction="row" spacing={2} alignItems="center">
+      {activeShiftDates && (
+        <ShiftDatepicker
+          activeDate={activeShiftDates}
+          handleChangeDate={handleChangeDate}
+          value={startDate ? new Date(startDate) : new Date()}
+        />
+      )}
+      <Button
+        variant="contained"
+        startIcon={<Add />}
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
+        Add shift
+      </Button>
+    </Stack>
   );
 
   const handleSortModelChange = (newModel: GridSortModel) => {
@@ -223,7 +249,7 @@ const ShiftPage = () => {
   const handleChangeSemester = (
     selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
-    setSemester(selectedSemester);
+    dispatch(updateShiftSemester(selectedSemester));
   };
 
   return (
@@ -251,6 +277,7 @@ const ShiftPage = () => {
         onSortModelChange={handleSortModelChange}
         rowCount={totalItems}
         isLoading={isLoading}
+        hasSearch={false}
         title="Manage Shifts"
         columns={columns}
         page={page}

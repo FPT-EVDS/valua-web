@@ -65,7 +65,7 @@ export const subjectExamineeSlice = createSlice({
   name: 'subjectExaminee',
   initialState,
   reducers: {
-    updateSelectedSemester: (
+    updateExamineeSemester: (
       state,
       action: PayloadAction<Pick<
         Semester,
@@ -109,6 +109,6 @@ export const subjectExamineeSlice = createSlice({
   },
 });
 
-export const { updateSelectedSemester } = subjectExamineeSlice.actions;
+export const { updateExamineeSemester } = subjectExamineeSlice.actions;
 
 export default subjectExamineeSlice.reducer;
