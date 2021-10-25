@@ -1,12 +1,7 @@
 import { differenceInMinutes } from 'date-fns';
-import ValidationMessage from 'enums/validationMessage';
 import { date, DateSchema, object, ref, string } from 'yup';
 
 const shiftSchema = object({
-  description: string()
-    .defined('Description is required')
-    .min(6, value => `${ValidationMessage.MIN_LENGTH} ${value.min}`)
-    .max(200, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`),
   beginTime: date()
     .typeError('Invalid time')
     .defined('Begin time is required')

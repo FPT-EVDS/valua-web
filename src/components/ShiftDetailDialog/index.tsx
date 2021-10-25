@@ -38,7 +38,6 @@ const ShiftDetailDialog: React.FC<Props> = ({
   initialValues = {
     shiftId: null,
     semester: null,
-    description: '',
     beginTime: add(new Date(), { days: 1, hours: 1 }),
     finishTime: add(new Date(), { days: 1, hours: 2 }),
   },
@@ -175,7 +174,6 @@ const ShiftDetailDialog: React.FC<Props> = ({
                   <TextField
                     {...params}
                     name="endTime"
-                    autoFocus
                     margin="dense"
                     fullWidth
                     variant="outlined"
@@ -191,30 +189,6 @@ const ShiftDetailDialog: React.FC<Props> = ({
                     }
                   />
                 )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="description"
-                autoFocus
-                multiline
-                margin="dense"
-                label="Description"
-                rows={4}
-                value={formik.values.description}
-                fullWidth
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                error={
-                  formik.touched.description &&
-                  Boolean(formik.errors.description)
-                }
-                helperText={
-                  formik.touched.description && formik.errors.description
-                }
-                onChange={formik.handleChange}
               />
             </Grid>
           </Grid>

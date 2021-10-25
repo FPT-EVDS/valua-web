@@ -222,24 +222,6 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                name="description"
-                autoFocus
-                multiline
-                margin="dense"
-                disabled={!isEditable}
-                label="Description"
-                rows={4}
-                value={formik.values.description}
-                fullWidth
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                onChange={formik.handleChange}
-              />
-            </Grid>
-            <Grid item xs={12}>
               <Typography color="text.secondary">
                 Last updated date:{' '}
                 {format(new Date(shift.lastModifiedDate), 'dd/MM/yyyy HH:mm')}

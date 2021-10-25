@@ -147,13 +147,6 @@ const ShiftPage = () => {
         format(new Date(String(value)), 'dd/MM/yyyy HH:mm'),
     },
     {
-      field: 'description',
-      headerName: 'Description',
-      flex: 0.1,
-      minWidth: 130,
-      sortable: false,
-    },
-    {
       field: 'status',
       headerName: 'Status',
       flex: 0.1,
