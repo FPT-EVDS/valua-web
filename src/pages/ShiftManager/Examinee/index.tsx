@@ -14,10 +14,9 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import ImportExcelButton from 'components/ImportExcelButton';
 import SemesterDropdown from 'components/SemesterDropdown';
-import Status from 'enums/status.enum';
 import {
   searchSubjectBySemester,
-  updateSelectedSemester,
+  updateExamineeSemester,
 } from 'features/subjectExaminee/subjectExamineeSlice';
 import Semester from 'models/semester.model';
 import Subject from 'models/subject.model';
@@ -201,7 +200,7 @@ const ExamineePage = () => {
   const handleChangeSemester = (
     semester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
-    dispatch(updateSelectedSemester(semester));
+    dispatch(updateExamineeSemester(semester));
   };
 
   return (
@@ -228,6 +227,7 @@ const ExamineePage = () => {
         onSortModelChange={handleSortModelChange}
         rowCount={totalItems}
         isLoading={isLoading}
+        hasSearch={false}
         title="Manage Examinee"
         columns={columns}
         page={page}

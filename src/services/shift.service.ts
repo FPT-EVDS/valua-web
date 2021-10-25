@@ -12,10 +12,11 @@ const shiftServices = {
     page,
     sort,
     semesterId,
+    date,
   }: SearchShiftParamsDto): Promise<AxiosResponse<ShiftsDto>> => {
     const url = `/shifts`;
     return axiosClient.get(url, {
-      params: { page, sort, semester: semesterId },
+      params: { page, sort, semester: semesterId, date },
     });
   },
   getShift: (id: string): Promise<AxiosResponse<Shift>> => {
@@ -39,6 +40,12 @@ const shiftServices = {
         value: 0,
       },
     ]);
+  },
+  getShiftCalendar: (
+    id: string,
+  ): Promise<AxiosResponse<Record<string, number>>> => {
+    const url = `/shifts/calendar/${id}`;
+    return axiosClient.get(url);
   },
 };
 

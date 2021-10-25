@@ -9,6 +9,7 @@ import { AxiosError } from 'axios';
 import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftsDto from 'dtos/shifts.dto';
+import Semester from 'models/semester.model';
 import Shift from 'models/shift.model';
 import shiftServices from 'services/shift.service';
 
@@ -16,6 +17,9 @@ interface ShiftsState {
   isLoading: boolean;
   error: string;
   current: ShiftsDto;
+  semester: Pick<Semester, 'semesterId' | 'semesterName'> | null;
+  activeShiftDates: Record<string, number> | null;
+  startDate: Date | string | null;
 }
 
 export const getShifts = createAsyncThunk(
@@ -23,6 +27,19 @@ export const getShifts = createAsyncThunk(
   async (payload: SearchShiftParamsDto, { rejectWithValue }) => {
     try {
       const response = await shiftServices.getShifts(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const getShiftCalendar = createAsyncThunk(
+  'shifts/calendar',
+  async (semesterId: string, { rejectWithValue }) => {
+    try {
+      const response = await shiftServices.getShiftCalendar(semesterId);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -73,6 +90,9 @@ export const addShift = createAsyncThunk(
 // Define the initial state using that type
 const initialState: ShiftsState = {
   isLoading: false,
+  semester: null,
+  startDate: null,
+  activeShiftDates: null,
   error: '',
   current: {
     shifts: [] as Shift[],
@@ -82,14 +102,32 @@ const initialState: ShiftsState = {
   },
 };
 
-export const shiftslice = createSlice({
+export const shiftSlice = createSlice({
   name: 'shift',
   initialState,
-  reducers: {},
+  reducers: {
+    updateShiftSemester: (
+      state,
+      action: PayloadAction<Pick<
+        Semester,
+        'semesterId' | 'semesterName'
+      > | null>,
+    ) => {
+      state.semester = action.payload;
+    },
+    updateShiftStartDate: (state, action: PayloadAction<string | null>) => {
+      state.startDate = String(action.payload);
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(getShifts.fulfilled, (state, action) => {
         state.current = action.payload;
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(getShiftCalendar.fulfilled, (state, action) => {
+        state.activeShiftDates = action.payload;
         state.error = '';
         state.isLoading = false;
       })
@@ -135,4 +173,6 @@ export const shiftslice = createSlice({
   },
 });
 
-export default shiftslice.reducer;
+export const { updateShiftSemester, updateShiftStartDate } = shiftSlice.actions;
+
+export default shiftSlice.reducer;
