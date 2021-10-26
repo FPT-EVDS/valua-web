@@ -2,8 +2,6 @@ import {
   createAsyncThunk,
   createSlice,
   isAnyOf,
-  isPending,
-  isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
@@ -113,14 +111,30 @@ export const roomSlice = createSlice({
           state.isLoading = false;
         },
       )
-      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addMatcher(isPending, state => {
-        state.isLoading = true;
-        state.error = '';
-      });
+      .addMatcher(
+        isAnyOf(
+          addRoom.rejected,
+          disableRoom.rejected,
+          getRooms.rejected,
+          searchByRoomName.rejected,
+        ),
+        (state, action: PayloadAction<string>) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          addRoom.pending,
+          disableRoom.pending,
+          getRooms.pending,
+          searchByRoomName.pending,
+        ),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      );
   },
 });
 

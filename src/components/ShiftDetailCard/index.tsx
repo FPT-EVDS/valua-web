@@ -11,17 +11,18 @@ import {
   CircularProgress,
   Grid,
   IconButton,
+  Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import { green, red } from '@mui/material/colors';
+import { green, grey, orange, red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import SemesterDropdown from 'components/SemesterDropdown';
 import { shiftSchema } from 'configs/validations';
 import { format } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
-import Status from 'enums/status.enum';
+import ShiftStatus from 'enums/shiftStatus.enum';
 import { updateShift } from 'features/shift/detailShiftSlice';
 import { useFormik } from 'formik';
 import useQuery from 'hooks/useQuery';
@@ -45,21 +46,31 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
   );
 
   let statusColor = '#1890ff';
-  let statusText = '';
+  let statusText = 'Ready';
   switch (shift.status) {
-    case Status.isReady:
+    case ShiftStatus.Inactive:
+      statusColor = red[500];
+      statusText = 'Inactive';
+      break;
+
+    case ShiftStatus.NotReady:
+      statusColor = grey[500];
+      statusText = 'Not ready';
+      break;
+
+    case ShiftStatus.Ready:
       statusColor = '#1890ff';
       statusText = 'Ready';
       break;
 
-    case Status.isActive:
-      statusColor = green[500];
-      statusText = 'Active';
+    case ShiftStatus.Ongoing:
+      statusColor = orange[400];
+      statusText = 'Ongoing';
       break;
 
-    case Status.isDisable:
-      statusColor = red[500];
-      statusText = 'Disable';
+    case ShiftStatus.Finished:
+      statusColor = green[500];
+      statusText = 'Finished';
       break;
 
     default:
@@ -130,7 +141,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           </Typography>
         }
         action={
-          shift.status !== Status.isDisable && (
+          shift.status !== ShiftStatus.Inactive && (
             <IconButton onClick={() => setIsEditable(prevState => !prevState)}>
               {isEditable ? (
                 <EditOff sx={{ fontSize: 20 }} />
@@ -241,12 +252,12 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           {isLoading ? (
             <CircularProgress />
           ) : (
-            <Box>
+            <Stack spacing={2} direction="row">
               <Button
                 disabled={!isEditable}
                 type="submit"
                 variant="contained"
-                sx={{ width: 150, marginRight: 2 }}
+                sx={{ minWidth: 120 }}
               >
                 Update
               </Button>
@@ -255,11 +266,11 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
                 variant="contained"
                 color="error"
                 onClick={() => handleDelete(String(shift.shiftId))}
-                sx={{ width: 150 }}
+                sx={{ minWidth: 120 }}
               >
                 Delete
               </Button>
-            </Box>
+            </Stack>
           )}
         </CardActions>
       </Box>

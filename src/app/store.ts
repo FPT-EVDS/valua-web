@@ -4,6 +4,7 @@ import detailAccountReducer from 'features/account/detailAccountSlice';
 import authReducer from 'features/auth/authSlice';
 import cameraReducer from 'features/camera/camerasSlice';
 import detailCameraReducer from 'features/camera/detailCameraSlice';
+import examRoomReducer from 'features/examRoom/examRoomSlice';
 import detailFeedbackReducer from 'features/feedback/detailFeedbackSlice';
 import feedbackReducer from 'features/feedback/feedbacksSlice';
 import detailRoomReducer from 'features/room/detailRoomSlice';
@@ -38,6 +39,7 @@ export const store = configureStore({
     detailFeedback: detailFeedbackReducer,
     subjectExaminee: subjectExamineeReducer,
     detailSubjectExaminee: detailSubjectExamineeReducer,
+    examRoom: examRoomReducer,
   },
 });
 

@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 import { Add, FiberManualRecord } from '@mui/icons-material';
 import { Box, Button, Stack, Typography } from '@mui/material';
-import { green, red } from '@mui/material/colors';
+import { green, grey, orange, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
   GridActionsColDef,
@@ -18,6 +18,7 @@ import SemesterDropdown from 'components/SemesterDropdown';
 import ShiftDatepicker from 'components/ShiftDatepicker';
 import ShiftDetailDialog from 'components/ShiftDetailDialog';
 import { format } from 'date-fns';
+import ShiftStatus from 'enums/shiftStatus.enum';
 import Status from 'enums/status.enum';
 import {
   deleteShift,
@@ -159,14 +160,29 @@ const ShiftPage = () => {
         let color = '#1890ff';
         let statusText = 'Ready';
         switch (active) {
-          case 1:
-            color = green[500];
-            statusText = 'Active';
+          case ShiftStatus.Inactive:
+            color = red[500];
+            statusText = 'Inactive';
             break;
 
-          case 0:
-            color = red[500];
-            statusText = 'Disable';
+          case ShiftStatus.NotReady:
+            color = grey[500];
+            statusText = 'Not ready';
+            break;
+
+          case ShiftStatus.Ready:
+            color = '#1890ff';
+            statusText = 'Ready';
+            break;
+
+          case ShiftStatus.Ongoing:
+            color = orange[400];
+            statusText = 'Ongoing';
+            break;
+
+          case ShiftStatus.Finished:
+            color = green[500];
+            statusText = 'Finished';
             break;
 
           default:

@@ -1,9 +1,7 @@
-import ExamineeStatus from 'enums/examineeStatus.enum';
-
 import Account from './account.model';
 
-export default interface SubjectExaminee {
-  subjectExamineeId: string;
+export default interface ExamSeat {
+  examSeatId: string;
   examinee: Pick<
     Account,
     | 'appUserId'
@@ -13,5 +11,5 @@ export default interface SubjectExaminee {
     | 'imageUrl'
     | 'companyId'
   >;
-  status: ExamineeStatus;
+  position: number;
 }

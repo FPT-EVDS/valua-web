@@ -16,9 +16,10 @@ interface Props {
 }
 
 const ExamineePieChart = ({ totalExaminees, totalUnassigned }: Props) => {
+  const totalAssigned = totalExaminees - totalUnassigned;
   const data = [
-    { name: 'Assigned', value: totalExaminees - totalUnassigned },
-    { name: 'Unassigned', value: totalExaminees },
+    { name: 'Assigned', value: totalAssigned },
+    { name: 'Unassigned', value: totalUnassigned },
   ];
 
   return (
