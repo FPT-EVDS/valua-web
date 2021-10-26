@@ -1,8 +1,7 @@
 import {
   createAsyncThunk,
   createSlice,
-  isPending,
-  isRejected,
+  isAnyOf,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
@@ -98,14 +97,20 @@ export const subjectExamineeSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addMatcher(isPending, state => {
-        state.isLoading = true;
-        state.error = '';
-      });
+      .addMatcher(
+        isAnyOf(searchSubjectBySemester.rejected, addExaminees.rejected),
+        (state, action: PayloadAction<string>) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        },
+      )
+      .addMatcher(
+        isAnyOf(searchSubjectBySemester.pending, addExaminees.pending),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      );
   },
 });
 

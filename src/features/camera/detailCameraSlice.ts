@@ -1,10 +1,4 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  isAnyOf,
-  isPending,
-  isRejected,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import CameraDto from 'dtos/camera.dto';
 import Camera from 'models/camera.model';
@@ -94,14 +88,24 @@ export const detailCameraSlice = createSlice({
           state.isLoading = false;
         },
       )
-      .addMatcher(isPending, state => {
-        state.isLoading = true;
-        state.error = '';
-      })
-      .addMatcher(isRejected, state => {
-        state.isLoading = false;
-        state.error = '';
-      });
+      .addMatcher(
+        isAnyOf(disableCamera.pending, getCamera.pending, updateCamera.pending),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          disableCamera.rejected,
+          getCamera.rejected,
+          updateCamera.rejected,
+        ),
+        (state, action) => {
+          state.isLoading = false;
+          state.error = String(action.payload);
+        },
+      );
   },
 });
 

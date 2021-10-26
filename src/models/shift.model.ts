@@ -1,4 +1,4 @@
-import Status from 'enums/status.enum';
+import ShiftStatus from 'enums/shiftStatus.enum';
 
 import Account from './account.model';
 import Semester from './semester.model';
@@ -17,7 +17,7 @@ export default interface Shift {
   semester: Pick<Semester, 'semesterId' | 'semesterName'>;
   beginTime: Date;
   finishTime: Date;
-  status: Status;
+  status: ShiftStatus;
   createdDate: Date;
   lastModifiedDate: Date;
 }

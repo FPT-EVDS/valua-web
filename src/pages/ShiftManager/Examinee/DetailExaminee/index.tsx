@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import { ChevronLeft, FiberManualRecord } from '@mui/icons-material';
 import {
   Avatar,
@@ -9,7 +10,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { green, red } from '@mui/material/colors';
+import { green, orange, red } from '@mui/material/colors';
 import {
   GridActionsColDef,
   GridColDef,
@@ -22,6 +23,7 @@ import EVDSDataGrid from 'components/EVDSDataGrid';
 import ExamineeDetailCard from 'components/ExamineeDetailCard';
 import ExamineePieChart from 'components/ExamineePieChart';
 import StringAvatar from 'components/StringAvatar';
+import ExamineeStatus from 'enums/examineeStatus.enum';
 import { getExamineeSubjectDetail } from 'features/subjectExaminee/detailExamineeSubjectSlice';
 import useQuery from 'hooks/useQuery';
 import { useSnackbar } from 'notistack';
@@ -77,7 +79,7 @@ const DetailExamineePage = () => {
     ? examineeSubject.examinees.map(examinee => ({
         ...examinee.examinee,
         id: examinee.examinee.appUserId,
-        isAssigned: examinee.isAssigned,
+        status: examinee.status,
       }))
     : [];
 
@@ -113,14 +115,33 @@ const DetailExamineePage = () => {
       sortable: false,
     },
     {
-      field: 'isActive',
+      field: 'status',
       headerName: 'Status',
       flex: 0.2,
       minWidth: 130,
       renderCell: params => {
-        const active = params.getValue(params.id, params.field);
-        const color = active ? green[500] : red[500];
-        const statusText = active ? 'Assigned' : 'Not assigned';
+        const status = params.getValue(params.id, params.field);
+        let color = '#1890ff';
+        let statusText = 'Unknown';
+        switch (status) {
+          case ExamineeStatus.Unassigned:
+            color = orange[400];
+            statusText = 'Unassigned';
+            break;
+
+          case ExamineeStatus.Assigned:
+            color = green[500];
+            statusText = 'Assigned';
+            break;
+
+          case ExamineeStatus.Removed:
+            color = red[500];
+            statusText = 'Removed';
+            break;
+
+          default:
+            break;
+        }
         return (
           <Box display="flex" alignItems="center">
             <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />

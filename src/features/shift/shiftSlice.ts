@@ -1,8 +1,7 @@
 import {
   createAsyncThunk,
   createSlice,
-  isPending,
-  isRejected,
+  isAnyOf,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
@@ -163,14 +162,30 @@ export const shiftSlice = createSlice({
         state.isLoading = false;
         state.error = String(action.payload);
       })
-      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addMatcher(isPending, state => {
-        state.isLoading = true;
-        state.error = '';
-      });
+      .addMatcher(
+        isAnyOf(
+          getShifts.rejected,
+          addShift.rejected,
+          updateShift.rejected,
+          deleteShift.rejected,
+        ),
+        (state, action: PayloadAction<string>) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          getShifts.pending,
+          addShift.pending,
+          updateShift.pending,
+          deleteShift.pending,
+        ),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      );
   },
 });
 

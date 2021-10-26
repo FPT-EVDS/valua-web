@@ -1,9 +1,4 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  isPending,
-  isRejected,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import DetailSubjectExamineeDto from 'dtos/detailSubjectExaminee';
 import { SearchSubjectExamineeParams } from 'dtos/searchSubjectExamineeParams.dto';
@@ -46,14 +41,17 @@ export const detailShiftSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addMatcher(isPending, state => {
+      .addMatcher(isAnyOf(getExamineeSubjectDetail.pending), state => {
         state.isLoading = true;
         state.error = '';
       })
-      .addMatcher(isRejected, (state, action) => {
-        state.isLoading = false;
-        state.error = String(action.payload);
-      });
+      .addMatcher(
+        isAnyOf(getExamineeSubjectDetail.rejected),
+        (state, action) => {
+          state.isLoading = false;
+          state.error = String(action.payload);
+        },
+      );
   },
 });
 
