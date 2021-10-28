@@ -5,7 +5,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import { AddSubjectToSemesterDto } from 'dtos/addSubjectToSemester.dto';
+import AddSubjectToSemesterDto from 'dtos/addSubjectToSemester.dto';
 import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto';
 import SemesterDto from 'dtos/semester.dto';
 import Semester from 'models/semester.model';

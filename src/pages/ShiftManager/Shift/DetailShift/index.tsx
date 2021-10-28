@@ -135,7 +135,11 @@ const DetailShiftPage = () => {
   };
 
   const AddButton = () => (
-    <Button variant="contained" startIcon={<Add />}>
+    <Button
+      variant="contained"
+      startIcon={<Add />}
+      onClick={() => history.push(`/shift-manager/shift/${id}/add`)}
+    >
       Add new
     </Button>
   );
@@ -235,18 +239,14 @@ const DetailShiftPage = () => {
       field: 'actions',
       headerName: 'Actions',
       type: 'actions',
-      getActions: ({ getValue, id: rowId }) => {
-        const appUserId = String(getValue(rowId, 'appUserId'));
-        const status = getValue(rowId, 'status');
-        return [
-          <GridActionsCellItem label="View detail" showInMenu />,
-          <GridActionsCellItem
-            label="Disable"
-            sx={{ color: red[500] }}
-            showInMenu
-          />,
-        ];
-      },
+      getActions: ({ getValue, id: rowId }) => [
+        <GridActionsCellItem label="View detail" showInMenu />,
+        <GridActionsCellItem
+          label="Disable"
+          sx={{ color: red[500] }}
+          showInMenu
+        />,
+      ],
     },
   ];
 

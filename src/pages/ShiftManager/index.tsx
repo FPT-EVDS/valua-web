@@ -27,6 +27,7 @@ import DetailFeedbackPage from './Feedback/DetailFeedback';
 import Profile from './Profile';
 import ShiftPage from './Shift';
 import DetailShiftPage from './Shift/DetailShift';
+import AddExamRoomPage from './Shift/DetailShift/AddExamRoom';
 import ViolationPage from './Violation';
 import DetailViolationPage from './Violation/DetailViolation';
 
@@ -141,11 +142,15 @@ const ShiftManagerDashboard = (): JSX.Element => {
           />
           <Route path="/shift-manager/shift" component={ShiftPage} exact />
           <Route
-            path="/shift-manager/shift/add"
+            path="/shift-manager/shift/:id"
             component={DetailShiftPage}
             exact
           />
-          <Route path="/shift-manager/shift/:id" component={DetailShiftPage} />
+          <Route
+            path="/shift-manager/shift/:id/add"
+            component={AddExamRoomPage}
+            exact
+          />
           <Route
             path="/shift-manager/violation"
             component={ViolationPage}
