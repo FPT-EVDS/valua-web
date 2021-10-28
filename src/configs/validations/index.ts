@@ -1,4 +1,5 @@
 import accountSchema from './accountSchema';
+import addExamRoomSchema from './addExamRoomSchema';
 import addSubjectsSchema from './addSubjectsSchema';
 import appUserSchema from './appUserSchema';
 import cameraSchema from './cameraSchema';
@@ -9,6 +10,7 @@ import subjectSchema from './subjectSchema';
 
 export {
   accountSchema,
+  addExamRoomSchema,
   addSubjectsSchema,
   appUserSchema,
   cameraSchema,

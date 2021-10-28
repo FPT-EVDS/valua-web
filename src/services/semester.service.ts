@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import { AddSubjectToSemesterDto } from 'dtos/addSubjectToSemester.dto';
+import AddSubjectToSemesterDto from 'dtos/addSubjectToSemester.dto';
 import DisableSemesterDto from 'dtos/disableSemester.dto';
 import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto';
 import SearchByDateDto from 'dtos/searchByDate.dto';

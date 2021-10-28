@@ -51,7 +51,6 @@ export const examRoomsSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-
       .addMatcher(
         isAnyOf(getExamRooms.rejected),
         (state, action: PayloadAction<string>) => {
