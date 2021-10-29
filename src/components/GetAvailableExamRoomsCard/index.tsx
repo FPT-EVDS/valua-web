@@ -1,6 +1,6 @@
+import { LoadingButton } from '@mui/lab';
 import {
   Box,
-  Button,
   Card,
   CardActions,
   CardContent,
@@ -16,7 +16,6 @@ import { AxiosError } from 'axios';
 import SemesterSubjectsDropdown from 'components/SemesterSubjectDropdown';
 import { addExamRoomSchema } from 'configs/validations';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
-import AvailableRoomsDto from 'dtos/availableRooms.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
 import { getShift } from 'features/examRoom/addExamRoomSlice';
@@ -27,11 +26,12 @@ import React, { useEffect, useState } from 'react';
 
 interface Props {
   shiftId: string;
-  handleSubmit: (payload: GetAvailableExamRoomsDto) => void;
+  handleSubmit: (payload: GetAvailableExamRoomsDto) => Promise<void>;
   handleGetAvailableExaminees: (
     payload: GetAvailableExamineesDto,
   ) => Promise<void>;
   examinees: AvailableExamineesDto | null;
+  handleError: () => void;
 }
 
 const GetAvailableExamRoomsCard = ({
@@ -39,12 +39,14 @@ const GetAvailableExamRoomsCard = ({
   examinees,
   handleSubmit,
   handleGetAvailableExaminees,
+  handleError,
 }: Props) => {
   const dispatch = useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const { shift, defaultExamRoomSize } = useAppSelector(
     state => state.addExamRoom,
   );
+  const [isLoading, setIsLoading] = useState(false);
   const [isDisable, setIsDisable] = useState(true);
 
   const fetchShift = async (id: string) => {
@@ -66,10 +68,14 @@ const GetAvailableExamRoomsCard = ({
     },
     validationSchema: addExamRoomSchema,
     onSubmit: async ({ shiftId: id, numOfRooms }) => {
+      setIsLoading(true);
       try {
-        handleSubmit({ shiftId: id, numOfRooms });
+        await handleSubmit({ shiftId: id, numOfRooms });
+        setIsLoading(false);
       } catch (error) {
+        handleError();
         showErrorMessage(error);
+        setIsLoading(false);
       }
     },
   });
@@ -85,6 +91,7 @@ const GetAvailableExamRoomsCard = ({
         setIsDisable(false);
       }
     } catch (error) {
+      handleError();
       const err = error as AxiosError;
       if (err.response) showErrorMessage(err.response.data);
       else showErrorMessage(error);
@@ -153,9 +160,14 @@ const GetAvailableExamRoomsCard = ({
           </Grid>
         </CardContent>
         <CardActions sx={{ justifyContent: 'center', paddingBottom: 2 }}>
-          <Button variant="contained" type="submit" disabled={isDisable}>
+          <LoadingButton
+            variant="contained"
+            type="submit"
+            disabled={isDisable}
+            loading={isLoading}
+          >
             Get available rooms
-          </Button>
+          </LoadingButton>
         </CardActions>
       </Box>
     </Card>
