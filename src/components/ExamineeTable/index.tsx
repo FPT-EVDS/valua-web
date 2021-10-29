@@ -1,4 +1,5 @@
 import {
+  Button,
   Link,
   Paper,
   Table,
@@ -11,7 +12,7 @@ import {
   TableRow,
 } from '@mui/material';
 import Examinee from 'models/examinee.model';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
   data: Examinee[];
@@ -19,9 +20,10 @@ interface Props {
 
 const ExamineeTable = ({ data }: Props) => {
   const [page, setPage] = useState(0);
+  const [rows, setRows] = useState(data);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -37,6 +39,10 @@ const ExamineeTable = ({ data }: Props) => {
     setPage(0);
   };
 
+  useEffect(() => {
+    setRows(data);
+  }, [data]);
+
   return (
     <TableContainer component={Paper} sx={{ display: 'flex', height: '100%' }}>
       <Table sx={{ flexGrow: 1 }}>
@@ -50,8 +56,8 @@ const ExamineeTable = ({ data }: Props) => {
         </TableHead>
         <TableBody>
           {(rowsPerPage > 0
-            ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : data
+            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : rows
           ).map((row, index) => (
             <TableRow key={row.subjectExamineeID}>
               <TableCell component="th" scope="row" align="center">
@@ -59,11 +65,20 @@ const ExamineeTable = ({ data }: Props) => {
               </TableCell>
               <TableCell align="center">{row.examinee.fullName}</TableCell>
               <TableCell align="center">{row.examinee.companyId}</TableCell>
-              <TableCell align="center">
-                <Link href="#" underline="hover">
-                  Delete
-                </Link>
-              </TableCell>
+              {rows.length > 1 && (
+                <TableCell align="center">
+                  <Button
+                    variant="text"
+                    onClick={() =>
+                      setRows(prev =>
+                        prev.filter((item, itemIndex) => index !== itemIndex),
+                      )
+                    }
+                  >
+                    Remove
+                  </Button>
+                </TableCell>
+              )}
             </TableRow>
           ))}
           {emptyRows > 0 && (
@@ -77,7 +92,7 @@ const ExamineeTable = ({ data }: Props) => {
             <TablePagination
               rowsPerPageOptions={[10]}
               colSpan={4}
-              count={data.length}
+              count={rows.length}
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{

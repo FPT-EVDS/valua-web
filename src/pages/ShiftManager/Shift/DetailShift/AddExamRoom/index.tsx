@@ -1,17 +1,11 @@
-import { ChevronLeft, Info } from '@mui/icons-material';
-import {
-  Box,
-  CircularProgress,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Add, ChevronLeft, Info } from '@mui/icons-material';
+import { Box, Button, Grid, Stack, Typography, useTheme } from '@mui/material';
 import { red } from '@mui/material/colors';
 import { useAppSelector } from 'app/hooks';
 import AvailableRoomTable from 'components/AvailableRoomTable';
+import CustomTooltip from 'components/CustomTooltip';
 import ExamineeTable from 'components/ExamineeTable';
+import ExamineeTransferListDialog from 'components/ExamineeTransferListDialog';
 import GetAvailableExamRoomsCard from 'components/GetAvailableExamRoomsCard';
 import LoadingIndicator from 'components/LoadingIndicator';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
@@ -19,7 +13,7 @@ import AvailableRoomsDto from 'dtos/availableRooms.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
 import Examinee from 'models/examinee.model';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import examRoomServices from 'services/examRoom.service';
 import { chunk } from 'utils';
@@ -30,7 +24,8 @@ interface ParamProps {
 
 const AddExamRoomPage = () => {
   const { id } = useParams<ParamProps>();
-  const themes = useTheme();
+  const theme = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
   const [examRooms, setExamRooms] = useState<AvailableRoomsDto | null>(null);
   const [examinees, setExaminees] = useState<AvailableExamineesDto | null>(
     null,
@@ -39,7 +34,16 @@ const AddExamRoomPage = () => {
     Examinee[][] | null
   >(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const { isLoading } = useAppSelector(state => state.addExamRoom);
+  const { isLoading, defaultExamRoomSize } = useAppSelector(
+    state => state.addExamRoom,
+  );
+
+  const handleError = () => {
+    setExamRooms(null);
+    setExaminees(null);
+    setSelectedIndex(-1);
+    setListExamineesByRoom(null);
+  };
 
   const handleGetAvailableRooms = async (payload: GetAvailableExamRoomsDto) => {
     const response = await examRoomServices.getAvailableExamRooms(payload);
@@ -59,9 +63,15 @@ const AddExamRoomPage = () => {
     setExaminees(response.data);
   };
 
-  useEffect(() => {
-    console.log(selectedIndex);
-  }, [selectedIndex]);
+  const handleChangeRoom = (value: number) => {
+    setSelectedIndex(value);
+    if (examinees && examRooms) {
+      const examineePerRoom = Math.ceil(
+        examinees.totalExaminees / examRooms.totalRooms,
+      );
+      setListExamineesByRoom(chunk(examinees.examinees, examineePerRoom));
+    }
+  };
 
   return (
     <div>
@@ -82,6 +92,7 @@ const AddExamRoomPage = () => {
               examinees={examinees}
               handleSubmit={handleGetAvailableRooms}
               handleGetAvailableExaminees={handleGetAvailableExaminees}
+              handleError={handleError}
             />
             {!isLoading ? (
               examRooms && (
@@ -94,35 +105,19 @@ const AddExamRoomPage = () => {
                     >
                       Room list
                     </Typography>
-                    {examinees && (
-                      <Tooltip
+                    {examinees && examinees.totalExaminees > 0 && (
+                      <CustomTooltip
                         title={`There are ${examinees.totalExaminees} examinees left unassigned`}
-                        placement="right"
-                        arrow
-                        componentsProps={{
-                          tooltip: {
-                            sx: {
-                              backgroundColor: '#fff',
-                              boxShadow: themes.shadows[4],
-                              color: red[500],
-                              fontSize: 13,
-                            },
-                          },
-                          arrow: {
-                            sx: {
-                              color: '#fff',
-                            },
-                          },
-                        }}
+                        color={red[500]}
                       >
                         <Info color="error" />
-                      </Tooltip>
+                      </CustomTooltip>
                     )}
                   </Stack>
                   <AvailableRoomTable
                     data={examRooms?.availableRooms}
                     selectedIndex={selectedIndex}
-                    handleSelect={value => setSelectedIndex(value)}
+                    handleSelect={handleChangeRoom}
                   />
                 </>
               )
@@ -133,11 +128,57 @@ const AddExamRoomPage = () => {
         </Grid>
         <Grid item xs={12} lg={8}>
           <Stack spacing={3} sx={{ height: '100%' }}>
-            <Typography variant="h6" component="div" sx={{ marginRight: 1 }}>
-              {selectedIndex > -1 &&
-                examRooms &&
-                examRooms?.availableRooms[selectedIndex].roomName}
-            </Typography>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              {examRooms?.availableRooms[selectedIndex] &&
+                selectedIndex > -1 &&
+                listExamineesByRoom && (
+                  <>
+                    <ExamineeTransferListDialog
+                      handleClose={() => setIsOpen(false)}
+                      listExamineeByRoom={listExamineesByRoom}
+                      roomName={
+                        examRooms.availableRooms[selectedIndex].roomName
+                      }
+                      handleListExamineeByRoom={setListExamineesByRoom}
+                      selectedIndex={selectedIndex}
+                      open={isOpen}
+                    />
+                    <Box
+                      display="flex"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                    >
+                      <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{ marginRight: 1 }}
+                      >
+                        {examRooms.availableRooms[selectedIndex].roomName}
+                      </Typography>
+                      {listExamineesByRoom[selectedIndex].length !==
+                        defaultExamRoomSize && (
+                        <CustomTooltip
+                          title={`Recommend room size is ${defaultExamRoomSize}`}
+                          color={theme.palette.warning.main}
+                        >
+                          <Info color="warning" />
+                        </CustomTooltip>
+                      )}
+                    </Box>
+                    <Button
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() => setIsOpen(true)}
+                    >
+                      Add examinee
+                    </Button>
+                  </>
+                )}
+            </Stack>
             {selectedIndex > -1 && listExamineesByRoom && (
               <ExamineeTable data={listExamineesByRoom[selectedIndex]} />
             )}
