@@ -5,7 +5,6 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import { format } from 'date-fns';
 import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftsDto from 'dtos/shifts.dto';
@@ -115,12 +114,6 @@ export const shiftSlice = createSlice({
       state.semester = action.payload;
       state.current.selectedDate = null;
     },
-    updateShiftStartDate: (state, action: PayloadAction<string | null>) => {
-      state.current.selectedDate = format(
-        new Date(String(action.payload)),
-        'yyyy-MM-dd',
-      );
-    },
   },
   extraReducers: builder => {
     builder
@@ -136,6 +129,7 @@ export const shiftSlice = createSlice({
       })
       .addCase(addShift.fulfilled, (state, action) => {
         state.current.shifts.unshift(action.payload);
+        state.current.selectedDate = action.payload.beginTime;
         state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;
@@ -162,6 +156,10 @@ export const shiftSlice = createSlice({
         state.isLoading = false;
         state.error = String(action.payload);
       })
+      .addCase(getShifts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = String(action.payload);
+      })
       .addMatcher(
         isAnyOf(
           getShifts.rejected,
@@ -180,6 +178,7 @@ export const shiftSlice = createSlice({
           addShift.pending,
           updateShift.pending,
           deleteShift.pending,
+          getShiftCalendar.pending,
         ),
         state => {
           state.isLoading = true;
@@ -189,6 +188,6 @@ export const shiftSlice = createSlice({
   },
 });
 
-export const { updateShiftSemester, updateShiftStartDate } = shiftSlice.actions;
+export const { updateShiftSemester } = shiftSlice.actions;
 
 export default shiftSlice.reducer;

@@ -1,6 +1,5 @@
 import {
   Button,
-  Link,
   Paper,
   Table,
   TableBody,
@@ -11,6 +10,8 @@ import {
   TablePagination,
   TableRow,
 } from '@mui/material';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { updateRemovedExaminees } from 'features/examRoom/addExamRoomSlice';
 import Examinee from 'models/examinee.model';
 import React, { useEffect, useState } from 'react';
 
@@ -19,6 +20,10 @@ interface Props {
 }
 
 const ExamineeTable = ({ data }: Props) => {
+  const removedItems = useAppSelector(
+    state => state.addExamRoom.removedExaminees,
+  );
+  const dispatch = useAppDispatch();
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(data);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -37,6 +42,11 @@ const ExamineeTable = ({ data }: Props) => {
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const handleRemoveExaminee = (examinee: Examinee, index: number) => {
+    dispatch(updateRemovedExaminees([...removedItems, examinee]));
+    setRows(prev => prev.filter((item, itemIndex) => index !== itemIndex));
   };
 
   useEffect(() => {
@@ -69,11 +79,7 @@ const ExamineeTable = ({ data }: Props) => {
                 <TableCell align="center">
                   <Button
                     variant="text"
-                    onClick={() =>
-                      setRows(prev =>
-                        prev.filter((item, itemIndex) => index !== itemIndex),
-                      )
-                    }
+                    onClick={() => handleRemoveExaminee(row, index)}
                   >
                     Remove
                   </Button>

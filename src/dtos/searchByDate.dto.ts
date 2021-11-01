@@ -1,4 +1,4 @@
 export default interface SearchByDateDto {
-  beginDate?: Date;
-  endDate?: Date;
+  beginDate?: Date | string;
+  endDate?: Date | string;
 }

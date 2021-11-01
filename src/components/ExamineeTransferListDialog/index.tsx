@@ -9,8 +9,10 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ExamineeTransferList from 'components/ExamineeTransferList';
 import SlideTransition from 'components/SlideTransition';
+import { updateRemovedExaminees } from 'features/examRoom/addExamRoomSlice';
 import Examinee from 'models/examinee.model';
 import React, { useState } from 'react';
 
@@ -34,6 +36,10 @@ const ExamineeTransferListDialog: React.FC<Props> = ({
   handleListExamineeByRoom,
 }) => {
   const [selected, setSelected] = useState<Examinee[] | null>(null);
+  const dispatch = useAppDispatch();
+  const removedExaminees = useAppSelector(
+    state => state.addExamRoom.removedExaminees,
+  );
 
   const handleSelected = (examinee: Examinee[]) => {
     setSelected(examinee);
@@ -47,6 +53,10 @@ const ExamineeTransferListDialog: React.FC<Props> = ({
       }
       return prevState;
     });
+    const removedItems = removedExaminees.filter(
+      item => !selected?.includes(item),
+    );
+    dispatch(updateRemovedExaminees(removedItems));
     handleClose();
   };
 

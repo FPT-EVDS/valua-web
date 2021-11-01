@@ -1,3 +1,5 @@
+import { Close, Search } from '@mui/icons-material';
+import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -8,6 +10,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import { useAppSelector } from 'app/hooks';
 import Examinee from 'models/examinee.model';
 import React, { useEffect, useState } from 'react';
 
@@ -16,6 +19,11 @@ interface Props {
   selectedIndex: number;
   roomName: string;
   handleSelected: (examinee: Examinee[]) => void;
+}
+
+interface TransferListProps {
+  title: React.ReactNode;
+  items: Examinee[];
 }
 
 function not(a: Examinee[], b: Examinee[]) {
@@ -36,6 +44,9 @@ const ExamineeTransferList = ({
   roomName,
   handleSelected,
 }: Props) => {
+  const removedExaminees = useAppSelector(
+    state => state.addExamRoom.removedExaminees,
+  );
   const [checked, setChecked] = useState<Examinee[]>([]);
   const [left, setLeft] = useState<Examinee[]>([]);
   const [right, setRight] = useState<Examinee[]>([]);
@@ -44,14 +55,19 @@ const ExamineeTransferList = ({
   const rightChecked = intersection(checked, right);
 
   useEffect(() => {
-    setRight(listExamineeByRoom[selectedIndex]);
+    setRight(
+      listExamineeByRoom[selectedIndex].filter(
+        value => !removedExaminees.includes(value),
+      ),
+    );
     handleSelected(listExamineeByRoom[selectedIndex]);
-    setLeft(
-      listExamineeByRoom
+    setLeft([
+      ...listExamineeByRoom
         .filter((value, index) => index !== selectedIndex)
         .flat()
         .filter(value => !listExamineeByRoom[selectedIndex].includes(value)),
-    );
+      ...removedExaminees,
+    ]);
     setChecked([]);
   }, [listExamineeByRoom, selectedIndex]);
 
@@ -93,76 +109,125 @@ const ExamineeTransferList = ({
     setChecked(not(checked, rightChecked));
   };
 
-  const customList = (title: React.ReactNode, items: Examinee[]) => (
-    <Card>
-      <CardHeader
-        sx={{ px: 2, py: 1 }}
-        avatar={
-          <Checkbox
-            onClick={handleToggleAll(items)}
-            checked={
-              numberOfChecked(items) === items.length && items.length > 0
-            }
-            indeterminate={
-              numberOfChecked(items) !== items.length &&
-              numberOfChecked(items) !== 0
-            }
-            disabled={items.length === 0}
-            inputProps={{
-              'aria-label': 'all items selected',
-            }}
-          />
-        }
-        title={title}
-        subheader={`${numberOfChecked(items)}/${items.length} selected`}
-      />
-      <Divider />
-      <List
-        sx={{
-          height: 230,
-          bgcolor: 'background.paper',
-          overflow: 'auto',
-        }}
-        dense
-        component="div"
-        role="list"
-      >
-        {items.map(value => {
-          const labelId = `transfer-list-all-item-${value.subjectExamineeID}-label`;
+  const TransferList = ({ items, title }: TransferListProps) => {
+    const [isSearch, setIsSearch] = useState<boolean>(false);
+    const [searchValue, setSearchValue] = useState('');
+    const [filteredItems, setFilteredItems] = useState<Examinee[]>(items);
 
-          return (
-            <ListItem
-              key={value.subjectExamineeID}
-              role="listitem"
-              button
-              onClick={handleToggle(value)}
-            >
-              <ListItemIcon>
+    const handleIsSearch = () => {
+      setIsSearch(prev => !prev);
+    };
+
+    useEffect(() => {
+      const searchList = items.filter(
+        ({ examinee: { companyId, email, fullName } }) =>
+          companyId.includes(searchValue) ||
+          email.includes(searchValue) ||
+          fullName.includes(searchValue),
+      );
+      setFilteredItems(searchList);
+    }, [searchValue]);
+
+    return (
+      <>
+        <Card>
+          <CardHeader
+            sx={{ px: 2, py: 1 }}
+            avatar={
+              !isSearch && (
                 <Checkbox
-                  checked={checked.includes(value)}
-                  tabIndex={-1}
-                  disableRipple
+                  onClick={handleToggleAll(items)}
+                  checked={
+                    numberOfChecked(items) === items.length && items.length > 0
+                  }
+                  indeterminate={
+                    numberOfChecked(items) !== items.length &&
+                    numberOfChecked(items) !== 0
+                  }
+                  disabled={items.length === 0}
                   inputProps={{
-                    'aria-labelledby': labelId,
+                    'aria-label': 'all items selected',
                   }}
                 />
-              </ListItemIcon>
-              <ListItemText
-                id={labelId}
-                primary={`${value.examinee.fullName}`}
-              />
-            </ListItem>
-          );
-        })}
-        <ListItem />
-      </List>
-    </Card>
-  );
+              )
+            }
+            title={
+              isSearch ? (
+                <TextField
+                  margin="dense"
+                  size="small"
+                  fullWidth
+                  value={searchValue}
+                  variant="standard"
+                  placeholder="Search here..."
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  onChange={event => setSearchValue(event.target.value)}
+                />
+              ) : (
+                title
+              )
+            }
+            subheader={
+              !isSearch && `${numberOfChecked(items)}/${items.length} selected`
+            }
+            action={
+              <IconButton onClick={handleIsSearch}>
+                {isSearch ? <Close /> : <Search />}
+              </IconButton>
+            }
+          />
+          <Divider />
+          <List
+            sx={{
+              height: 230,
+              bgcolor: 'background.paper',
+              overflow: 'auto',
+            }}
+            dense
+            component="div"
+            role="list"
+          >
+            {filteredItems.map(value => {
+              const labelId = `transfer-list-all-item-${value.subjectExamineeID}-label`;
+
+              return (
+                <ListItem
+                  key={value.subjectExamineeID}
+                  role="listitem"
+                  button
+                  onClick={handleToggle(value)}
+                >
+                  <ListItemIcon>
+                    <Checkbox
+                      checked={checked.includes(value)}
+                      tabIndex={-1}
+                      disableRipple
+                      inputProps={{
+                        'aria-labelledby': labelId,
+                      }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    id={labelId}
+                    primary={value.examinee.fullName}
+                    secondary={value.examinee.email}
+                  />
+                </ListItem>
+              );
+            })}
+            <ListItem />
+          </List>
+        </Card>
+      </>
+    );
+  };
 
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center">
       <Grid item xs={12} lg={5}>
-        {customList('Unassigned', left)}
+        <TransferList items={left} title="Unassigned" />
       </Grid>
       <Grid item xs={12} lg={2}>
         <Grid container direction="column" alignItems="center">
@@ -189,7 +254,7 @@ const ExamineeTransferList = ({
         </Grid>
       </Grid>
       <Grid item xs={12} lg={5}>
-        {customList(roomName, right)}
+        <TransferList title={roomName} items={right} />
       </Grid>
     </Grid>
   );

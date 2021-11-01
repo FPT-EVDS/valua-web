@@ -1,7 +1,8 @@
 import { Add, ChevronLeft, Info } from '@mui/icons-material';
 import { Box, Button, Grid, Stack, Typography, useTheme } from '@mui/material';
 import { red } from '@mui/material/colors';
-import { useAppSelector } from 'app/hooks';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AvailableRoomTable from 'components/AvailableRoomTable';
 import CustomTooltip from 'components/CustomTooltip';
 import ExamineeTable from 'components/ExamineeTable';
@@ -10,11 +11,18 @@ import GetAvailableExamRoomsCard from 'components/GetAvailableExamRoomsCard';
 import LoadingIndicator from 'components/LoadingIndicator';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import AvailableRoomsDto from 'dtos/availableRooms.dto';
+import CreateExamRoomDto from 'dtos/createExamRoom.dto';
+import ExamineeSeat from 'dtos/examineeSeat.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
+import {
+  createExamRoom,
+  updateRemovedExaminees,
+} from 'features/examRoom/addExamRoomSlice';
 import Examinee from 'models/examinee.model';
+import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import examRoomServices from 'services/examRoom.service';
 import { chunk } from 'utils';
 
@@ -24,7 +32,10 @@ interface ParamProps {
 
 const AddExamRoomPage = () => {
   const { id } = useParams<ParamProps>();
+  const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
+  const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
   const [examRooms, setExamRooms] = useState<AvailableRoomsDto | null>(null);
   const [examinees, setExaminees] = useState<AvailableExamineesDto | null>(
@@ -34,9 +45,14 @@ const AddExamRoomPage = () => {
     Examinee[][] | null
   >(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const { isLoading, defaultExamRoomSize } = useAppSelector(
-    state => state.addExamRoom,
-  );
+  const { isLoading, defaultExamRoomSize, currentSubject, shift } =
+    useAppSelector(state => state.addExamRoom);
+
+  const showErrorMessage = (error: string) =>
+    enqueueSnackbar(error, {
+      variant: 'error',
+      preventDuplicate: true,
+    });
 
   const handleError = () => {
     setExamRooms(null);
@@ -69,7 +85,68 @@ const AddExamRoomPage = () => {
       const examineePerRoom = Math.ceil(
         examinees.totalExaminees / examRooms.totalRooms,
       );
+      dispatch(updateRemovedExaminees([]));
       setListExamineesByRoom(chunk(examinees.examinees, examineePerRoom));
+    }
+  };
+
+  const handleCreateExamRoom = async () => {
+    if (listExamineesByRoom && examRooms && currentSubject && shift) {
+      console.log(
+        '🚀 ~ file: index.tsx ~ line 95 ~ handleCreateExamRoom ~ listExamineesByRoom',
+        listExamineesByRoom,
+      );
+      const appUserIdList = new Set(
+        listExamineesByRoom[selectedIndex].map(
+          (value, index) => value.examinee.appUserId,
+        ),
+      );
+      const examSeats: ExamineeSeat[] = listExamineesByRoom[selectedIndex].map(
+        (value, index) => ({
+          examinee: {
+            appUserId: value.examinee.appUserId,
+          },
+          position: index + 1,
+        }),
+      );
+      const payload: CreateExamRoomDto = {
+        examSeats,
+        shift: {
+          shiftId: id,
+        },
+        room: {
+          roomId: examRooms.availableRooms[selectedIndex].roomId,
+        },
+        subject: {
+          subjectId: currentSubject?.subjectId,
+        },
+      };
+      try {
+        const result = await dispatch(createExamRoom(payload));
+        unwrapResult(result);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const filteredExaminees = examinees!.examinees.filter(
+          examinee => !appUserIdList.has(examinee.examinee.appUserId),
+        );
+        const filteredExamRooms = examRooms.availableRooms.filter(
+          (examRoom, index) => index !== selectedIndex,
+        );
+        setExamRooms({
+          availableRooms: filteredExamRooms,
+          totalRooms: filteredExamRooms.length,
+        });
+        setExaminees({
+          examinees: filteredExaminees,
+          totalExaminees: filteredExaminees?.length || 0,
+        });
+        setSelectedIndex(-1);
+        enqueueSnackbar('Create exam room success', {
+          variant: 'success',
+          preventDuplicate: true,
+        });
+      } catch (error) {
+        showErrorMessage(error);
+      }
     }
   };
 
@@ -80,6 +157,7 @@ const AddExamRoomPage = () => {
         display="flex"
         alignItems="center"
         sx={{ cursor: 'pointer' }}
+        onClick={() => history.push(`/shift-manager/shift/${id}`)}
       >
         <ChevronLeft />
         <div>Back to detail shift page</div>
@@ -95,7 +173,8 @@ const AddExamRoomPage = () => {
               handleError={handleError}
             />
             {!isLoading ? (
-              examRooms && (
+              examRooms &&
+              examRooms.availableRooms.length > 0 && (
                 <>
                   <Stack direction="row" alignItems="center">
                     <Typography
@@ -118,6 +197,7 @@ const AddExamRoomPage = () => {
                     data={examRooms?.availableRooms}
                     selectedIndex={selectedIndex}
                     handleSelect={handleChangeRoom}
+                    handleCreateExamRoom={handleCreateExamRoom}
                   />
                 </>
               )
@@ -133,7 +213,8 @@ const AddExamRoomPage = () => {
               alignItems="center"
               justifyContent="space-between"
             >
-              {examRooms?.availableRooms[selectedIndex] &&
+              {!isLoading &&
+                examRooms?.availableRooms[selectedIndex] &&
                 selectedIndex > -1 &&
                 listExamineesByRoom && (
                   <>
@@ -179,7 +260,7 @@ const AddExamRoomPage = () => {
                   </>
                 )}
             </Stack>
-            {selectedIndex > -1 && listExamineesByRoom && (
+            {!isLoading && selectedIndex > -1 && listExamineesByRoom && (
               <ExamineeTable data={listExamineesByRoom[selectedIndex]} />
             )}
           </Stack>

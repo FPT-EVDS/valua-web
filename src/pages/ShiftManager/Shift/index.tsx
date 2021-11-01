@@ -25,7 +25,6 @@ import {
   getShiftCalendar,
   getShifts,
   updateShiftSemester,
-  updateShiftStartDate,
 } from 'features/shift/shiftSlice';
 import Semester from 'models/semester.model';
 import { useSnackbar } from 'notistack';
@@ -47,11 +46,12 @@ const ShiftPage = () => {
     });
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(0);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
-    current: { shifts, totalItems, selectedDate },
+    current: { shifts, totalItems },
     semester,
     activeShiftDates,
   } = useAppSelector(state => state.shift);
@@ -82,7 +82,11 @@ const ShiftPage = () => {
           date: selectedDate ? new Date(selectedDate) : undefined,
         }),
       )
-        .then(result => unwrapResult(result))
+        // eslint-disable-next-line promise/always-return
+        .then(result => {
+          const { selectedDate: currentSelectedDate } = unwrapResult(result);
+          setSelectedDate(currentSelectedDate);
+        })
         .catch(error => showErrorMessage(error));
     }
   };
@@ -230,7 +234,7 @@ const ShiftPage = () => {
   ];
 
   const handleChangeDate = (date: Date | null) => {
-    dispatch(updateShiftStartDate(String(date)));
+    setSelectedDate(date);
   };
 
   const AddButton = () => (
