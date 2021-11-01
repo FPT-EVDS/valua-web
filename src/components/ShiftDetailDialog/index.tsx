@@ -23,7 +23,7 @@ import { addShift } from 'features/shift/shiftSlice';
 import { useFormik } from 'formik';
 import Semester from 'models/semester.model';
 import { useSnackbar } from 'notistack';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface Props {
   open: boolean;
@@ -44,9 +44,9 @@ const ShiftDetailDialog: React.FC<Props> = ({
 }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
-  const isLoading = useAppSelector(state => state.shift.isLoading);
+  const { isLoading, semester } = useAppSelector(state => state.shift);
   const formik = useFormik({
-    initialValues,
+    initialValues: { ...initialValues, semester },
     validationSchema: shiftSchema,
     onSubmit: async (payload: ShiftDto) => {
       try {
@@ -76,10 +76,19 @@ const ShiftDetailDialog: React.FC<Props> = ({
   };
 
   const handleChangeSemester = async (
-    semester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
+    selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
-    await formik.setFieldValue('semester', semester);
+    await formik.setFieldValue('semester', selectedSemester);
   };
+
+  useEffect(() => {
+    handleChangeSemester(semester).catch(error =>
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      }),
+    );
+  }, [semester]);
 
   return (
     <Dialog

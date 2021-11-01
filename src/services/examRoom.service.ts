@@ -1,11 +1,14 @@
 import { AxiosResponse } from 'axios';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import AvailableRoomsDto from 'dtos/availableRooms.dto';
+import CreateExamRoomDto from 'dtos/createExamRoom.dto';
 import ExamRoomsDto from 'dtos/examRooms.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
 import SearchExamRoomsDto from 'dtos/searchExamRooms.dto';
+import ExamRoom from 'models/examRoom.model';
 import Shift from 'models/shift.model';
+
 import axiosClient from './axiosClient';
 
 const examRoomServices = {
@@ -39,6 +42,12 @@ const examRoomServices = {
   getAvailableStaff: (shiftId: string) => {
     const url = '/examRooms/available/staff';
     return axiosClient.post(url, { shiftId });
+  },
+  createExamRoom: (
+    payload: CreateExamRoomDto,
+  ): Promise<AxiosResponse<ExamRoom>> => {
+    const url = '/examRooms';
+    return axiosClient.post(url, payload);
   },
 };
 

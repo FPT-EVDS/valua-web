@@ -18,7 +18,10 @@ import { addExamRoomSchema } from 'configs/validations';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
-import { getShift } from 'features/examRoom/addExamRoomSlice';
+import {
+  getShift,
+  updateCurrentSubject,
+} from 'features/examRoom/addExamRoomSlice';
 import { useFormik } from 'formik';
 import Subject from 'models/subject.model';
 import { useSnackbar } from 'notistack';
@@ -82,6 +85,7 @@ const GetAvailableExamRoomsCard = ({
 
   const handleChangeSubject = async (selectedSubject: Subject | null) => {
     await formik.setFieldValue('subjectId', selectedSubject?.subjectId);
+    dispatch(updateCurrentSubject(selectedSubject));
     try {
       if (shift && selectedSubject) {
         await handleGetAvailableExaminees({
@@ -163,7 +167,7 @@ const GetAvailableExamRoomsCard = ({
           <LoadingButton
             variant="contained"
             type="submit"
-            disabled={isDisable}
+            disabled={isDisable || examinees?.examinees.length === 0}
             loading={isLoading}
           >
             Get available rooms

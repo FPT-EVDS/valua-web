@@ -184,16 +184,22 @@ const DetailShiftPage = () => {
       headerName: 'Staff',
       flex: 0.1,
       renderCell: ({ getValue, id: rowId, field }) => {
-        const staff = getValue(rowId, field) as Account;
+        const staff = getValue(rowId, field) as Account | null;
         return (
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Avatar
-              alt={`${staff.fullName}`}
-              src={String(staff.imageUrl)}
-              sx={{ width: 32, height: 32 }}
-            />
-            <div>{staff.fullName}</div>
-          </Stack>
+          <>
+            {staff ? (
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Avatar
+                  alt={`${staff.fullName}`}
+                  src={String(staff.imageUrl)}
+                  sx={{ width: 32, height: 32 }}
+                />
+                <div>{staff.fullName}</div>
+              </Stack>
+            ) : (
+              <Typography>N/A</Typography>
+            )}
+          </>
         );
       },
     },

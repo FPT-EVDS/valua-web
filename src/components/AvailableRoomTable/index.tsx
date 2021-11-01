@@ -1,5 +1,5 @@
 import {
-  Link,
+  Button,
   Paper,
   Radio,
   Table,
@@ -13,15 +13,22 @@ import {
 } from '@mui/material';
 import Room from 'models/room.model';
 import React, { useState } from 'react';
+import { VoidExpression } from 'typescript';
 
 interface Props {
   // eslint-disable-next-line react/require-default-props
   data: Pick<Room, 'roomId' | 'seatCount' | 'roomName' | 'floor' | 'status'>[];
   selectedIndex: number;
+  handleCreateExamRoom: () => void;
   handleSelect: (index: number) => void;
 }
 
-const AvailableRoomTable = ({ data, handleSelect, selectedIndex }: Props) => {
+const AvailableRoomTable = ({
+  data,
+  handleSelect,
+  selectedIndex,
+  handleCreateExamRoom,
+}: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(3);
   const emptyRows =
@@ -66,9 +73,11 @@ const AvailableRoomTable = ({ data, handleSelect, selectedIndex }: Props) => {
               </TableCell>
               <TableCell align="center">{row.roomName}</TableCell>
               <TableCell align="center">
-                <Link href="#" underline="hover">
-                  Create
-                </Link>
+                {selectedIndex === index && (
+                  <Button variant="text" onClick={handleCreateExamRoom}>
+                    Create
+                  </Button>
+                )}
               </TableCell>
             </TableRow>
           ))}
