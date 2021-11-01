@@ -7,7 +7,7 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import OverviewCard from 'components/OverviewCard';
 import { format } from 'date-fns';
 import { disableCamera, getCamera } from 'features/camera/detailCameraSlice';
-import Cameram from 'models/camera.model';
+import Camera from 'models/camera.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
@@ -17,7 +17,7 @@ interface ParamProps {
 }
 
 interface CameraProps {
-  camera: Cameram;
+  camera: Camera;
 }
 const DetailCameraPage = () => {
   const dispatch = useAppDispatch();

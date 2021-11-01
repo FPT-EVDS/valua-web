@@ -8,7 +8,7 @@ import {
   Menu as MenuIcon,
   Notifications,
   ReportProblem,
-  ReportProblemOutlined,
+  ReportProblemOutlined
 } from '@mui/icons-material';
 import { AppBar, Badge, Box, IconButton, Toolbar } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
@@ -16,13 +16,14 @@ import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
 import React, { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-
 import DashboardPage from './Dashboard';
-import FeedbackPage from './Feedback';
 import Profile from './Profile';
 import ShiftPage from './Shift';
 import DetailShiftPage from './Shift/DetailShift';
 import ViolationPage from './Violation';
+import DetailViolationPage from './Violation/DetailViolation';
+import FeedbackPage from './Feedback';
+import DetailFeedbackPage from './Feedback/DetailFeedback';
 
 const drawerItems: Array<DrawerItem> = [
   {
@@ -128,6 +129,19 @@ const ShiftManagerDashboard = (): JSX.Element => {
             path="/shift-manager/violation"
             component={ViolationPage}
             exact
+          />
+          <Route
+            path="/shift-manager/violation/:id"
+            component={DetailViolationPage}
+          />
+          <Route
+            path="/shift-manager/feedback"
+            component={FeedbackPage}
+            exact
+          />
+          <Route
+            path="/shift-manager/feedback/:id"
+            component={DetailFeedbackPage}
           />
           <Route path="/shift-manager/profile" component={Profile} exact />
           <Redirect from="/shift-manager" to="/shift-manager/dashboard" />

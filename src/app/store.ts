@@ -11,6 +11,10 @@ import semesterReducer from 'features/semester/semestersSlice';
 import detailShiftReducer from 'features/shift/detailShiftSlice';
 import shiftReducer from 'features/shift/shiftSlice';
 import subjectReducer from 'features/subject/subjectsSlice';
+import detailViolationReducer from 'features/violation/detailViolationSlice';
+import violationReducer from 'features/violation/violationsSlice';
+import feedbackReducer from 'features/feedback/feedbacksSlice';
+import detailFeedbackReducer from 'features/feedback/detailFeedbackSlice';
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +30,10 @@ export const store = configureStore({
     detailCamera: detailCameraReducer,
     shift: shiftReducer,
     detailShift: detailShiftReducer,
+    violation: violationReducer,
+    detailViolation: detailViolationReducer,
+    feedback: feedbackReducer,
+    detailFeedback: detailFeedbackReducer,
   },
 });
 
