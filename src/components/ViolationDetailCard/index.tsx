@@ -14,11 +14,40 @@ import useQuery from 'hooks/useQuery';
 import Violation from 'models/violation.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import AliceCarousel from 'react-alice-carousel';
+import 'react-alice-carousel/lib/alice-carousel.css';
 
 interface Props {
   violation: Violation;
   isLoading: boolean;
 }
+
+const images = [
+  {
+    original: 'https://picsum.photos/id/1018/1000/600/',
+    thumbnail: 'https://picsum.photos/id/1018/250/150/',
+  },
+  {
+    original: 'https://picsum.photos/id/1015/1000/600/',
+    thumbnail: 'https://picsum.photos/id/1015/250/150/',
+  },
+  {
+    original: 'https://picsum.photos/id/1019/1000/600/',
+    thumbnail: 'https://picsum.photos/id/1019/250/150/',
+  },
+];
+
+const items = [
+  <img src="https://picsum.photos/id/1018/150/150" alt="huy" />,
+  <img src="https://picsum.photos/id/1015/150/150" alt="huy" />,
+  <img src="https://picsum.photos/id/1019/150/150" alt="huy" />,
+];
+
+const responsive = {
+  0: { items: 1 },
+  568: { items: 2 },
+  1024: { items: 3 },
+};
 
 const ViolationDetailCard = ({ violation, isLoading }: Props) => {
   const { enqueueSnackbar } = useSnackbar();
@@ -115,7 +144,7 @@ const ViolationDetailCard = ({ violation, isLoading }: Props) => {
                 variant="outlined"
                 fullWidth
                 label="Violation position"
-                value='Nay de demo thoi chua co field nay'
+                value="Nay de demo thoi chua co field nay"
                 disabled
                 InputLabelProps={{
                   shrink: true,
@@ -142,15 +171,13 @@ const ViolationDetailCard = ({ violation, isLoading }: Props) => {
                 Evidence
               </Typography>
             </Grid>
-            <Grid item xs={12} md={4}>
-              <img src="https://picsum.photos/200" alt="new" />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <img src="https://picsum.photos/200" alt="new" />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <img src="https://picsum.photos/200" alt="new" />
-            </Grid>
+            <AliceCarousel
+              autoWidth
+              innerWidth={3}
+              disableDotsControls
+              paddingLeft={10}
+              items={items}
+            />
           </Grid>
         </CardContent>
       </Box>

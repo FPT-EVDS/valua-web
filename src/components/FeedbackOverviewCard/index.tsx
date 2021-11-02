@@ -16,7 +16,7 @@ interface Props {
   content: React.ReactNode;
   status: number;
   icon: React.ReactNode;
-  imageUrl: string;
+  imageUrl: React.ReactNode;
   fullName: string | undefined;
   // eslint-disable-next-line react/require-default-props
 }
@@ -80,7 +80,7 @@ const FeedbackOverviewCard: React.FC<Props> = ({
         </Stack>
         <>
           <Stack direction="row" spacing={2}>
-              <Avatar alt={fullName} src={imageUrl} />
+              <Avatar alt={fullName} src={imageUrl?.toString()} />
               <Stack direction="column">
                 <Typography>Submitted by:</Typography>
                 <Typography>{fullName}</Typography>

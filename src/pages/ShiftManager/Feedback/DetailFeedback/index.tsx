@@ -1,6 +1,6 @@
 import { ChevronLeft } from '@mui/icons-material';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, Stack, Typography } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import FeedbackDetailCard from 'components/FeedbackDetailCard';
@@ -65,21 +65,21 @@ const DetailFeedbackPage = () => {
       <Grid container mt={2} spacing={2}>
         {feedback && (
           <>
-            <Grid item xs={12} md={9} lg={6}>
-              <FeedbackOverviewCard
-                title={feedback?.feedbackId}
-                status={feedback.status}
-                icon={<AnnouncementIcon fontSize="large" />}
-                content={<OverviewContent feedback={feedback} />}
-                imageUrl="https://picsum.photos/200"
-                fullName={feedback.shiftManager?.fullName}
-              />
+            <Grid item xs={12} md={6} lg={6}>
+              <Stack spacing={3}>
+                <FeedbackOverviewCard
+                  title={feedback?.feedbackId}
+                  status={feedback.status}
+                  icon={<AnnouncementIcon fontSize="large" />}
+                  content={<OverviewContent feedback={feedback} />}
+                  imageUrl={feedback.shiftManager?.profileImageUrl}
+                  fullName={feedback.shiftManager?.fullName}
+                />
+                <ViolationInformationCard violation={feedback?.violation} />
+              </Stack>
             </Grid>
             <Grid item xs={12} lg={6}>
               <FeedbackDetailCard isLoading={isLoading} feedback={feedback} />
-            </Grid>
-            <Grid item xs={12} md={6} lg={6}>
-              <ViolationInformationCard violation={feedback?.violation} />
             </Grid>
           </>
         )}
