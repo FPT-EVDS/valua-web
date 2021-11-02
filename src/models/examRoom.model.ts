@@ -1,4 +1,5 @@
 import Room from "./room.model";
+import Subject from "./subject.model";
 import User from "./user.model";
 
 export default interface ExamRoom {
@@ -6,4 +7,5 @@ export default interface ExamRoom {
   examRoomName: string;
   staff: User | null;
   room: Room | null;
+  subject: Subject;
 }

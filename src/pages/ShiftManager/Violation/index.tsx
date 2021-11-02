@@ -42,12 +42,7 @@ const ViolationPage = () => {
   }, [violations]);
 
   const columns: Array<GridColDef | GridActionsColDef> = [
-    {
-      field: '',
-      headerName: 'Violation ID',
-      flex: 0.12,
-      minWidth: 130,
-    },
+    { field: '', hide: true },
     {
       field: 'examRoom',
       headerName: 'Shift name',

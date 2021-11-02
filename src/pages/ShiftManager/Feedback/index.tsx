@@ -1,6 +1,6 @@
 /* eslint-disable prefer-destructuring */
 import { Add, FiberManualRecord } from '@mui/icons-material';
-import { Box, Button, Link, Typography } from '@mui/material';
+import { Box, Avatar, Button, Link, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import { GridActionsColDef, GridColDef, GridRowModel } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Link as RouterLink,
   useHistory,
-  useRouteMatch
+  useRouteMatch,
 } from 'react-router-dom';
 
 const FeedbackPage = () => {
@@ -39,6 +39,28 @@ const FeedbackPage = () => {
 
   const columns: Array<GridColDef | GridActionsColDef> = [
     {
+      field: 'shiftManger',
+      sortable: false,
+      filterable: false,
+      renderCell: params => {
+        const imageUrl = String(params.getValue(params.id, 'imageUrl'));
+        const fullName = String(params.getValue(params.id, 'fullName'));
+        return (
+          <>
+            {imageUrl ? (
+              <Avatar alt={fullName} src={imageUrl} />
+            ) : (
+              <Typography>N/A</Typography>
+            )}
+          </>
+        );
+      },
+      align: 'center',
+      headerName: '',
+      flex: 0.05,
+      minWidth: 64,
+    },
+    {
       field: 'violation',
       headerName: 'Reporter name',
       flex: 0.13,
@@ -46,7 +68,7 @@ const FeedbackPage = () => {
       renderCell: params => {
         const violation = params.getValue(params.id, params.field) as Violation;
         return violation ? (
-          <Typography>{violation.evidence.staff?.fullName}</Typography>
+          <Typography>{violation.examRoom?.staff?.fullName}</Typography>
         ) : (
           <Typography>N/A</Typography>
         );

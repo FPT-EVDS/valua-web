@@ -5,10 +5,9 @@ import {
   Card,
   CardContent,
   Stack,
-  Typography,
+  Typography
 } from '@mui/material';
 import { green } from '@mui/material/colors';
-import StringAvatar from 'components/StringAvatar';
 import Status from 'enums/feedbackStatus.enum';
 import React from 'react';
 
@@ -17,8 +16,8 @@ interface Props {
   content: React.ReactNode;
   status: number;
   icon: React.ReactNode;
-  imageUrl: string | null;
-  fullName: string;
+  imageUrl: string;
+  fullName: string | undefined;
   // eslint-disable-next-line react/require-default-props
 }
 
@@ -80,17 +79,13 @@ const FeedbackOverviewCard: React.FC<Props> = ({
           </Avatar>
         </Stack>
         <>
-          {imageUrl ? (
-            <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={2}>
               <Avatar alt={fullName} src={imageUrl} />
               <Stack direction="column">
                 <Typography>Submitted by:</Typography>
                 <Typography>{fullName}</Typography>
               </Stack>
             </Stack>
-          ) : (
-            <StringAvatar name={fullName} sx={{ justifyContent: 'center' }} />
-          )}
         </>
       </CardContent>
     </Card>

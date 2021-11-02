@@ -10,13 +10,11 @@ import {
 } from 'react-router-dom';
 
 interface Props {
-  content: React.ReactNode;
   violation: Violation | null;
   // eslint-disable-next-line react/require-default-props
 }
 
 const ViolationInformationCard: React.FC<Props> = ({
-  content,
   violation,
 }: Props) => {
   return (
@@ -61,11 +59,11 @@ const ViolationInformationCard: React.FC<Props> = ({
         >
           <Stack direction="column" spacing={1} justifyContent="space-between">
             <Typography style={{ fontWeight: 600 }}>Confirmed by</Typography>
-            {violation ? (
-              <Typography>{violation.examRoom.staff?.fullName}</Typography>
+            {/* {violation ? (
+              <Typography>{violation}</Typography>
             ) : (
               <Typography>N/A</Typography>
-            )}
+            )} */}
           </Stack>
           <Stack direction="column" spacing={1} justifyContent="space-between">
             <Typography style={{ fontWeight: 600 }}>Violation date</Typography>
