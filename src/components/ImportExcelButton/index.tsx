@@ -22,7 +22,6 @@ import { addExaminees } from 'features/subjectExaminee/subjectExamineeSlice';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useState } from 'react';
 import { FileError, useDropzone } from 'react-dropzone';
-import subjectExamineesServices from 'services/subjectExaminees.service';
 import XLSX from 'xlsx';
 
 interface DropzoneDialogProps {

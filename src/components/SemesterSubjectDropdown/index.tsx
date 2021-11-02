@@ -8,13 +8,16 @@ import {
 import Subject from 'models/subject.model';
 import React, { useEffect, useState } from 'react';
 import semesterServices from 'services/semester.service';
-import subjectServices from 'services/subject.service';
 
 interface Props {
   error?: boolean;
+  value?: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'>;
+  isEditable?: boolean;
   helperText?: string;
   semesterId?: string;
-  onChange: (subjects: Subject | null) => void;
+  onChange: (
+    subjects: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'> | null,
+  ) => void;
 }
 
 const SemesterSubjectsDropdown = ({
@@ -22,9 +25,13 @@ const SemesterSubjectsDropdown = ({
   onChange,
   helperText,
   error,
+  value,
+  isEditable = true,
 }: Props) => {
   const dispatch = useAppDispatch();
-  const [subjectOptions, setSubjectOptions] = useState<Subject[]>([]);
+  const [subjectOptions, setSubjectOptions] = useState<
+    Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'>[]
+  >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchSubjects = async () => {
@@ -48,7 +55,9 @@ const SemesterSubjectsDropdown = ({
   return (
     <Autocomplete
       loading={isLoading}
+      disabled={!isEditable}
       options={subjectOptions}
+      value={value}
       isOptionEqualToValue={(option, optionValue) =>
         option?.subjectId === optionValue?.subjectId
       }

@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import Room from 'models/room.model';
 import React, { useState } from 'react';
-import { VoidExpression } from 'typescript';
 
 interface Props {
   // eslint-disable-next-line react/require-default-props

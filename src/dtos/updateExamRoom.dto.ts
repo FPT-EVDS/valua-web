@@ -1,12 +1,9 @@
-import ExamRoomStatus from 'enums/examRoomStatus.enum';
+import Account from 'models/account.model';
+import Room from 'models/room.model';
+import Subject from 'models/subject.model';
 
-import Account from './account.model';
-import Room from './room.model';
-import Subject from './subject.model';
-
-export default interface ExamRoom {
-  examRoomID: string;
-  examRoomName: string;
+export default interface UpdateExamRoomDto {
+  examRoomId: string;
   staff: Pick<
     Account,
     | 'appUserId'
@@ -18,5 +15,4 @@ export default interface ExamRoom {
   >;
   room: Pick<Room, 'roomId' | 'seatCount' | 'roomName' | 'floor' | 'status'>;
   subject: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'>;
-  status: ExamRoomStatus;
 }

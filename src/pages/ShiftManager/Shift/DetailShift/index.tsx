@@ -19,6 +19,7 @@ import {
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import AssignStaffDialog from 'components/AssignStaffDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import ShiftDetailCard from 'components/ShiftDetailCard';
@@ -48,12 +49,13 @@ const DetailShiftPage = () => {
   const { shift, isLoading } = useAppSelector(state => state.detailShift);
   const {
     current: { totalItems, examRooms },
-    isLoading: isShiftLoading,
+    isLoading: isExamRoomLoading,
   } = useAppSelector(state => state.examRoom);
   const rows: GridRowModel[] = examRooms.map((examRoom, index) => ({
     ...examRoom,
     id: examRoom.examRoomID,
   }));
+  const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
@@ -108,7 +110,7 @@ const DetailShiftPage = () => {
     try {
       const result = await dispatch(deleteShift(shiftId));
       unwrapResult(result);
-      enqueueSnackbar('Delete shift success', {
+      enqueueSnackbar('This shift has been successfully deleted', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -138,7 +140,7 @@ const DetailShiftPage = () => {
     <Button
       variant="contained"
       startIcon={<Add />}
-      onClick={() => history.push(`/shift-manager/shift/${id}/add`)}
+      onClick={() => history.push(`/shift-manager/shift/${id}/examRoom/add`)}
     >
       Add new
     </Button>
@@ -245,20 +247,59 @@ const DetailShiftPage = () => {
       field: 'actions',
       headerName: 'Actions',
       type: 'actions',
-      getActions: ({ getValue, id: rowId }) => [
-        <GridActionsCellItem label="View detail" showInMenu />,
-        <GridActionsCellItem
-          label="Disable"
-          sx={{ color: red[500] }}
-          showInMenu
-        />,
-      ],
+      getActions: ({ getValue, id: rowId }) => {
+        const staff = getValue(rowId, 'staff') as Account;
+        const deleteItems = [
+          <GridActionsCellItem
+            label="Assign"
+            showInMenu
+            sx={{ justifyContent: 'right' }}
+            onClick={() => {
+              setCurrentRoomId(String(rowId));
+              setOpen(true);
+            }}
+          />,
+          <GridActionsCellItem
+            label="View detail"
+            showInMenu
+            sx={{ justifyContent: 'right' }}
+            onClick={() =>
+              history.push(`/shift-manager/shift/${id}/examRoom/${rowId}`)
+            }
+          />,
+          <GridActionsCellItem
+            label="Edit"
+            showInMenu
+            sx={{ justifyContent: 'right' }}
+            onClick={() =>
+              history.push(
+                `/shift-manager/shift/${id}/examRoom/${rowId}?edit=true`,
+              )
+            }
+          />,
+          <GridActionsCellItem
+            label="Disable"
+            sx={{ color: red[500], justifyContent: 'right' }}
+            showInMenu
+          />,
+        ];
+        if (staff) deleteItems.shift();
+        return deleteItems;
+      },
     },
   ];
 
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} />
+      {currentRoomId && (
+        <AssignStaffDialog
+          shiftId={id}
+          open={open}
+          handleClose={() => setOpen(false)}
+          examRoomId={currentRoomId}
+        />
+      )}
       <Box
         width={180}
         display="flex"
@@ -288,7 +329,7 @@ const DetailShiftPage = () => {
                 sortModel={sortModel}
                 onSortModelChange={handleSortModelChange}
                 rowCount={totalItems}
-                isLoading={isShiftLoading}
+                isLoading={isExamRoomLoading}
                 title="Exam room list"
                 handleSearch={handleSearch}
                 columns={columns}

@@ -10,19 +10,15 @@ import {
   TablePagination,
   TableRow,
 } from '@mui/material';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { updateRemovedExaminees } from 'features/examRoom/addExamRoomSlice';
-import Examinee from 'models/examinee.model';
+import { useAppDispatch } from 'app/hooks';
+import ExamSeat from 'models/examSeat.model';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
-  data: Examinee[];
+  data: ExamSeat[];
 }
 
-const ExamineeTable = ({ data }: Props) => {
-  const removedItems = useAppSelector(
-    state => state.addExamRoom.removedExaminees,
-  );
+const ExamSeatTable = ({ data }: Props) => {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(data);
@@ -46,8 +42,8 @@ const ExamineeTable = ({ data }: Props) => {
     setPage(0);
   };
 
-  const handleRemoveExaminee = (examinee: Examinee, index: number) => {
-    dispatch(updateRemovedExaminees([...removedItems, examinee]));
+  const handleRemoveExaminee = (examinee: ExamSeat, index: number) => {
+    // dispatch(updateRemovedExaminees([...removedItems, examinee]));
     setRows(prev => prev.filter((item, itemIndex) => index !== itemIndex));
   };
 
@@ -71,9 +67,9 @@ const ExamineeTable = ({ data }: Props) => {
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
           ).map((row, index) => (
-            <TableRow key={row.subjectExamineeID}>
+            <TableRow key={row.examSeatId}>
               <TableCell component="th" scope="row" align="center">
-                {index + 1}
+                {row.position}
               </TableCell>
               <TableCell align="center">{row.examinee.fullName}</TableCell>
               <TableCell align="center">{row.examinee.companyId}</TableCell>
@@ -119,4 +115,4 @@ const ExamineeTable = ({ data }: Props) => {
   );
 };
 
-export default ExamineeTable;
+export default ExamSeatTable;

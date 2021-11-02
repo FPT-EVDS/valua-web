@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import {
   DataGrid,
   DataGridProps,
@@ -181,6 +182,20 @@ const EVDSDataGridHeader = ({
   );
 };
 
+const useStyles = makeStyles({
+  root: {
+    '&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus':
+      {
+        outline: 'none',
+      },
+  },
+  header: {
+    '& > .MuiDataGrid-columnSeparator': {
+      visibility: 'hidden',
+    },
+  },
+});
+
 const CustomLoadingOverlay = () => (
   <GridOverlay>
     <div style={{ position: 'absolute', top: 0, width: '100%' }}>
@@ -201,38 +216,42 @@ const EVDSDataGrid = ({
   leftActions,
   handleSearch,
   ...otherProps
-}: CustomDataGridProps) => (
-  <>
-    <EVDSDataGridHeader
-      title={title}
-      addButton={addButton}
-      hasSearch={hasSearch}
-      hasFilter={hasFilter}
-      filterItems={filterItems}
-      handleSearch={handleSearch}
-      leftActions={leftActions}
-    />
-    <div style={{ height: 650, width: '100%' }}>
-      <div style={{ display: 'flex', height: '100%' }}>
-        <div style={{ flexGrow: 1 }}>
-          <DataGrid
-            {...otherProps}
-            loading={isLoading}
-            disableSelectionOnClick
-            disableColumnMenu
-            disableColumnFilter
-            disableColumnSelector
-            rows={rows}
-            columns={columns}
-            components={{
-              LoadingOverlay: CustomLoadingOverlay,
-              NoRowsOverlay: CustomNoRowsOverlay,
-            }}
-          />
+}: CustomDataGridProps) => {
+  const classes = useStyles();
+  return (
+    <>
+      <EVDSDataGridHeader
+        title={title}
+        addButton={addButton}
+        hasSearch={hasSearch}
+        hasFilter={hasFilter}
+        filterItems={filterItems}
+        handleSearch={handleSearch}
+        leftActions={leftActions}
+      />
+      <div style={{ height: 650, width: '100%' }}>
+        <div style={{ display: 'flex', height: '100%' }}>
+          <div style={{ flexGrow: 1 }}>
+            <DataGrid
+              {...otherProps}
+              loading={isLoading}
+              disableSelectionOnClick
+              disableColumnMenu
+              disableColumnFilter
+              disableColumnSelector
+              rows={rows}
+              columns={columns}
+              components={{
+                LoadingOverlay: CustomLoadingOverlay,
+                NoRowsOverlay: CustomNoRowsOverlay,
+              }}
+              classes={{ root: classes.root, columnHeader: classes.header }}
+            />
+          </div>
         </div>
       </div>
-    </div>
-  </>
-);
+    </>
+  );
+};
 
 export default EVDSDataGrid;
