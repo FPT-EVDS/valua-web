@@ -83,7 +83,12 @@ const GetAvailableExamRoomsCard = ({
     },
   });
 
-  const handleChangeSubject = async (selectedSubject: Subject | null) => {
+  const handleChangeSubject = async (
+    selectedSubject: Pick<
+      Subject,
+      'subjectId' | 'subjectName' | 'subjectCode'
+    > | null,
+  ) => {
     await formik.setFieldValue('subjectId', selectedSubject?.subjectId);
     dispatch(updateCurrentSubject(selectedSubject));
     try {

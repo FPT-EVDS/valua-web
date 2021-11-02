@@ -5,6 +5,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import { format } from 'date-fns';
 import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftsDto from 'dtos/shifts.dto';
@@ -114,10 +115,16 @@ export const shiftSlice = createSlice({
       state.semester = action.payload;
       state.current.selectedDate = null;
     },
+    updateCurrentSelectedDate: (state, action: PayloadAction<Date | null>) => {
+      state.current.selectedDate = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
       .addCase(getShifts.fulfilled, (state, action) => {
+        if (state.semester === null) {
+          state.semester = action.payload.shifts[0].semester;
+        }
         state.current = action.payload;
         state.error = '';
         state.isLoading = false;
@@ -128,8 +135,21 @@ export const shiftSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(addShift.fulfilled, (state, action) => {
-        state.current.shifts.unshift(action.payload);
-        state.current.selectedDate = action.payload.beginTime;
+        const parsedBeginTime = format(
+          new Date(action.payload.beginTime),
+          'yyyy-MM-dd',
+        );
+        if (state.activeShiftDates) {
+          if (state.activeShiftDates[parsedBeginTime] !== undefined)
+            state.activeShiftDates[parsedBeginTime] += 1;
+          else state.activeShiftDates[parsedBeginTime] = 1;
+        }
+        if (
+          state.current.selectedDate &&
+          format(new Date(state.current.selectedDate), 'yyyy-MM-dd') ===
+            parsedBeginTime
+        )
+          state.current.shifts.unshift(action.payload);
         state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;
@@ -188,6 +208,7 @@ export const shiftSlice = createSlice({
   },
 });
 
-export const { updateShiftSemester } = shiftSlice.actions;
+export const { updateShiftSemester, updateCurrentSelectedDate } =
+  shiftSlice.actions;
 
 export default shiftSlice.reducer;

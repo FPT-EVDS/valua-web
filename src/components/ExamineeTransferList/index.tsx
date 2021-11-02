@@ -1,5 +1,5 @@
 import { Close, Search } from '@mui/icons-material';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
+import { IconButton, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';

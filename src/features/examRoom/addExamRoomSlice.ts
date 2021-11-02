@@ -16,7 +16,10 @@ interface ExamRoomState {
   isLoading: boolean;
   error: string;
   shift: Shift | null;
-  currentSubject: Subject | null;
+  currentSubject: Pick<
+    Subject,
+    'subjectId' | 'subjectName' | 'subjectCode'
+  > | null;
   defaultExamRoomSize: number;
   removedExaminees: Examinee[];
 }
@@ -64,7 +67,13 @@ export const addExamRoomSlice = createSlice({
     updateRemovedExaminees: (state, action: PayloadAction<Examinee[]>) => {
       state.removedExaminees = action.payload;
     },
-    updateCurrentSubject: (state, action: PayloadAction<Subject | null>) => {
+    updateCurrentSubject: (
+      state,
+      action: PayloadAction<Pick<
+        Subject,
+        'subjectId' | 'subjectName' | 'subjectCode'
+      > | null>,
+    ) => {
       state.currentSubject = action.payload;
     },
   },

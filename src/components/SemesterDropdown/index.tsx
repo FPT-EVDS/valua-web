@@ -30,7 +30,7 @@ const SemesterDropdown = ({
     setSemesterOptions(response.data);
     if (value) {
       onChange(value);
-    } else onChange(response.data[0]);
+    }
     setIsLoading(false);
   };
 
@@ -51,6 +51,7 @@ const SemesterDropdown = ({
       getOptionLabel={option => option.semesterName || ''}
       value={value}
       onChange={(event, newValue) => onChange(newValue)}
+      disabled={!isEditable}
       renderInput={params => (
         <TextField
           {...params}

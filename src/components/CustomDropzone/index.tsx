@@ -1,5 +1,5 @@
 /* eslint-disable prefer-destructuring */
-import { Add, Cancel, Close, CloudUpload } from '@mui/icons-material';
+import { Add, Cancel, CloudUpload } from '@mui/icons-material';
 import {
   Alert,
   Badge,

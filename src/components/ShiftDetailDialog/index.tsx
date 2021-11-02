@@ -51,12 +51,13 @@ const ShiftDetailDialog: React.FC<Props> = ({
     onSubmit: async (payload: ShiftDto) => {
       try {
         const result = await dispatch(addShift(payload));
-        unwrapResult(result);
+        const shift = unwrapResult(result);
         enqueueSnackbar('Create shift success', {
           variant: 'success',
           preventDuplicate: true,
         });
         formik.resetForm();
+        await formik.setFieldValue('semester', shift.semester);
         handleClose();
       } catch (error) {
         enqueueSnackbar(error, {

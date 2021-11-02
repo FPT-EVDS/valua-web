@@ -24,6 +24,7 @@ import {
   deleteShift,
   getShiftCalendar,
   getShifts,
+  updateCurrentSelectedDate,
   updateShiftSemester,
 } from 'features/shift/shiftSlice';
 import Semester from 'models/semester.model';
@@ -73,22 +74,21 @@ const ShiftPage = () => {
       const { field, sort } = sortModel[0];
       sortParam = `${field},${String(sort)}`;
     }
-    if (semester) {
-      dispatch(
-        getShifts({
-          page,
-          sort: sortParam,
-          semesterId: semester?.semesterId,
-          date: selectedDate ? new Date(selectedDate) : undefined,
-        }),
-      )
-        // eslint-disable-next-line promise/always-return
-        .then(result => {
-          const { selectedDate: currentSelectedDate } = unwrapResult(result);
-          setSelectedDate(currentSelectedDate);
-        })
-        .catch(error => showErrorMessage(error));
-    }
+    dispatch(updateCurrentSelectedDate(selectedDate));
+    dispatch(
+      getShifts({
+        page,
+        sort: sortParam,
+        semesterId: semester ? semester.semesterId : undefined,
+        date: selectedDate ? new Date(selectedDate) : undefined,
+      }),
+    )
+      // eslint-disable-next-line promise/always-return
+      .then(result => {
+        const { selectedDate: currentSelectedDate } = unwrapResult(result);
+        setSelectedDate(currentSelectedDate);
+      })
+      .catch(error => showErrorMessage(String(error)));
   };
 
   useEffect(() => {
@@ -106,7 +106,7 @@ const ShiftPage = () => {
     try {
       const result = await dispatch(deleteShift(shiftId));
       unwrapResult(result);
-      enqueueSnackbar('Delete shift success', {
+      enqueueSnackbar('This shift has been successfully deleted', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -274,15 +274,16 @@ const ShiftPage = () => {
         pagination
         rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
         leftActions={
-          <SemesterDropdown
-            payload={{ beginDate: new Date() }}
-            textFieldProps={{
-              size: 'small',
-            }}
-            isEditable
-            value={semester}
-            onChange={handleChangeSemester}
-          />
+          semester && (
+            <SemesterDropdown
+              textFieldProps={{
+                size: 'small',
+              }}
+              isEditable
+              value={semester}
+              onChange={handleChangeSemester}
+            />
+          )
         }
         pageSize={DEFAULT_PAGE_SIZE}
         sortingMode="server"

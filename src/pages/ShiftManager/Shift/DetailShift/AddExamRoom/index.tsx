@@ -92,10 +92,6 @@ const AddExamRoomPage = () => {
 
   const handleCreateExamRoom = async () => {
     if (listExamineesByRoom && examRooms && currentSubject && shift) {
-      console.log(
-        '🚀 ~ file: index.tsx ~ line 95 ~ handleCreateExamRoom ~ listExamineesByRoom',
-        listExamineesByRoom,
-      );
       const appUserIdList = new Set(
         listExamineesByRoom[selectedIndex].map(
           (value, index) => value.examinee.appUserId,
@@ -207,7 +203,7 @@ const AddExamRoomPage = () => {
           </Stack>
         </Grid>
         <Grid item xs={12} lg={8}>
-          <Stack spacing={3} sx={{ height: '100%' }}>
+          <Stack spacing={3}>
             <Stack
               direction="row"
               alignItems="center"
