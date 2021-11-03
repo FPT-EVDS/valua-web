@@ -165,12 +165,12 @@ const ShiftPage = () => {
         let statusText = 'Ready';
         switch (active) {
           case ShiftStatus.Inactive:
-            color = red[500];
+            color = grey[500];
             statusText = 'Inactive';
             break;
 
           case ShiftStatus.NotReady:
-            color = grey[500];
+            color = red[500];
             statusText = 'Not ready';
             break;
 

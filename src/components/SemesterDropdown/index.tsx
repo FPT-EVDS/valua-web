@@ -30,6 +30,8 @@ const SemesterDropdown = ({
     setSemesterOptions(response.data);
     if (value) {
       onChange(value);
+    } else {
+      onChange(response.data[0]);
     }
     setIsLoading(false);
   };
