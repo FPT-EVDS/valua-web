@@ -248,7 +248,6 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
           <CardActions>
             <LoadingButton
               disabled={!isEditable}
-              loading={isLoading}
               type="submit"
               variant="contained"
             >
