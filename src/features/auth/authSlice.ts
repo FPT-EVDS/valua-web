@@ -76,12 +76,23 @@ export const authSlice = createSlice({
           state.isLoading = false;
         },
       )
-      .addMatcher(isAnyOf(login.fulfilled, getUserProfile.fulfilled), state => {
-        state.isLoading = true;
-        state.error = '';
-      })
       .addMatcher(
-        isAnyOf(login.rejected, getUserProfile.rejected),
+        isAnyOf(
+          login.pending,
+          getUserProfile.pending,
+          updateUserProfile.pending,
+        ),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          login.rejected,
+          getUserProfile.rejected,
+          updateUserProfile.rejected,
+        ),
         (state, action) => {
           state.isLoading = false;
           state.error = String(action.payload);

@@ -8,7 +8,7 @@ type User = {
   address: string;
   isActive: boolean;
   phoneNumber: string;
-  profileImageUrl?: string | null;
+  imageUrl?: string | null;
   refreshToken: string;
   companyId: string;
 };

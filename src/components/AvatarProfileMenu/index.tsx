@@ -32,7 +32,7 @@ const AvatarProfileMenu = ({ user, profileLink }: Props) => {
     <>
       <IconButton size="large" onClick={handleMenu}>
         <Avatar
-          src={String(user?.profileImageUrl)}
+          src={String(user?.imageUrl)}
           alt={String(user?.fullName)}
           sx={{ bgcolor: '#1890ff' }}
         />

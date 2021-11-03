@@ -35,7 +35,7 @@ const Profile = () => {
                       height: '150px',
                       width: '150px',
                     }}
-                    src={String(user?.profileImageUrl)}
+                    src={String(user?.imageUrl)}
                     alt={`${String(user?.fullName)} avatar`}
                   />
                 }
