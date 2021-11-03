@@ -8,69 +8,46 @@ import {
   ListItemText,
   TextField,
 } from '@mui/material';
-import Account from 'models/account.model';
+import Examinee from 'models/examinee.model';
 import React, { useEffect, useState } from 'react';
 import examRoomServices from 'services/examRoom.service';
 
 interface Props {
   shiftId: string;
+  subjectId: string;
   error?: boolean;
   helperText?: string;
-  value: Pick<
-    Account,
-    | 'appUserId'
-    | 'email'
-    | 'fullName'
-    | 'phoneNumber'
-    | 'imageUrl'
-    | 'companyId'
-  > | null;
+  value: Examinee | null;
   isEditable: boolean;
-  onChange: (
-    account: Pick<
-      Account,
-      | 'appUserId'
-      | 'email'
-      | 'fullName'
-      | 'phoneNumber'
-      | 'imageUrl'
-      | 'companyId'
-    > | null,
-  ) => void;
+  onChange: (staff: Examinee | null) => void;
 }
 
-const StaffDropdown = ({
+const ExamineeDropdown = ({
   shiftId,
+  subjectId,
   value,
   isEditable,
   onChange,
   error,
   helperText,
 }: Props) => {
-  const [staffOptions, setStaffOptions] = useState<
-    Pick<
-      Account,
-      | 'appUserId'
-      | 'email'
-      | 'fullName'
-      | 'phoneNumber'
-      | 'imageUrl'
-      | 'companyId'
-    >[]
-  >([]);
+  const [examineeOptions, setExamineeOptions] = useState<Examinee[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchAccounts = async () => {
-    const response = await examRoomServices.getAvailableStaff(shiftId);
-    const { availableStaffs } = response.data;
-    if (value) setStaffOptions([value, ...availableStaffs]);
-    else setStaffOptions(availableStaffs);
+  const fetchAvailableExaminees = async () => {
+    const response = await examRoomServices.getAvailableExaminees({
+      shiftId,
+      subjectId,
+    });
+    const { examinees } = response.data;
+    if (value) setExamineeOptions([value, ...examinees]);
+    else setExamineeOptions(examinees);
     setIsLoading(false);
   };
 
   useEffect(() => {
     setIsLoading(true);
-    fetchAccounts().catch(() => {
+    fetchAvailableExaminees().catch(() => {
       setIsLoading(false);
     });
   }, []);
@@ -79,26 +56,32 @@ const StaffDropdown = ({
     <Autocomplete
       disabled={!isEditable}
       loading={isLoading}
-      options={staffOptions}
+      options={examineeOptions}
       isOptionEqualToValue={(option, optionValue) =>
-        option.appUserId === optionValue.appUserId
+        option.subjectExamineeID === optionValue.subjectExamineeID
       }
       value={value}
-      getOptionLabel={props => props.fullName}
+      getOptionLabel={props => props.examinee.fullName}
       onChange={(event, newValue) => onChange(newValue)}
       renderOption={(props, option) => (
-        <ListItem {...props} key={option.appUserId}>
+        <ListItem {...props} key={option.subjectExamineeID}>
           <ListItemAvatar>
-            <Avatar src={String(option.imageUrl)} alt={option.fullName} />
+            <Avatar
+              src={String(option.examinee.imageUrl)}
+              alt={option.examinee.fullName}
+            />
           </ListItemAvatar>
-          <ListItemText primary={option.fullName} secondary={option.email} />
+          <ListItemText
+            primary={option.examinee.fullName}
+            secondary={option.examinee.email}
+          />
         </ListItem>
       )}
       renderInput={params => (
         <TextField
           {...params}
-          label="Assigned Staff"
-          name="staff"
+          label="Available examinees"
+          name="examinee"
           autoFocus
           margin="dense"
           error={error}
@@ -114,8 +97,8 @@ const StaffDropdown = ({
             startAdornment: value && (
               <InputAdornment position="start">
                 <Avatar
-                  src={String(value.imageUrl)}
-                  alt={value.fullName}
+                  src={String(value.examinee.imageUrl)}
+                  alt={value.examinee.fullName}
                   sx={{ width: 28, height: 28 }}
                 />
               </InputAdornment>
@@ -127,4 +110,4 @@ const StaffDropdown = ({
   );
 };
 
-export default StaffDropdown;
+export default ExamineeDropdown;

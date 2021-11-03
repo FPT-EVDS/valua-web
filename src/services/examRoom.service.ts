@@ -4,6 +4,7 @@ import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import AvailableRoomsDto from 'dtos/availableRooms.dto';
 import AvailableStaffDto from 'dtos/availableStaff.dto';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
+import DetailExamSeat from 'dtos/detailExamSeat.dto';
 import DisableExamRoom from 'dtos/disableExamRoom.dto';
 import ExamRoomsDto from 'dtos/examRooms.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
@@ -66,18 +67,20 @@ const examRoomServices = {
   },
   updateExamRoom: ({
     examRoomId,
-    ...payload
+    room,
+    staff,
+    subject,
   }: UpdateExamRoomDto): Promise<AxiosResponse<DetailExamRoom>> => {
     const url = `/examRooms/${examRoomId}`;
     return axiosClient.put(url, {
       staff: {
-        appUserId: payload.staff.appUserId,
+        appUserId: staff.appUserId,
       },
       room: {
-        roomId: payload.room.roomId,
+        roomId: room.roomId,
       },
       subject: {
-        subjectId: payload.subject.subjectId,
+        subjectId: subject.subjectId,
       },
     });
   },
@@ -85,11 +88,24 @@ const examRoomServices = {
     examRoomId: string,
   ): Promise<AxiosResponse<DisableExamRoom>> => {
     const url = `/examRooms/${examRoomId}`;
-    return axiosClient.patch(url, {
-      op: 'replace',
-      path: '/status',
-      value: 0,
-    });
+    return axiosClient.patch(url, [
+      {
+        op: 'replace',
+        path: '/status',
+        value: 0,
+      },
+    ]);
+  },
+  addNewSeatToExamRoom: (payload: DetailExamSeat): Promise<AxiosResponse> => {
+    const url = '/examSeats';
+    return axiosClient.post(url, payload);
+  },
+  removeSeatFromExamRoom: ({
+    examSeatId,
+    ...otherPayload
+  }: DetailExamSeat): Promise<AxiosResponse> => {
+    const url = `/examSeats/${String(examSeatId)}`;
+    return axiosClient.patch(url, otherPayload);
   },
 };
 

@@ -24,7 +24,7 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import ShiftDetailCard from 'components/ShiftDetailCard';
 import ExamRoomStatus from 'enums/examRoomStatus.enum';
-import { getExamRooms } from 'features/examRoom/examRoomSlice';
+import { deleteExamRoom, getExamRooms } from 'features/examRoom/examRoomSlice';
 import { deleteShift, getShift } from 'features/shift/detailShiftSlice';
 import Account from 'models/account.model';
 import Room from 'models/room.model';
@@ -128,9 +128,31 @@ const DetailShiftPage = () => {
     }
   };
 
+  const handleDeleteExamRoom = async (roomId: string) => {
+    try {
+      const result = await dispatch(deleteExamRoom(roomId));
+      unwrapResult(result);
+      enqueueSnackbar('Exam room has been successfully deleted', {
+        variant: 'success',
+        preventDuplicate: true,
+      });
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
+    } catch (error) {
+      showErrorMessage(error);
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
+    }
+  };
+
   const showDeleteConfirmation = (shiftId: string) => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
+      title: 'Do you want to delete this shift ?',
       open: true,
       handleAccept: () => handleDeleteShift(shiftId),
     }));
@@ -152,6 +174,15 @@ const DetailShiftPage = () => {
 
   const handleSortModelChange = (newModel: GridSortModel) => {
     setSortModel(newModel);
+  };
+
+  const showDeleteExamRoomConfirmation = (roomId: string) => {
+    setConfirmDialogProps(prevState => ({
+      ...prevState,
+      title: 'Do you want to delete this exam room ?',
+      open: true,
+      handleAccept: () => handleDeleteExamRoom(roomId),
+    }));
   };
 
   const columns: Array<GridColDef | GridActionsColDef> = [
@@ -216,12 +247,12 @@ const DetailShiftPage = () => {
         let statusText = 'Unknown';
         switch (status) {
           case ExamRoomStatus.Disabled:
-            color = red[500];
+            color = grey[500];
             statusText = 'Disabled';
             break;
 
           case ExamRoomStatus.NotReady:
-            color = orange[400];
+            color = red[500];
             statusText = 'Not ready';
             break;
 
@@ -278,9 +309,10 @@ const DetailShiftPage = () => {
             }
           />,
           <GridActionsCellItem
-            label="Disable"
+            label="Delete"
             sx={{ color: red[500], justifyContent: 'right' }}
             showInMenu
+            onClick={() => showDeleteExamRoomConfirmation(String(rowId))}
           />,
         ];
         if (staff) deleteItems.shift();

@@ -12,15 +12,18 @@ import {
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import AddExamineeSeatDialog from 'components/AddExamineeSeatDialog';
+import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import ExamRoomDetailCard from 'components/ExamRoomDetailCard';
 import ExamSeatTable from 'components/ExamSeatTable';
 import { format } from 'date-fns';
 import {
+  deleteExamRoom,
   getDetailExamRoom,
   getShift,
 } from 'features/examRoom/detailExamRoomSlice';
 import { useSnackbar } from 'notistack';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
 interface ParamProps {
@@ -34,6 +37,16 @@ const DetailExamRoomPage = () => {
   const { examRoom, shift, isLoading } = useAppSelector(
     state => state.detailExamRoom,
   );
+  const [confirmDialogProps, setConfirmDialogProps] =
+    useState<ConfirmDialogProps>({
+      title: `Do you want to delete this exam room ?`,
+      content: "This action can't be revert",
+      open: false,
+      handleClose: () =>
+        setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
+      handleAccept: () => null,
+    });
+  const [open, setOpen] = useState(false);
   const history = useHistory();
   const { id, examRoomId } = useParams<ParamProps>();
 
@@ -60,8 +73,39 @@ const DetailExamRoomPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleDeleteExamRoom = async (roomId: string) => {
+    try {
+      const result = await dispatch(deleteExamRoom(roomId));
+      unwrapResult(result);
+      enqueueSnackbar('Exam room has been successfully deleted', {
+        variant: 'success',
+        preventDuplicate: true,
+      });
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
+      history.push(`/shift-manager/shift/${id}`);
+    } catch (error) {
+      showErrorMessage(error);
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
+    }
+  };
+
+  const showDeleteConfirmation = (roomId: string) => {
+    setConfirmDialogProps(prevState => ({
+      ...prevState,
+      open: true,
+      handleAccept: () => handleDeleteExamRoom(roomId),
+    }));
+  };
+
   return (
     <div>
+      <ConfirmDialog {...confirmDialogProps} />
       <Box
         width={250}
         display="flex"
@@ -76,6 +120,10 @@ const DetailExamRoomPage = () => {
       <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
         {examRoom && shift && (
           <>
+            <AddExamineeSeatDialog
+              handleClose={() => setOpen(false)}
+              open={open}
+            />
             <Grid item xs={12} md={12} lg={4}>
               <Stack spacing={3}>
                 <Card sx={{ minWidth: 275 }} elevation={2}>
@@ -135,7 +183,7 @@ const DetailExamRoomPage = () => {
                   examRoom={examRoom}
                   shift={shift}
                   isLoading={isLoading}
-                  handleDelete={() => console.log('hihi')}
+                  handleDelete={showDeleteConfirmation}
                 />
               </Stack>
             </Grid>
@@ -159,7 +207,11 @@ const DetailExamRoomPage = () => {
                       Exam seat list
                     </Typography>
                   </Box>
-                  <Button variant="contained" startIcon={<Add />}>
+                  <Button
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() => setOpen(true)}
+                  >
                     Add examinee
                   </Button>
                 </Stack>

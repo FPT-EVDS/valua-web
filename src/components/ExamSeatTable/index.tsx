@@ -10,8 +10,11 @@ import {
   TablePagination,
   TableRow,
 } from '@mui/material';
-import { useAppDispatch } from 'app/hooks';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { removeExamSeat } from 'features/examRoom/detailExamRoomSlice';
 import ExamSeat from 'models/examSeat.model';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -20,6 +23,8 @@ interface Props {
 
 const ExamSeatTable = ({ data }: Props) => {
   const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+  const examRoom = useAppSelector(state => state.detailExamRoom.examRoom);
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(data);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -42,9 +47,29 @@ const ExamSeatTable = ({ data }: Props) => {
     setPage(0);
   };
 
-  const handleRemoveExaminee = (examinee: ExamSeat, index: number) => {
-    // dispatch(updateRemovedExaminees([...removedItems, examinee]));
-    setRows(prev => prev.filter((item, itemIndex) => index !== itemIndex));
+  const handleRemoveExaminee = async (examinee: ExamSeat, index: number) => {
+    if (examRoom) {
+      try {
+        const result = await dispatch(
+          removeExamSeat({
+            examSeatId: examinee.examSeatId,
+            examinee: { appUserId: examinee.examinee.appUserId },
+            examRoom: { examRoomID: examRoom.examRoomID },
+          }),
+        );
+        unwrapResult(result);
+        setRows(prev => prev.filter((item, itemIndex) => index !== itemIndex));
+        enqueueSnackbar(`Remove ${examinee.examinee.fullName} success`, {
+          variant: 'success',
+          preventDuplicate: true,
+        });
+      } catch (error) {
+        enqueueSnackbar(error, {
+          variant: 'error',
+          preventDuplicate: true,
+        });
+      }
+    }
   };
 
   useEffect(() => {
@@ -73,16 +98,16 @@ const ExamSeatTable = ({ data }: Props) => {
               </TableCell>
               <TableCell align="center">{row.examinee.fullName}</TableCell>
               <TableCell align="center">{row.examinee.companyId}</TableCell>
-              {rows.length > 1 && (
-                <TableCell align="center">
+              <TableCell align="center">
+                {rows.length > 1 && (
                   <Button
                     variant="text"
                     onClick={() => handleRemoveExaminee(row, index)}
                   >
                     Remove
                   </Button>
-                </TableCell>
-              )}
+                )}
+              </TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (

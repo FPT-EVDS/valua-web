@@ -31,10 +31,23 @@ export const getExamRooms = createAsyncThunk(
 );
 
 export const assignStaff = createAsyncThunk(
-  'addExamRoom/assignStaff',
+  'examRoom/assignStaff',
   async (payload: AssignStaffToExamRoomDto, { rejectWithValue }) => {
     try {
       const response = await examRoomServices.assignStaff(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const deleteExamRoom = createAsyncThunk(
+  'examRoom/deleteExamRoom',
+  async (examRoomId: string, { rejectWithValue }) => {
+    try {
+      const response = await examRoomServices.deleteExamRoom(examRoomId);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -76,17 +89,36 @@ export const examRoomsSlice = createSlice({
         state.isLoading = false;
         state.error = '';
       })
+      .addCase(deleteExamRoom.fulfilled, (state, action) => {
+        const index = state.current.examRooms.findIndex(
+          item => item.examRoomID === action.meta.arg,
+        );
+        if (index > -1) state.current.examRooms.splice(index, 1);
+        state.isLoading = false;
+        state.error = '';
+      })
       .addMatcher(
-        isAnyOf(getExamRooms.rejected),
+        isAnyOf(
+          getExamRooms.rejected,
+          assignStaff.rejected,
+          deleteExamRoom.rejected,
+        ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
           state.error = action.payload;
         },
       )
-      .addMatcher(isAnyOf(getExamRooms.pending), state => {
-        state.isLoading = true;
-        state.error = '';
-      });
+      .addMatcher(
+        isAnyOf(
+          getExamRooms.pending,
+          assignStaff.pending,
+          deleteExamRoom.pending,
+        ),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      );
   },
 });
 
