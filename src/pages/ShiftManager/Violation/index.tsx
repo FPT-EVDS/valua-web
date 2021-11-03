@@ -1,12 +1,6 @@
-import {
-  Add
-} from '@mui/icons-material';
+import { Add } from '@mui/icons-material';
 import { Button, Link, Typography } from '@mui/material';
-import {
-  GridActionsColDef,
-  GridColDef,
-  GridRowModel
-} from '@mui/x-data-grid';
+import { GridActionsColDef, GridColDef, GridRowModel } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import EVDSDataGrid from 'components/EVDSDataGrid';
@@ -20,7 +14,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Link as RouterLink,
   useHistory,
-  useRouteMatch
+  useRouteMatch,
 } from 'react-router-dom';
 
 const ViolationPage = () => {
@@ -170,7 +164,6 @@ const ViolationPage = () => {
         page={page}
         handleSearch={handleSearch}
         onPageChange={newPage => setPage(newPage)}
-        addButton={<AddButton />}
       />
     </div>
   );

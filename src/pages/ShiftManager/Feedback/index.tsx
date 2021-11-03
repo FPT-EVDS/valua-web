@@ -1,6 +1,6 @@
 /* eslint-disable prefer-destructuring */
 import { Add, FiberManualRecord } from '@mui/icons-material';
-import { Box, Avatar, Button, Link, Typography } from '@mui/material';
+import { Avatar, Box, Button, Link, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import { GridActionsColDef, GridColDef, GridRowModel } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -211,7 +211,6 @@ const FeedbackPage = () => {
         page={page}
         handleSearch={handleSearch}
         onPageChange={newPage => setPage(newPage)}
-        addButton={<AddButton />}
       />
     </div>
   );
