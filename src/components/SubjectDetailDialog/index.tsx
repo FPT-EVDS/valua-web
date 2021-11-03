@@ -9,12 +9,11 @@ import {
   DialogTitle,
   Grid,
   IconButton,
-  Slide,
   TextField,
 } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import SlideTransition from 'components/SlideTransition';
 import { subjectSchema } from 'configs/validations';
 import SubjectDto from 'dtos/subject.dto';
 import { addSubject, updateSubject } from 'features/subject/subjectsSlice';
@@ -29,12 +28,6 @@ interface Props {
   initialValues?: SubjectDto;
   isUpdate: boolean;
 }
-
-const Transition = React.forwardRef(
-  (props: TransitionProps, ref: React.Ref<unknown>) => (
-    <Slide direction="up" ref={ref} {...props} />
-  ),
-);
 
 const SubjectDetailDialog: React.FC<Props> = ({
   open,
@@ -93,7 +86,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
       open={open}
       onClose={handleClose}
       fullWidth
-      TransitionComponent={Transition}
+      TransitionComponent={SlideTransition}
     >
       <DialogTitle>
         <Grid

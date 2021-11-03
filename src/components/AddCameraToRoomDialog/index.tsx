@@ -8,13 +8,12 @@ import {
   DialogTitle,
   Grid,
   IconButton,
-  Slide,
   Typography,
 } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import CameraDropdown from 'components/CameraDropdown';
+import SlideTransition from 'components/SlideTransition';
 import AddCameraToRoomDto from 'dtos/addCameraToRoom.dto';
 import RoomWithCamera from 'dtos/roomWithCamera.dto';
 import { addCameraToRoom } from 'features/room/detailRoomSlice';
@@ -27,12 +26,6 @@ interface Props {
   open: boolean;
   handleClose: () => void;
 }
-
-const Transition = React.forwardRef(
-  (props: TransitionProps, ref: React.Ref<unknown>) => (
-    <Slide direction="up" ref={ref} {...props} />
-  ),
-);
 
 const AddCameraToRoomDialog: React.FC<Props> = ({ open, handleClose }) => {
   const { enqueueSnackbar } = useSnackbar();
@@ -79,7 +72,7 @@ const AddCameraToRoomDialog: React.FC<Props> = ({ open, handleClose }) => {
       open={open}
       onClose={handleClose}
       fullWidth
-      TransitionComponent={Transition}
+      TransitionComponent={SlideTransition}
     >
       <DialogTitle>
         <Grid

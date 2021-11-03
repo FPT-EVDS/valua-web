@@ -23,13 +23,13 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import examineeIcon from 'assets/images/examinee.png';
 import shiftManagerIcon from 'assets/images/shift-manager.png';
 import staffIcon from 'assets/images/staff.png';
 import AvatarFilePicker from 'components/AvatarFilePicker';
+import SlideTransition from 'components/SlideTransition';
 import genders from 'configs/constants/genders.constant';
 import accountRoles from 'configs/constants/roles.constant';
 import { accountSchema } from 'configs/validations';
@@ -53,12 +53,6 @@ interface AvatarWithTextProps {
   // eslint-disable-next-line react/require-default-props
   handleClick?: () => void;
 }
-
-const Transition = React.forwardRef(
-  (props: TransitionProps, ref: React.Ref<unknown>) => (
-    <Slide direction="up" ref={ref} {...props} />
-  ),
-);
 
 const AvatarWithText = ({
   src,
@@ -183,7 +177,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
       open={open}
       onClose={handleClose}
       fullWidth
-      TransitionComponent={Transition}
+      TransitionComponent={SlideTransition}
       PaperProps={{ sx: { overflowX: 'hidden' } }}
     >
       {currentStep === 0 && (

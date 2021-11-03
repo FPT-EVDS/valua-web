@@ -2,6 +2,7 @@
 import { FilterAlt, Search } from '@mui/icons-material';
 import {
   alpha,
+  Box,
   Button,
   Grid,
   InputAdornment,
@@ -12,6 +13,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import {
   DataGrid,
   DataGridProps,
@@ -24,9 +26,11 @@ import React, { useState } from 'react';
 
 interface DataGridHeaderProps {
   title: string;
-  addButton: React.ReactNode;
+  addButton?: React.ReactNode;
+  leftActions?: React.ReactNode;
   filterItems?: React.ReactNode;
   hasFilter?: boolean;
+  hasSearch?: boolean;
   handleSearch?: (searchValue: string) => void;
 }
 
@@ -34,7 +38,6 @@ interface CustomDataGridProps extends DataGridHeaderProps, DataGridProps {
   isLoading: boolean;
   rows: GridRowData[];
   columns: GridColumns;
-  hasFilter?: boolean;
 }
 
 const StyledMenu = styled((props: MenuProps) => (
@@ -85,12 +88,15 @@ const EVDSDataGridHeader = ({
   title,
   addButton,
   hasFilter,
+  hasSearch,
   handleSearch,
   filterItems,
+  leftActions,
 }: DataGridHeaderProps) => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const spacing = hasSearch && (hasFilter || addButton) ? 2 : 0;
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -112,30 +118,34 @@ const EVDSDataGridHeader = ({
 
   return (
     <Grid container justifyContent="space-between" alignItems="center" mb={2}>
-      <Grid item>
-        <Typography variant="h5" component="div">
+      <Grid item display="flex" alignItems="center">
+        <Typography variant="h5" component="div" sx={{ marginRight: 2 }}>
           {title}
         </Typography>
+        <Box sx={{ width: 200 }}>{leftActions}</Box>
       </Grid>
       <Grid item>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item>
-            <TextField
-              placeholder="Search here..."
-              type="search"
-              size="small"
-              onKeyDown={handleOnKeyDown}
-              onChange={handleChange}
-              value={searchValue}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search sx={{ width: 20, height: 20 }} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid>
+        <Grid container spacing={spacing} alignItems="center">
+          {hasSearch && (
+            <Grid item>
+              <TextField
+                placeholder="Search here..."
+                type="search"
+                size="small"
+                fullWidth
+                onKeyDown={handleOnKeyDown}
+                onChange={handleChange}
+                value={searchValue}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search sx={{ width: 20, height: 20 }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+          )}
           {hasFilter && (
             <Grid item alignItems="stretch" display="flex">
               <Button
@@ -172,6 +182,20 @@ const EVDSDataGridHeader = ({
   );
 };
 
+const useStyles = makeStyles({
+  root: {
+    '&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus':
+      {
+        outline: 'none',
+      },
+  },
+  header: {
+    '& > .MuiDataGrid-columnSeparator': {
+      visibility: 'hidden',
+    },
+  },
+});
+
 const CustomLoadingOverlay = () => (
   <GridOverlay>
     <div style={{ position: 'absolute', top: 0, width: '100%' }}>
@@ -187,39 +211,47 @@ const EVDSDataGrid = ({
   title,
   addButton,
   hasFilter = false,
+  hasSearch = true,
   filterItems,
+  leftActions,
   handleSearch,
   ...otherProps
-}: CustomDataGridProps) => (
-  <>
-    <EVDSDataGridHeader
-      title={title}
-      addButton={addButton}
-      hasFilter={hasFilter}
-      filterItems={filterItems}
-      handleSearch={handleSearch}
-    />
-    <div style={{ height: 650, width: '100%' }}>
-      <div style={{ display: 'flex', height: '100%' }}>
-        <div style={{ flexGrow: 1 }}>
-          <DataGrid
-            {...otherProps}
-            loading={isLoading}
-            disableSelectionOnClick
-            disableColumnMenu
-            disableColumnFilter
-            disableColumnSelector
-            rows={rows}
-            columns={columns}
-            components={{
-              LoadingOverlay: CustomLoadingOverlay,
-              NoRowsOverlay: CustomNoRowsOverlay,
-            }}
-          />
+}: CustomDataGridProps) => {
+  const classes = useStyles();
+  return (
+    <>
+      <EVDSDataGridHeader
+        title={title}
+        addButton={addButton}
+        hasSearch={hasSearch}
+        hasFilter={hasFilter}
+        filterItems={filterItems}
+        handleSearch={handleSearch}
+        leftActions={leftActions}
+      />
+      <div style={{ height: 650, width: '100%' }}>
+        <div style={{ display: 'flex', height: '100%' }}>
+          <div style={{ flexGrow: 1 }}>
+            <DataGrid
+              {...otherProps}
+              loading={isLoading}
+              disableSelectionOnClick
+              disableColumnMenu
+              disableColumnFilter
+              disableColumnSelector
+              rows={rows}
+              columns={columns}
+              components={{
+                LoadingOverlay: CustomLoadingOverlay,
+                NoRowsOverlay: CustomNoRowsOverlay,
+              }}
+              classes={{ root: classes.root, columnHeader: classes.header }}
+            />
+          </div>
         </div>
       </div>
-    </div>
-  </>
-);
+    </>
+  );
+};
 
 export default EVDSDataGrid;

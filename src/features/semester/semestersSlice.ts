@@ -2,12 +2,10 @@ import {
   createAsyncThunk,
   createSlice,
   isAnyOf,
-  isPending,
-  isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import { SearchByNameDto } from 'dtos/searchByName.dto';
+import SearchByNameDto from 'dtos/searchByName.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
 import Semester from 'models/semester.model';
@@ -133,14 +131,32 @@ export const semesterSlice = createSlice({
           state.isLoading = false;
         },
       )
-      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addMatcher(isPending, state => {
-        state.isLoading = true;
-        state.error = '';
-      });
+      .addMatcher(
+        isAnyOf(
+          addSemester.rejected,
+          updateSemester.rejected,
+          disableSemester.rejected,
+          getSemesters.rejected,
+          searchBySemesterName.rejected,
+        ),
+        (state, action: PayloadAction<string>) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          addSemester.pending,
+          updateSemester.pending,
+          disableSemester.pending,
+          getSemesters.pending,
+          searchBySemesterName.pending,
+        ),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      );
   },
 });
 

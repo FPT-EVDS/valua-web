@@ -72,7 +72,7 @@ const DetailFeedbackPage = () => {
                   status={feedback.status}
                   icon={<AnnouncementIcon fontSize="large" />}
                   content={<OverviewContent feedback={feedback} />}
-                  imageUrl={feedback.shiftManager?.profileImageUrl}
+                  imageUrl={feedback.shiftManager?.imageUrl}
                   fullName={feedback.shiftManager?.fullName}
                 />
                 <ViolationInformationCard violation={feedback?.violation} />

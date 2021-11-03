@@ -1,21 +1,38 @@
-import { Autocomplete, TextField } from '@mui/material';
+/* eslint-disable react/require-default-props */
+import { Autocomplete, TextField, TextFieldProps } from '@mui/material';
+import SearchByDateDto from 'dtos/searchByDate.dto';
 import Semester from 'models/semester.model';
 import React, { useEffect, useState } from 'react';
 import semesterServices from 'services/semester.service';
 
 interface Props {
-  value: Semester | null;
+  value: Pick<Semester, 'semesterId' | 'semesterName'> | null;
   isEditable: boolean;
-  onChange: (semester: Semester | null) => void;
+  onChange: (
+    semester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
+  ) => void;
+  textFieldProps?: TextFieldProps;
+  payload?: SearchByDateDto;
 }
 
-const SemesterDropdown = ({ value, isEditable, onChange }: Props) => {
+const SemesterDropdown = ({
+  value,
+  isEditable,
+  onChange,
+  textFieldProps,
+  payload,
+}: Props) => {
   const [semesterOptions, setSemesterOptions] = useState<Semester[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchSemesters = async () => {
-    const response = await semesterServices.getSemesterForShift();
+    const response = await semesterServices.getSemesterForShift(payload);
     setSemesterOptions(response.data);
+    if (value) {
+      onChange(value);
+    } else {
+      onChange(response.data[0]);
+    }
     setIsLoading(false);
   };
 
@@ -36,22 +53,27 @@ const SemesterDropdown = ({ value, isEditable, onChange }: Props) => {
       getOptionLabel={option => option.semesterName || ''}
       value={value}
       onChange={(event, newValue) => onChange(newValue)}
+      disabled={!isEditable}
       renderInput={params => (
         <TextField
           {...params}
-          value={value}
-          label="Semester"
-          name="semester"
-          autoFocus
+          {...textFieldProps}
           margin="dense"
           fullWidth
           disabled={!isEditable}
           variant="outlined"
-          InputLabelProps={{
-            shrink: true,
-          }}
         />
       )}
+      renderOption={(props, option) => (
+        <li {...props} key={option.semesterId}>
+          {option.semesterName}
+        </li>
+      )}
+      ListboxProps={{
+        style: {
+          maxHeight: '320px',
+        },
+      }}
     />
   );
 };

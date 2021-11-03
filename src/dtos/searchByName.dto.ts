@@ -1,4 +1,5 @@
-export interface SearchByNameDto {
-  search: string;
-  page: number;
+import SearchParams from './searchParams.dto';
+
+export default interface SearchByNameDto extends SearchParams {
+  search?: string;
 }

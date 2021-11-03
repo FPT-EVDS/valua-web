@@ -9,12 +9,11 @@ import {
   DialogTitle,
   Grid,
   IconButton,
-  Slide,
   TextField,
 } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import SlideTransition from 'components/SlideTransition';
 import { semesterSchema } from 'configs/validations';
 import { add } from 'date-fns';
 import SemesterDto from 'dtos/semester.dto';
@@ -30,12 +29,6 @@ interface Props {
   initialValues?: SemesterDto;
   isUpdate: boolean;
 }
-
-const Transition = React.forwardRef(
-  (props: TransitionProps, ref: React.Ref<unknown>) => (
-    <Slide direction="up" ref={ref} {...props} />
-  ),
-);
 
 const SemesterDetailDialog: React.FC<Props> = ({
   open,
@@ -103,7 +96,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
       open={open}
       onClose={handleClose}
       fullWidth
-      TransitionComponent={Transition}
+      TransitionComponent={SlideTransition}
     >
       <DialogTitle>
         <Grid

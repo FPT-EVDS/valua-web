@@ -9,12 +9,11 @@ import {
   DialogTitle,
   Grid,
   IconButton,
-  Slide,
   TextField,
 } from '@mui/material';
-import { TransitionProps } from '@mui/material/transitions';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import SlideTransition from 'components/SlideTransition';
 import { cameraSchema } from 'configs/validations';
 import CameraDto from 'dtos/camera.dto';
 import { addCamera } from 'features/camera/camerasSlice';
@@ -27,12 +26,6 @@ interface Props {
   open: boolean;
   handleClose: () => void;
 }
-
-const Transition = React.forwardRef(
-  (props: TransitionProps, ref: React.Ref<unknown>) => (
-    <Slide direction="up" ref={ref} {...props} />
-  ),
-);
 
 const CameraDetailDialog: React.FC<Props> = ({ open, handleClose, title }) => {
   const { enqueueSnackbar } = useSnackbar();
@@ -82,7 +75,7 @@ const CameraDetailDialog: React.FC<Props> = ({ open, handleClose, title }) => {
       open={open}
       onClose={handleClose}
       fullWidth
-      TransitionComponent={Transition}
+      TransitionComponent={SlideTransition}
     >
       <DialogTitle>
         <Grid

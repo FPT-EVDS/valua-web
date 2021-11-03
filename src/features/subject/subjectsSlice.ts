@@ -2,12 +2,10 @@ import {
   createAsyncThunk,
   createSlice,
   isAnyOf,
-  isPending,
-  isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import { SearchByNameDto } from 'dtos/searchByName.dto';
+import SearchByNameDto from 'dtos/searchByName.dto';
 import SubjectDto from 'dtos/subject.dto';
 import SubjectsDto from 'dtos/subjects.dto';
 import Subject from 'models/subject.model';
@@ -133,14 +131,32 @@ export const subjectSlice = createSlice({
           state.isLoading = false;
         },
       )
-      .addMatcher(isRejected, (state, action: PayloadAction<string>) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addMatcher(isPending, state => {
-        state.isLoading = true;
-        state.error = '';
-      });
+      .addMatcher(
+        isAnyOf(
+          addSubject.rejected,
+          updateSubject.rejected,
+          disableSubject.rejected,
+          getSubjects.rejected,
+          searchBySubjectName.rejected,
+        ),
+        (state, action: PayloadAction<string>) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          addSubject.pending,
+          updateSubject.pending,
+          disableSubject.pending,
+          getSubjects.pending,
+          searchBySubjectName.pending,
+        ),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      );
   },
 });
 

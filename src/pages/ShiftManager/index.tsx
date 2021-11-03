@@ -5,10 +5,12 @@ import {
   DashboardOutlined,
   Event,
   EventOutlined,
+  Group,
+  GroupOutlined,
   Menu as MenuIcon,
   Notifications,
   ReportProblem,
-  ReportProblemOutlined
+  ReportProblemOutlined,
 } from '@mui/icons-material';
 import { AppBar, Badge, Box, IconButton, Toolbar } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
@@ -16,38 +18,49 @@ import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
 import React, { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+
 import DashboardPage from './Dashboard';
+import ExamineePage from './Examinee';
+import DetailExamineePage from './Examinee/DetailExaminee';
+import FeedbackPage from './Feedback';
+import DetailFeedbackPage from './Feedback/DetailFeedback';
 import Profile from './Profile';
 import ShiftPage from './Shift';
 import DetailShiftPage from './Shift/DetailShift';
+import AddExamRoomPage from './Shift/DetailShift/AddExamRoom';
+import DetailExamRoomPage from './Shift/DetailShift/DetailExamRoom';
 import ViolationPage from './Violation';
 import DetailViolationPage from './Violation/DetailViolation';
-import FeedbackPage from './Feedback';
-import DetailFeedbackPage from './Feedback/DetailFeedback';
 
 const drawerItems: Array<DrawerItem> = [
   {
     name: 'Dashboard',
     icon: <DashboardOutlined />,
-    activeIcon: <DashboardIcon />,
+    activeIcon: <DashboardIcon color="primary" />,
     to: '/shift-manager/dashboard',
   },
   {
     name: 'Feedback',
     icon: <AnnouncementOutlined />,
-    activeIcon: <Announcement />,
+    activeIcon: <Announcement color="primary" />,
     to: '/shift-manager/feedback',
+  },
+  {
+    name: 'Examinee',
+    icon: <GroupOutlined />,
+    activeIcon: <Group color="primary" />,
+    to: '/shift-manager/examinee',
   },
   {
     name: 'Shift',
     icon: <EventOutlined />,
-    activeIcon: <Event />,
+    activeIcon: <Event color="primary" />,
     to: '/shift-manager/shift',
   },
   {
     name: 'Violation',
     icon: <ReportProblemOutlined />,
-    activeIcon: <ReportProblem />,
+    activeIcon: <ReportProblem color="primary" />,
     to: '/shift-manager/violation',
   },
 ];
@@ -118,13 +131,32 @@ const ShiftManagerDashboard = (): JSX.Element => {
             component={FeedbackPage}
             exact
           />
+          <Route
+            path="/shift-manager/examinee"
+            component={ExamineePage}
+            exact
+          />
+          <Route
+            path="/shift-manager/examinee/subject"
+            component={DetailExamineePage}
+            exact
+          />
           <Route path="/shift-manager/shift" component={ShiftPage} exact />
           <Route
-            path="/shift-manager/shift/add"
+            path="/shift-manager/shift/:id"
             component={DetailShiftPage}
             exact
           />
-          <Route path="/shift-manager/shift/:id" component={DetailShiftPage} />
+          <Route
+            path="/shift-manager/shift/:id/examRoom/add"
+            component={AddExamRoomPage}
+            exact
+          />
+          <Route
+            path="/shift-manager/shift/:id/examRoom/:examRoomId"
+            component={DetailExamRoomPage}
+            exact
+          />
           <Route
             path="/shift-manager/violation"
             component={ViolationPage}

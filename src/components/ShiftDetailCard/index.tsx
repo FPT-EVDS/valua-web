@@ -1,83 +1,94 @@
+/* eslint-disable prefer-destructuring */
 import { Edit, EditOff } from '@mui/icons-material';
-import { DateTimePicker, LoadingButton } from '@mui/lab';
+import { DateTimePicker } from '@mui/lab';
 import {
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
-  Divider,
+  CircularProgress,
   Grid,
   IconButton,
+  Stack,
   TextField,
   Typography,
 } from '@mui/material';
+import { green, grey, orange, red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
-import RoomDropdown from 'components/RoomDropdown';
 import SemesterDropdown from 'components/SemesterDropdown';
-import StaffDropdown from 'components/StaffDropdown';
-import SubjectDropdown from 'components/SubjectDropdown';
-import { add } from 'date-fns';
+import { shiftSchema } from 'configs/validations';
+import { format } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
-import { addShift, updateShift } from 'features/shift/detailShiftSlice';
+import ShiftStatus from 'enums/shiftStatus.enum';
+import { updateShift } from 'features/shift/detailShiftSlice';
 import { useFormik } from 'formik';
 import useQuery from 'hooks/useQuery';
-import Account from 'models/account.model';
-import Room from 'models/room.model';
 import Semester from 'models/semester.model';
 import Shift from 'models/shift.model';
-import Subject from 'models/subject.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 
 interface Props {
-  shift: Shift | null;
+  shift: Shift;
   isLoading: boolean;
-  isUpdate: boolean;
+  handleDelete: (shiftId: string) => void;
 }
 
-const ShiftDetailCard = ({ shift, isLoading, isUpdate }: Props) => {
+const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
-  const history = useHistory();
   const query = useQuery();
   const [isEditable, setIsEditable] = useState(
-    String(query.get('edit')) === 'true' || !isUpdate,
+    String(query.get('edit')) === 'true',
   );
-  const initialValues: ShiftDto = shift || {
-    beginTime: new Date(),
-    finishTime: add(new Date(), { minutes: 90 }),
-    description: '',
-    examRoom: null,
-    semester: null,
-    shiftId: null,
-    staff: null,
-    subject: null,
-  };
+
+  let statusColor = '#1890ff';
+  let statusText = 'Ready';
+  switch (shift.status) {
+    case ShiftStatus.Inactive:
+      statusColor = red[500];
+      statusText = 'Inactive';
+      break;
+
+    case ShiftStatus.NotReady:
+      statusColor = grey[500];
+      statusText = 'Not ready';
+      break;
+
+    case ShiftStatus.Ready:
+      statusColor = '#1890ff';
+      statusText = 'Ready';
+      break;
+
+    case ShiftStatus.Ongoing:
+      statusColor = orange[400];
+      statusText = 'Ongoing';
+      break;
+
+    case ShiftStatus.Finished:
+      statusColor = green[500];
+      statusText = 'Finished';
+      break;
+
+    default:
+      break;
+  }
+
+  const initialValues: ShiftDto = shift;
   const formik = useFormik({
     initialValues,
+    validationSchema: shiftSchema,
     onSubmit: async (payload: ShiftDto) => {
       try {
-        const result =
-          isUpdate === false
-            ? await dispatch(addShift(payload))
-            : await dispatch(updateShift(payload));
-        const { shiftId } = unwrapResult(result);
-        if (!isUpdate) {
-          enqueueSnackbar('Create shift success', {
-            variant: 'success',
-            preventDuplicate: true,
-          });
-          setIsEditable(false);
-          history.push(`/shift-manager/shift/${shiftId}`);
-        } else {
-          enqueueSnackbar('Update shift success', {
-            variant: 'success',
-            preventDuplicate: true,
-          });
-        }
+        const result = await dispatch(updateShift(payload));
+        unwrapResult(result);
+        enqueueSnackbar('Update shift success', {
+          variant: 'success',
+          preventDuplicate: true,
+        });
       } catch (error) {
         enqueueSnackbar(error, {
           variant: 'error',
@@ -95,19 +106,9 @@ const ShiftDetailCard = ({ shift, isLoading, isUpdate }: Props) => {
     await formik.setFieldValue('finishTime', selectedDate);
   };
 
-  const handleChangeSubject = async (subject: Subject | null) => {
-    await formik.setFieldValue('subject', subject);
-  };
-
-  const handleChangeExamRoom = async (examRoom: Room | null) => {
-    await formik.setFieldValue('examRoom', examRoom);
-  };
-
-  const handleChangeStaff = async (staff: Account | null) => {
-    await formik.setFieldValue('staff', staff);
-  };
-
-  const handleChangeSemester = async (semester: Semester | null) => {
+  const handleChangeSemester = async (
+    semester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
+  ) => {
     await formik.setFieldValue('semester', semester);
   };
 
@@ -136,11 +137,11 @@ const ShiftDetailCard = ({ shift, isLoading, isUpdate }: Props) => {
             variant="h5"
             gutterBottom
           >
-            {isUpdate ? 'Shift information' : 'New shift information'}
+            Shift information
           </Typography>
         }
         action={
-          shift?.isActive && (
+          shift.status !== ShiftStatus.Inactive && (
             <IconButton onClick={() => setIsEditable(prevState => !prevState)}>
               {isEditable ? (
                 <EditOff sx={{ fontSize: 20 }} />
@@ -154,35 +155,24 @@ const ShiftDetailCard = ({ shift, isLoading, isUpdate }: Props) => {
       <Box component="form" onSubmit={formik.handleSubmit}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12}>
               <SemesterDropdown
                 value={formik.values?.semester}
                 isEditable={isEditable}
                 onChange={handleChangeSemester}
+                textFieldProps={{
+                  error:
+                    formik.touched.semester && Boolean(formik.errors.semester),
+                  helperText: formik.touched.semester && formik.errors.semester,
+                  InputLabelProps: {
+                    shrink: true,
+                  },
+                  label: 'Semester',
+                  name: 'semester',
+                }}
               />
             </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <SubjectDropdown
-                value={formik.values.subject}
-                isEditable={isEditable}
-                onChange={handleChangeSubject}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <RoomDropdown
-                value={formik.values.examRoom}
-                isEditable={isEditable}
-                onChange={handleChangeExamRoom}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <StaffDropdown
-                value={formik.values.staff}
-                isEditable={isEditable}
-                onChange={handleChangeStaff}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12}>
               <DateTimePicker
                 label="Begin time"
                 value={formik.values.beginTime}
@@ -201,11 +191,18 @@ const ShiftDetailCard = ({ shift, isLoading, isUpdate }: Props) => {
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    error={
+                      formik.touched.beginTime &&
+                      Boolean(formik.errors.beginTime)
+                    }
+                    helperText={
+                      formik.touched.beginTime && formik.errors.beginTime
+                    }
                   />
                 )}
               />
             </Grid>
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12}>
               <DateTimePicker
                 label="End time"
                 value={formik.values.finishTime}
@@ -224,40 +221,57 @@ const ShiftDetailCard = ({ shift, isLoading, isUpdate }: Props) => {
                     InputLabelProps={{
                       shrink: true,
                     }}
+                    error={
+                      formik.touched.finishTime &&
+                      Boolean(formik.errors.finishTime)
+                    }
+                    helperText={
+                      formik.touched.finishTime && formik.errors.finishTime
+                    }
                   />
                 )}
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                name="description"
-                autoFocus
-                multiline
-                margin="dense"
-                label="Description"
-                rows={4}
-                value={formik.values.description}
-                fullWidth
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                onChange={formik.handleChange}
-              />
+              <Typography color="text.secondary">
+                Last updated date:{' '}
+                {format(new Date(shift.lastModifiedDate), 'dd/MM/yyyy HH:mm')}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Box color="text.secondary">
+                Status:
+                <Typography display="inline" ml={0.5} color={statusColor}>
+                  {statusText}
+                </Typography>
+              </Box>
             </Grid>
           </Grid>
         </CardContent>
-        <Divider />
-        <CardActions>
-          <LoadingButton
-            disabled={!isEditable}
-            loading={isLoading}
-            type="submit"
-            variant="contained"
-            sx={{ width: 150 }}
-          >
-            {isUpdate ? 'Update shift' : 'Add shift'}
-          </LoadingButton>
+        <CardActions sx={{ justifyContent: 'center', paddingBottom: 2 }}>
+          {isLoading ? (
+            <CircularProgress />
+          ) : (
+            <Stack spacing={2} direction="row">
+              <Button
+                disabled={!isEditable}
+                type="submit"
+                variant="contained"
+                sx={{ minWidth: 120 }}
+              >
+                Update
+              </Button>
+              <Button
+                disabled={!isEditable}
+                variant="contained"
+                color="error"
+                onClick={() => handleDelete(String(shift.shiftId))}
+                sx={{ minWidth: 120 }}
+              >
+                Delete
+              </Button>
+            </Stack>
+          )}
         </CardActions>
       </Box>
     </Card>

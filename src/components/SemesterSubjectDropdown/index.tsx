@@ -1,42 +1,47 @@
-import {
-  CheckBox as CheckBoxIcon,
-  CheckBoxOutlineBlank,
-} from '@mui/icons-material';
-import { Autocomplete, Checkbox, TextField } from '@mui/material';
+/* eslint-disable react/require-default-props */
+import { Autocomplete, TextField } from '@mui/material';
 import { useAppDispatch } from 'app/hooks';
-import { AddSubjectToSemesterDto } from 'dtos/addSubjectToSemester.dto';
 import {
   disableAddSubject,
   enableAddSubject,
 } from 'features/semester/detailSemesterSlice';
-import { FormikErrors, FormikTouched } from 'formik';
 import Subject from 'models/subject.model';
 import React, { useEffect, useState } from 'react';
-import subjectServices from 'services/subject.service';
+import semesterServices from 'services/semester.service';
 
 interface Props {
-  errors: FormikErrors<AddSubjectToSemesterDto>;
-  touched: FormikTouched<AddSubjectToSemesterDto>;
-  semesterId: string;
-  onChange: (subject: Subject[] | null) => void;
+  error?: boolean;
+  value?: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'>;
+  isEditable?: boolean;
+  helperText?: string;
+  semesterId?: string;
+  onChange: (
+    subjects: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'> | null,
+  ) => void;
 }
 
-const SemesterSubjectDropdown = ({
+const SemesterSubjectsDropdown = ({
   semesterId,
   onChange,
-  touched,
-  errors,
+  helperText,
+  error,
+  value,
+  isEditable = true,
 }: Props) => {
   const dispatch = useAppDispatch();
-  const [subjectOptions, setSubjectOptions] = useState<Subject[]>([]);
+  const [subjectOptions, setSubjectOptions] = useState<
+    Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'>[]
+  >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchSubjects = async () => {
-    const response = await subjectServices.getAvailableSubjects(semesterId);
-    if (response.data.length > 0) {
-      setSubjectOptions(response.data);
-      dispatch(enableAddSubject());
-    } else dispatch(disableAddSubject());
+    if (semesterId) {
+      const response = await semesterServices.getSemester(semesterId);
+      if (response.data.subjects.length > 0) {
+        setSubjectOptions(response.data.subjects);
+        dispatch(enableAddSubject());
+      } else dispatch(disableAddSubject());
+    }
     setIsLoading(false);
   };
 
@@ -45,30 +50,19 @@ const SemesterSubjectDropdown = ({
     fetchSubjects().catch(() => {
       setIsLoading(false);
     });
-  }, []);
+  }, [semesterId]);
 
   return (
     <Autocomplete
-      multiple
-      disableCloseOnSelect
       loading={isLoading}
+      disabled={!isEditable}
       options={subjectOptions}
+      value={value}
       isOptionEqualToValue={(option, optionValue) =>
         option?.subjectId === optionValue?.subjectId
       }
-      getOptionLabel={option => `${option.subjectCode}`}
+      getOptionLabel={option => `${option.subjectCode} - ${option.subjectName}`}
       onChange={(event, newValue) => onChange(newValue)}
-      renderOption={(props, option, { selected }) => (
-        <li {...props}>
-          <Checkbox
-            icon={<CheckBoxOutlineBlank fontSize="small" />}
-            checkedIcon={<CheckBoxIcon fontSize="small" />}
-            style={{ marginRight: 8 }}
-            checked={selected}
-          />
-          {`${option.subjectCode} - ${option.subjectName}`}
-        </li>
-      )}
       renderInput={params => (
         <TextField
           {...params}
@@ -76,8 +70,8 @@ const SemesterSubjectDropdown = ({
           name="subjects"
           autoFocus
           margin="dense"
-          error={touched.subjects && Boolean(errors.subjects)}
-          helperText={touched.subjects && errors.subjects}
+          error={error}
+          helperText={error && helperText}
           fullWidth
           variant="outlined"
           InputLabelProps={{
@@ -89,4 +83,4 @@ const SemesterSubjectDropdown = ({
   );
 };
 
-export default SemesterSubjectDropdown;
+export default SemesterSubjectsDropdown;

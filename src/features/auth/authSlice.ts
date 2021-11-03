@@ -1,10 +1,4 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  isAnyOf,
-  isPending,
-  isRejected,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import LoginDto from 'dtos/login.dto';
 import User from 'models/user.model';
@@ -82,14 +76,28 @@ export const authSlice = createSlice({
           state.isLoading = false;
         },
       )
-      .addMatcher(isPending, state => {
-        state.isLoading = true;
-        state.error = '';
-      })
-      .addMatcher(isRejected, (state, action) => {
-        state.isLoading = false;
-        state.error = String(action.payload);
-      });
+      .addMatcher(
+        isAnyOf(
+          login.pending,
+          getUserProfile.pending,
+          updateUserProfile.pending,
+        ),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          login.rejected,
+          getUserProfile.rejected,
+          updateUserProfile.rejected,
+        ),
+        (state, action) => {
+          state.isLoading = false;
+          state.error = String(action.payload);
+        },
+      );
   },
 });
 

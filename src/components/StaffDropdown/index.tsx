@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import {
   Autocomplete,
   Avatar,
@@ -9,21 +10,61 @@ import {
 } from '@mui/material';
 import Account from 'models/account.model';
 import React, { useEffect, useState } from 'react';
-import accountServices from 'services/account.service';
+import examRoomServices from 'services/examRoom.service';
 
 interface Props {
-  value: Account | null;
+  shiftId: string;
+  error?: boolean;
+  helperText?: string;
+  value: Pick<
+    Account,
+    | 'appUserId'
+    | 'email'
+    | 'fullName'
+    | 'phoneNumber'
+    | 'imageUrl'
+    | 'companyId'
+  > | null;
   isEditable: boolean;
-  onChange: (account: Account | null) => void;
+  onChange: (
+    account: Pick<
+      Account,
+      | 'appUserId'
+      | 'email'
+      | 'fullName'
+      | 'phoneNumber'
+      | 'imageUrl'
+      | 'companyId'
+    > | null,
+  ) => void;
 }
 
-const StaffDropdown = ({ value, isEditable, onChange }: Props) => {
-  const [staffOptions, setStaffOptions] = useState<Account[]>([]);
+const StaffDropdown = ({
+  shiftId,
+  value,
+  isEditable,
+  onChange,
+  error,
+  helperText,
+}: Props) => {
+  const [staffOptions, setStaffOptions] = useState<
+    Pick<
+      Account,
+      | 'appUserId'
+      | 'email'
+      | 'fullName'
+      | 'phoneNumber'
+      | 'imageUrl'
+      | 'companyId'
+    >[]
+  >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchAccounts = async () => {
-    const response = await accountServices.getAllStaffForShift();
-    setStaffOptions(response.data);
+    const response = await examRoomServices.getAvailableStaff(shiftId);
+    const { availableStaffs } = response.data;
+    if (value) setStaffOptions([value, ...availableStaffs]);
+    else setStaffOptions(availableStaffs);
     setIsLoading(false);
   };
 
@@ -36,16 +77,17 @@ const StaffDropdown = ({ value, isEditable, onChange }: Props) => {
 
   return (
     <Autocomplete
+      disabled={!isEditable}
       loading={isLoading}
       options={staffOptions}
       isOptionEqualToValue={(option, optionValue) =>
-        option?.appUserId === optionValue?.appUserId
+        option.appUserId === optionValue.appUserId
       }
       value={value}
       getOptionLabel={props => props.fullName}
       onChange={(event, newValue) => onChange(newValue)}
       renderOption={(props, option) => (
-        <ListItem key={option.appUserId} {...props}>
+        <ListItem {...props} key={option.appUserId}>
           <ListItemAvatar>
             <Avatar src={String(option.imageUrl)} alt={option.fullName} />
           </ListItemAvatar>
@@ -59,6 +101,8 @@ const StaffDropdown = ({ value, isEditable, onChange }: Props) => {
           name="staff"
           autoFocus
           margin="dense"
+          error={error}
+          helperText={error && helperText}
           fullWidth
           disabled={!isEditable}
           variant="outlined"
