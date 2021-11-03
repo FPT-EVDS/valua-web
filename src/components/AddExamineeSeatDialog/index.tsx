@@ -23,10 +23,15 @@ import React, { useState } from 'react';
 
 interface Props {
   open: boolean;
+  examRoomId: string;
   handleClose: () => void;
 }
 
-const AddExamineeSeatDialog: React.FC<Props> = ({ open, handleClose }) => {
+const AddExamineeSeatDialog: React.FC<Props> = ({
+  open,
+  handleClose,
+  examRoomId,
+}) => {
   const { enqueueSnackbar } = useSnackbar();
   const { examRoom } = useAppSelector(state => state.detailExamRoom);
   const dispatch = useAppDispatch();
@@ -35,7 +40,7 @@ const AddExamineeSeatDialog: React.FC<Props> = ({ open, handleClose }) => {
   const formik = useFormik({
     initialValues: {
       examRoom: {
-        examRoomID: String(examRoom?.examRoomID),
+        examRoomID: examRoomId,
       },
       examinee: {
         appUserId: '',
@@ -50,6 +55,7 @@ const AddExamineeSeatDialog: React.FC<Props> = ({ open, handleClose }) => {
           preventDuplicate: true,
         });
         formik.resetForm();
+        setCurrentExaminee(null);
         handleClose();
       } catch (error) {
         enqueueSnackbar(error, {
@@ -108,7 +114,7 @@ const AddExamineeSeatDialog: React.FC<Props> = ({ open, handleClose }) => {
             sx={{ width: 150 }}
             disabled={currentExaminee === null}
           >
-            Assign
+            Add
           </LoadingButton>
         </DialogActions>
       </Box>

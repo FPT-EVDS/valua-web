@@ -116,6 +116,11 @@ export const detailExamRoomSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(addExamSeat.fulfilled, (state, action) => {
+        state.examRoom?.examSeats.push(action.payload);
+        state.error = '';
+        state.isLoading = false;
+      })
       .addMatcher(
         isAnyOf(removeExamSeat.fulfilled, deleteExamRoom.fulfilled),
         (state, action) => {
