@@ -1,15 +1,9 @@
-import { object, string } from 'yup';
+import { object } from 'yup';
 
 const detailExamRoomSchema = object({
-  room: object().shape({
-    roomId: string().defined('Room is required'),
-  }),
-  staff: object().shape({
-    appUserId: string().defined('Staff is required'),
-  }),
-  subject: object().shape({
-    subjectId: string().defined('Subject is required'),
-  }),
+  room: object().nullable().required('Room is required'),
+  staff: object().nullable().required('Staff is required'),
+  subject: object().nullable().required('Subject is required'),
 });
 
 export default detailExamRoomSchema;

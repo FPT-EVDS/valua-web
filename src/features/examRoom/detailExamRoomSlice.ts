@@ -5,6 +5,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import DetailExamSeat from 'dtos/detailExamSeat.dto';
 import UpdateExamRoomDto from 'dtos/updateExamRoom.dto';
 import DetailExamRoom from 'models/detailExamRoom.model';
 import Shift from 'models/shift.model';
@@ -57,6 +58,45 @@ export const updateExamRoom = createAsyncThunk(
   },
 );
 
+export const removeExamSeat = createAsyncThunk(
+  'detailExamRoom/removeExamSeat',
+  async (payload: DetailExamSeat, { rejectWithValue }) => {
+    try {
+      const response = await examRoomServices.removeSeatFromExamRoom(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const addExamSeat = createAsyncThunk(
+  'detailExamRoom/addExamSeat',
+  async (payload: DetailExamSeat, { rejectWithValue }) => {
+    try {
+      const response = await examRoomServices.addNewSeatToExamRoom(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const deleteExamRoom = createAsyncThunk(
+  'detailExamRoom/deleteExamRoom',
+  async (examRoomId: string, { rejectWithValue }) => {
+    try {
+      const response = await examRoomServices.deleteExamRoom(examRoomId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: ExamRoomState = {
   isLoading: false,
@@ -77,6 +117,13 @@ export const detailExamRoomSlice = createSlice({
         state.isLoading = false;
       })
       .addMatcher(
+        isAnyOf(removeExamSeat.fulfilled, deleteExamRoom.fulfilled),
+        (state, action) => {
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
+      .addMatcher(
         isAnyOf(getDetailExamRoom.fulfilled, updateExamRoom.fulfilled),
         (state, action) => {
           state.examRoom = {
@@ -94,6 +141,9 @@ export const detailExamRoomSlice = createSlice({
           getDetailExamRoom.rejected,
           updateExamRoom.rejected,
           getShift.rejected,
+          addExamSeat.rejected,
+          removeExamSeat.rejected,
+          deleteExamRoom.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -105,6 +155,9 @@ export const detailExamRoomSlice = createSlice({
           getDetailExamRoom.pending,
           updateExamRoom.pending,
           getShift.pending,
+          addExamSeat.pending,
+          removeExamSeat.pending,
+          deleteExamRoom.pending,
         ),
         state => {
           state.isLoading = true;

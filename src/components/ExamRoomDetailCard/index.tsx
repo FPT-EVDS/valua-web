@@ -37,8 +37,8 @@ import React, { useState } from 'react';
 interface Props {
   examRoom: DetailExamRoom;
   shift: Shift;
+  handleDelete: (examRoomId: string) => void;
   isLoading: boolean;
-  handleDelete: (shiftId: string) => void;
 }
 
 const ExamRoomDetailCard = ({
@@ -164,6 +164,8 @@ const ExamRoomDetailCard = ({
                 value={formik.values.subject}
                 semesterId={shift.semester.semesterId}
                 onChange={handleChangeSubject}
+                error={Boolean(formik.errors.subject)}
+                helperText={formik.errors.subject?.subjectId}
               />
             </Grid>
             <Grid item xs={12}>
@@ -172,6 +174,8 @@ const ExamRoomDetailCard = ({
                 onChange={handleChangeStaff}
                 shiftId={String(examRoom.shift.shiftId)}
                 value={formik.values.staff}
+                error={Boolean(formik.errors.staff)}
+                helperText={formik.errors.staff?.appUserId}
               />
             </Grid>
             <Grid item xs={12}>
@@ -180,6 +184,8 @@ const ExamRoomDetailCard = ({
                 onChange={handleChangeRoom}
                 shiftId={String(examRoom.shift.shiftId)}
                 value={formik.values.room}
+                error={Boolean(formik.errors.room)}
+                helperText={formik.errors.room?.roomId}
               />
             </Grid>
             <Grid item xs={12}>

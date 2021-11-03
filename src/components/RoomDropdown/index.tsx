@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import { Autocomplete, TextField } from '@mui/material';
 import Room from 'models/room.model';
 import React, { useEffect, useState } from 'react';
@@ -5,6 +6,8 @@ import examRoomServices from 'services/examRoom.service';
 
 interface Props {
   shiftId: string;
+  error?: boolean;
+  helperText?: string;
   value: Pick<
     Room,
     'roomId' | 'seatCount' | 'roomName' | 'floor' | 'status'
@@ -18,7 +21,14 @@ interface Props {
   ) => void;
 }
 
-const RoomDropdown = ({ shiftId, value, isEditable, onChange }: Props) => {
+const RoomDropdown = ({
+  shiftId,
+  value,
+  isEditable,
+  onChange,
+  error,
+  helperText,
+}: Props) => {
   const [roomOptions, setRoomOptions] = useState<
     Pick<Room, 'roomId' | 'seatCount' | 'roomName' | 'floor' | 'status'>[]
   >([]);
@@ -62,6 +72,8 @@ const RoomDropdown = ({ shiftId, value, isEditable, onChange }: Props) => {
           autoFocus
           margin="dense"
           fullWidth
+          error={error}
+          helperText={error && helperText}
           disabled={!isEditable}
           variant="outlined"
           InputLabelProps={{
