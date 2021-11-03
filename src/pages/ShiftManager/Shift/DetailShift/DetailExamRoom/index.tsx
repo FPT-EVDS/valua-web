@@ -121,6 +121,7 @@ const DetailExamRoomPage = () => {
         {examRoom && shift && (
           <>
             <AddExamineeSeatDialog
+              examRoomId={examRoomId}
               handleClose={() => setOpen(false)}
               open={open}
             />

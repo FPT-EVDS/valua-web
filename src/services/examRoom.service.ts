@@ -13,6 +13,7 @@ import SearchExamRoomsDto from 'dtos/searchExamRooms.dto';
 import UpdateExamRoomDto from 'dtos/updateExamRoom.dto';
 import DetailExamRoom from 'models/detailExamRoom.model';
 import ExamRoom from 'models/examRoom.model';
+import ExamSeat from 'models/examSeat.model';
 
 import axiosClient from './axiosClient';
 
@@ -103,7 +104,7 @@ const examRoomServices = {
   removeSeatFromExamRoom: ({
     examSeatId,
     ...otherPayload
-  }: DetailExamSeat): Promise<AxiosResponse> => {
+  }: DetailExamSeat): Promise<AxiosResponse<ExamSeat>> => {
     const url = `/examSeats/${String(examSeatId)}`;
     return axiosClient.patch(url, otherPayload);
   },

@@ -172,7 +172,9 @@ const GetAvailableExamRoomsCard = ({
           <LoadingButton
             variant="contained"
             type="submit"
-            disabled={isDisable || examinees?.examinees.length === 0}
+            disabled={
+              isDisable || isLoading || examinees?.examinees.length === 0
+            }
             loading={isLoading}
           >
             Get available rooms
