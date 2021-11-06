@@ -62,6 +62,7 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
   }, []);
 
   const handleValidation = ({ name, size, type }: File) => {
+    const filenamePattern = /\w+_\w+_\w+/g;
     const isDuplicated = files.some(
       file => file.name === name && file.size === size && file.type === type,
     );
@@ -70,6 +71,11 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
         code: 'duplicated',
         message: `${name} already existed`,
       } as FileError;
+    if (!filenamePattern.test(name))
+      return {
+        code: 'format',
+        message: `${name} has invalid name format`,
+      };
     return null;
   };
 
@@ -110,7 +116,7 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
         try {
           const result = await dispatch(addExaminees(data));
           unwrapResult(result);
-          enqueueSnackbar(`Import ${files.length} file(s) success`, {
+          enqueueSnackbar(`Import ${files.length} file(s) successfully`, {
             variant: 'success',
             preventDuplicate: true,
           });

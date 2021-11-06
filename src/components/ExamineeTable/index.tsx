@@ -77,16 +77,16 @@ const ExamineeTable = ({ data }: Props) => {
               </TableCell>
               <TableCell align="center">{row.examinee.fullName}</TableCell>
               <TableCell align="center">{row.examinee.companyId}</TableCell>
-              {rows.length > 1 && (
-                <TableCell align="center">
+              <TableCell align="center">
+                {rows.length > 1 && (
                   <Button
                     variant="text"
                     onClick={() => handleRemoveExaminee(row, index)}
                   >
                     Remove
                   </Button>
-                </TableCell>
-              )}
+                )}
+              </TableCell>
             </TableRow>
           ))}
           {emptyRows > 0 && (

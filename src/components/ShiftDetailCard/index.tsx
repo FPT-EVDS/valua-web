@@ -49,12 +49,12 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
   let statusText = 'Ready';
   switch (shift.status) {
     case ShiftStatus.Inactive:
-      statusColor = red[500];
+      statusColor = grey[500];
       statusText = 'Inactive';
       break;
 
     case ShiftStatus.NotReady:
-      statusColor = grey[500];
+      statusColor = red[500];
       statusText = 'Not ready';
       break;
 
