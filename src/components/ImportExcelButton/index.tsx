@@ -116,7 +116,7 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
         try {
           const result = await dispatch(addExaminees(data));
           unwrapResult(result);
-          enqueueSnackbar(`Import ${files.length} file(s) success`, {
+          enqueueSnackbar(`Import ${files.length} file(s) successfully`, {
             variant: 'success',
             preventDuplicate: true,
           });
