@@ -5,7 +5,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import SearchByNameDto from 'dtos/searchByName.dto';
+import SearchSemesterParamsDto from 'dtos/searchSemesterParams.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
 import Semester from 'models/semester.model';
@@ -69,9 +69,22 @@ export const disableSemester = createAsyncThunk(
   },
 );
 
+export const activeSemester = createAsyncThunk(
+  'semesters/active',
+  async (semesterId: string, { rejectWithValue }) => {
+    try {
+      const response = await semesterServices.activeSemester(semesterId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 export const searchBySemesterName = createAsyncThunk(
   'semesters/searchByName',
-  async (payload: SearchByNameDto, { rejectWithValue }) => {
+  async (payload: SearchSemesterParamsDto, { rejectWithValue }) => {
     try {
       const response = await semesterServices.searchSemestersByName(payload);
       return response.data;
@@ -115,14 +128,17 @@ export const semesterSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(disableSemester.fulfilled, (state, action) => {
-        const index = state.current.semesters.findIndex(
-          semester => semester.semesterId === action.payload.semesterId,
-        );
-        state.current.semesters[index].isActive = action.payload.isActive;
-        state.error = '';
-        state.isLoading = false;
-      })
+      .addMatcher(
+        isAnyOf(disableSemester.fulfilled, activeSemester.fulfilled),
+        (state, action) => {
+          const index = state.current.semesters.findIndex(
+            semester => semester.semesterId === action.payload.semesterId,
+          );
+          state.current.semesters[index].isActive = action.payload.isActive;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
       .addMatcher(
         isAnyOf(getSemesters.fulfilled, searchBySemesterName.fulfilled),
         (state, action) => {
@@ -138,6 +154,7 @@ export const semesterSlice = createSlice({
           disableSemester.rejected,
           getSemesters.rejected,
           searchBySemesterName.rejected,
+          activeSemester.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -151,6 +168,7 @@ export const semesterSlice = createSlice({
           disableSemester.pending,
           getSemesters.pending,
           searchBySemesterName.pending,
+          activeSemester.pending,
         ),
         state => {
           state.isLoading = true;

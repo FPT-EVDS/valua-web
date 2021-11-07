@@ -59,6 +59,19 @@ export const disableSemester = createAsyncThunk(
   },
 );
 
+export const enableSemester = createAsyncThunk(
+  'detailSemester/enable',
+  async (semesterId: string, { rejectWithValue }) => {
+    try {
+      const response = await semesterServices.activeSemester(semesterId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 export const addSubjectsToSemester = createAsyncThunk(
   'detailSemester/addSubjects',
   async (payload: AddSubjectToSemesterDto, { rejectWithValue }) => {
@@ -119,11 +132,6 @@ export const detailRoomSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(disableSemester.fulfilled, (state, action) => {
-        if (state.semester) state.semester.isActive = action.payload.isActive;
-        state.isLoading = false;
-        state.error = '';
-      })
       .addCase(updateSemester.fulfilled, (state, action) => {
         if (state.semester) state.semester = action.payload;
         state.error = '';
@@ -143,12 +151,21 @@ export const detailRoomSlice = createSlice({
         },
       )
       .addMatcher(
+        isAnyOf(disableSemester.fulfilled, enableSemester.fulfilled),
+        (state, action) => {
+          if (state.semester) state.semester.isActive = action.payload.isActive;
+          state.isLoading = false;
+          state.error = '';
+        },
+      )
+      .addMatcher(
         isAnyOf(
           disableSemester.pending,
           updateSemester.pending,
           getSemester.pending,
           addSubjectsToSemester.pending,
           removeSubjectFromSemester.pending,
+          enableSemester.pending,
         ),
         state => {
           state.isLoading = true;
@@ -162,6 +179,7 @@ export const detailRoomSlice = createSlice({
           getSemester.rejected,
           addSubjectsToSemester.rejected,
           removeSubjectFromSemester.rejected,
+          enableSemester.rejected,
         ),
         (state, action) => {
           state.isLoading = false;

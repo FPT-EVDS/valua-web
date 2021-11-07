@@ -1,11 +1,13 @@
+import { Add, FiberManualRecord } from '@mui/icons-material';
+import { DatePicker } from '@mui/lab';
 import {
-  Add,
-  Delete,
-  Description,
-  Edit,
-  FiberManualRecord,
-} from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
+  Box,
+  Button,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -13,16 +15,19 @@ import {
   GridColDef,
   GridRowModel,
   GridRowParams,
+  GridSortModel,
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import SemesterDetailDialog from 'components/SemesterDetailDialog';
-import { add, format } from 'date-fns';
-import SearchByNameDto from 'dtos/searchByName.dto';
+import activeStatus from 'configs/constants/activeStatus';
+import { add, format, isBefore, isValid } from 'date-fns';
 import SemesterDto from 'dtos/semester.dto';
+import Status from 'enums/status.enum';
 import {
+  activeSemester,
   disableSemester,
   searchBySemesterName,
 } from 'features/semester/semestersSlice';
@@ -63,21 +68,40 @@ const SemesterPage = () => {
     beginDate: new Date(),
     endDate: add(new Date(), { months: 1 }),
   };
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterBeginDate, setFilterBeginDate] = useState<Date | null>(
+    new Date('1/1/1980'),
+  );
+  const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
 
-  const fetchSemesters = async (payload: SearchByNameDto) => {
-    const actionResult = await dispatch(searchBySemesterName(payload));
+  const fetchSemesters = async () => {
+    let sortParam = '';
+    if (sortModel.length > 0) {
+      const { field, sort } = sortModel[0];
+      sortParam = `${field},${String(sort)}`;
+    }
+    const actionResult = await dispatch(
+      searchBySemesterName({
+        page,
+        search: searchValue,
+        sort: sortParam.length > 0 ? sortParam : undefined,
+        beginDate: filterBeginDate || undefined,
+        endDate: filterEndDate || undefined,
+        status: filterStatus as unknown as Status,
+      }),
+    );
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchSemesters({ page, search: searchValue }).catch(error =>
+    fetchSemesters().catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
       }),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [page, sortModel]);
 
   useEffect(() => {
     setOpen(false);
@@ -104,6 +128,22 @@ const SemesterPage = () => {
         ...prevState,
         open: false,
       }));
+    }
+  };
+
+  const handleActiveSemester = async (semesterId: string) => {
+    try {
+      const result = await dispatch(activeSemester(semesterId));
+      unwrapResult(result);
+      enqueueSnackbar('Enable semester success', {
+        variant: 'success',
+        preventDuplicate: true,
+      });
+    } catch (error) {
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      });
     }
   };
 
@@ -161,32 +201,43 @@ const SemesterPage = () => {
       headerName: 'Actions',
       type: 'actions',
       getActions: params => {
-        const semesterId = params.getValue(params.id, 'semesterId');
+        const semesterId = String(params.getValue(params.id, 'semesterId'));
         const isActive = params.getValue(params.id, 'isActive');
-        const deleteItems = [
+        if (!isActive) {
+          return [
+            <GridActionsCellItem
+              label="View detail"
+              showInMenu
+              onClick={() => history.push(`${url}/${String(semesterId)}`)}
+            />,
+            <GridActionsCellItem
+              label="Enable"
+              sx={{ color: green[500] }}
+              showInMenu
+              onClick={() => handleActiveSemester(semesterId)}
+            />,
+          ];
+        }
+        return [
           <GridActionsCellItem
-            label="Delete"
-            icon={<Delete />}
+            label="View detail"
             showInMenu
-            onClick={() => showDeleteConfirmation(params)}
+            onClick={() => history.push(`${url}/${String(semesterId)}`)}
           />,
           <GridActionsCellItem
             label="Edit"
-            icon={<Edit />}
             showInMenu
             onClick={() =>
               history.push(`${url}/${String(semesterId)}?edit=true`)
             }
           />,
           <GridActionsCellItem
-            label="View detail"
-            icon={<Description />}
+            label="Delete"
+            sx={{ color: red[500] }}
             showInMenu
-            onClick={() => history.push(`${url}/${String(semesterId)}`)}
+            onClick={() => showDeleteConfirmation(params)}
           />,
         ];
-        if (!isActive) deleteItems.shift();
-        return deleteItems;
       },
     },
   ];
@@ -204,12 +255,149 @@ const SemesterPage = () => {
     </Button>
   );
 
+  const FilterItems = () => {
+    const [beginDate, setBeginDate] = useState<Date | null>(filterBeginDate);
+    const [endDate, setEndDate] = useState<Date | null>(filterEndDate);
+
+    const handleChangeBeginDate = (selectedDate: Date | null) => {
+      setBeginDate(selectedDate);
+    };
+
+    const handleChangeEndDate = (selectedDate: Date | null) => {
+      setEndDate(selectedDate);
+    };
+
+    const handleSubmit = async () => {
+      setFilterBeginDate(beginDate);
+      setFilterEndDate(endDate);
+      let sortParam = '';
+      if (sortModel.length > 0) {
+        const { field, sort } = sortModel[0];
+        sortParam = `${field},${String(sort)}`;
+      }
+      const actionResult = await dispatch(
+        searchBySemesterName({
+          page,
+          search: searchValue,
+          sort: sortParam.length > 0 ? sortParam : undefined,
+          beginDate: beginDate || undefined,
+          endDate: endDate || undefined,
+          status: filterStatus as unknown as Status,
+        }),
+      );
+      unwrapResult(actionResult);
+    };
+
+    return (
+      <Box>
+        <Stack>
+          <TextField
+            name="status"
+            select
+            value={filterStatus}
+            label="Status"
+            margin="dense"
+            size="small"
+            fullWidth
+            variant="outlined"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            SelectProps={{
+              displayEmpty: true,
+            }}
+            onChange={event => setFilterStatus(event.target.value)}
+          >
+            <MenuItem key="all-status" value="">
+              All
+            </MenuItem>
+            {activeStatus.map(option => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <DatePicker
+            label="Begin date"
+            value={beginDate}
+            inputFormat="dd/MM/yyyy"
+            onChange={handleChangeBeginDate}
+            renderInput={params => (
+              <TextField
+                {...params}
+                size="small"
+                margin="dense"
+                fullWidth
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            )}
+          />
+          <DatePicker
+            label="End date"
+            minDate={beginDate ? new Date(beginDate) : undefined}
+            value={endDate}
+            inputFormat="dd/MM/yyyy"
+            onChange={handleChangeEndDate}
+            renderInput={params => (
+              <TextField
+                {...params}
+                name="endDate"
+                size="small"
+                margin="dense"
+                fullWidth
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            )}
+          />
+        </Stack>
+        <Stack direction="row" sx={{ marginTop: 1 }} justifyContent="flex-end">
+          <Button
+            variant="text"
+            sx={{ marginRight: 1 }}
+            size="small"
+            onClick={() => {
+              setFilterStatus('');
+              setBeginDate(new Date('1/1/1980'));
+              setFilterBeginDate(new Date('1/1/1980'));
+              setEndDate(new Date());
+              setFilterEndDate(new Date());
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            disabled={
+              (beginDate && !isValid(beginDate)) ||
+              (endDate && !isValid(endDate)) ||
+              isBefore(new Date(String(endDate)), new Date(String(beginDate)))
+            }
+            onClick={() => handleSubmit()}
+          >
+            Apply
+          </Button>
+        </Stack>
+      </Box>
+    );
+  };
+
   const handleSearch = async (inputValue: string) => {
     setSearchValue(inputValue);
     const result = await dispatch(
       searchBySemesterName({ search: inputValue, page: 0 }),
     );
     unwrapResult(result);
+  };
+
+  const handleSortModelChange = (newModel: GridSortModel) => {
+    setSortModel(newModel);
   };
 
   return (
@@ -224,6 +412,11 @@ const SemesterPage = () => {
       <EVDSDataGrid
         pagination
         paginationMode="server"
+        sortModel={sortModel}
+        onSortModelChange={handleSortModelChange}
+        hasFilter
+        filterItems={<FilterItems />}
+        page={page}
         rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
         pageSize={DEFAULT_PAGE_SIZE}
         rowCount={totalItems}
@@ -234,7 +427,6 @@ const SemesterPage = () => {
         columns={columns}
         rows={rows}
         addButton={<AddButton />}
-        hasFilter={false}
       />
     </div>
   );

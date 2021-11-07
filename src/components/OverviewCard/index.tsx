@@ -86,16 +86,12 @@ const OverviewCard: React.FC<Props> = ({
           </Avatar>
         </Stack>
       </CardContent>
-      {status !== 0 && (
-        <>
-          <Divider />
-          <CardActions
-            sx={{ justifyContent: isSingleAction ? 'center' : 'space-between' }}
-          >
-            {actionButtons}
-          </CardActions>
-        </>
-      )}
+      <Divider />
+      <CardActions
+        sx={{ justifyContent: isSingleAction ? 'center' : 'space-between' }}
+      >
+        {actionButtons}
+      </CardActions>
     </Card>
   );
 };
