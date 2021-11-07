@@ -513,7 +513,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                             name="classCode"
                             autoFocus
                             margin="dense"
-                            label="Class code"
+                            label="Class"
                             fullWidth
                             variant="outlined"
                             value={formik.values.classCode}

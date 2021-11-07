@@ -21,12 +21,12 @@ import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
 import React, { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
+import ProfilePage from '../Profile';
 import AccountPage from './Account';
 import DetailAccountPage from './Account/DetailAccount';
 import Camera from './Camera';
 import DetailCameraPage from './Camera/DetailCamera';
 import Dashboard from './Dashboard';
-import Profile from './Profile';
 import RoomPage from './Room';
 import DetailRoomPage from './Room/DetailRoomPage';
 import SemesterPage from './Semester';
@@ -139,7 +139,7 @@ const ManagerDashboard = (): JSX.Element => {
             exact
           />
           <Route path="/manager/subject" component={SubjectPage} exact />
-          <Route path="/manager/profile" component={Profile} exact />
+          <Route path="/manager/profile" component={ProfilePage} exact />
           <Redirect from="/manager" to="/manager/dashboard" />
         </Switch>
       </Box>

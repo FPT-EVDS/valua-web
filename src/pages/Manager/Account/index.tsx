@@ -226,7 +226,21 @@ const AccountPage = () => {
       getActions: params => {
         const appUserId = String(params.getValue(params.id, 'appUserId'));
         const status = params.getValue(params.id, 'isActive');
-        const deleteItems = [
+        if (!status)
+          return [
+            <GridActionsCellItem
+              label="View detail"
+              showInMenu
+              onClick={() => history.push(`${url}/${appUserId}`)}
+            />,
+            <GridActionsCellItem
+              label="Enable"
+              sx={{ color: green[500] }}
+              showInMenu
+              onClick={() => handleActiveAccount(appUserId)}
+            />,
+          ];
+        return [
           <GridActionsCellItem
             label="View detail"
             showInMenu
@@ -244,16 +258,6 @@ const AccountPage = () => {
             onClick={() => showDeleteConfirmation(params)}
           />,
         ];
-        if (!status)
-          return [
-            <GridActionsCellItem
-              label="Enable"
-              sx={{ color: green[500] }}
-              showInMenu
-              onClick={() => handleActiveAccount(appUserId)}
-            />,
-          ];
-        return deleteItems;
       },
     },
   ];

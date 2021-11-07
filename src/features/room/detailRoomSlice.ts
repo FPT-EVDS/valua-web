@@ -150,7 +150,7 @@ export const detailRoomSlice = createSlice({
           updateRoom.rejected,
         ),
         (state, action) => {
-          state.isLoading = true;
+          state.isLoading = false;
           state.error = String(action.payload);
         },
       );

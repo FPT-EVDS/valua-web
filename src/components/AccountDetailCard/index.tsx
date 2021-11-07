@@ -339,7 +339,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                     name="classCode"
                     autoFocus
                     margin="dense"
-                    label="Class code"
+                    label="Class"
                     fullWidth
                     disabled={!isEditable}
                     variant="outlined"
