@@ -237,7 +237,7 @@ const RoomPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <RoomDetailDialog
         title="Create room"
         open={open}

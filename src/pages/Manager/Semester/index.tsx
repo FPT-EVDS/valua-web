@@ -214,7 +214,7 @@ const SemesterPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <SemesterDetailDialog
         open={open}
         handleClose={() => setOpen(false)}

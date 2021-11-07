@@ -154,6 +154,11 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
     },
   });
 
+  const handleCloseModal = () => {
+    formik.resetForm();
+    handleClose();
+  };
+
   const handleChangeGender = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -175,8 +180,9 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={handleCloseModal}
       fullWidth
+      maxWidth="md"
       TransitionComponent={SlideTransition}
       PaperProps={{ sx: { overflowX: 'hidden' } }}
     >
@@ -202,7 +208,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                 >
                   <IconButton sx={{ visibility: 'hidden' }} />
                   <Typography variant="h6">Choose account role</Typography>
-                  <IconButton onClick={handleClose}>
+                  <IconButton onClick={handleCloseModal}>
                     <Close />
                   </IconButton>
                 </Grid>
@@ -267,7 +273,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                   <Typography variant="h6">Account information</Typography>
                   <IconButton
                     onClick={() => {
-                      handleClose();
+                      handleCloseModal();
                       setCurrentStep(0);
                     }}
                   >

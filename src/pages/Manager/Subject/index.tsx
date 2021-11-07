@@ -188,7 +188,7 @@ const SubjectPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <SubjectDetailDialog
         open={open}
         handleClose={() => setOpen(false)}

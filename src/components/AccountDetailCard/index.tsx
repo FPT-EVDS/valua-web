@@ -158,7 +158,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                disabled
+                disabled={!isEditable}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -341,7 +341,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                     margin="dense"
                     label="Class code"
                     fullWidth
-                    disabled
+                    disabled={!isEditable}
                     variant="outlined"
                     value={formik.values.classCode}
                     InputLabelProps={{
