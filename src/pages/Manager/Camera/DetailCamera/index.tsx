@@ -6,6 +6,7 @@ import CameraDetailCard from 'components/CameraDetailCard';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import OverviewCard from 'components/OverviewCard';
 import { format } from 'date-fns';
+import Status from 'enums/status.enum';
 import { disableCamera, getCamera } from 'features/camera/detailCameraSlice';
 import Camera from 'models/camera.model';
 import { useSnackbar } from 'notistack';
@@ -84,13 +85,19 @@ const DetailCameraPage = () => {
 
   const GroupButtons = () => (
     <>
-      <Button
-        variant="text"
-        color="error"
-        onClick={() => showDeleteConfirmation(id)}
-      >
-        Disable camera
-      </Button>
+      {camera?.status !== Status.isDisable ? (
+        <Button
+          variant="text"
+          color="error"
+          onClick={() => showDeleteConfirmation(id)}
+        >
+          Disable camera
+        </Button>
+      ) : (
+        <Button variant="text" color="success">
+          Enable camera
+        </Button>
+      )}
     </>
   );
 

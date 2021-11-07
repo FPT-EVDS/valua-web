@@ -40,7 +40,7 @@ const accountSchema = object({
   classCode: string().when('userRole', {
     is: (value: Role) => value.roleID === 3,
     then: string()
-      .required('Class code is required')
+      .required('Class is required')
       .max(
         10,
         value => `Maximum length of class field is ${value.max} characters`,

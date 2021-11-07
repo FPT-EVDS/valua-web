@@ -1,25 +1,30 @@
 /* eslint-disable prefer-destructuring */
+import { Add, FiberManualRecord } from '@mui/icons-material';
 import {
-  Add,
-  Delete,
-  Description,
-  Edit,
-  FiberManualRecord,
-} from '@mui/icons-material';
-import { Box, Button, Link, Typography } from '@mui/material';
-import { green, red } from '@mui/material/colors';
+  Box,
+  Button,
+  Link,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { green, grey, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
   GridActionsColDef,
   GridColDef,
   GridRowModel,
   GridRowParams,
+  GridSortModel,
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import RoomDetailDialog from 'components/RoomDetailDialog';
+import RoomStatus from 'configs/constants/roomStatus';
+import Status from 'enums/status.enum';
 import { disableRoom, searchByRoomName } from 'features/room/roomsSlice';
 import Camera from 'models/camera.model';
 import { useSnackbar } from 'notistack';
@@ -60,23 +65,35 @@ const RoomPage = () => {
       id: room.roomId,
     };
   });
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [filterStatus, setFilterStatus] = useState('');
 
-  const fetchRooms = async (search: string, numOfPage: number) => {
+  const fetchRooms = async () => {
+    let sortParam = '';
+    if (sortModel.length > 0) {
+      const { field, sort } = sortModel[0];
+      sortParam = `${field},${String(sort)}`;
+    }
     const actionResult = await dispatch(
-      searchByRoomName({ search, page: numOfPage }),
+      searchByRoomName({
+        search: searchValue,
+        page,
+        sort: sortParam.length > 0 ? sortParam : undefined,
+        status: filterStatus as unknown as Status,
+      }),
     );
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchRooms(searchValue, page).catch(error =>
+    fetchRooms().catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, sortModel]);
 
   useEffect(() => {
     setOpen(false);
@@ -120,18 +137,23 @@ const RoomPage = () => {
   const columns: Array<GridColDef | GridActionsColDef> = [
     { field: 'roomId', hide: true },
     { field: 'roomName', headerName: 'Name', flex: 0.1, minWidth: 130 },
-    { field: 'floor', headerName: 'Floor', flex: 0.1, minWidth: 130 },
-    { field: 'seatCount', headerName: 'Seats Count', flex: 0.1, minWidth: 130 },
     {
-      field: 'description',
-      headerName: 'Description',
-      flex: 0.2,
+      field: 'floor',
+      headerName: 'Floor',
+      flex: 0.05,
+      minWidth: 130,
+    },
+    {
+      field: 'seatCount',
+      headerName: 'Seats Count',
+      flex: 0.05,
       minWidth: 130,
     },
     {
       field: 'camera',
       headerName: 'Assigned Camera',
       flex: 0.1,
+      sortable: false,
       minWidth: 130,
       renderCell: params => {
         const camera = params.getValue(
@@ -147,7 +169,7 @@ const RoomPage = () => {
             {camera.cameraName}
           </Link>
         ) : (
-          <Typography>N/A</Typography>
+          <Typography variant="subtitle1">N/A</Typography>
         );
       },
     },
@@ -158,15 +180,20 @@ const RoomPage = () => {
       minWidth: 130,
       renderCell: params => {
         const active = params.getValue(params.id, 'status');
-        let color = '#1890ff';
-        let statusText = 'Ready';
+        let color = grey[400].toString();
+        let statusText = 'Unknown';
         switch (active) {
-          case 1:
+          case Status.isReady:
+            color = '#1890ff';
+            statusText = 'Ready';
+            break;
+
+          case Status.isActive:
             color = green[500];
             statusText = 'Active';
             break;
 
-          case 0:
+          case Status.isDisable:
             color = red[500];
             statusText = 'Disable';
             break;
@@ -193,25 +220,25 @@ const RoomPage = () => {
         const status = params.getValue(params.id, 'status');
         const deleteItems = [
           <GridActionsCellItem
-            label="Delete"
-            icon={<Delete />}
+            label="View detail"
             showInMenu
-            onClick={() => showDeleteConfirmation(params)}
+            onClick={() => history.push(`${url}/${roomId}`)}
           />,
           <GridActionsCellItem
             label="Edit"
-            icon={<Edit />}
             showInMenu
             onClick={() => history.push(`${url}/${roomId}?edit=true`)}
           />,
           <GridActionsCellItem
-            label="View detail"
-            icon={<Description />}
+            label="Delete"
+            sx={{ color: red[500] }}
             showInMenu
-            onClick={() => history.push(`${url}/${roomId}`)}
+            onClick={() => showDeleteConfirmation(params)}
           />,
         ];
-        if (!status) deleteItems.shift();
+        if (status === Status.isDisable) {
+          deleteItems.splice(1, 2);
+        }
         return deleteItems;
       },
     },
@@ -227,12 +254,64 @@ const RoomPage = () => {
     </Button>
   );
 
+  const FilterItems = () => (
+    <Box>
+      <Stack>
+        <TextField
+          name="status"
+          select
+          value={filterStatus}
+          label="Status"
+          margin="dense"
+          size="small"
+          fullWidth
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          SelectProps={{
+            displayEmpty: true,
+          }}
+          onChange={event => setFilterStatus(event.target.value)}
+        >
+          <MenuItem key="all-status" value="">
+            All
+          </MenuItem>
+          {RoomStatus.map(option => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Stack>
+      <Stack direction="row" sx={{ marginTop: 1 }} justifyContent="flex-end">
+        <Button
+          variant="text"
+          sx={{ marginRight: 1 }}
+          size="small"
+          onClick={() => {
+            setFilterStatus('');
+          }}
+        >
+          Reset
+        </Button>
+        <Button variant="contained" size="small" onClick={() => fetchRooms()}>
+          Apply
+        </Button>
+      </Stack>
+    </Box>
+  );
+
   const handleSearch = async (inputValue: string) => {
     setSearchValue(inputValue);
     const result = await dispatch(
       searchByRoomName({ search: inputValue, page: 0 }),
     );
     unwrapResult(result);
+  };
+
+  const handleSortModelChange = (newModel: GridSortModel) => {
+    setSortModel(newModel);
   };
 
   return (
@@ -246,11 +325,17 @@ const RoomPage = () => {
       <EVDSDataGrid
         pagination
         paginationMode="server"
+        sortingMode="server"
+        sortModel={sortModel}
+        onSortModelChange={handleSortModelChange}
+        hasFilter
+        filterItems={<FilterItems />}
         rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
         pageSize={DEFAULT_PAGE_SIZE}
         rowCount={totalItems}
         isLoading={isLoading}
         title="Manage Rooms"
+        page={page}
         columns={columns}
         rows={rows}
         handleSearch={handleSearch}

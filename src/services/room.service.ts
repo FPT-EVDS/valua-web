@@ -44,12 +44,16 @@ const roomServices = {
   searchRoomsByName: ({
     page,
     search,
+    sort,
+    status,
   }: SearchByNameDto): Promise<AxiosResponse<RoomsDto>> => {
     const url = `/rooms`;
     return axiosClient.get(url, {
       params: {
         page,
         search,
+        status,
+        sort,
       },
     });
   },
