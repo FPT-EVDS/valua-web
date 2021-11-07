@@ -1,6 +1,13 @@
 /* eslint-disable prefer-destructuring */
-import { Add, Delete, Edit, FiberManualRecord } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
+import { Add, FiberManualRecord } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -8,15 +15,18 @@ import {
   GridColDef,
   GridRowModel,
   GridRowParams,
+  GridSortModel,
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import SubjectDetailDialog from 'components/SubjectDetailDialog';
-import SearchByNameDto from 'dtos/searchByName.dto';
+import activeStatus from 'configs/constants/activeStatus';
 import SubjectDto from 'dtos/subject.dto';
+import Status from 'enums/status.enum';
 import {
+  activeSubject,
   disableSubject,
   searchBySubjectName,
 } from 'features/subject/subjectsSlice';
@@ -27,6 +37,7 @@ const SubjectPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
   const [page, setPage] = React.useState(0);
   const [searchValue, setSearchValue] = useState('');
+  const [isActive, setIsActive] = useState<boolean>(true);
   const [open, setOpen] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDialogProps, setConfirmDialogProps] =
@@ -53,24 +64,54 @@ const SubjectPage = () => {
     subjectCode: '',
     subjectName: '',
   });
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [filterStatus, setFilterStatus] = useState('');
 
-  const fetchSubjects = async (payload: SearchByNameDto) => {
-    const actionResult = await dispatch(searchBySubjectName(payload));
+  const fetchSubjects = async () => {
+    let sortParam = '';
+    if (sortModel.length > 0) {
+      const { field, sort } = sortModel[0];
+      sortParam = `${field},${String(sort)}`;
+    }
+    const actionResult = await dispatch(
+      searchBySubjectName({
+        page,
+        search: searchValue,
+        sort: sortParam.length > 0 ? sortParam : undefined,
+        status: filterStatus as unknown as Status,
+      }),
+    );
     unwrapResult(actionResult);
   };
 
   useEffect(() => {
-    fetchSubjects({ page, search: searchValue }).catch(error =>
+    fetchSubjects().catch(error =>
       enqueueSnackbar(error, {
         variant: 'error',
         preventDuplicate: true,
       }),
     );
-  }, [page]);
+  }, [page, sortModel]);
 
   useEffect(() => {
     setOpen(false);
   }, [subjects]);
+
+  const handleActiveSubject = async (subjectId: string) => {
+    try {
+      const result = await dispatch(activeSubject(subjectId));
+      unwrapResult(result);
+      enqueueSnackbar('Enable subject success', {
+        variant: 'success',
+        preventDuplicate: true,
+      });
+    } catch (error) {
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      });
+    }
+  };
 
   const handleDeleteSubject = async (subject: string) => {
     try {
@@ -140,27 +181,46 @@ const SubjectPage = () => {
       headerName: 'Actions',
       type: 'actions',
       getActions: params => {
-        const isActive = params.getValue(params.id, 'isActive');
-        const deleteItems = [
-          <GridActionsCellItem
-            label="Delete"
-            icon={<Delete />}
-            showInMenu
-            onClick={() => showDeleteConfirmation(params)}
-          />,
+        const subjectStatus = params.getValue(params.id, 'isActive');
+        const subjectId = String(params.getValue(params.id, 'subjectId'));
+        if (!subjectStatus) {
+          return [
+            <GridActionsCellItem
+              label="View detail"
+              showInMenu
+              onClick={() => {
+                setIsActive(false);
+                setIsUpdate(false);
+                setInitialValues(params.row as SubjectDto);
+                setOpen(true);
+              }}
+            />,
+            <GridActionsCellItem
+              label="Enable"
+              sx={{ color: green[500] }}
+              showInMenu
+              onClick={() => handleActiveSubject(subjectId)}
+            />,
+          ];
+        }
+        return [
           <GridActionsCellItem
             label="Edit"
-            icon={<Edit />}
             showInMenu
             onClick={() => {
+              setIsActive(true);
               setIsUpdate(true);
               setInitialValues(params.row as SubjectDto);
               setOpen(true);
             }}
           />,
+          <GridActionsCellItem
+            label="Delete"
+            sx={{ color: red[500] }}
+            showInMenu
+            onClick={() => showDeleteConfirmation(params)}
+          />,
         ];
-        if (!isActive) deleteItems.shift();
-        return deleteItems;
       },
     },
   ];
@@ -170,6 +230,7 @@ const SubjectPage = () => {
       variant="contained"
       startIcon={<Add />}
       onClick={() => {
+        setIsActive(true);
         setOpen(true);
         setIsUpdate(false);
       }}
@@ -186,11 +247,68 @@ const SubjectPage = () => {
     unwrapResult(result);
   };
 
+  const FilterItems = () => (
+    <Box>
+      <Stack>
+        <TextField
+          name="status"
+          select
+          value={filterStatus}
+          label="Status"
+          margin="dense"
+          size="small"
+          fullWidth
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          SelectProps={{
+            displayEmpty: true,
+          }}
+          onChange={event => setFilterStatus(event.target.value)}
+        >
+          <MenuItem key="all-status" value="">
+            All
+          </MenuItem>
+          {activeStatus.map(option => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Stack>
+      <Stack direction="row" sx={{ marginTop: 1 }} justifyContent="flex-end">
+        <Button
+          variant="text"
+          sx={{ marginRight: 1 }}
+          size="small"
+          onClick={() => {
+            setFilterStatus('');
+          }}
+        >
+          Reset
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => fetchSubjects()}
+        >
+          Apply
+        </Button>
+      </Stack>
+    </Box>
+  );
+
+  const handleSortModelChange = (newModel: GridSortModel) => {
+    setSortModel(newModel);
+  };
+
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <SubjectDetailDialog
         open={open}
+        isActive={isActive}
         handleClose={() => setOpen(false)}
         isUpdate={isUpdate}
         initialValues={initialValues}
@@ -201,14 +319,19 @@ const SubjectPage = () => {
         rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
         pageSize={DEFAULT_PAGE_SIZE}
         rowCount={totalItems}
+        sortingMode="server"
+        sortModel={sortModel}
+        onSortModelChange={handleSortModelChange}
+        hasFilter
+        filterItems={<FilterItems />}
         isLoading={isLoading}
         title="Manage Subjects"
         columns={columns}
         rows={rows}
+        page={page}
         handleSearch={handleSearch}
         onPageChange={newPage => setPage(newPage)}
         addButton={<AddButton />}
-        hasFilter={false}
       />
     </div>
   );

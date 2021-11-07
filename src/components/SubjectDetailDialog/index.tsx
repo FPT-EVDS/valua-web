@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import { Class, Close } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -24,8 +25,8 @@ import React, { useEffect } from 'react';
 interface Props {
   open: boolean;
   handleClose: () => void;
-  // eslint-disable-next-line react/require-default-props
   initialValues?: SubjectDto;
+  isActive: boolean;
   isUpdate: boolean;
 }
 
@@ -38,6 +39,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
     subjectName: '',
   },
   isUpdate,
+  isActive,
 }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
@@ -48,7 +50,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
     onSubmit: async (payload: SubjectDto) => {
       try {
         const message = isUpdate
-          ? `Update subject ${String(payload.subjectName)} success`
+          ? `Update subject ${String(payload.subjectCode)} success`
           : 'Create subject success';
         const result = isUpdate
           ? await dispatch(updateSubject(payload))
@@ -69,6 +71,11 @@ const SubjectDetailDialog: React.FC<Props> = ({
     },
   });
 
+  const handleModalClose = () => {
+    formik.resetForm();
+    handleClose();
+  };
+
   const refreshForm = async (values: SubjectDto) => formik.setValues(values);
 
   useEffect(() => {
@@ -84,7 +91,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={handleModalClose}
       fullWidth
       TransitionComponent={SlideTransition}
     >
@@ -95,8 +102,12 @@ const SubjectDetailDialog: React.FC<Props> = ({
           justifyContent="space-between"
           alignItems="center"
         >
-          {isUpdate ? 'Update subject' : 'Create subject'}
-          <IconButton onClick={handleClose}>
+          {!isActive
+            ? `${formik.values.subjectCode}'s detail`
+            : isUpdate
+            ? 'Update subject'
+            : 'Create subject'}
+          <IconButton onClick={handleModalClose}>
             <Close />
           </IconButton>
         </Grid>
@@ -130,6 +141,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                disabled={!isActive}
                 error={
                   formik.touched.subjectCode &&
                   Boolean(formik.errors.subjectCode)
@@ -147,6 +159,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
                 margin="dense"
                 label="Name"
                 fullWidth
+                disabled={!isActive}
                 variant="outlined"
                 value={formik.values.subjectName}
                 InputLabelProps={{
@@ -165,14 +178,16 @@ const SubjectDetailDialog: React.FC<Props> = ({
           </Grid>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            sx={{ width: 150 }}
-            loading={isLoading}
-          >
-            {isUpdate ? 'Update' : 'Create'}
-          </LoadingButton>
+          {isActive && (
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              sx={{ width: 150 }}
+              loading={isLoading}
+            >
+              {isUpdate ? 'Update' : 'Create'}
+            </LoadingButton>
+          )}
         </DialogActions>
       </Box>
     </Dialog>

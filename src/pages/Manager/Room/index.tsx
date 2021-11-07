@@ -153,6 +153,7 @@ const RoomPage = () => {
       field: 'camera',
       headerName: 'Assigned Camera',
       flex: 0.1,
+      sortable: false,
       minWidth: 130,
       renderCell: params => {
         const camera = params.getValue(
