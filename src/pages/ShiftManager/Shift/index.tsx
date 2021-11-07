@@ -268,7 +268,7 @@ const ShiftPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <ShiftDetailDialog open={open} handleClose={() => setOpen(false)} />
       <EVDSDataGrid
         pagination

@@ -323,7 +323,7 @@ const DetailShiftPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       {currentRoomId && (
         <AssignStaffDialog
           shiftId={id}

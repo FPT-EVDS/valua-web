@@ -245,7 +245,7 @@ const CameraPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <CameraDetailDialog
         title="Create camera"
         open={open}

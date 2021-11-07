@@ -21,8 +21,8 @@ import React, { useState } from 'react';
 const RoomCameraCard = () => {
   const [open, setOpen] = useState(false);
   const dispatch = useAppDispatch();
-  const roomWithCamera: RoomWithCamera | null = useAppSelector(
-    state => state.detailRoom.roomWithCamera,
+  const { roomWithCamera, isLoading } = useAppSelector(
+    state => state.detailRoom,
   );
   const { enqueueSnackbar } = useSnackbar();
   const [confirmDialogProps, setConfirmDialogProps] =
@@ -80,7 +80,7 @@ const RoomCameraCard = () => {
   return (
     <>
       <AddCameraToRoomDialog open={open} handleClose={() => setOpen(false)} />
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <Card sx={{ minWidth: 275 }} elevation={2}>
         <CardContent>
           <Stack

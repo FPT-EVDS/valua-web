@@ -213,7 +213,7 @@ const AccountPage = () => {
           <Box display="flex" alignItems="center">
             <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
             <Typography variant="subtitle1" color={color}>
-              {active ? 'Active' : 'Disable'}
+              {active ? 'Active' : 'Inactive'}
             </Typography>
           </Box>
         );
@@ -245,14 +245,14 @@ const AccountPage = () => {
           />,
         ];
         if (!status)
-          deleteItems[2] = (
+          return [
             <GridActionsCellItem
               label="Enable"
               sx={{ color: green[500] }}
               showInMenu
               onClick={() => handleActiveAccount(appUserId)}
-            />
-          );
+            />,
+          ];
         return deleteItems;
       },
     },
@@ -357,7 +357,7 @@ const AccountPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <AccountDetailDialog open={open} handleClose={() => setOpen(false)} />
       <EVDSDataGrid
         pagination
