@@ -26,7 +26,7 @@ const accountSchema = object({
   fullName: string()
     .defined('Full name is required')
     .matches(
-      /^[ A-Za-z]{3,50}$/,
+      /[ A-Za-z]{3,50}/,
       'Full name must be letter only with length of 3 - 50 characters',
     ),
   gender: number().integer().defined('Gender is required').oneOf([0, 1]),
