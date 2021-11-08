@@ -53,13 +53,13 @@ const ViolationPage = () => {
     },
     {
       field: 'createdDate',
-      headerName: 'Created Date',
+      headerName: 'Created Time',
       flex: 0.12,
       minWidth: 130,
       renderCell: params => {
         const createdDate = format(
           new Date(params.row.createdDate),
-          'dd/MM/yyyy',
+          'dd/MM/yyyy - HH:MM',
         );
         return <Typography>{createdDate.toLocaleString()}</Typography>;
       },

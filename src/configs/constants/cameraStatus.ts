@@ -1,13 +1,13 @@
 import Status from 'enums/status.enum';
 
-const ActiveStatus = [
+const CameraStatus = [
   {
     value: Status.isActive,
     label: 'Active',
   },
   {
     value: Status.isDisable,
-    label: 'Disable',
+    label: 'Inactive',
   },
   {
     value: Status.isReady,
@@ -15,4 +15,4 @@ const ActiveStatus = [
   },
 ];
 
-export default ActiveStatus;
+export default CameraStatus;

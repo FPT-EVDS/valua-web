@@ -47,13 +47,11 @@ const cameraServices = {
   searchCameras: ({
     page,
     search,
-    beginDate,
-    endDate,
     status,
   }: SearchCameraDto): Promise<AxiosResponse<CamerasDto>> => {
     const url = `/cameras`;
     return axiosClient.get(url, {
-      params: { page, search, beginDate, endDate, status },
+      params: { page, search, status },
     });
   },
 };
