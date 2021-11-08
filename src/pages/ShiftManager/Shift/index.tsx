@@ -263,6 +263,7 @@ const ShiftPage = () => {
   const handleChangeSemester = (
     selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
+    setSelectedDate(null);
     dispatch(updateShiftSemester(selectedSemester));
   };
 
