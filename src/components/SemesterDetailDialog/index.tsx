@@ -71,18 +71,6 @@ const SemesterDetailDialog: React.FC<Props> = ({
     },
   });
 
-  const refreshForm = async (values: SemesterDto) => formik.setValues(values);
-
-  useEffect(() => {
-    refreshForm(initialValues).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialValues]);
-
   const handleChangeBeginDate = async (selectedDate: Date | null) => {
     await formik.setFieldValue('beginDate', selectedDate);
   };

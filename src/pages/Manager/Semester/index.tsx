@@ -36,6 +36,9 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const SemesterPage = () => {
+  // FIXME: This is caused due to BE not support
+  const DEFAULT_START_DATE = '1/1/1980';
+  const DEFAULT_END_DATE = '12/31/2090';
   const DEFAULT_PAGE_SIZE = 20;
   const [page, setPage] = useState(0);
   const [searchValue, setSearchValue] = useState('');
@@ -71,9 +74,11 @@ const SemesterPage = () => {
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [filterStatus, setFilterStatus] = useState('');
   const [filterBeginDate, setFilterBeginDate] = useState<Date | null>(
-    new Date('1/1/1980'),
+    new Date(DEFAULT_START_DATE),
   );
-  const [filterEndDate, setFilterEndDate] = useState<Date | null>(new Date());
+  const [filterEndDate, setFilterEndDate] = useState<Date | null>(
+    new Date(DEFAULT_END_DATE),
+  );
 
   const fetchSemesters = async () => {
     let sortParam = '';
@@ -363,10 +368,10 @@ const SemesterPage = () => {
             size="small"
             onClick={() => {
               setFilterStatus('');
-              setBeginDate(new Date('1/1/1980'));
-              setFilterBeginDate(new Date('1/1/1980'));
-              setEndDate(new Date());
-              setFilterEndDate(new Date());
+              setBeginDate(new Date(DEFAULT_START_DATE));
+              setFilterBeginDate(new Date(DEFAULT_START_DATE));
+              setEndDate(new Date(DEFAULT_END_DATE));
+              setFilterEndDate(new Date(DEFAULT_END_DATE));
             }}
           >
             Reset
