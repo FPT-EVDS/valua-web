@@ -1,6 +1,6 @@
 /* eslint-disable prefer-destructuring */
 import { Add, FiberManualRecord } from '@mui/icons-material';
-import { Avatar, Box, Button, Link, Typography } from '@mui/material';
+import { Avatar, Box, Button, Link, Stack, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import { GridActionsColDef, GridColDef, GridRowModel } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -8,24 +8,19 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import Status from 'enums/status.enum';
 import { searchFeedback } from 'features/feedback/feedbacksSlice';
-import ExamRoom from 'models/examRoom.model';
 import User from 'models/user.model';
 import Violation from 'models/violation.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import {
-  Link as RouterLink,
-  useHistory,
-  useRouteMatch,
+  Link as RouterLink
 } from 'react-router-dom';
 
 const FeedbackPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
   const [open, setOpen] = useState(false);
-  const { url } = useRouteMatch();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useAppDispatch();
-  const history = useHistory();
   const [page, setPage] = React.useState(0);
   const [searchValue, setSearchValue] = useState('');
   const {
@@ -61,42 +56,56 @@ const FeedbackPage = () => {
       minWidth: 64,
     },
     {
-      field: 'violation',
-      headerName: 'Reporter name',
+      field: 'examinee',
+      headerName: 'Examinee',
       flex: 0.13,
       minWidth: 130,
       renderCell: params => {
-        const violation = params.getValue(params.id, params.field) as Violation;
-        return violation ? (
-          <Typography>{violation.examRoom?.staff?.fullName}</Typography>
+        const examinee = params.getValue(params.id, params.field) as User;
+        return examinee ? (
+          <Typography>{examinee?.fullName}</Typography>
         ) : (
           <Typography>N/A</Typography>
         );
       },
     },
     {
-      field: 'examRoom',
-      headerName: 'Shift ID',
-      flex: 0.115,
-      minWidth: 130,
-      renderCell: params => {
-        const examRoom = params.getValue(params.id, params.field) as ExamRoom;
-        return examRoom ? (
-          <Typography>{examRoom.examRoomName}</Typography>
-        ) : (
-          <Typography>N/A</Typography>
+      field: 'examRoomName',
+      sortable: false,
+      filterable: false,
+      headerName: 'Exam room name',
+      flex: 0.1,
+      renderCell: ({ getValue, id: rowId }) => {
+        const {examRoom} = getValue(rowId, "violation") as Violation;
+        return (
+          <>
+            {examRoom ? (
+              <Typography>{examRoom?.examRoomName}</Typography>
+            ) : (
+              <Typography>N/A</Typography>
+            )}
+          </>
         );
       },
     },
     {
-      field: 'shiftManager',
+      field: 'violation',
       headerName: 'Confirmed by',
       flex: 0.1,
       minWidth: 130,
       renderCell: params => {
-        const shiftManager = params.getValue(params.id, params.field) as User;
-        return shiftManager ? (
-          <Typography>{shiftManager.fullName}</Typography>
+        const {examRoom} = params.getValue(params.id, params.field) as Violation;
+        return examRoom ? (
+          <>
+          <Stack direction="row" spacing={2} alignItems="center">
+                <Avatar
+                  alt={`${examRoom.staff.fullName}`}
+                  src={String(examRoom.staff.imageUrl)}
+                  sx={{ width: 32, height: 32 }}
+                />
+                <div>{examRoom.staff.fullName}</div>
+              </Stack>
+              </>
         ) : (
           <Typography>N/A</Typography>
         );
@@ -160,6 +169,8 @@ const FeedbackPage = () => {
     ...feedback,
     id: feedback.feedbackId,
   }));
+
+  console.log(rows)
 
   const fetchFeedback = async (search: string, pageNum: number) => {
     const actionResult = await dispatch(

@@ -33,7 +33,7 @@ const ViolationOverviewCard: React.FC<Props> = ({
               variant="h5"
               gutterBottom
             >
-              {title}
+              Violation title
             </Typography>
             {content}
           </Box>

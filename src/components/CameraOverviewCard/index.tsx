@@ -1,14 +1,17 @@
 /* eslint-disable prefer-destructuring */
+import { Room as RoomIcon } from '@mui/icons-material';
 import {
   Avatar,
   Box,
   Card,
+  CardActions,
   CardContent,
+  Divider,
   Stack,
-  Typography
+  Typography,
 } from '@mui/material';
-import { green } from '@mui/material/colors';
-import Status from 'enums/feedbackStatus.enum';
+import { green, red } from '@mui/material/colors';
+import Status from 'enums/status.enum';
 import React from 'react';
 
 interface Props {
@@ -16,30 +19,35 @@ interface Props {
   content: React.ReactNode;
   status: number;
   icon: React.ReactNode;
-  imageUrl: React.ReactNode;
-  fullName: string | undefined;
+  actionButtons: React.ReactNode;
   // eslint-disable-next-line react/require-default-props
+  isSingleAction?: boolean;
 }
 
-const FeedbackOverviewCard: React.FC<Props> = ({
+const CameraOverviewCard: React.FC<Props> = ({
   title,
   content,
   status,
   icon,
-  imageUrl,
-  fullName,
+  actionButtons,
+  isSingleAction = false,
 }: Props) => {
-  let statusColor = '#F7D154';
+  let statusColor = '#1890ff';
   let statusText = '';
   switch (status) {
-    case Status.isPending:
-      statusColor = '#F7D154';
-      statusText = 'Pending';
+    case Status.isReady:
+      statusColor = '#1890ff';
+      statusText = 'Connected';
       break;
 
-    case Status.isResolved:
+    case Status.isActive:
       statusColor = green[500];
-      statusText = 'Resolved';
+      statusText = 'Active';
+      break;
+
+    case Status.isDisable:
+      statusColor = red[500];
+      statusText = 'Inactive';
       break;
 
     default:
@@ -55,7 +63,7 @@ const FeedbackOverviewCard: React.FC<Props> = ({
               variant="h5"
               gutterBottom
             >
-              Feedback title
+              {title}
             </Typography>
             <Box color="text.secondary" marginBottom={1}>
               Status:
@@ -78,18 +86,19 @@ const FeedbackOverviewCard: React.FC<Props> = ({
             {icon}
           </Avatar>
         </Stack>
-        <>
-          <Stack direction="row" spacing={2}>
-              <Avatar alt={fullName} src={imageUrl?.toString()} />
-              <Stack direction="column">
-                <Typography>Submitted by:</Typography>
-                <Typography>{fullName}</Typography>
-              </Stack>
-            </Stack>
-        </>
       </CardContent>
+      {status !== 0 && (
+        <>
+          <Divider />
+          <CardActions
+            sx={{ justifyContent: isSingleAction ? 'center' : 'space-between' }}
+          >
+            {actionButtons}
+          </CardActions>
+        </>
+      )}
     </Card>
   );
 };
 
-export default FeedbackOverviewCard;
+export default CameraOverviewCard;

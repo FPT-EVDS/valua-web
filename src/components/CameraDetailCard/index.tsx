@@ -36,7 +36,9 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
   const [isEditable, setIsEditable] = useState(
     String(query.get('edit')) === 'true',
   );
-  const initialValues: CameraDto = { ...camera };
+  const initialValues: CameraDto = {
+    ...camera,
+  };
   const formik = useFormik({
     initialValues,
     validationSchema: cameraSchema,
@@ -66,6 +68,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
         ...camera,
       });
     }
+
   };
 
   const handleChangePurchaseDate = async (selectedDate: Date | null) => {
@@ -139,7 +142,7 @@ const CameraDetailCard = ({ camera, isLoading }: Props) => {
                 label="Room name"
                 fullWidth
                 variant="outlined"
-                value={formik.values.room?.roomName}
+                value={formik.values.room?.roomName || ''}
                 InputLabelProps={{
                   shrink: true,
                 }}

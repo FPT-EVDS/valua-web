@@ -4,9 +4,15 @@ import {
   Delete,
   Description,
   Edit,
-  FiberManualRecord,
+  FiberManualRecord
 } from '@mui/icons-material';
-import { Box, Button, Link, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Link, MenuItem,
+  Stack,
+  TextField, Typography
+} from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -14,12 +20,14 @@ import {
   GridColDef,
   GridRowModel,
   GridRowParams,
+  GridSortModel
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import CameraDetailDialog from 'components/CameraDetailDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
+import CameraStatus from 'configs/constants/cameraStatus';
 import { format } from 'date-fns';
 import Status from 'enums/status.enum';
 import { disableCamera, searchCamera } from 'features/camera/camerasSlice';
@@ -29,7 +37,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Link as RouterLink,
   useHistory,
-  useRouteMatch,
+  useRouteMatch
 } from 'react-router-dom';
 
 const CameraPage = () => {
@@ -41,6 +49,7 @@ const CameraPage = () => {
   const history = useHistory();
   const [page, setPage] = React.useState(0);
   const [searchValue, setSearchValue] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
   const {
     isLoading,
     current: { cameras, totalItems },
@@ -59,23 +68,34 @@ const CameraPage = () => {
     ...camera,
     id: camera.cameraId,
   }));
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
-  const fetchCamera = async (search: string, pageNum: number) => {
+  const fetchCamera = async () => {
+    let sortParam = '';
+    if (sortModel.length > 0) {
+      const { field, sort } = sortModel[0];
+      sortParam = `${field},${String(sort)}`;
+    }
     const actionResult = await dispatch(
-      searchCamera({ search, page: pageNum }),
-    );
-    unwrapResult(actionResult);
+      searchCamera({
+        search: searchValue,
+        page,
+        sort: sortParam.length > 0 ? sortParam : undefined,
+        status: filterStatus as unknown as Status,
+      }),
+    )
+      .then(result => unwrapResult(result))
+      .catch(error => {
+        enqueueSnackbar(error, {
+          variant: 'error',
+          preventDuplicate: true,
+        });
+      });
   };
 
   useEffect(() => {
-    fetchCamera(searchValue, page).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+    fetchCamera();
+  }, [page, sortModel]);
 
   useEffect(() => {
     setOpen(false);
@@ -85,7 +105,7 @@ const CameraPage = () => {
     try {
       const result = await dispatch(disableCamera(cameraId));
       unwrapResult(result);
-      enqueueSnackbar('Disable camera success', {
+      enqueueSnackbar('Delete camera success', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -111,7 +131,7 @@ const CameraPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove camera ${name}`,
+      title: `Do you want to delete camera ${name}`,
       handleAccept: () => handleDeleteCamera(cameraId),
     }));
   };
@@ -165,7 +185,7 @@ const CameraPage = () => {
       renderCell: params => {
         const active = params.getValue(params.id, 'status');
         let color = '#1890ff';
-        let statusText = 'Ready';
+        let statusText = 'Connected';
         switch (active) {
           case Status.isActive:
             color = green[500];
@@ -174,7 +194,7 @@ const CameraPage = () => {
 
           case Status.isDisable:
             color = red[500];
-            statusText = 'Disable';
+            statusText = 'Inactive';
             break;
 
           default:
@@ -219,6 +239,7 @@ const CameraPage = () => {
         ];
         if (!status) {
           deleteItems.shift();
+          deleteItems.shift();
         }
         return deleteItems;
       },
@@ -241,7 +262,61 @@ const CameraPage = () => {
       searchCamera({ search: inputValue, page: 0 }),
     );
     unwrapResult(result);
+    
   };
+
+  const handleSortModelChange = (newModel: GridSortModel) => {
+    setSortModel(newModel);
+  };
+
+
+  const FilterItems = () => (
+    <Box>
+      <Stack>
+        <TextField
+          name="status"
+          select
+          value={filterStatus}
+          label="Status"
+          margin="dense"
+          size="small"
+          fullWidth
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          SelectProps={{
+            displayEmpty: true,
+          }}
+          onChange={event => setFilterStatus(event.target.value)}
+        >
+          <MenuItem key="all-status" value="">
+            All
+          </MenuItem>
+          {CameraStatus.map(option => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Stack>
+      <Stack direction="row" sx={{ marginTop: 1 }} justifyContent="flex-end">
+        <Button
+          variant="text"
+          sx={{ marginRight: 1 }}
+          size="small"
+          onClick={() => {
+            setFilterStatus('');
+          }}
+        >
+          Reset
+        </Button>
+        <Button variant="contained" size="small" onClick={() => fetchCamera()}>
+          Apply
+        </Button>
+      </Stack>
+    </Box>
+  );
 
   return (
     <div>
@@ -265,6 +340,9 @@ const CameraPage = () => {
         handleSearch={handleSearch}
         onPageChange={newPage => setPage(newPage)}
         addButton={<AddButton />}
+        filterItems={<FilterItems />}
+        sortModel={sortModel}
+        hasFilter
       />
     </div>
   );

@@ -74,14 +74,14 @@ const DetailViolationPage = () => {
       <Grid container mt={2} spacing={2}>
         {violation && (
           <>
-            <Grid item xs={12} md={9} lg={6}>
+            <Grid item xs={12} md={6}>
               <ViolationOverviewCard
                 title={violation?.violationId}
                 icon={<NotificationsActive fontSize="large" />}
                 content={<OverviewContent violation={violation} />}
               />
             </Grid>
-            <Grid item xs={12} lg={6}>
+            <Grid item xs={12} md={8}>
               <ViolationDetailCard
                 isLoading={isLoading}
                 violation={violation}

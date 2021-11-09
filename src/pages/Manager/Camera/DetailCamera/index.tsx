@@ -4,7 +4,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import CameraDetailCard from 'components/CameraDetailCard';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
-import OverviewCard from 'components/OverviewCard';
+import CameraOverviewCard from 'components/CameraOverviewCard';
 import { format } from 'date-fns';
 import Status from 'enums/status.enum';
 import { disableCamera, getCamera } from 'features/camera/detailCameraSlice';
@@ -55,7 +55,7 @@ const DetailCameraPage = () => {
     try {
       const result = await dispatch(disableCamera(cameraId));
       unwrapResult(result);
-      enqueueSnackbar('Disable camera success', {
+      enqueueSnackbar('Delete camera success', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -85,19 +85,13 @@ const DetailCameraPage = () => {
 
   const GroupButtons = () => (
     <>
-      {camera?.status !== Status.isDisable ? (
-        <Button
-          variant="text"
-          color="error"
-          onClick={() => showDeleteConfirmation(id)}
-        >
-          Disable camera
-        </Button>
-      ) : (
-        <Button variant="text" color="success">
-          Enable camera
-        </Button>
-      )}
+      <Button
+        variant="text"
+        color="error"
+        onClick={() => showDeleteConfirmation(id)}
+      >
+        Delete camera
+      </Button>
     </>
   );
 
@@ -125,7 +119,7 @@ const DetailCameraPage = () => {
         {camera && (
           <>
             <Grid item xs={12} md={9} lg={4}>
-              <OverviewCard
+              <CameraOverviewCard
                 title={camera.cameraName}
                 icon={<Videocam fontSize="large" />}
                 status={camera.status}
