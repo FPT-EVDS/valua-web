@@ -14,6 +14,8 @@ import useQuery from 'hooks/useQuery';
 import Violation from 'models/violation.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
+import Responsive from 'components/Responsive';
+
 
 interface Props {
   violation: Violation;
@@ -142,7 +144,7 @@ const ViolationDetailCard = ({ violation, isLoading }: Props) => {
                 variant="outlined"
                 fullWidth
                 label="Violation position"
-                value="Nay de demo thoi chua co field nay"
+                value="12"
                 disabled
                 InputLabelProps={{
                   shrink: true,
@@ -164,13 +166,14 @@ const ViolationDetailCard = ({ violation, isLoading }: Props) => {
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={8}>
               <Typography gutterBottom color="text.secondary">
                 Evidence
               </Typography>
+              <Responsive/>
             </Grid>
-            
           </Grid>
+          
         </CardContent>
       </Box>
     </Card>

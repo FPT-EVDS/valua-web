@@ -55,7 +55,7 @@ const FeedbackOverviewCard: React.FC<Props> = ({
               variant="h5"
               gutterBottom
             >
-              {title}
+              Feedback title
             </Typography>
             <Box color="text.secondary" marginBottom={1}>
               Status:
