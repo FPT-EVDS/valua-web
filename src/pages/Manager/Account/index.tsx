@@ -213,7 +213,7 @@ const AccountPage = () => {
           <Box display="flex" alignItems="center">
             <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
             <Typography variant="subtitle1" color={color}>
-              {active ? 'Active' : 'Disable'}
+              {active ? 'Active' : 'Inactive'}
             </Typography>
           </Box>
         );
@@ -226,7 +226,21 @@ const AccountPage = () => {
       getActions: params => {
         const appUserId = String(params.getValue(params.id, 'appUserId'));
         const status = params.getValue(params.id, 'isActive');
-        const deleteItems = [
+        if (!status)
+          return [
+            <GridActionsCellItem
+              label="View detail"
+              showInMenu
+              onClick={() => history.push(`${url}/${appUserId}`)}
+            />,
+            <GridActionsCellItem
+              label="Enable"
+              sx={{ color: green[500] }}
+              showInMenu
+              onClick={() => handleActiveAccount(appUserId)}
+            />,
+          ];
+        return [
           <GridActionsCellItem
             label="View detail"
             showInMenu
@@ -244,16 +258,6 @@ const AccountPage = () => {
             onClick={() => showDeleteConfirmation(params)}
           />,
         ];
-        if (!status)
-          deleteItems[2] = (
-            <GridActionsCellItem
-              label="Enable"
-              sx={{ color: green[500] }}
-              showInMenu
-              onClick={() => handleActiveAccount(appUserId)}
-            />
-          );
-        return deleteItems;
       },
     },
   ];
@@ -357,7 +361,7 @@ const AccountPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <AccountDetailDialog open={open} handleClose={() => setOpen(false)} />
       <EVDSDataGrid
         pagination

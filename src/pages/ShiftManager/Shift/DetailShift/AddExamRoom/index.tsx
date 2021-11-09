@@ -124,19 +124,22 @@ const AddExamRoomPage = () => {
         const filteredExaminees = examinees!.examinees.filter(
           examinee => !appUserIdList.has(examinee.examinee.appUserId),
         );
-        const filteredExamRooms = examRooms.availableRooms.filter(
-          (examRoom, index) => index !== selectedIndex,
-        );
-        setExamRooms({
-          availableRooms: filteredExamRooms,
-          totalRooms: filteredExamRooms.length,
-        });
+        const filteredExamRooms =
+          filteredExaminees.length > 0
+            ? examRooms.availableRooms.filter(
+                (examRoom, index) => index !== selectedIndex,
+              )
+            : [];
         setExaminees({
           examinees: filteredExaminees,
           totalExaminees: filteredExaminees?.length || 0,
         });
+        setExamRooms({
+          availableRooms: filteredExamRooms,
+          totalRooms: filteredExamRooms.length,
+        });
         setSelectedIndex(-1);
-        enqueueSnackbar('Create exam room success', {
+        enqueueSnackbar('Created exam room successfully.', {
           variant: 'success',
           preventDuplicate: true,
         });

@@ -24,6 +24,7 @@ import { format } from 'date-fns';
 import Status from 'enums/status.enum';
 import {
   disableSemester,
+  enableSemester,
   getSemester,
   removeSubjectFromSemester,
   searchSemesterSubjects,
@@ -125,6 +126,22 @@ const DetailSemesterPage = () => {
     }
   };
 
+  const handleEnableSemester = async (semesterId: string) => {
+    try {
+      const result = await dispatch(enableSemester(semesterId));
+      unwrapResult(result);
+      enqueueSnackbar('Enable semester success', {
+        variant: 'success',
+        preventDuplicate: true,
+      });
+    } catch (error) {
+      enqueueSnackbar(error, {
+        variant: 'error',
+        preventDuplicate: true,
+      });
+    }
+  };
+
   const showDeleteConfirmation = (semesterId: string) => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
@@ -206,13 +223,23 @@ const DetailSemesterPage = () => {
 
   const GroupButtons = () => (
     <>
-      <Button
-        variant="text"
-        color="error"
-        onClick={() => showDeleteConfirmation(id)}
-      >
-        Disable semester
-      </Button>
+      {semester?.isActive ? (
+        <Button
+          variant="text"
+          color="error"
+          onClick={() => showDeleteConfirmation(id)}
+        >
+          Disable semester
+        </Button>
+      ) : (
+        <Button
+          variant="text"
+          color="success"
+          onClick={() => handleEnableSemester(String(semester?.semesterId))}
+        >
+          Enable semester
+        </Button>
+      )}
     </>
   );
 
@@ -248,7 +275,7 @@ const DetailSemesterPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <Box
         display="flex"
         alignItems="center"

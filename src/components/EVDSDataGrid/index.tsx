@@ -186,12 +186,17 @@ const useStyles = makeStyles({
   root: {
     '&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus':
       {
-        outline: 'none',
+        outline: 'none !important',
       },
   },
   header: {
     '& > .MuiDataGrid-columnSeparator': {
       visibility: 'hidden',
+    },
+  },
+  row: {
+    '&.MuiDataGrid-row:hover': {
+      backgroundColor: 'transparent',
     },
   },
 });
@@ -245,7 +250,11 @@ const EVDSDataGrid = ({
                 LoadingOverlay: CustomLoadingOverlay,
                 NoRowsOverlay: CustomNoRowsOverlay,
               }}
-              classes={{ root: classes.root, columnHeader: classes.header }}
+              classes={{
+                root: classes.root,
+                columnHeader: classes.header,
+                row: classes.row,
+              }}
             />
           </div>
         </div>

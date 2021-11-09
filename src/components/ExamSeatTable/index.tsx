@@ -59,10 +59,13 @@ const ExamSeatTable = ({ data }: Props) => {
         );
         unwrapResult(result);
         setRows(prev => prev.filter((item, itemIndex) => index !== itemIndex));
-        enqueueSnackbar(`Remove ${examinee.examinee.fullName} success`, {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        enqueueSnackbar(
+          `${examinee.examinee.fullName} has been successfully removed`,
+          {
+            variant: 'success',
+            preventDuplicate: true,
+          },
+        );
       } catch (error) {
         enqueueSnackbar(error, {
           variant: 'error',

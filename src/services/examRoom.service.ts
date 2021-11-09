@@ -97,7 +97,9 @@ const examRoomServices = {
       },
     ]);
   },
-  addNewSeatToExamRoom: (payload: DetailExamSeat): Promise<AxiosResponse> => {
+  addNewSeatToExamRoom: (
+    payload: DetailExamSeat,
+  ): Promise<AxiosResponse<ExamSeat>> => {
     const url = '/examSeats';
     return axiosClient.post(url, payload);
   },

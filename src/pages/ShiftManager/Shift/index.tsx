@@ -263,12 +263,13 @@ const ShiftPage = () => {
   const handleChangeSemester = (
     selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
+    setSelectedDate(null);
     dispatch(updateShiftSemester(selectedSemester));
   };
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <ShiftDetailDialog open={open} handleClose={() => setOpen(false)} />
       <EVDSDataGrid
         pagination

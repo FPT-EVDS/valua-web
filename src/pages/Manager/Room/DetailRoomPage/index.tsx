@@ -7,6 +7,7 @@ import OverviewCard from 'components/OverviewCard';
 import RoomCameraCard from 'components/RoomCameraCard';
 import RoomDetailCard from 'components/RoomDetailCard';
 import { format } from 'date-fns';
+import Status from 'enums/status.enum';
 import { disableRoom, getRoom } from 'features/room/detailRoomSlice';
 import Room from 'models/room.model';
 import { useSnackbar } from 'notistack';
@@ -86,13 +87,19 @@ const DetailRoomPage = () => {
 
   const GroupButtons = () => (
     <>
-      <Button
-        variant="text"
-        color="error"
-        onClick={() => showDeleteConfirmation(id)}
-      >
-        Disable room
-      </Button>
+      {roomWithCamera?.room.status !== Status.isDisable ? (
+        <Button
+          variant="text"
+          color="error"
+          onClick={() => showDeleteConfirmation(id)}
+        >
+          Disable room
+        </Button>
+      ) : (
+        <Button variant="text" color="success">
+          Enable room
+        </Button>
+      )}
     </>
   );
 
@@ -108,7 +115,7 @@ const DetailRoomPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <Box
         display="flex"
         alignItems="center"

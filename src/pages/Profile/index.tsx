@@ -4,15 +4,15 @@ import ProfileDetailCard from 'components/ProfileDetailCard';
 import ProfileOverviewCard from 'components/ProfileOverviewCard';
 import React from 'react';
 
-const Profile = () => {
+const ProfilePage = () => {
   const { user, isLoading } = useAppSelector(state => state.auth);
 
   const GroupButtons = () => (
     <>
-      <Button variant="text" color="info">
+      <Button variant="text" color="primary">
         Upload image
       </Button>
-      <Button variant="text" color="info">
+      <Button variant="text" color="primary">
         Update password
       </Button>
     </>
@@ -53,4 +53,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfilePage;

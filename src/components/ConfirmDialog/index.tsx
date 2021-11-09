@@ -1,5 +1,7 @@
 import {
+  Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -9,6 +11,7 @@ import {
 import React from 'react';
 
 export interface ConfirmDialogProps {
+  loading?: boolean;
   title: string;
   content: string;
   open: boolean;
@@ -20,21 +23,35 @@ const ConfirmDialog = ({
   title,
   content,
   open,
+  loading = false,
   handleClose,
   handleAccept,
 }: ConfirmDialogProps) => (
   <div>
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>{title}</DialogTitle>
+    <Dialog open={open} onClose={handleClose} fullWidth>
+      <DialogTitle>{loading ? 'Processing...' : title}</DialogTitle>
       <DialogContent>
-        <DialogContentText>{content}</DialogContentText>
+        {loading ? (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height={150}
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <DialogContentText>{content}</DialogContentText>
+        )}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleAccept} autoFocus>
-          Confirm
-        </Button>
-      </DialogActions>
+      {!loading && (
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleAccept} autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      )}
     </Dialog>
   </div>
 );

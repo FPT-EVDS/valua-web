@@ -3,7 +3,7 @@ import ExamineeStatus from 'enums/examineeStatus.enum';
 import Account from './account.model';
 
 export default interface SubjectExaminee {
-  subjectExamineeId: string;
+  subjectExamineeID: string;
   examinee: Pick<
     Account,
     | 'appUserId'

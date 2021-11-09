@@ -55,11 +55,11 @@ const LoginPage = () => {
   });
 
   return (
-    <div
+    <Box
       className="container"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
+      sx={{ backgroundImage: `url(${backgroundImage})` }}
     >
-      <Card sx={{ minWidth: '40%', minHeight: '60%', mx: 2 }}>
+      <Card sx={{ minWidth: '30%', minHeight: '40%', mx: 1 }}>
         <CardContent>
           <div className="logo">
             <Logo width={72} height={72} />
@@ -112,12 +112,11 @@ const LoginPage = () => {
               <Typography variant="subtitle1" component="div" color={red[500]}>
                 {errorMessage}
               </Typography>
-              <Box display="flex" justifyContent="right" my={1}>
+              {/* <Box display="flex" justifyContent="right" my={1}>
                 <Link href="#" underline="hover">
                   Forgot your password?
                 </Link>
-              </Box>
-              {/* FIXME: button should be submit to call api */}
+              </Box> */}
               <Button
                 type="submit"
                 fullWidth
@@ -127,13 +126,13 @@ const LoginPage = () => {
               >
                 Log In
               </Button>
-              <Divider light>OR</Divider>
-              <GoogleLoginButton />
+              {/* <Divider light>OR</Divider>
+              <GoogleLoginButton /> */}
             </Box>
           </Box>
         </CardContent>
       </Card>
-    </div>
+    </Box>
   );
 };
 

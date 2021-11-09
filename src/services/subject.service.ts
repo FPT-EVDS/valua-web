@@ -34,6 +34,16 @@ const subjectServices = {
       },
     ]);
   },
+  activeSubject: (id: string): Promise<AxiosResponse<DisableSubjectDto>> => {
+    const url = `/subjects/${id}`;
+    return axiosClient.patch(url, [
+      {
+        op: 'replace',
+        path: '/isActive',
+        value: true,
+      },
+    ]);
+  },
   getSubjectsForShift: (): Promise<AxiosResponse<Subject[]>> => {
     const url = '/subjects/shiftManager';
     return axiosClient.get(url);
@@ -41,12 +51,16 @@ const subjectServices = {
   searchSubjects: ({
     search,
     page,
+    sort,
+    status,
   }: SearchByNameDto): Promise<AxiosResponse<SubjectsDto>> => {
     const url = `/subjects`;
     return axiosClient.get(url, {
       params: {
         page,
         search,
+        sort,
+        status,
       },
     });
   },

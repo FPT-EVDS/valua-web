@@ -16,6 +16,7 @@ import { AppBar, Badge, Box, IconButton, Toolbar } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
 import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
+import ProfilePage from 'pages/Profile';
 import React, { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
@@ -24,7 +25,6 @@ import ExamineePage from './Examinee';
 import DetailExamineePage from './Examinee/DetailExaminee';
 import FeedbackPage from './Feedback';
 import DetailFeedbackPage from './Feedback/DetailFeedback';
-import Profile from './Profile';
 import ShiftPage from './Shift';
 import DetailShiftPage from './Shift/DetailShift';
 import AddExamRoomPage from './Shift/DetailShift/AddExamRoom';
@@ -100,11 +100,11 @@ const ShiftManagerDashboard = (): JSX.Element => {
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'flex' } }}>
-            <IconButton size="large" color="inherit">
+            {/* <IconButton size="large" color="inherit">
               <Badge badgeContent={4} color="error">
                 <Notifications />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <AvatarProfileMenu
               profileLink="/shift-manager/profile"
               user={user}
@@ -175,7 +175,7 @@ const ShiftManagerDashboard = (): JSX.Element => {
             path="/shift-manager/feedback/:id"
             component={DetailFeedbackPage}
           />
-          <Route path="/shift-manager/profile" component={Profile} exact />
+          <Route path="/shift-manager/profile" component={ProfilePage} exact />
           <Redirect from="/shift-manager" to="/shift-manager/dashboard" />
         </Switch>
       </Box>
