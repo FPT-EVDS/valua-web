@@ -23,6 +23,7 @@ const AvatarFilePicker = ({ name, onChange }: Props) => {
   return (
     <label htmlFor="upload-image-button">
       <input
+        title="image"
         ref={inputFileRef}
         name={name}
         accept="image/*"
@@ -35,7 +36,7 @@ const AvatarFilePicker = ({ name, onChange }: Props) => {
         <Avatar
           src={String(image)}
           variant="square"
-          sx={{ width: 128, height: 128 }}
+          sx={{ width: 180, height: 180 }}
         >
           <AddPhotoAlternate />
         </Avatar>

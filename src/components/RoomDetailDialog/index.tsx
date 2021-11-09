@@ -65,10 +65,15 @@ const RoomDetailDialog: React.FC<Props> = ({
     },
   });
 
+  const handleModalClose = () => {
+    formik.resetForm();
+    handleClose();
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={handleModalClose}
       fullWidth
       TransitionComponent={SlideTransition}
     >
@@ -80,7 +85,7 @@ const RoomDetailDialog: React.FC<Props> = ({
           alignItems="center"
         >
           {title}
-          <IconButton onClick={handleClose}>
+          <IconButton onClick={handleModalClose}>
             <Close />
           </IconButton>
         </Grid>

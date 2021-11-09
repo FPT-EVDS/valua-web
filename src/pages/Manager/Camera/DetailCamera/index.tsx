@@ -6,6 +6,7 @@ import CameraDetailCard from 'components/CameraDetailCard';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import CameraOverviewCard from 'components/CameraOverviewCard';
 import { format } from 'date-fns';
+import Status from 'enums/status.enum';
 import { disableCamera, getCamera } from 'features/camera/detailCameraSlice';
 import Camera from 'models/camera.model';
 import { useSnackbar } from 'notistack';

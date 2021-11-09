@@ -170,7 +170,7 @@ const DetailAccountPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <Box
         display="flex"
         alignItems="center"

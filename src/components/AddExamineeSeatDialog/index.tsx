@@ -49,11 +49,14 @@ const AddExamineeSeatDialog: React.FC<Props> = ({
     onSubmit: async (payload: DetailExamSeat) => {
       try {
         const result = await dispatch(addExamSeat(payload));
-        unwrapResult(result);
-        enqueueSnackbar('Add new seat success', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        const examSeat = unwrapResult(result);
+        enqueueSnackbar(
+          `${examSeat.examinee.fullName} has been successfully added to this exam room`,
+          {
+            variant: 'success',
+            preventDuplicate: true,
+          },
+        );
         formik.resetForm();
         setCurrentExaminee(null);
         handleClose();

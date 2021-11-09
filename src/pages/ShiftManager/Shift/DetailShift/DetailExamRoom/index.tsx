@@ -105,7 +105,7 @@ const DetailExamRoomPage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <Box
         width={250}
         display="flex"

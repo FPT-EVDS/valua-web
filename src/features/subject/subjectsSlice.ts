@@ -69,6 +69,19 @@ export const disableSubject = createAsyncThunk(
   },
 );
 
+export const activeSubject = createAsyncThunk(
+  'subjects/active',
+  async (subjectId: string, { rejectWithValue }) => {
+    try {
+      const response = await subjectServices.activeSubject(subjectId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 export const searchBySubjectName = createAsyncThunk(
   'subjects/searchByName',
   async (payload: SearchByNameDto, { rejectWithValue }) => {
@@ -115,14 +128,17 @@ export const subjectSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(disableSubject.fulfilled, (state, action) => {
-        const index = state.current.subjects.findIndex(
-          subject => subject.subjectId === action.payload.subjectId,
-        );
-        state.current.subjects[index].isActive = action.payload.isActive;
-        state.error = '';
-        state.isLoading = false;
-      })
+      .addMatcher(
+        isAnyOf(disableSubject.fulfilled, activeSubject.fulfilled),
+        (state, action) => {
+          const index = state.current.subjects.findIndex(
+            subject => subject.subjectId === action.payload.subjectId,
+          );
+          state.current.subjects[index].isActive = action.payload.isActive;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
       .addMatcher(
         isAnyOf(getSubjects.fulfilled, searchBySubjectName.fulfilled),
         (state, action) => {
@@ -138,6 +154,7 @@ export const subjectSlice = createSlice({
           disableSubject.rejected,
           getSubjects.rejected,
           searchBySubjectName.rejected,
+          activeSubject.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -151,6 +168,7 @@ export const subjectSlice = createSlice({
           disableSubject.pending,
           getSubjects.pending,
           searchBySubjectName.pending,
+          activeSubject.pending,
         ),
         state => {
           state.isLoading = true;

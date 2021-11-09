@@ -4,6 +4,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  Link,
   Stack,
   Typography,
 } from '@mui/material';
@@ -11,18 +12,19 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AddCameraToRoomDialog from 'components/AddCameraToRoomDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
-import RoomWithCamera from 'dtos/roomWithCamera.dto';
+import Status from 'enums/status.enum';
 import { removeCameraFromRoom } from 'features/room/detailRoomSlice';
 import Camera from 'models/camera.model';
 import Room from 'models/room.model';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 const RoomCameraCard = () => {
   const [open, setOpen] = useState(false);
   const dispatch = useAppDispatch();
-  const roomWithCamera: RoomWithCamera | null = useAppSelector(
-    state => state.detailRoom.roomWithCamera,
+  const { roomWithCamera, isLoading } = useAppSelector(
+    state => state.detailRoom,
   );
   const { enqueueSnackbar } = useSnackbar();
   const [confirmDialogProps, setConfirmDialogProps] =
@@ -80,7 +82,7 @@ const RoomCameraCard = () => {
   return (
     <>
       <AddCameraToRoomDialog open={open} handleClose={() => setOpen(false)} />
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <Card sx={{ minWidth: 275 }} elevation={2}>
         <CardContent>
           <Stack
@@ -96,33 +98,44 @@ const RoomCameraCard = () => {
                 sx={{ width: 64, height: 64, color: 'text.secondary' }}
               />
             )}
-            <Typography color="text.secondary" gutterBottom>
-              {roomWithCamera?.camera
-                ? roomWithCamera.camera.cameraName
-                : 'No camera added'}
-            </Typography>
+
+            {roomWithCamera?.camera ? (
+              <Link
+                component={RouterLink}
+                to={`/manager/camera/${roomWithCamera.camera.cameraId}`}
+                underline="hover"
+              >
+                {roomWithCamera.camera.cameraName}
+              </Link>
+            ) : (
+              <Typography color="text.secondary" gutterBottom>
+                No camera added
+              </Typography>
+            )}
           </Stack>
         </CardContent>
-        <CardActions sx={{ justifyContent: 'center' }}>
-          {roomWithCamera?.camera ? (
-            <Button
-              variant="text"
-              color="error"
-              onClick={() => {
-                showDeleteConfirmation(
-                  roomWithCamera.camera,
-                  roomWithCamera.room,
-                );
-              }}
-            >
-              Remove camera
-            </Button>
-          ) : (
-            <Button variant="contained" onClick={() => setOpen(true)}>
-              Add camera
-            </Button>
-          )}
-        </CardActions>
+        {roomWithCamera?.room.status !== Status.isDisable && (
+          <CardActions sx={{ justifyContent: 'center' }}>
+            {roomWithCamera?.camera ? (
+              <Button
+                variant="text"
+                color="error"
+                onClick={() => {
+                  showDeleteConfirmation(
+                    roomWithCamera.camera,
+                    roomWithCamera.room,
+                  );
+                }}
+              >
+                Remove camera
+              </Button>
+            ) : (
+              <Button variant="contained" onClick={() => setOpen(true)}>
+                Add camera
+              </Button>
+            )}
+          </CardActions>
+        )}
       </Card>
     </>
   );

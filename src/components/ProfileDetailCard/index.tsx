@@ -116,6 +116,22 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
             <Grid item xs={12} md={4}>
               <TextField
                 autoFocus
+                name="email"
+                margin="dense"
+                label="Email"
+                fullWidth
+                variant="outlined"
+                value={formik.values.email}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={formik.handleChange}
+                disabled
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                autoFocus
                 name="fullName"
                 margin="dense"
                 label="Fullname"
@@ -131,22 +147,6 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
                 }}
                 onChange={formik.handleChange}
                 disabled={!isEditable}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <TextField
-                autoFocus
-                name="email"
-                margin="dense"
-                label="Email"
-                fullWidth
-                variant="outlined"
-                value={formik.values.email}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                onChange={formik.handleChange}
-                disabled
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -248,6 +248,7 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
           <CardActions>
             <LoadingButton
               disabled={!isEditable}
+              loading={isLoading}
               type="submit"
               variant="contained"
             >

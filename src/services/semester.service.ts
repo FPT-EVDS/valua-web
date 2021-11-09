@@ -4,6 +4,7 @@ import DisableSemesterDto from 'dtos/disableSemester.dto';
 import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto';
 import SearchByDateDto from 'dtos/searchByDate.dto';
 import SearchByNameDto from 'dtos/searchByName.dto';
+import SearchSemesterParamsDto from 'dtos/searchSemesterParams.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
 import Semester from 'models/semester.model';
@@ -37,6 +38,16 @@ const semesterServices = {
       },
     ]);
   },
+  activeSemester: (id: string): Promise<AxiosResponse<DisableSemesterDto>> => {
+    const url = `/semesters/${id}`;
+    return axiosClient.patch(url, [
+      {
+        op: 'replace',
+        path: '/isActive',
+        value: true,
+      },
+    ]);
+  },
   getSemesterForShift: (
     payload?: SearchByDateDto,
   ): Promise<AxiosResponse<Semester[]>> => {
@@ -51,12 +62,20 @@ const semesterServices = {
   searchSemestersByName: ({
     page,
     search,
-  }: SearchByNameDto): Promise<AxiosResponse<SemestersDto>> => {
+    sort,
+    status,
+    beginDate,
+    endDate,
+  }: SearchSemesterParamsDto): Promise<AxiosResponse<SemestersDto>> => {
     const url = '/semesters';
     return axiosClient.get(url, {
       params: {
         page,
         search,
+        sort,
+        status,
+        beginDate,
+        endDate,
       },
     });
   },

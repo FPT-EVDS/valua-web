@@ -205,7 +205,7 @@ const ExamineePage = () => {
 
   return (
     <div>
-      <ConfirmDialog {...confirmDialogProps} />
+      <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <EVDSDataGrid
         pagination
         leftActions={

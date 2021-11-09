@@ -2,9 +2,11 @@ import { AxiosResponse } from 'axios';
 import AddedExamineeSubject from 'dtos/addedExamineeSubject.dto';
 import DetailSubjectExamineeDto from 'dtos/detailSubjectExaminee';
 import ExamineeSubject from 'dtos/examineeSubject.dto';
+import RemoveSubjectExamineeDto from 'dtos/removeExaminee.dto';
 import SearchParams from 'dtos/searchParams.dto';
 import { SearchSubjectExamineeParams } from 'dtos/searchSubjectExamineeParams.dto';
 import SubjectExamineesDto from 'dtos/subjectExaminees.dto';
+import SubjectExaminee from 'models/subjectExaminee.model';
 
 import axiosClient from './axiosClient';
 
@@ -35,6 +37,13 @@ const subjectExamineesServices = {
         ...payload,
       },
     });
+  },
+  removeExamineeFromSubject: ({
+    subjectExamineeId,
+    removedReason,
+  }: RemoveSubjectExamineeDto): Promise<AxiosResponse<SubjectExaminee>> => {
+    const url = `/subjectExaminees/${subjectExamineeId}`;
+    return axiosClient.put(url, { removedReason });
   },
 };
 export default subjectExamineesServices;
