@@ -6,7 +6,7 @@ import { GridActionsColDef, GridColDef, GridRowModel } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import EVDSDataGrid from 'components/EVDSDataGrid';
-import Status from 'enums/status.enum';
+import Status from 'enums/feedbackStatus.enum';
 import { searchFeedback } from 'features/feedback/feedbacksSlice';
 import User from 'models/user.model';
 import Violation from 'models/violation.model';
@@ -121,7 +121,7 @@ const FeedbackPage = () => {
         let color = '#1890ff';
         let statusText = 'Pending';
         switch (active) {
-          case Status.isActive:
+          case Status.isResolved:
             color = green[500];
             statusText = 'Accepted';
             break;

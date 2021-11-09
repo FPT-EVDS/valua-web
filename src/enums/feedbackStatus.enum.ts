@@ -1,6 +1,7 @@
 export enum FeedbackStatus {
-  isPending = 0,
-  isResolved = 1,
+  isPending = 1,
+  isResolved = 2,
+  isDisable = 0,
 }
 
 export default FeedbackStatus;
