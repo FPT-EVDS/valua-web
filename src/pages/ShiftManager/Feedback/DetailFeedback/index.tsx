@@ -65,7 +65,7 @@ const DetailFeedbackPage = () => {
       <Grid container mt={2} spacing={2}>
         {feedback && (
           <>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={5}>
               <Stack spacing={3}>
                 <FeedbackOverviewCard
                   title={feedback?.feedbackId}

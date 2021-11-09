@@ -185,7 +185,7 @@ const CameraPage = () => {
       renderCell: params => {
         const active = params.getValue(params.id, 'status');
         let color = '#1890ff';
-        let statusText = 'Ready';
+        let statusText = 'Connected';
         switch (active) {
           case Status.isActive:
             color = green[500];

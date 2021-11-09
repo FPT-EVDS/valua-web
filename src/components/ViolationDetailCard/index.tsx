@@ -14,8 +14,6 @@ import useQuery from 'hooks/useQuery';
 import Violation from 'models/violation.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import AliceCarousel from 'react-alice-carousel';
-import 'react-alice-carousel/lib/alice-carousel.css';
 
 interface Props {
   violation: Violation;
@@ -171,13 +169,7 @@ const ViolationDetailCard = ({ violation, isLoading }: Props) => {
                 Evidence
               </Typography>
             </Grid>
-            <AliceCarousel
-              autoWidth
-              innerWidth={3}
-              disableDotsControls
-              paddingLeft={10}
-              items={items}
-            />
+            
           </Grid>
         </CardContent>
       </Box>

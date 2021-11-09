@@ -8,8 +8,6 @@ import { format } from 'date-fns';
 import Violation from 'models/violation.model';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import AliceCarousel from 'react-alice-carousel';
-import 'react-alice-carousel/lib/alice-carousel.css';
 
 interface Props {
   violation: Violation | null;
@@ -18,25 +16,10 @@ interface Props {
 
 const ViolationInformationCard: React.FC<Props> = ({ violation }: Props) => {
   const images = [
-    {
-      original: 'https://picsum.photos/id/1018/1000/600/',
-      thumbnail: 'https://picsum.photos/id/1018/250/150/',
-    },
-    {
-      original: 'https://picsum.photos/id/1015/1000/600/',
-      thumbnail: 'https://picsum.photos/id/1015/250/150/',
-    },
-    {
-      original: 'https://picsum.photos/id/1019/1000/600/',
-      thumbnail: 'https://picsum.photos/id/1019/250/150/',
-    },
-  ];
-
-  const items = [
-    <img src="https://picsum.photos/id/1018/90/90" alt="huy" />,
-    <img src="https://picsum.photos/id/1015/90/90" alt="huy" />,
-    <img src="https://picsum.photos/id/1019/90/90" alt="huy" />,
-    <img src="https://picsum.photos/id/1020/90/90" alt="huy" />,
+    "https://picsum.photos/id/1018/90/90" ,
+    "https://picsum.photos/id/1015/90/90" ,
+    "https://picsum.photos/id/1019/90/90" ,
+    "https://picsum.photos/id/1020/90/90" ,
   ];
 
   return (
@@ -58,12 +41,6 @@ const ViolationInformationCard: React.FC<Props> = ({ violation }: Props) => {
             View detail
           </Link>
         </Stack>
-        <AliceCarousel
-          autoWidth
-          disableDotsControls
-          paddingLeft={10}
-          items={items}
-        />
         <Stack
           direction="row"
           spacing={17}
