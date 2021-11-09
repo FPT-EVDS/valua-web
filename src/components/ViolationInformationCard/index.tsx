@@ -4,6 +4,7 @@
 /* eslint-disable arrow-body-style */
 /* eslint-disable prefer-destructuring */
 import { Card, CardContent, Link, Stack, Typography } from '@mui/material';
+import Responsive from 'components/Responsive';
 import { format } from 'date-fns';
 import Violation from 'models/violation.model';
 import React from 'react';
@@ -41,6 +42,7 @@ const ViolationInformationCard: React.FC<Props> = ({ violation }: Props) => {
             View detail
           </Link>
         </Stack>
+        <Responsive/>
         <Stack
           direction="row"
           spacing={17}

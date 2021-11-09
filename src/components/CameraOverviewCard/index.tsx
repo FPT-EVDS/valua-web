@@ -37,7 +37,7 @@ const CameraOverviewCard: React.FC<Props> = ({
   switch (status) {
     case Status.isReady:
       statusColor = '#1890ff';
-      statusText = 'Ready';
+      statusText = 'Connected';
       break;
 
     case Status.isActive:

@@ -9,7 +9,7 @@ const cameraSchema = object({
     .typeError('Invalid date')
     .defined('Date is required')
     .max(new Date(), 'Purchase date must be less than or equal to today'),
-  configurationUrl: string().defined('Configuration URL is required'),
+  configurationUrl: string().defined('Configuration URL is optional'),
   description: string().max(
     255,
     value => `${ValidationMessage.MAX_LENGTH} ${value.max}`,
