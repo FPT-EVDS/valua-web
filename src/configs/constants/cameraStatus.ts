@@ -1,4 +1,4 @@
-import Status from 'enums/status.enum';
+import Status from 'enums/cameraStatus.enum';
 
 const CameraStatus = [
   {
@@ -10,8 +10,8 @@ const CameraStatus = [
     label: 'Inactive',
   },
   {
-    value: Status.isReady,
-    label: 'Ready',
+    value: Status.isConnected,
+    label: 'Connected',
   },
 ];
 
