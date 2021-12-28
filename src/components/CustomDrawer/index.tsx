@@ -62,7 +62,13 @@ const DrawerContent = ({ items }: DrawerContentProps): JSX.Element => {
   return (
     <div>
       <Toolbar>
-        <img src={logo} alt="logo" className="logo" />
+        <Box
+          component="img"
+          sx={{ height: 48, objectFit: 'contain' }}
+          src={logo}
+          alt="logo"
+          className="logo"
+        />
       </Toolbar>
       <List>
         {items.map(({ name, icon, activeIcon, to }, index) => (

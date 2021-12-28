@@ -368,6 +368,7 @@ const AccountPage = () => {
         rowHeight={60}
         rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
         pageSize={DEFAULT_PAGE_SIZE}
+        paginationMode="server"
         sortingMode="server"
         sortModel={sortModel}
         onSortModelChange={handleSortModelChange}
