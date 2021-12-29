@@ -7,8 +7,8 @@ import {
 import { AxiosError } from 'axios';
 import RoomDto from 'dtos/room.dto';
 import RoomsDto from 'dtos/rooms.dto';
-import RoomWithCamera from 'dtos/roomWithCamera.dto';
 import SearchByNameDto from 'dtos/searchByName.dto';
+import Room from 'models/room.model';
 import roomServices from 'services/room.service';
 
 interface RoomState {
@@ -74,7 +74,7 @@ const initialState: RoomState = {
   isLoading: false,
   error: '',
   current: {
-    rooms: [] as RoomWithCamera[],
+    rooms: [] as { room: Room }[],
     currentPage: 0,
     totalItems: 0,
     totalPages: 0,
@@ -89,15 +89,14 @@ export const roomSlice = createSlice({
     builder
       .addCase(addRoom.fulfilled, (state, action) => {
         if (state.current.currentPage === 0)
-          state.current.rooms.unshift({ room: action.payload, camera: null });
+          state.current.rooms.unshift({ room: action.payload });
         state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;
       })
       .addCase(disableRoom.fulfilled, (state, action) => {
         const index = state.current.rooms.findIndex(
-          roomWithCamera =>
-            roomWithCamera.room.roomId === action.payload.roomId,
+          room => room.room.roomId === action.payload.roomId,
         );
         state.current.rooms[index].room.status = action.payload.status;
         state.error = '';

@@ -2,8 +2,6 @@ import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import accountReducer from 'features/account/accountsSlice';
 import detailAccountReducer from 'features/account/detailAccountSlice';
 import authReducer from 'features/auth/authSlice';
-import cameraReducer from 'features/camera/camerasSlice';
-import detailCameraReducer from 'features/camera/detailCameraSlice';
 import addExamRoomReducer from 'features/examRoom/addExamRoomSlice';
 import detailExamRoomReducer from 'features/examRoom/detailExamRoomSlice';
 import examRoomReducer from 'features/examRoom/examRoomSlice';
@@ -27,8 +25,6 @@ export const store = configureStore({
     subjects: subjectReducer,
     semesters: semesterReducer,
     detailSemester: detailSemesterReducer,
-    camera: cameraReducer,
-    detailCamera: detailCameraReducer,
     shift: shiftReducer,
     detailShift: detailShiftReducer,
     subjectExaminee: subjectExamineeReducer,

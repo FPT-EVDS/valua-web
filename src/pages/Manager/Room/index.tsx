@@ -3,7 +3,6 @@ import { Add, FiberManualRecord } from '@mui/icons-material';
 import {
   Box,
   Button,
-  Link,
   MenuItem,
   Stack,
   TextField,
@@ -26,14 +25,9 @@ import RoomDetailDialog from 'components/RoomDetailDialog';
 import RoomStatus from 'configs/constants/roomStatus';
 import Status from 'enums/status.enum';
 import { disableRoom, searchByRoomName } from 'features/room/roomsSlice';
-import Camera from 'models/camera.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import {
-  Link as RouterLink,
-  useHistory,
-  useRouteMatch,
-} from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const RoomPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
@@ -57,14 +51,10 @@ const RoomPage = () => {
     isLoading,
     current: { rooms, totalItems },
   } = useAppSelector(state => state.room);
-  const rows: GridRowModel[] = rooms.map(roomWithCamera => {
-    const { room, camera } = roomWithCamera;
-    return {
-      ...room,
-      camera,
-      id: room.roomId,
-    };
-  });
+  const rows: GridRowModel[] = rooms.map(room => ({
+    ...room.room,
+    id: room.room.roomId,
+  }));
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [filterStatus, setFilterStatus] = useState('');
 
@@ -148,30 +138,6 @@ const RoomPage = () => {
       headerName: 'Seats Count',
       flex: 0.05,
       minWidth: 130,
-    },
-    {
-      field: 'camera',
-      headerName: 'Assigned Camera',
-      flex: 0.1,
-      sortable: false,
-      minWidth: 130,
-      renderCell: params => {
-        const camera = params.getValue(
-          params.id,
-          params.field,
-        ) as Camera | null;
-        return camera ? (
-          <Link
-            component={RouterLink}
-            to={`/manager/camera/${camera.cameraId}`}
-            underline="hover"
-          >
-            {camera.cameraName}
-          </Link>
-        ) : (
-          <Typography variant="subtitle1">N/A</Typography>
-        );
-      },
     },
     {
       field: 'status',

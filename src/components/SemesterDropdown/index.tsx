@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import { Autocomplete, TextField, TextFieldProps } from '@mui/material';
-import SearchByDateDto from 'dtos/searchByDate.dto';
+import SearchSemesterParamsDto from 'dtos/searchSemesterParams.dto';
 import Semester from 'models/semester.model';
 import React, { useEffect, useState } from 'react';
 import semesterServices from 'services/semester.service';
@@ -12,7 +12,7 @@ interface Props {
     semester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => void;
   textFieldProps?: TextFieldProps;
-  payload?: SearchByDateDto;
+  payload?: SearchSemesterParamsDto;
 }
 
 const SemesterDropdown = ({
@@ -26,12 +26,12 @@ const SemesterDropdown = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchSemesters = async () => {
-    const response = await semesterServices.getSemesterForShift(payload);
-    setSemesterOptions(response.data);
+    const response = await semesterServices.searchSemestersByName(payload);
+    setSemesterOptions(response.data.semesters);
     if (value) {
       onChange(value);
     } else {
-      onChange(response.data[0]);
+      onChange(response.data.semesters[0]);
     }
     setIsLoading(false);
   };

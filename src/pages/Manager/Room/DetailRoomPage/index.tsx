@@ -4,7 +4,6 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import OverviewCard from 'components/OverviewCard';
-import RoomCameraCard from 'components/RoomCameraCard';
 import RoomDetailCard from 'components/RoomDetailCard';
 import { format } from 'date-fns';
 import Status from 'enums/status.enum';
@@ -25,9 +24,7 @@ interface RoomProps {
 const DetailRoomPage = () => {
   const dispatch = useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const { roomWithCamera, isLoading } = useAppSelector(
-    state => state.detailRoom,
-  );
+  const { room, isLoading } = useAppSelector(state => state.detailRoom);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
       title: `Do you want to delete this room ?`,
@@ -87,7 +84,7 @@ const DetailRoomPage = () => {
 
   const GroupButtons = () => (
     <>
-      {roomWithCamera?.room.status !== Status.isDisable ? (
+      {room?.status !== Status.isDisable ? (
         <Button
           variant="text"
           color="error"
@@ -126,26 +123,22 @@ const DetailRoomPage = () => {
         <div>Back to room page</div>
       </Box>
       <Grid container mt={2} spacing={2}>
-        {roomWithCamera && (
+        {room && (
           <>
             <Grid item xs={12} md={9} lg={4}>
               <Stack spacing={3}>
                 <OverviewCard
-                  title={roomWithCamera.room.roomName}
+                  title={room.roomName}
                   icon={<RoomIcon fontSize="large" />}
-                  status={roomWithCamera.room.status}
-                  content={<OverviewContent room={roomWithCamera.room} />}
+                  status={room.status}
+                  content={<OverviewContent room={room} />}
                   actionButtons={<GroupButtons />}
                   isSingleAction
                 />
-                <RoomCameraCard />
               </Stack>
             </Grid>
             <Grid item xs={12} lg={8}>
-              <RoomDetailCard
-                isLoading={isLoading}
-                room={roomWithCamera.room}
-              />
+              <RoomDetailCard isLoading={isLoading} room={room} />
             </Grid>
           </>
         )}

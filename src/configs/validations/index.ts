@@ -2,7 +2,6 @@ import accountSchema from './accountSchema';
 import addExamRoomSchema from './addExamRoomSchema';
 import addSubjectsSchema from './addSubjectsSchema';
 import appUserSchema from './appUserSchema';
-import cameraSchema from './cameraSchema';
 import detailExamRoomSchema from './detailExamRoomSchema';
 import removeExamineeSchema from './removeExamineeSchema';
 import roomSchema from './roomSchema';
@@ -15,7 +14,6 @@ export {
   addExamRoomSchema,
   addSubjectsSchema,
   appUserSchema,
-  cameraSchema,
   detailExamRoomSchema,
   removeExamineeSchema,
   roomSchema,

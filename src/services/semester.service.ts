@@ -59,25 +59,24 @@ const semesterServices = {
       },
     });
   },
-  searchSemestersByName: ({
-    page,
-    search,
-    sort,
-    status,
-    beginDate,
-    endDate,
-  }: SearchSemesterParamsDto): Promise<AxiosResponse<SemestersDto>> => {
+  searchSemestersByName: (
+    payload: SearchSemesterParamsDto | undefined,
+  ): Promise<AxiosResponse<SemestersDto>> => {
     const url = '/semesters';
-    return axiosClient.get(url, {
-      params: {
-        page,
-        search,
-        sort,
-        status,
-        beginDate,
-        endDate,
-      },
-    });
+    if (payload) {
+      const { page, search, sort, status, beginDate, endDate } = payload;
+      return axiosClient.get(url, {
+        params: {
+          page,
+          search,
+          sort,
+          status,
+          beginDate,
+          endDate,
+        },
+      });
+    }
+    return axiosClient.get(url);
   },
   addSubjects: (
     payload: AddSubjectToSemesterDto,

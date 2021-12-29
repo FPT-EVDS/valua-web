@@ -1,6 +1,7 @@
 import './styles.scss';
 
 import {
+  alpha,
   Box,
   Drawer,
   List,
@@ -59,6 +60,11 @@ const DrawerContent = ({ items }: DrawerContentProps): JSX.Element => {
     );
   }, [pathname]);
 
+  const activeSubStyle = {
+    borderRight: '3px solid',
+    borderColor: alpha(theme.palette.primary.main, 0.8),
+  };
+
   return (
     <div>
       <Toolbar>
@@ -71,26 +77,29 @@ const DrawerContent = ({ items }: DrawerContentProps): JSX.Element => {
         />
       </Toolbar>
       <List>
-        {items.map(({ name, icon, activeIcon, to }, index) => (
-          <ListItemButton
-            key={name}
-            selected={selectedIndex === index}
-            onClick={event => handleListItemClick(event, index, to)}
-          >
-            <ListItemIcon>
-              {selectedIndex === index ? activeIcon : icon}
-            </ListItemIcon>
-            <ListItemText
-              primary={name}
+        {items.map(({ name, icon, activeIcon, to }, index) => {
+          const isActive = selectedIndex === index;
+          return (
+            <ListItemButton
+              key={name}
+              selected={isActive}
+              onClick={event => handleListItemClick(event, index, to)}
               sx={{
-                color:
-                  selectedIndex === index
+                ...(isActive && activeSubStyle),
+              }}
+            >
+              <ListItemIcon>{isActive ? activeIcon : icon}</ListItemIcon>
+              <ListItemText
+                primary={name}
+                sx={{
+                  color: isActive
                     ? theme.palette.primary.main
                     : theme.palette.text.primary,
-              }}
-            />
-          </ListItemButton>
-        ))}
+                }}
+              />
+            </ListItemButton>
+          );
+        })}
       </List>
     </div>
   );

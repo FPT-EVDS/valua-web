@@ -7,10 +7,11 @@ import {
   GroupOutlined,
   Menu as MenuIcon,
 } from '@mui/icons-material';
-import { AppBar, Box, IconButton, Toolbar } from '@mui/material';
+import { AppBar, Box, IconButton, Stack, Toolbar } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
 import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
+import NotificationMenu from 'components/NotificationMenu';
 import ProfilePage from 'pages/Profile';
 import React, { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
@@ -78,17 +79,14 @@ const ShiftManagerDashboard = (): JSX.Element => {
             <MenuIcon />
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'flex' } }}>
-            {/* <IconButton size="large" color="inherit">
-              <Badge badgeContent={4} color="error">
-                <Notifications />
-              </Badge>
-            </IconButton> */}
-            <AvatarProfileMenu
-              profileLink="/shift-manager/profile"
-              user={user}
-            />
-          </Box>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={{ xs: 0.5, sm: 1.5 }}
+          >
+            <NotificationMenu />
+            <AvatarProfileMenu user={user} />
+          </Stack>
         </Toolbar>
       </AppBar>
       <CustomDrawer

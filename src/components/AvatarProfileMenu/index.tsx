@@ -1,11 +1,14 @@
-import { AccountBox, Logout } from '@mui/icons-material';
+import { AccountCircle, Logout } from '@mui/icons-material';
 import {
   Avatar,
+  Box,
+  Divider,
   IconButton,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
+  Typography,
 } from '@mui/material';
 import User from 'models/user.model';
 import React, { useState } from 'react';
@@ -13,10 +16,9 @@ import { Link, useHistory } from 'react-router-dom';
 
 interface Props {
   user: User | null;
-  profileLink: string;
 }
 
-const AvatarProfileMenu = ({ user, profileLink }: Props) => {
+const AvatarProfileMenu = ({ user }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const history = useHistory();
 
@@ -71,9 +73,18 @@ const AvatarProfileMenu = ({ user, profileLink }: Props) => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem component={Link} to={profileLink}>
+        <Box sx={{ px: 2.5 }}>
+          <Typography variant="subtitle1" noWrap>
+            {user?.fullName}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+            {user?.email}
+          </Typography>
+        </Box>
+        <Divider sx={{ my: 1 }} />
+        <MenuItem component={Link} to="/shift-manager/profile">
           <ListItemIcon>
-            <AccountBox fontSize="small" />
+            <AccountCircle fontSize="small" />
           </ListItemIcon>
           <ListItemText>My profile</ListItemText>
         </MenuItem>

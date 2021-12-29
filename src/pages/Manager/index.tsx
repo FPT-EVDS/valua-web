@@ -6,15 +6,12 @@ import {
   LocationOn,
   LocationOnOutlined,
   Menu as MenuIcon,
-  Notifications,
   School,
   SchoolOutlined,
   SupervisorAccount,
   SupervisorAccountOutlined,
-  Videocam,
-  VideocamOutlined,
 } from '@mui/icons-material';
-import { AppBar, Badge, Box, IconButton, Toolbar } from '@mui/material';
+import { AppBar, Box, IconButton, Toolbar } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
 import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
@@ -24,8 +21,6 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import ProfilePage from '../Profile';
 import AccountPage from './Account';
 import DetailAccountPage from './Account/DetailAccount';
-import Camera from './Camera';
-import DetailCameraPage from './Camera/DetailCamera';
 import Dashboard from './Dashboard';
 import RoomPage from './Room';
 import DetailRoomPage from './Room/DetailRoomPage';
@@ -51,12 +46,6 @@ const drawerItems: Array<DrawerItem> = [
     icon: <LocationOnOutlined />,
     activeIcon: <LocationOn color="primary" />,
     to: '/manager/room',
-  },
-  {
-    name: 'Camera',
-    icon: <VideocamOutlined />,
-    activeIcon: <Videocam color="primary" />,
-    to: '/manager/camera',
   },
   {
     name: 'Subject',
@@ -107,7 +96,7 @@ const ManagerDashboard = (): JSX.Element => {
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'flex' } }}>
-            <AvatarProfileMenu profileLink="/manager/profile" user={user} />
+            <AvatarProfileMenu user={user} />
           </Box>
         </Toolbar>
       </AppBar>
@@ -125,8 +114,6 @@ const ManagerDashboard = (): JSX.Element => {
           <Route path="/manager/account/:id" component={DetailAccountPage} />
           <Route path="/manager/room" component={RoomPage} exact />
           <Route path="/manager/room/:id" component={DetailRoomPage} />
-          <Route path="/manager/camera" component={Camera} exact />
-          <Route path="/manager/camera/:id" component={DetailCameraPage} />
           <Route path="/manager/semester" component={SemesterPage} exact />
           <Route
             path="/manager/semester/:id"
