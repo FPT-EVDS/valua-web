@@ -8,6 +8,7 @@ import roomSchema from './roomSchema';
 import semesterSchema from './semesterSchema';
 import shiftSchema from './shiftSchema';
 import subjectSchema from './subjectSchema';
+import toolSchema from './toolSchema';
 
 export {
   accountSchema,
@@ -20,4 +21,5 @@ export {
   semesterSchema,
   shiftSchema,
   subjectSchema,
+  toolSchema,
 };

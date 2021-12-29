@@ -1,4 +1,6 @@
 import {
+  Build,
+  BuildOutlined,
   Class,
   ClassOutlined,
   Dashboard as DashboardIcon,
@@ -27,6 +29,7 @@ import DetailRoomPage from './Room/DetailRoomPage';
 import SemesterPage from './Semester';
 import DetailSemesterPage from './Semester/DetailSemester';
 import SubjectPage from './Subject';
+import ToolPage from './Tool';
 
 const drawerItems: Array<DrawerItem> = [
   {
@@ -42,22 +45,28 @@ const drawerItems: Array<DrawerItem> = [
     to: '/manager/account',
   },
   {
-    name: 'Room',
-    icon: <LocationOnOutlined />,
-    activeIcon: <LocationOn color="primary" />,
-    to: '/manager/room',
-  },
-  {
     name: 'Subject',
     icon: <ClassOutlined />,
     activeIcon: <Class color="primary" />,
     to: '/manager/subject',
   },
   {
+    name: 'Tools',
+    icon: <BuildOutlined />,
+    activeIcon: <Build color="primary" />,
+    to: '/manager/tool',
+  },
+  {
     name: 'Semester',
     icon: <SchoolOutlined />,
     activeIcon: <School color="primary" />,
     to: '/manager/semester',
+  },
+  {
+    name: 'Room',
+    icon: <LocationOnOutlined />,
+    activeIcon: <LocationOn color="primary" />,
+    to: '/manager/room',
   },
 ];
 
@@ -109,18 +118,15 @@ const ManagerDashboard = (): JSX.Element => {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
         <Switch>
-          <Route path="/manager/dashboard" component={Dashboard} />
+          <Route path="/manager/dashboard" component={Dashboard} exact />
           <Route path="/manager/account" component={AccountPage} exact />
           <Route path="/manager/account/:id" component={DetailAccountPage} />
           <Route path="/manager/room" component={RoomPage} exact />
           <Route path="/manager/room/:id" component={DetailRoomPage} />
           <Route path="/manager/semester" component={SemesterPage} exact />
-          <Route
-            path="/manager/semester/:id"
-            component={DetailSemesterPage}
-            exact
-          />
+          <Route path="/manager/semester/:id" component={DetailSemesterPage} />
           <Route path="/manager/subject" component={SubjectPage} exact />
+          <Route path="/manager/tool" component={ToolPage} exact />
           <Route path="/manager/profile" component={ProfilePage} exact />
           <Redirect from="/manager" to="/manager/dashboard" />
         </Switch>

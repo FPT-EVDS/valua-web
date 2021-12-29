@@ -14,6 +14,7 @@ import shiftReducer from 'features/shift/shiftSlice';
 import subjectReducer from 'features/subject/subjectsSlice';
 import detailSubjectExamineeReducer from 'features/subjectExaminee/detailExamineeSubjectSlice';
 import subjectExamineeReducer from 'features/subjectExaminee/subjectExamineeSlice';
+import toolsReducer from 'features/tool/toolsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -23,6 +24,7 @@ export const store = configureStore({
     room: roomReducer,
     detailRoom: detailRoomReducer,
     subjects: subjectReducer,
+    tools: toolsReducer,
     semesters: semesterReducer,
     detailSemester: detailSemesterReducer,
     shift: shiftReducer,
