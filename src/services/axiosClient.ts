@@ -2,6 +2,7 @@ import axios from 'axios';
 import createAuthRefreshInterceptor, {
   AxiosAuthRefreshRequestConfig,
 } from 'axios-auth-refresh';
+import AppConstants from 'enums/app';
 
 const axiosClient = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -13,7 +14,7 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(async config => {
   const customHeaders: Record<string, unknown> = {};
 
-  const accessToken = localStorage.getItem('access_token');
+  const accessToken = localStorage.getItem(AppConstants.ACCESS_TOKEN);
   if (accessToken) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     customHeaders.Authorization = `Bearer ${String(accessToken)}`;
@@ -32,7 +33,7 @@ axiosClient.interceptors.request.use(async config => {
 const refreshAuthLogic = async (failedRequest: {
   response: { config: { headers: { [x: string]: string } } };
 }) => {
-  const refreshToken = localStorage.getItem('refresh_token');
+  const refreshToken = localStorage.getItem(AppConstants.REFRESH_TOKEN);
   try {
     const response = await axiosClient.get('/authentication/refreshToken', {
       headers: {
@@ -41,14 +42,14 @@ const refreshAuthLogic = async (failedRequest: {
       skipAuthRefresh: true,
     } as AxiosAuthRefreshRequestConfig);
     const { token } = response.data;
-    localStorage.setItem('access_token', token);
+    localStorage.setItem(AppConstants.ACCESS_TOKEN, token);
     failedRequest.response.config.headers.Authorization = `Bearer ${String(
       token,
     )}`;
     return await Promise.resolve();
   } catch (error) {
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('access_token');
+    localStorage.removeItem(AppConstants.REFRESH_TOKEN);
+    localStorage.removeItem(AppConstants.ACCESS_TOKEN);
     return await Promise.reject(error);
   }
 };

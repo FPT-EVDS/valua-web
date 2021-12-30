@@ -10,6 +10,7 @@ import {
   MenuItem,
   Typography,
 } from '@mui/material';
+import AppConstants from 'enums/app';
 import User from 'models/user.model';
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -90,9 +91,8 @@ const AvatarProfileMenu = ({ user }: Props) => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            // FIXME: FIX LOGOUT LOGIC HERE
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
+            localStorage.removeItem(AppConstants.ACCESS_TOKEN);
+            localStorage.removeItem(AppConstants.REFRESH_TOKEN);
             history.push('/');
           }}
         >
