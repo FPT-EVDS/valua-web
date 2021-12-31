@@ -19,4 +19,18 @@ const chunk = <Type>(arr: Type[], size: number): Type[][] => {
 const parseJwt = (token: string): JwToken =>
   JSON.parse(atob(token.split('.')[1])) as JwToken;
 
-export { chunk, parseJwt };
+function debounce<T extends unknown[], U>(
+  callback: (...args: T) => PromiseLike<U> | U,
+  wait: number,
+) {
+  let timer: number;
+
+  return (...args: T): Promise<U> => {
+    clearTimeout(timer);
+    return new Promise(resolve => {
+      timer = window.setTimeout(() => resolve(callback(...args)), wait);
+    });
+  };
+}
+
+export { chunk, debounce, parseJwt };

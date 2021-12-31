@@ -4,46 +4,49 @@ import {
   CheckBoxOutlineBlank,
 } from '@mui/icons-material';
 import { Autocomplete, Checkbox, TextField } from '@mui/material';
-import { useAppDispatch } from 'app/hooks';
-import {
-  disableAddSubject,
-  enableAddSubject,
-} from 'features/semester/detailSemesterSlice';
-import Subject from 'models/subject.model';
-import React, { useEffect, useState } from 'react';
-import subjectServices from 'services/subject.service';
+import Tool from 'models/tool.model';
+import React, { useCallback, useEffect, useState } from 'react';
+import toolServices from 'services/tool.service';
+import { debounce } from 'utils';
 
 interface Props {
   error?: boolean;
+  disabled: boolean;
   helperText?: string;
-  semesterId?: string;
-  onChange: (subjects: Subject[] | null) => void;
+  onChange: (tools: Tool[] | null) => void;
+  value?: Tool[];
 }
 
-const AddSemesterSubjectsDropdown = ({
-  semesterId,
+const ToolDropdown = ({
   onChange,
   helperText,
   error,
+  value = [],
+  disabled,
 }: Props) => {
-  const dispatch = useAppDispatch();
-  const [subjectOptions, setSubjectOptions] = useState<Subject[]>([]);
+  const [toolOptions, setToolOptions] = useState<Tool[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchSubjects = async () => {
-    if (semesterId) {
-      const response = await subjectServices.getAvailableSubjects(semesterId);
-      if (response.data.length > 0) {
-        setSubjectOptions(response.data);
-        dispatch(enableAddSubject());
-      } else dispatch(disableAddSubject());
-    }
+  const fetchTools = async (search?: string) => {
+    const response = await toolServices.searchTools({ search });
+    const { tools } = response.data;
+    setToolOptions(tools);
     setIsLoading(false);
+  };
+
+  const debounceCall = useCallback(
+    debounce((searchValue: string) => fetchTools(searchValue), 500),
+    [],
+  );
+
+  const updateValue = (newValue: string) => {
+    setIsLoading(true);
+    debounceCall(newValue).catch(error_ => setToolOptions([]));
   };
 
   useEffect(() => {
     setIsLoading(true);
-    fetchSubjects().catch(() => {
+    fetchTools().catch(() => {
       setIsLoading(false);
     });
   }, []);
@@ -51,14 +54,21 @@ const AddSemesterSubjectsDropdown = ({
   return (
     <Autocomplete
       multiple
-      limitTags={5}
+      disabled={disabled}
+      value={value}
+      filterSelectedOptions
+      limitTags={4}
       disableCloseOnSelect
       loading={isLoading}
-      options={subjectOptions}
+      options={toolOptions}
       isOptionEqualToValue={(option, optionValue) =>
-        option?.subjectId === optionValue?.subjectId
+        option?.toolId === optionValue?.toolId
       }
-      getOptionLabel={option => `${option.subjectCode}`}
+      filterOptions={options => options}
+      getOptionLabel={option => `${option.toolName}`}
+      onInputChange={(event, newInputValue) => {
+        updateValue(newInputValue);
+      }}
       onChange={(event, newValue) => onChange(newValue)}
       renderOption={(props, option, { selected }) => (
         <li {...props}>
@@ -68,14 +78,14 @@ const AddSemesterSubjectsDropdown = ({
             style={{ marginRight: 8 }}
             checked={selected}
           />
-          {`${option.subjectCode} - ${option.subjectName}`}
+          {`${option.toolCode} - ${option.toolName}`}
         </li>
       )}
       renderInput={params => (
         <TextField
           {...params}
-          label="Subject"
-          name="subjects"
+          label="Tool"
+          name="tools"
           autoFocus
           margin="dense"
           error={error}
@@ -91,4 +101,4 @@ const AddSemesterSubjectsDropdown = ({
   );
 };
 
-export default AddSemesterSubjectsDropdown;
+export default ToolDropdown;

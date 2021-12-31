@@ -1,14 +1,18 @@
 /* eslint-disable prefer-destructuring */
-import { Add, FiberManualRecord } from '@mui/icons-material';
+import { Add, FiberManualRecord, InfoOutlined } from '@mui/icons-material';
 import {
   Box,
   Button,
   MenuItem,
   Stack,
   TextField,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
   Typography,
 } from '@mui/material';
-import { green, red } from '@mui/material/colors';
+import { green, grey, red } from '@mui/material/colors';
+import { styled } from '@mui/styles';
 import {
   GridActionsCellItem,
   GridActionsColDef,
@@ -30,8 +34,17 @@ import {
   disableSubject,
   searchBySubjectName,
 } from 'features/subject/subjectsSlice';
+import Tool from 'models/tool.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
+
+const CustomWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  [`& .${tooltipClasses.tooltip}`]: {
+    maxWidth: 200,
+  },
+});
 
 const SubjectPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
@@ -63,6 +76,7 @@ const SubjectPage = () => {
     subjectId: null,
     subjectCode: '',
     subjectName: '',
+    tools: [],
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [filterStatus, setFilterStatus] = useState('');
@@ -157,6 +171,30 @@ const SubjectPage = () => {
       minWidth: 130,
     },
     { field: 'subjectName', headerName: 'Name', flex: 0.1, minWidth: 130 },
+    {
+      field: 'tools',
+      headerName: 'Allowed tools',
+      flex: 0.1,
+      renderCell: ({ id, field, getValue }) => {
+        const tools = getValue(id, field) as Tool[];
+        let tooltipText = 'No tools allowed';
+        if (tools.length > 0) {
+          tooltipText = tools.map(tool => tool.toolName).join(', ');
+        }
+        return (
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Typography variant="body2">
+              {tools.length > 0 ? tools.length : 'Not allowed'}
+            </Typography>
+            {tools.length > 0 && (
+              <CustomWidthTooltip title={tooltipText} arrow>
+                <InfoOutlined fontSize="small" color="info" />
+              </CustomWidthTooltip>
+            )}
+          </Stack>
+        );
+      },
+    },
     {
       field: 'isActive',
       headerName: 'Status',

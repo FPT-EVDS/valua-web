@@ -45,6 +45,7 @@ const toolServices = {
     page,
     sort,
     status,
+    size,
   }: SearchByNameDto): Promise<AxiosResponse<ToolsDto>> => {
     const url = `/tools`;
     return axiosClient.get(url, {
@@ -53,6 +54,7 @@ const toolServices = {
         search,
         sort,
         status,
+        size,
       },
     });
   },

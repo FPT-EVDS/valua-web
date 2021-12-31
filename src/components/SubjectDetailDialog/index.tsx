@@ -15,10 +15,12 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import SlideTransition from 'components/SlideTransition';
+import ToolDropdown from 'components/ToolDropdown';
 import { subjectSchema } from 'configs/validations';
 import SubjectDto from 'dtos/subject.dto';
 import { addSubject, updateSubject } from 'features/subject/subjectsSlice';
 import { useFormik } from 'formik';
+import Tool from 'models/tool.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 
@@ -37,6 +39,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
     subjectId: null,
     subjectCode: '',
     subjectName: '',
+    tools: [],
   },
   isUpdate,
   isActive,
@@ -74,6 +77,10 @@ const SubjectDetailDialog: React.FC<Props> = ({
   const handleModalClose = () => {
     formik.resetForm();
     handleClose();
+  };
+
+  const handleChangeTools = async (selectedTools: Tool[] | null) => {
+    await formik.setFieldValue('tools', selectedTools);
   };
 
   const refreshForm = async (values: SubjectDto) => formik.setValues(values);
@@ -173,6 +180,15 @@ const SubjectDetailDialog: React.FC<Props> = ({
                   formik.touched.subjectName && formik.errors.subjectName
                 }
                 onChange={formik.handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ToolDropdown
+                disabled={!isActive}
+                error={Boolean(formik.errors.tools)}
+                helperText={String(formik.errors.tools)}
+                onChange={value => handleChangeTools(value)}
+                value={formik.values.tools ?? []}
               />
             </Grid>
           </Grid>
