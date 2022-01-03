@@ -47,7 +47,7 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
         };
         const result = await dispatch(updateUserProfile(data));
         unwrapResult(result);
-        enqueueSnackbar('Update profile success', {
+        enqueueSnackbar('Update profile successfully', {
           variant: 'success',
           preventDuplicate: true,
         });

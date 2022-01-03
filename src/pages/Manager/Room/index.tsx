@@ -38,7 +38,7 @@ const RoomPage = () => {
   const { url } = useRouteMatch();
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this room ?`,
+      title: `Do you want to disable this room ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
@@ -93,7 +93,7 @@ const RoomPage = () => {
     try {
       const result = await dispatch(disableRoom(roomId));
       unwrapResult(result);
-      enqueueSnackbar('Disable room success', {
+      enqueueSnackbar('Disable room successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -119,7 +119,7 @@ const RoomPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove room ${name}`,
+      title: `Do you want to disable room ${name}`,
       handleAccept: () => handleDeleteRoom(roomId),
     }));
   };
@@ -161,7 +161,7 @@ const RoomPage = () => {
 
           case Status.isDisable:
             color = red[500];
-            statusText = 'Disable';
+            statusText = 'Inactive';
             break;
 
           default:
@@ -196,7 +196,7 @@ const RoomPage = () => {
             onClick={() => history.push(`${url}/${roomId}?edit=true`)}
           />,
           <GridActionsCellItem
-            label="Delete"
+            label="Disable"
             sx={{ color: red[500] }}
             showInMenu
             onClick={() => showDeleteConfirmation(params)}

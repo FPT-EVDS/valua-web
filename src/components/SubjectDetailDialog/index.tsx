@@ -53,8 +53,8 @@ const SubjectDetailDialog: React.FC<Props> = ({
     onSubmit: async (payload: SubjectDto) => {
       try {
         const message = isUpdate
-          ? `Update subject ${String(payload.subjectCode)} success`
-          : 'Create subject success';
+          ? `Update subject ${String(payload.subjectCode)} successfully`
+          : 'Create subject successfully';
         const result = isUpdate
           ? await dispatch(updateSubject(payload))
           : await dispatch(addSubject(payload));

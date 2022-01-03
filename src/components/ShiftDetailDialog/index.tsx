@@ -52,7 +52,7 @@ const ShiftDetailDialog: React.FC<Props> = ({
       try {
         const result = await dispatch(addShift(payload));
         const shift = unwrapResult(result);
-        enqueueSnackbar('Create shift success', {
+        enqueueSnackbar('Create shift successfully', {
           variant: 'success',
           preventDuplicate: true,
         });

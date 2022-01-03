@@ -45,7 +45,7 @@ const AccountPage = () => {
   const [filterRole, setFilterRole] = useState('');
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this account ?`,
+      title: `Do you want to disable this account ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
@@ -102,7 +102,7 @@ const AccountPage = () => {
     try {
       const result = await dispatch(disableAccount(appUserId));
       unwrapResult(result);
-      enqueueSnackbar('Disable account success', {
+      enqueueSnackbar('Disable account successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -126,7 +126,7 @@ const AccountPage = () => {
     try {
       const result = await dispatch(activeAccount(appUserId));
       unwrapResult(result);
-      enqueueSnackbar('Enable account success', {
+      enqueueSnackbar('Enable account successfully', {
         variant: 'success',
         preventDuplicate: true,
       });

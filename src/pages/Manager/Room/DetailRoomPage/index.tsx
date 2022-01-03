@@ -27,7 +27,7 @@ const DetailRoomPage = () => {
   const { room, isLoading } = useAppSelector(state => state.detailRoom);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this room ?`,
+      title: `Do you want to disable this room ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
@@ -54,7 +54,7 @@ const DetailRoomPage = () => {
     try {
       const result = await dispatch(disableRoom(roomId));
       unwrapResult(result);
-      enqueueSnackbar('Disable room success', {
+      enqueueSnackbar('Disable room successfully', {
         variant: 'success',
         preventDuplicate: true,
       });

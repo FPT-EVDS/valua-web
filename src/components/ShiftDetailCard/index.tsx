@@ -85,7 +85,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
       try {
         const result = await dispatch(updateShift(payload));
         unwrapResult(result);
-        enqueueSnackbar('Update shift success', {
+        enqueueSnackbar('Update shift successfully', {
           variant: 'success',
           preventDuplicate: true,
         });

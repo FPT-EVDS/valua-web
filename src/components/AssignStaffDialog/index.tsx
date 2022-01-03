@@ -59,7 +59,7 @@ const AssignStaffDialog: React.FC<Props> = ({
       try {
         const result = await dispatch(assignStaff(payload));
         unwrapResult(result);
-        enqueueSnackbar('Assign staff success', {
+        enqueueSnackbar('Assign staff successfully', {
           variant: 'success',
           preventDuplicate: true,
         });

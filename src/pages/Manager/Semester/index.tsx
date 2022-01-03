@@ -48,7 +48,7 @@ const SemesterPage = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this semester ?`,
+      title: `Do you want to disable this semester ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
@@ -116,7 +116,7 @@ const SemesterPage = () => {
     try {
       const result = await dispatch(disableSemester(semesterId));
       unwrapResult(result);
-      enqueueSnackbar('Disable semester success', {
+      enqueueSnackbar('Disable semester successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -140,7 +140,7 @@ const SemesterPage = () => {
     try {
       const result = await dispatch(activeSemester(semesterId));
       unwrapResult(result);
-      enqueueSnackbar('Enable semester success', {
+      enqueueSnackbar('Enable semester successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -158,7 +158,7 @@ const SemesterPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove semester ${name}`,
+      title: `Do you want to disable semester ${name}`,
       handleAccept: () => handleDeleteSemester(semesterId),
     }));
   };
@@ -190,7 +190,7 @@ const SemesterPage = () => {
       renderCell: params => {
         const active = params.getValue(params.id, params.field);
         const color = active ? green[500] : red[500];
-        const statusText = active ? 'Active' : 'Disable';
+        const statusText = active ? 'Active' : 'Inactive';
         return (
           <Box display="flex" alignItems="center">
             <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
@@ -316,11 +316,12 @@ const SemesterPage = () => {
             <MenuItem key="all-status" value="">
               All
             </MenuItem>
-            {activeStatus.map(option => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
+            <MenuItem key="actived" value="1">
+              Active
+            </MenuItem>
+            <MenuItem key="disabled" value="0">
+              Inactive
+            </MenuItem>
           </TextField>
           <DatePicker
             label="Begin date"

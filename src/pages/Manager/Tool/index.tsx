@@ -40,7 +40,7 @@ const ToolPage = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this tool ?`,
+      title: `Do you want to disable this tool ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
@@ -100,7 +100,7 @@ const ToolPage = () => {
     try {
       const result = await dispatch(activeTool(toolId));
       unwrapResult(result);
-      enqueueSnackbar('Enable tool success', {
+      enqueueSnackbar('Enable tool successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -116,7 +116,7 @@ const ToolPage = () => {
     try {
       const result = await dispatch(disableTool(toolId));
       unwrapResult(result);
-      enqueueSnackbar('Disable tool success', {
+      enqueueSnackbar('Disable tool successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -142,7 +142,7 @@ const ToolPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove ${name}`,
+      title: `Do you want to disable ${name}`,
       handleAccept: () => handleDeleteTool(toolId),
     }));
   };
@@ -155,7 +155,12 @@ const ToolPage = () => {
       flex: 0.1,
       minWidth: 130,
     },
-    { field: 'toolName', headerName: 'Name', flex: 0.1, minWidth: 130 },
+    {
+      field: 'toolName',
+      headerName: 'Name',
+      flex: 0.1,
+      minWidth: 130,
+    },
     {
       field: 'isActive',
       headerName: 'Status',
@@ -164,7 +169,7 @@ const ToolPage = () => {
       renderCell: params => {
         const active = params.getValue(params.id, params.field);
         const color = active ? green[500] : red[500];
-        const statusText = active ? 'Active' : 'Disable';
+        const statusText = active ? 'Active' : 'Inactive';
         return (
           <Box display="flex" alignItems="center">
             <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
@@ -214,7 +219,7 @@ const ToolPage = () => {
             }}
           />,
           <GridActionsCellItem
-            label="Delete"
+            label="Disable"
             sx={{ color: red[500] }}
             showInMenu
             onClick={() => showDeleteConfirmation(params)}
@@ -273,7 +278,7 @@ const ToolPage = () => {
             Active
           </MenuItem>
           <MenuItem key="disabled" value="2">
-            Disable
+            Inactive
           </MenuItem>
         </TextField>
       </Stack>

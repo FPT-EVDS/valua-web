@@ -138,7 +138,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
         if (image) formData.append('image', image as unknown as Blob);
         const result = await dispatch(addAccount(formData));
         unwrapResult(result);
-        enqueueSnackbar('Create account success', {
+        enqueueSnackbar('Create account successfully', {
           variant: 'success',
           preventDuplicate: true,
         });

@@ -1,9 +1,6 @@
 /* eslint-disable react/require-default-props */
-import {
-  CheckBox as CheckBoxIcon,
-  CheckBoxOutlineBlank,
-} from '@mui/icons-material';
-import { Autocomplete, Checkbox, TextField } from '@mui/material';
+import { Autocomplete, Box, Chip, TextField } from '@mui/material';
+import { activeTool } from 'features/tool/toolsSlice';
 import Tool from 'models/tool.model';
 import React, { useCallback, useEffect, useState } from 'react';
 import toolServices from 'services/tool.service';
@@ -30,7 +27,9 @@ const ToolDropdown = ({
   const fetchTools = async (search?: string) => {
     const response = await toolServices.searchTools({ search });
     const { tools } = response.data;
-    setToolOptions(tools);
+    // Get active tools only
+    const activeTools = tools.filter(tool => tool.isActive === true);
+    setToolOptions(activeTools);
     setIsLoading(false);
   };
 
@@ -70,17 +69,20 @@ const ToolDropdown = ({
         updateValue(newInputValue);
       }}
       onChange={(event, newValue) => onChange(newValue)}
-      renderOption={(props, option, { selected }) => (
-        <li {...props}>
-          <Checkbox
-            icon={<CheckBoxOutlineBlank fontSize="small" />}
-            checkedIcon={<CheckBoxIcon fontSize="small" />}
-            style={{ marginRight: 8 }}
-            checked={selected}
-          />
+      renderOption={(props, option) => (
+        <Box component="li" {...props}>
           {`${option.toolCode} - ${option.toolName}`}
-        </li>
+        </Box>
       )}
+      renderTags={(tagValues: Tool[], getTagProps) =>
+        tagValues.map((option, index) => (
+          <Chip
+            label={option.toolName}
+            color={option.isActive ? 'primary' : 'default'}
+            {...getTagProps({ index })}
+          />
+        ))
+      }
       renderInput={params => (
         <TextField
           {...params}

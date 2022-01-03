@@ -1,6 +1,6 @@
 import {
-  Build,
-  BuildOutlined,
+  Architecture,
+  ArchitectureOutlined,
   Class,
   ClassOutlined,
   Dashboard as DashboardIcon,
@@ -52,8 +52,8 @@ const drawerItems: Array<DrawerItem> = [
   },
   {
     name: 'Tools',
-    icon: <BuildOutlined />,
-    activeIcon: <Build color="primary" />,
+    icon: <ArchitectureOutlined />,
+    activeIcon: <Architecture color="primary" />,
     to: '/manager/tool',
   },
   {

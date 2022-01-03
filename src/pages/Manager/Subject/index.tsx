@@ -11,7 +11,7 @@ import {
   TooltipProps,
   Typography,
 } from '@mui/material';
-import { green, grey, red } from '@mui/material/colors';
+import { green, red } from '@mui/material/colors';
 import { styled } from '@mui/styles';
 import {
   GridActionsCellItem,
@@ -26,7 +26,6 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import SubjectDetailDialog from 'components/SubjectDetailDialog';
-import activeStatus from 'configs/constants/activeStatus';
 import SubjectDto from 'dtos/subject.dto';
 import Status from 'enums/status.enum';
 import {
@@ -55,7 +54,7 @@ const SubjectPage = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this subject ?`,
+      title: `Do you want to disable this subject ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
@@ -115,7 +114,7 @@ const SubjectPage = () => {
     try {
       const result = await dispatch(activeSubject(subjectId));
       unwrapResult(result);
-      enqueueSnackbar('Enable subject success', {
+      enqueueSnackbar('Enable subject successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -131,7 +130,7 @@ const SubjectPage = () => {
     try {
       const result = await dispatch(disableSubject(subject));
       unwrapResult(result);
-      enqueueSnackbar('Disable subject success', {
+      enqueueSnackbar('Disable subject successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -157,7 +156,7 @@ const SubjectPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove subject ${name}`,
+      title: `Do you want to disable subject ${name}`,
       handleAccept: () => handleDeleteSubject(subjectId),
     }));
   };
@@ -175,6 +174,7 @@ const SubjectPage = () => {
       field: 'tools',
       headerName: 'Allowed tools',
       flex: 0.1,
+      sortable: false,
       renderCell: ({ id, field, getValue }) => {
         const tools = getValue(id, field) as Tool[];
         let tooltipText = 'No tools allowed';
@@ -183,9 +183,7 @@ const SubjectPage = () => {
         }
         return (
           <Stack direction="row" spacing={2} alignItems="center">
-            <Typography variant="body2">
-              {tools.length > 0 ? tools.length : 'Not allowed'}
-            </Typography>
+            <Typography variant="body2">{tools.length}</Typography>
             {tools.length > 0 && (
               <CustomWidthTooltip title={tooltipText} arrow>
                 <InfoOutlined fontSize="small" color="info" />
@@ -203,7 +201,7 @@ const SubjectPage = () => {
       renderCell: params => {
         const active = params.getValue(params.id, params.field);
         const color = active ? green[500] : red[500];
-        const statusText = active ? 'Active' : 'Disable';
+        const statusText = active ? 'Active' : 'Inactive';
         return (
           <Box display="flex" alignItems="center">
             <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
@@ -253,7 +251,7 @@ const SubjectPage = () => {
             }}
           />,
           <GridActionsCellItem
-            label="Delete"
+            label="Disable"
             sx={{ color: red[500] }}
             showInMenu
             onClick={() => showDeleteConfirmation(params)}
@@ -308,11 +306,12 @@ const SubjectPage = () => {
           <MenuItem key="all-status" value="">
             All
           </MenuItem>
-          {activeStatus.map(option => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
+          <MenuItem key="actived" value="1">
+            Active
+          </MenuItem>
+          <MenuItem key="disabled" value="0">
+            Inactive
+          </MenuItem>
         </TextField>
       </Stack>
       <Stack direction="row" sx={{ marginTop: 1 }} justifyContent="flex-end">

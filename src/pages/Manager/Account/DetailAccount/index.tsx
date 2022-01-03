@@ -45,7 +45,7 @@ const DetailAccountPage = () => {
     try {
       const result = await dispatch(disableAccount(accountId));
       unwrapResult(result);
-      enqueueSnackbar('Disable account success', {
+      enqueueSnackbar('Disable account successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -69,7 +69,7 @@ const DetailAccountPage = () => {
     try {
       const result = await dispatch(activeAccount(accountId));
       unwrapResult(result);
-      enqueueSnackbar('Active account success', {
+      enqueueSnackbar('Active account successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -85,7 +85,7 @@ const DetailAccountPage = () => {
     try {
       const result = await dispatch(resetPassword(appUserId));
       unwrapResult(result);
-      enqueueSnackbar('Reset password success', {
+      enqueueSnackbar('Reset password successfully', {
         variant: 'success',
         preventDuplicate: true,
       });

@@ -50,8 +50,8 @@ const ToolDetailDialog: React.FC<Props> = ({
     onSubmit: async (payload: ToolDto) => {
       try {
         const message = isUpdate
-          ? `Update tool ${String(payload.toolCode)} success`
-          : 'Create tool success';
+          ? `Update tool ${String(payload.toolCode)} successfully`
+          : 'Create tool successfully';
         const result = isUpdate
           ? await dispatch(updateTool(payload))
           : await dispatch(addTool(payload));

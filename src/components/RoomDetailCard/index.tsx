@@ -42,7 +42,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
       try {
         const result = await dispatch(updateRoom(payload));
         unwrapResult(result);
-        enqueueSnackbar('Update room success', {
+        enqueueSnackbar('Update room successfully', {
           variant: 'success',
           preventDuplicate: true,
         });

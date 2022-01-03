@@ -89,7 +89,7 @@ const ExamRoomDetailCard = ({
       try {
         const result = await dispatch(updateExamRoom(payload));
         unwrapResult(result);
-        enqueueSnackbar('Update exam room success', {
+        enqueueSnackbar('Update exam room successfully', {
           variant: 'success',
           preventDuplicate: true,
         });

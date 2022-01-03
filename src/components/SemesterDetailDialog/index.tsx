@@ -50,8 +50,8 @@ const SemesterDetailDialog: React.FC<Props> = ({
     onSubmit: async (payload: SemesterDto) => {
       try {
         const message = isUpdate
-          ? `Update semester ${String(payload.semesterName)} success`
-          : 'Add semester success';
+          ? `Update semester ${String(payload.semesterName)} successfully`
+          : 'Add semester successfully';
         const result = isUpdate
           ? await dispatch(updateSemester(payload))
           : await dispatch(addSemester(payload));

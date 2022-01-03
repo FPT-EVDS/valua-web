@@ -51,7 +51,7 @@ const AddSubjectToSemesterDialog: React.FC<Props> = ({ open, handleClose }) => {
         unwrapResult(result);
         const message = `Add ${
           formik.values.subjects.length
-        } subjects to ${String(semester?.semesterName)} success`;
+        } subjects to ${String(semester?.semesterName)} successfully`;
         enqueueSnackbar(message, {
           variant: 'success',
           preventDuplicate: true,

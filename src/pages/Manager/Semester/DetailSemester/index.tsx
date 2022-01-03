@@ -51,7 +51,7 @@ const DetailSemesterPage = () => {
   );
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this semester ?`,
+      title: `Do you want to disable this semester ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
@@ -81,7 +81,7 @@ const DetailSemesterPage = () => {
           }),
         );
         unwrapResult(result);
-        enqueueSnackbar('Remove subject success', {
+        enqueueSnackbar('Remove subject successfully', {
           variant: 'success',
           preventDuplicate: true,
         });
@@ -106,7 +106,7 @@ const DetailSemesterPage = () => {
     try {
       const result = await dispatch(disableSemester(semesterId));
       unwrapResult(result);
-      enqueueSnackbar('Disable semester success', {
+      enqueueSnackbar('Disable semester successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -130,7 +130,7 @@ const DetailSemesterPage = () => {
     try {
       const result = await dispatch(enableSemester(semesterId));
       unwrapResult(result);
-      enqueueSnackbar('Enable semester success', {
+      enqueueSnackbar('Enable semester successfully', {
         variant: 'success',
         preventDuplicate: true,
       });
@@ -146,7 +146,7 @@ const DetailSemesterPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: 'Do you want to delete this semester ?',
+      title: 'Do you want to disable this semester ?',
       handleAccept: () => handleDeleteSemester(semesterId),
     }));
   };

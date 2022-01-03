@@ -42,7 +42,7 @@ const SemesterDetailCard = ({ semester, isLoading }: Props) => {
       try {
         const result = await dispatch(updateSemester(payload));
         unwrapResult(result);
-        enqueueSnackbar('Update semester success', {
+        enqueueSnackbar('Update semester successfully', {
           variant: 'success',
           preventDuplicate: true,
         });

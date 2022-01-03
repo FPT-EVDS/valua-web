@@ -65,7 +65,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
         };
         const result = await dispatch(updateAccount(data));
         unwrapResult(result);
-        enqueueSnackbar('Update account success', {
+        enqueueSnackbar('Update account successfully', {
           variant: 'success',
           preventDuplicate: true,
         });
