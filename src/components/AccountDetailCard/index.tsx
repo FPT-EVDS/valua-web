@@ -144,8 +144,9 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                name="companyId"
                 autoFocus
+                name="companyId"
+                required
                 margin="dense"
                 label={
                   formik.values.userRole.roleID === 3
@@ -176,6 +177,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
             <Grid item xs={12} md={6}>
               <TextField
                 autoFocus
+                required
                 name="fullName"
                 margin="dense"
                 label="Full name"
@@ -204,6 +206,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
               <TextField
                 name="gender"
                 select
+                required
                 margin="dense"
                 label="Gender"
                 fullWidth
@@ -225,6 +228,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
               <TextField
                 name="email"
                 autoFocus
+                required
                 margin="dense"
                 label="Email"
                 type="email"
@@ -258,6 +262,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                   <TextField
                     {...params}
                     name="birthdate"
+                    required
                     autoFocus
                     margin="dense"
                     fullWidth
@@ -281,6 +286,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
               <TextField
                 name="phoneNumber"
                 autoFocus
+                required
                 margin="dense"
                 label="Phone number"
                 value={formik.values.phoneNumber}
@@ -311,6 +317,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
               <TextField
                 name="address"
                 autoFocus
+                required
                 margin="dense"
                 disabled={!isEditable}
                 label="Address"
@@ -338,6 +345,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                   <TextField
                     name="classCode"
                     autoFocus
+                    required
                     margin="dense"
                     label="Class"
                     fullWidth

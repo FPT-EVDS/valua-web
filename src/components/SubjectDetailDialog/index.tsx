@@ -139,9 +139,10 @@ const SubjectDetailDialog: React.FC<Props> = ({
             <Grid item xs={12}>
               <TextField
                 autoFocus
+                required
                 name="subjectCode"
                 margin="dense"
-                label="Subject Code"
+                label="Subject code"
                 fullWidth
                 variant="outlined"
                 value={formik.values.subjectCode}
@@ -162,6 +163,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
             <Grid item xs={12}>
               <TextField
                 autoFocus
+                required
                 name="subjectName"
                 margin="dense"
                 label="Name"

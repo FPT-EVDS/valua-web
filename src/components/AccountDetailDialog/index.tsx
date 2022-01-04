@@ -306,6 +306,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12}>
                       <TextField
                         name="companyId"
+                        required
                         autoFocus
                         margin="dense"
                         label={
@@ -339,6 +340,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12} md={6}>
                       <TextField
                         autoFocus
+                        required
                         name="fullName"
                         margin="dense"
                         label="Full name"
@@ -368,6 +370,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12} md={6}>
                       <TextField
                         name="gender"
+                        required
                         select
                         margin="dense"
                         label="Gender"
@@ -392,6 +395,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12}>
                       <TextField
                         name="email"
+                        required
                         autoFocus
                         margin="dense"
                         label="Email"
@@ -428,6 +432,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                           <TextField
                             {...params}
                             name="birthdate"
+                            required
                             autoFocus
                             margin="dense"
                             fullWidth
@@ -450,6 +455,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12} md={6}>
                       <TextField
                         name="phoneNumber"
+                        required
                         autoFocus
                         margin="dense"
                         label="Phone number"
@@ -480,6 +486,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12}>
                       <TextField
                         name="address"
+                        required
                         autoFocus
                         margin="dense"
                         label="Address"
@@ -512,6 +519,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                           <TextField
                             name="classCode"
                             autoFocus
+                            required
                             margin="dense"
                             label="Class"
                             fullWidth

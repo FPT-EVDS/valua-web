@@ -111,6 +111,7 @@ const SemesterDetailCard = ({ semester, isLoading }: Props) => {
             <Grid item xs={12}>
               <TextField
                 autoFocus
+                required
                 name="semesterName"
                 margin="dense"
                 label="Name"
@@ -141,6 +142,7 @@ const SemesterDetailCard = ({ semester, isLoading }: Props) => {
                 renderInput={params => (
                   <TextField
                     {...params}
+                    required
                     name="beginDate"
                     autoFocus
                     margin="dense"
@@ -170,6 +172,7 @@ const SemesterDetailCard = ({ semester, isLoading }: Props) => {
                 renderInput={params => (
                   <TextField
                     {...params}
+                    required
                     name="endDate"
                     autoFocus
                     margin="dense"

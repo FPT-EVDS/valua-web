@@ -109,6 +109,7 @@ const RoomDetailDialog: React.FC<Props> = ({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
+                required
                 autoFocus
                 name="roomName"
                 margin="dense"
@@ -128,6 +129,7 @@ const RoomDetailDialog: React.FC<Props> = ({
             </Grid>
             <Grid item xs={12}>
               <TextField
+                required
                 name="seatCount"
                 autoFocus
                 margin="dense"
@@ -149,6 +151,7 @@ const RoomDetailDialog: React.FC<Props> = ({
             </Grid>
             <Grid item xs={12}>
               <TextField
+                required
                 name="floor"
                 autoFocus
                 margin="dense"

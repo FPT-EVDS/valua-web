@@ -119,6 +119,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
             <Grid item xs={12}>
               <TextField
                 autoFocus
+                required
                 name="semesterName"
                 margin="dense"
                 label="Name"
@@ -147,6 +148,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
                 renderInput={params => (
                   <TextField
                     {...params}
+                    required
                     name="beginDate"
                     autoFocus
                     margin="dense"
@@ -175,6 +177,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
                 renderInput={params => (
                   <TextField
                     {...params}
+                    required
                     name="endDate"
                     autoFocus
                     margin="dense"

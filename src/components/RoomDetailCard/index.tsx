@@ -106,6 +106,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
               <TextField
+                required
                 name="roomName"
                 margin="dense"
                 label="Name"
@@ -124,6 +125,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
             </Grid>
             <Grid item xs={12} md={4}>
               <TextField
+                required
                 name="floor"
                 margin="dense"
                 label="Floor"
@@ -142,6 +144,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
             </Grid>
             <Grid item xs={12} md={4}>
               <TextField
+                required
                 name="seatCount"
                 margin="dense"
                 label="Seat count"
