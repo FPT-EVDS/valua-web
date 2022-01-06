@@ -25,10 +25,10 @@ import ShiftDto from 'dtos/shift.dto';
 import ShiftStatus from 'enums/shiftStatus.enum';
 import { updateShift } from 'features/shift/detailShiftSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import Semester from 'models/semester.model';
 import Shift from 'models/shift.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -38,7 +38,7 @@ interface Props {
 }
 
 const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
   const [isEditable, setIsEditable] = useState(
@@ -85,15 +85,9 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
       try {
         const result = await dispatch(updateShift(payload));
         unwrapResult(result);
-        enqueueSnackbar('Update shift successfully', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Update shift successfully');
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -119,12 +113,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
   };
 
   useEffect(() => {
-    refreshFormValues().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    refreshFormValues().catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shift]);
 

@@ -20,8 +20,8 @@ import { subjectSchema } from 'configs/validations';
 import SubjectDto from 'dtos/subject.dto';
 import { addSubject, updateSubject } from 'features/subject/subjectsSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Tool from 'models/tool.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 
 interface Props {
@@ -44,7 +44,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
   isUpdate,
   isActive,
 }) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.subjects.isLoading);
   const formik = useFormik({
@@ -59,17 +59,11 @@ const SubjectDetailDialog: React.FC<Props> = ({
           ? await dispatch(updateSubject(payload))
           : await dispatch(addSubject(payload));
         unwrapResult(result);
-        enqueueSnackbar(message, {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage(message);
         formik.resetForm();
         handleClose();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -86,12 +80,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
   const refreshForm = async (values: SubjectDto) => formik.setValues(values);
 
   useEffect(() => {
-    refreshForm(initialValues).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    refreshForm(initialValues).catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValues]);
 

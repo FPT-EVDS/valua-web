@@ -33,8 +33,8 @@ import {
   disableSubject,
   searchBySubjectName,
 } from 'features/subject/subjectsSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Tool from 'models/tool.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 const CustomWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -61,7 +61,7 @@ const SubjectPage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
@@ -98,12 +98,7 @@ const SubjectPage = () => {
   };
 
   useEffect(() => {
-    fetchSubjects().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    fetchSubjects().catch(error => showErrorMessage(error));
   }, [page, sortModel]);
 
   useEffect(() => {
@@ -114,15 +109,9 @@ const SubjectPage = () => {
     try {
       const result = await dispatch(activeSubject(subjectId));
       unwrapResult(result);
-      enqueueSnackbar('Enable subject successfully', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Enable subject successfully');
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
     }
   };
 
@@ -130,19 +119,13 @@ const SubjectPage = () => {
     try {
       const result = await dispatch(disableSubject(subject));
       unwrapResult(result);
-      enqueueSnackbar('Disable subject successfully', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable subject successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,

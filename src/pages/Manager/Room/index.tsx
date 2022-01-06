@@ -25,7 +25,7 @@ import RoomDetailDialog from 'components/RoomDetailDialog';
 import RoomStatus from 'configs/constants/roomStatus';
 import Status from 'enums/status.enum';
 import { disableRoom, searchByRoomName } from 'features/room/roomsSlice';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -45,7 +45,7 @@ const RoomPage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
@@ -76,12 +76,7 @@ const RoomPage = () => {
   };
 
   useEffect(() => {
-    fetchRooms().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    fetchRooms().catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, sortModel]);
 
@@ -93,19 +88,13 @@ const RoomPage = () => {
     try {
       const result = await dispatch(disableRoom(roomId));
       unwrapResult(result);
-      enqueueSnackbar('Disable room successfully', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable room successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,

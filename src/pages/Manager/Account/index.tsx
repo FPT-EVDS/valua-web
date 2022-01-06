@@ -31,7 +31,7 @@ import {
   disableAccount,
   searchAccount,
 } from 'features/account/accountsSlice';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -52,7 +52,7 @@ const AccountPage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
@@ -83,10 +83,7 @@ const AccountPage = () => {
     )
       .then(result => unwrapResult(result))
       .catch(error => {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       });
   };
 
@@ -102,19 +99,13 @@ const AccountPage = () => {
     try {
       const result = await dispatch(disableAccount(appUserId));
       unwrapResult(result);
-      enqueueSnackbar('Disable account successfully', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable account successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -126,15 +117,9 @@ const AccountPage = () => {
     try {
       const result = await dispatch(activeAccount(appUserId));
       unwrapResult(result);
-      enqueueSnackbar('Enable account successfully', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Enable account successfully');
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
     }
   };
 

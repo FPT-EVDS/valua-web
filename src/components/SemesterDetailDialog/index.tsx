@@ -19,8 +19,8 @@ import { add } from 'date-fns';
 import SemesterDto from 'dtos/semester.dto';
 import { addSemester, updateSemester } from 'features/semester/semestersSlice';
 import { useFormik } from 'formik';
-import { useSnackbar } from 'notistack';
-import React, { useEffect } from 'react';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
+import React from 'react';
 
 interface Props {
   open: boolean;
@@ -41,7 +41,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
   },
   isUpdate,
 }) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.semesters.isLoading);
   const formik = useFormik({
@@ -56,17 +56,11 @@ const SemesterDetailDialog: React.FC<Props> = ({
           ? await dispatch(updateSemester(payload))
           : await dispatch(addSemester(payload));
         unwrapResult(result);
-        enqueueSnackbar(message, {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage(message);
         formik.resetForm();
         handleClose();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });

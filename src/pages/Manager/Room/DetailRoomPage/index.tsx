@@ -1,17 +1,19 @@
-import { ChevronLeft, Room as RoomIcon } from '@mui/icons-material';
-import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { Room as RoomIcon } from '@mui/icons-material';
+import { Button, Grid, Stack, Typography } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
+import NotFoundItem from 'components/NotFoundItem';
 import OverviewCard from 'components/OverviewCard';
 import RoomDetailCard from 'components/RoomDetailCard';
 import { format } from 'date-fns';
 import Status from 'enums/status.enum';
 import { disableRoom, getRoom } from 'features/room/detailRoomSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Room from 'models/room.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 interface ParamProps {
   id: string;
@@ -23,8 +25,8 @@ interface RoomProps {
 
 const DetailRoomPage = () => {
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
   const { room, isLoading } = useAppSelector(state => state.detailRoom);
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
       title: `Do you want to disable this room ?`,
@@ -34,7 +36,6 @@ const DetailRoomPage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const history = useHistory();
   const { id } = useParams<ParamProps>();
 
   const fetchRoom = async (roomId: string) => {
@@ -54,19 +55,13 @@ const DetailRoomPage = () => {
     try {
       const result = await dispatch(disableRoom(roomId));
       unwrapResult(result);
-      enqueueSnackbar('Disable room successfully', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable room successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -101,48 +96,38 @@ const DetailRoomPage = () => {
   );
 
   useEffect(() => {
-    fetchRoom(id).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    fetchRoom(id).catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
-      <Box
-        display="flex"
-        alignItems="center"
-        onClick={() => history.push('/manager/room')}
-        sx={{ cursor: 'pointer' }}
-      >
-        <ChevronLeft />
-        <div>Back to room page</div>
-      </Box>
-      <Grid container mt={2} spacing={2}>
-        {room && (
-          <>
-            <Grid item xs={12} md={9} lg={4}>
-              <Stack spacing={3}>
-                <OverviewCard
-                  title={room.roomName}
-                  icon={<RoomIcon fontSize="large" />}
-                  status={room.status}
-                  content={<OverviewContent room={room} />}
-                  actionButtons={<GroupButtons />}
-                  isSingleAction
-                />
-              </Stack>
-            </Grid>
-            <Grid item xs={12} lg={8}>
-              <RoomDetailCard isLoading={isLoading} room={room} />
-            </Grid>
-          </>
-        )}
-      </Grid>
+      <BackToPreviousPageButton
+        title="Back to room page"
+        route="/manager/room"
+      />
+      {room ? (
+        <Grid container mt={2} spacing={2}>
+          <Grid item xs={12} md={9} lg={4}>
+            <Stack spacing={3}>
+              <OverviewCard
+                title={room.roomName}
+                icon={<RoomIcon fontSize="large" />}
+                status={room.status}
+                content={<OverviewContent room={room} />}
+                actionButtons={<GroupButtons />}
+                isSingleAction
+              />
+            </Stack>
+          </Grid>
+          <Grid item xs={12} lg={8}>
+            <RoomDetailCard isLoading={isLoading} room={room} />
+          </Grid>
+        </Grid>
+      ) : (
+        <NotFoundItem isLoading={isLoading} message="Room not found" />
+      )}
     </div>
   );
 };

@@ -30,9 +30,9 @@ import { accountSchema } from 'configs/validations';
 import AppUserDto from 'dtos/appUser.dto';
 import { updateAccount } from 'features/account/detailAccountSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import Account from 'models/account.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -42,7 +42,7 @@ interface Props {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 const AccountDetailCard = ({ account, isLoading }: Props) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
   const [isEditable, setIsEditable] = useState(
@@ -65,15 +65,9 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
         };
         const result = await dispatch(updateAccount(data));
         unwrapResult(result);
-        enqueueSnackbar('Update account successfully', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Update account successfully');
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -106,12 +100,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
   };
 
   useEffect(() => {
-    refreshFormValues().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    refreshFormValues().catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 

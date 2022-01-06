@@ -3,7 +3,6 @@ import AddSubjectToSemesterDto from 'dtos/addSubjectToSemester.dto';
 import DisableSemesterDto from 'dtos/disableSemester.dto';
 import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto';
 import SearchByDateDto from 'dtos/searchByDate.dto';
-import SearchByNameDto from 'dtos/searchByName.dto';
 import SearchSemesterParamsDto from 'dtos/searchSemesterParams.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
@@ -76,7 +75,9 @@ const semesterServices = {
         },
       });
     }
-    return axiosClient.get(url);
+    return axiosClient.get(url, {
+      params: { sort: 'beginDate,desc' },
+    });
   },
   addSubjects: (
     payload: AddSubjectToSemesterDto,

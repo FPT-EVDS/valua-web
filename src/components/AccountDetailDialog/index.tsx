@@ -36,6 +36,7 @@ import { accountSchema } from 'configs/validations';
 import AppUserDto from 'dtos/appUser.dto';
 import { addAccount } from 'features/account/accountsSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Role from 'models/role.model';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
@@ -103,7 +104,7 @@ const rolesProps: AvatarWithTextProps[] = [
 // eslint-disable-next-line sonarjs/cognitive-complexity
 const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.account.isLoading);
   const formik = useFormik({
@@ -138,18 +139,12 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
         if (image) formData.append('image', image as unknown as Blob);
         const result = await dispatch(addAccount(formData));
         unwrapResult(result);
-        enqueueSnackbar('Create account successfully', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Create account successfully');
         formik.resetForm();
         setCurrentStep(0);
         handleClose();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });

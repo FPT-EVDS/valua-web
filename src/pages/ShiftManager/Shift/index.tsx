@@ -27,6 +27,7 @@ import {
   updateCurrentSelectedDate,
   updateShiftSemester,
 } from 'features/shift/shiftSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -48,7 +49,7 @@ const ShiftPage = () => {
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(0);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
@@ -61,12 +62,6 @@ const ShiftPage = () => {
     id: shift.shiftId,
   }));
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
-
-  const showErrorMessage = (error: string) =>
-    enqueueSnackbar(error, {
-      variant: 'error',
-      preventDuplicate: true,
-    });
 
   const fetchShift = () => {
     let sortParam = '';
@@ -106,19 +101,13 @@ const ShiftPage = () => {
     try {
       const result = await dispatch(deleteShift(shiftId));
       unwrapResult(result);
-      enqueueSnackbar('This shift has been successfully deleted', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('This shift has been successfully deleted');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -275,16 +264,14 @@ const ShiftPage = () => {
         pagination
         rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
         leftActions={
-          semester && (
-            <SemesterDropdown
-              textFieldProps={{
-                size: 'small',
-              }}
-              isEditable
-              value={semester}
-              onChange={handleChangeSemester}
-            />
-          )
+          <SemesterDropdown
+            textFieldProps={{
+              size: 'small',
+            }}
+            isEditable
+            value={semester}
+            onChange={handleChangeSemester}
+          />
         }
         pageSize={DEFAULT_PAGE_SIZE}
         sortingMode="server"

@@ -21,8 +21,8 @@ import { add } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
 import { addShift } from 'features/shift/shiftSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect } from 'react';
 
 interface Props {
@@ -42,7 +42,7 @@ const ShiftDetailDialog: React.FC<Props> = ({
     finishTime: add(new Date(), { days: 1, hours: 2 }),
   },
 }) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const { isLoading, semester } = useAppSelector(state => state.shift);
   const formik = useFormik({
@@ -52,18 +52,12 @@ const ShiftDetailDialog: React.FC<Props> = ({
       try {
         const result = await dispatch(addShift(payload));
         const shift = unwrapResult(result);
-        enqueueSnackbar('Create shift successfully', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Create shift successfully');
         formik.resetForm();
         await formik.setFieldValue('semester', shift.semester);
         handleClose();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -83,12 +77,7 @@ const ShiftDetailDialog: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    handleChangeSemester(semester).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    handleChangeSemester(semester).catch(error => showErrorMessage(error));
   }, [semester]);
 
   return (

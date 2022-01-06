@@ -18,7 +18,7 @@ import { roomSchema } from 'configs/validations';
 import RoomDto from 'dtos/room.dto';
 import { addRoom } from 'features/room/roomsSlice';
 import { useFormik } from 'formik';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React from 'react';
 
 interface Props {
@@ -41,7 +41,7 @@ const RoomDetailDialog: React.FC<Props> = ({
     seatCount: 30,
   },
 }) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.room.isLoading);
   const formik = useFormik({
@@ -51,16 +51,10 @@ const RoomDetailDialog: React.FC<Props> = ({
       try {
         const result = await dispatch(addRoom(payload));
         unwrapResult(result);
-        enqueueSnackbar('Create room successfully', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Create room successfully');
         formik.resetForm();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });

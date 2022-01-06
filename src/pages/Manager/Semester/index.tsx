@@ -22,7 +22,6 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import SemesterDetailDialog from 'components/SemesterDetailDialog';
-import activeStatus from 'configs/constants/activeStatus';
 import { add, format, isBefore, isValid } from 'date-fns';
 import SemesterDto from 'dtos/semester.dto';
 import Status from 'enums/status.enum';
@@ -31,12 +30,12 @@ import {
   disableSemester,
   searchBySemesterName,
 } from 'features/semester/semestersSlice';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const SemesterPage = () => {
-  // FIXME: This is caused due to BE not support
+  // FIXME: This is caused due to BE not support start and end date
   const DEFAULT_START_DATE = '1/1/1980';
   const DEFAULT_END_DATE = '12/31/2090';
   const DEFAULT_PAGE_SIZE = 20;
@@ -55,7 +54,7 @@ const SemesterPage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
@@ -100,12 +99,7 @@ const SemesterPage = () => {
   };
 
   useEffect(() => {
-    fetchSemesters().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    fetchSemesters().catch(error => showErrorMessage(error));
   }, [page, sortModel]);
 
   useEffect(() => {
@@ -116,19 +110,13 @@ const SemesterPage = () => {
     try {
       const result = await dispatch(disableSemester(semesterId));
       unwrapResult(result);
-      enqueueSnackbar('Disable semester successfully', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable semester successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -140,15 +128,9 @@ const SemesterPage = () => {
     try {
       const result = await dispatch(activeSemester(semesterId));
       unwrapResult(result);
-      enqueueSnackbar('Enable semester successfully', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Enable semester successfully');
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
     }
   };
 

@@ -28,7 +28,7 @@ import {
   disableTool,
   searchByToolName,
 } from 'features/tool/toolsSlice';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect, useState } from 'react';
 
 const ToolPage = () => {
@@ -47,7 +47,7 @@ const ToolPage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
@@ -84,12 +84,7 @@ const ToolPage = () => {
   };
 
   useEffect(() => {
-    fetchTools().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    fetchTools().catch(error => showErrorMessage(error));
   }, [page, sortModel]);
 
   useEffect(() => {
@@ -100,15 +95,9 @@ const ToolPage = () => {
     try {
       const result = await dispatch(activeTool(toolId));
       unwrapResult(result);
-      enqueueSnackbar('Enable tool successfully', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Enable tool successfully');
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
     }
   };
 
@@ -116,19 +105,13 @@ const ToolPage = () => {
     try {
       const result = await dispatch(disableTool(toolId));
       unwrapResult(result);
-      enqueueSnackbar('Disable tool successfully', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable tool successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,

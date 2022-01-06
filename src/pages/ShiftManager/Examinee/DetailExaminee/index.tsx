@@ -1,6 +1,5 @@
-/* eslint-disable arrow-body-style */
 /* eslint-disable prefer-destructuring */
-import { ChevronLeft, Close, FiberManualRecord } from '@mui/icons-material';
+import { Close, FiberManualRecord } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -28,6 +27,7 @@ import {
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import ExamineeDetailCard from 'components/ExamineeDetailCard';
 import ExamineePieChart, {
@@ -42,10 +42,10 @@ import {
   removeExaminee,
 } from 'features/subjectExaminee/detailExamineeSubjectSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 
 interface RemoveExamineeDialogProps {
   subjectExamineeId: string | null;
@@ -61,7 +61,7 @@ const RemoveExamineeDialog = ({
   title,
 }: RemoveExamineeDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const formik = useFormik({
     initialValues: {
@@ -75,15 +75,9 @@ const RemoveExamineeDialog = ({
         try {
           const result = await dispatch(removeExaminee(payload));
           unwrapResult(result);
-          enqueueSnackbar('Remove examinee success', {
-            variant: 'success',
-            preventDuplicate: true,
-          });
+          showSuccessMessage('Remove examinee success');
         } catch (error) {
-          enqueueSnackbar('Can not remove this examinee', {
-            variant: 'error',
-            preventDuplicate: true,
-          });
+          showErrorMessage('Can not remove this examinee');
         } finally {
           setIsLoading(false);
           formik.resetForm();
@@ -167,11 +161,10 @@ const RemoveExamineeDialog = ({
 const DetailExamineePage = () => {
   const DEFAULT_PAGE_SIZE = 20;
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage } = useCustomSnackbar();
   const { examineeSubject, isLoading, shouldRefresh } = useAppSelector(
     state => state.detailSubjectExaminee,
   );
-  const history = useHistory();
   const query = useQuery();
   const semesterId = query.get('semesterId');
   const subjectId = query.get('subjectId');
@@ -228,12 +221,7 @@ const DetailExamineePage = () => {
           }
           return subjectExaminees;
         })
-        .catch(error =>
-          enqueueSnackbar(error, {
-            variant: 'error',
-            preventDuplicate: true,
-          }),
-        );
+        .catch(error => showErrorMessage(error));
   };
 
   useEffect(() => {
@@ -367,48 +355,45 @@ const DetailExamineePage = () => {
         open={open}
         handleClose={handleClose}
       />
-      <Box
-        width={250}
-        display="flex"
-        alignItems="center"
-        justifyContent="start"
-        onClick={() => history.push('/shift-manager/examinee')}
-        sx={{ cursor: 'pointer' }}
-      >
-        <ChevronLeft />
-        <div>Back to examinee page</div>
-      </Box>
+      <BackToPreviousPageButton
+        title="Back to examinee page"
+        route="/shift-manager/examinee"
+      />
       <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
         <Grid item xs={12} md={9} lg={3}>
           <Stack spacing={3}>
             {examineeSubject && (
               <ExamineeDetailCard examineeSubject={examineeSubject} />
             )}
-            {chartData && (
-              <Card sx={{ minWidth: 275 }} elevation={2}>
-                <CardHeader
-                  title={
-                    <Typography
-                      sx={{ fontWeight: 'medium', fontSize: 16 }}
-                      variant="h5"
-                      gutterBottom
-                    >
-                      Examinee&apos;s information
-                    </Typography>
-                  }
-                />
-                <CardContent sx={{ height: 300 }}>
-                  {chartData.totalAssigned +
-                    chartData.totalUnassigned +
-                    chartData.totalRemoved >
-                  0 ? (
-                    <ExamineePieChart {...chartData} />
-                  ) : (
-                    <Typography>No examinees yet</Typography>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+            {chartData &&
+              chartData.totalAssigned +
+                chartData.totalUnassigned +
+                chartData.totalRemoved >
+                0 && (
+                <Card sx={{ minWidth: 275 }} elevation={2}>
+                  <CardHeader
+                    title={
+                      <Typography
+                        sx={{ fontWeight: 'medium', fontSize: 16 }}
+                        variant="h5"
+                        gutterBottom
+                      >
+                        Examinee&apos;s information
+                      </Typography>
+                    }
+                  />
+                  <CardContent sx={{ height: 300 }}>
+                    {chartData.totalAssigned +
+                      chartData.totalUnassigned +
+                      chartData.totalRemoved >
+                    0 ? (
+                      <ExamineePieChart {...chartData} />
+                    ) : (
+                      <Typography>No examinees yet</Typography>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
           </Stack>
         </Grid>
         <Grid item xs={12} lg={9}>

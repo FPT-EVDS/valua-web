@@ -25,13 +25,13 @@ import UpdateExamRoomDto from 'dtos/updateExamRoom.dto';
 import ExamRoomStatus from 'enums/examRoomStatus.enum';
 import { updateExamRoom } from 'features/examRoom/detailExamRoomSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import Account from 'models/account.model';
 import DetailExamRoom from 'models/detailExamRoom.model';
 import Room from 'models/room.model';
 import Shift from 'models/shift.model';
 import Subject from 'models/subject.model';
-import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 
 interface Props {
@@ -47,7 +47,7 @@ const ExamRoomDetailCard = ({
   isLoading,
   handleDelete,
 }: Props) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
   const [isEditable, setIsEditable] = useState(
@@ -89,15 +89,9 @@ const ExamRoomDetailCard = ({
       try {
         const result = await dispatch(updateExamRoom(payload));
         unwrapResult(result);
-        enqueueSnackbar('Update exam room successfully', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Update exam room successfully');
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });

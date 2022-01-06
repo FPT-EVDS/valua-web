@@ -19,7 +19,7 @@ import { toolSchema } from 'configs/validations';
 import ToolDto from 'dtos/tool.dto';
 import { addTool, updateTool } from 'features/tool/toolsSlice';
 import { useFormik } from 'formik';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect } from 'react';
 
 interface Props {
@@ -41,7 +41,7 @@ const ToolDetailDialog: React.FC<Props> = ({
   isUpdate,
   isActive,
 }) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.tools.isLoading);
   const formik = useFormik({
@@ -56,17 +56,11 @@ const ToolDetailDialog: React.FC<Props> = ({
           ? await dispatch(updateTool(payload))
           : await dispatch(addTool(payload));
         unwrapResult(result);
-        enqueueSnackbar(message, {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage(message);
         formik.resetForm();
         handleClose();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -79,12 +73,7 @@ const ToolDetailDialog: React.FC<Props> = ({
   const refreshForm = async (values: ToolDto) => formik.setValues(values);
 
   useEffect(() => {
-    refreshForm(initialValues).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    refreshForm(initialValues).catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValues]);
 

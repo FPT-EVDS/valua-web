@@ -17,8 +17,8 @@ import SlideTransition from 'components/SlideTransition';
 import DetailExamSeat from 'dtos/detailExamSeat.dto';
 import { addExamSeat } from 'features/examRoom/detailExamRoomSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Examinee from 'models/examinee.model';
-import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 
 interface Props {
@@ -32,7 +32,7 @@ const AddExamineeSeatDialog: React.FC<Props> = ({
   handleClose,
   examRoomId,
 }) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const { examRoom } = useAppSelector(state => state.detailExamRoom);
   const dispatch = useAppDispatch();
   const [currentExaminee, setCurrentExaminee] = useState<Examinee | null>(null);
@@ -50,21 +50,14 @@ const AddExamineeSeatDialog: React.FC<Props> = ({
       try {
         const result = await dispatch(addExamSeat(payload));
         const examSeat = unwrapResult(result);
-        enqueueSnackbar(
+        showSuccessMessage(
           `${examSeat.examinee.fullName} has been successfully added to this exam room`,
-          {
-            variant: 'success',
-            preventDuplicate: true,
-          },
         );
         formik.resetForm();
         setCurrentExaminee(null);
         handleClose();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });

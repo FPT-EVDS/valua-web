@@ -1,4 +1,4 @@
-import { Add, ChevronLeft } from '@mui/icons-material';
+import { Add } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -13,6 +13,7 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AddExamineeSeatDialog from 'components/AddExamineeSeatDialog';
+import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import ExamRoomDetailCard from 'components/ExamRoomDetailCard';
 import ExamSeatTable from 'components/ExamSeatTable';
@@ -22,7 +23,7 @@ import {
   getDetailExamRoom,
   getShift,
 } from 'features/examRoom/detailExamRoomSlice';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -33,7 +34,7 @@ interface ParamProps {
 
 const DetailExamRoomPage = () => {
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const { examRoom, shift, isLoading } = useAppSelector(
     state => state.detailExamRoom,
   );
@@ -60,12 +61,6 @@ const DetailExamRoomPage = () => {
     unwrapResult(result);
   };
 
-  const showErrorMessage = (error: string) =>
-    enqueueSnackbar(error, {
-      variant: 'error',
-      preventDuplicate: true,
-    });
-
   useEffect(() => {
     fetchDetailExamRoom()
       .then(result => fetchDetailShift(String(result.shift.shiftId)))
@@ -77,10 +72,7 @@ const DetailExamRoomPage = () => {
     try {
       const result = await dispatch(deleteExamRoom(roomId));
       unwrapResult(result);
-      enqueueSnackbar('Exam room has been successfully deleted', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Exam room has been successfully deleted');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -106,17 +98,10 @@ const DetailExamRoomPage = () => {
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
-      <Box
-        width={250}
-        display="flex"
-        alignItems="center"
-        justifyContent="start"
-        onClick={() => history.push(`/shift-manager/shift/${id}`)}
-        sx={{ cursor: 'pointer' }}
-      >
-        <ChevronLeft />
-        <div>Back to detail shift page</div>
-      </Box>
+      <BackToPreviousPageButton
+        title="Back to detail shift page"
+        route={`/shift-manager/shift/${id}`}
+      />
       <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
         {examRoom && shift && (
           <>

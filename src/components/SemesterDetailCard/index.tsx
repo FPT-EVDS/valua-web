@@ -17,9 +17,9 @@ import { semesterSchema } from 'configs/validations';
 import SemesterDto from 'dtos/semester.dto';
 import { updateSemester } from 'features/semester/detailSemesterSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import Semester from 'models/semester.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -28,7 +28,7 @@ interface Props {
 }
 
 const SemesterDetailCard = ({ semester, isLoading }: Props) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
   const [isEditable, setIsEditable] = useState(
@@ -42,15 +42,9 @@ const SemesterDetailCard = ({ semester, isLoading }: Props) => {
       try {
         const result = await dispatch(updateSemester(payload));
         unwrapResult(result);
-        enqueueSnackbar('Update semester successfully', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Update semester successfully');
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -64,12 +58,7 @@ const SemesterDetailCard = ({ semester, isLoading }: Props) => {
   };
 
   useEffect(() => {
-    refreshFormValues().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    refreshFormValues().catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [semester]);
 
