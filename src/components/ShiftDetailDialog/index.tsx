@@ -24,7 +24,7 @@ import { addShift } from 'features/shift/shiftSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
   open: boolean;
@@ -40,6 +40,9 @@ const ShiftDetailDialog: React.FC<Props> = ({
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const { isLoading, semester } = useAppSelector(state => state.shift);
+  const [selectedSemester, setSelectedSemester] = useState<Semester | null>(
+    null,
+  );
   const formik = useFormik({
     initialValues: initialValues || {
       shiftId: null,
@@ -71,9 +74,17 @@ const ShiftDetailDialog: React.FC<Props> = ({
   };
 
   const handleChangeSemester = async (
-    selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
+    _selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
-    await formik.setFieldValue('semester', selectedSemester);
+    const shiftSemester = _selectedSemester as Semester;
+    await formik.setFieldValue('semester', _selectedSemester);
+    if (shiftSemester) {
+      setSelectedSemester(shiftSemester);
+      await handleChangeBeginTime(shiftSemester.beginDate);
+      await handleChangeFinishTime(
+        add(new Date(shiftSemester.beginDate), { hours: 1, minutes: 30 }),
+      );
+    }
   };
 
   useEffect(() => {
@@ -138,6 +149,16 @@ const ShiftDetailDialog: React.FC<Props> = ({
             <Grid item xs={12}>
               <DateTimePicker
                 label="Begin time"
+                minDate={
+                  selectedSemester !== null
+                    ? new Date(selectedSemester.beginDate)
+                    : undefined
+                }
+                maxDate={
+                  selectedSemester !== null
+                    ? new Date(selectedSemester.endDate)
+                    : undefined
+                }
                 value={formik.values.beginTime}
                 inputFormat="dd/MM/yyyy HH:mm"
                 onChange={handleChangeBeginTime}
@@ -169,6 +190,12 @@ const ShiftDetailDialog: React.FC<Props> = ({
                 value={formik.values.finishTime}
                 inputFormat="dd/MM/yyyy HH:mm"
                 onChange={handleChangeFinishTime}
+                minDateTime={new Date(formik.values.beginTime)}
+                maxDate={
+                  selectedSemester !== null
+                    ? new Date(selectedSemester.endDate)
+                    : undefined
+                }
                 renderInput={params => (
                   <TextField
                     {...params}

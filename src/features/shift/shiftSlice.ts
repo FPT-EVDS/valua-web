@@ -18,6 +18,7 @@ interface ShiftsState {
   error: string;
   current: ShiftsDto;
   selectedDate: string | null;
+  beginDate: string | null;
   semester: Pick<Semester, 'semesterId' | 'semesterName'> | null;
   activeShiftDates: Record<string, number> | null;
 }
@@ -94,6 +95,7 @@ const initialState: ShiftsState = {
   activeShiftDates: null,
   error: '',
   selectedDate: null,
+  beginDate: null,
   current: {
     selectedDate: null,
     shifts: [] as Shift[],
@@ -122,6 +124,9 @@ export const shiftSlice = createSlice({
       action: PayloadAction<string | null>,
     ) => {
       state.selectedDate = action.payload;
+    },
+    updateSemesterBeginDate: (state, action: PayloadAction<string | null>) => {
+      state.beginDate = action.payload;
     },
   },
   extraReducers: builder => {
@@ -183,6 +188,7 @@ export const shiftSlice = createSlice({
       .addCase(getShifts.rejected, (state, action) => {
         state.isLoading = false;
         state.error = String(action.payload);
+        state.selectedDate = state.beginDate;
       })
       .addMatcher(
         isAnyOf(addShift.rejected, updateShift.rejected, deleteShift.rejected),
@@ -207,7 +213,10 @@ export const shiftSlice = createSlice({
   },
 });
 
-export const { updateShiftSemester, updateCurrentSelectedDate } =
-  shiftSlice.actions;
+export const {
+  updateShiftSemester,
+  updateCurrentSelectedDate,
+  updateSemesterBeginDate,
+} = shiftSlice.actions;
 
 export default shiftSlice.reducer;

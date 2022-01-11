@@ -25,6 +25,7 @@ import {
   getShiftCalendar,
   getShifts,
   updateCurrentSelectedDate,
+  updateSemesterBeginDate,
   updateShiftSemester,
 } from 'features/shift/shiftSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
@@ -52,7 +53,7 @@ const ShiftPage = () => {
   const {
     isLoading,
     selectedDate,
-    current: { shifts, totalItems },
+    current: { shifts, totalItems, selectedDate: currentSelectedDate },
     semester,
     activeShiftDates,
   } = useAppSelector(state => state.shift);
@@ -61,6 +62,9 @@ const ShiftPage = () => {
     id: shift.shiftId,
   }));
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [selectedSemester, setSelectedSemester] = useState<Semester | null>(
+    null,
+  );
 
   const fetchShift = () => {
     let sortParam = '';
@@ -68,16 +72,18 @@ const ShiftPage = () => {
       const { field, sort } = sortModel[0];
       sortParam = `${field},${String(sort)}`;
     }
-    dispatch(
-      getShifts({
-        page,
-        sort: sortParam,
-        semesterId: semester ? semester.semesterId : undefined,
-        date: selectedDate ? new Date(selectedDate) : undefined,
-      }),
-    )
-      .then(result => unwrapResult(result))
-      .catch(error => showErrorMessage(String(error)));
+    if (selectedDate === null || selectedDate !== currentSelectedDate) {
+      dispatch(
+        getShifts({
+          page,
+          sort: sortParam,
+          semesterId: semester ? semester.semesterId : undefined,
+          date: selectedDate ? new Date(selectedDate) : undefined,
+        }),
+      )
+        .then(result => unwrapResult(result))
+        .catch(error => showErrorMessage(String(error)));
+    }
   };
 
   useEffect(() => {
@@ -226,6 +232,16 @@ const ShiftPage = () => {
   const AddButton = () => (
     <Stack direction="row" spacing={2} alignItems="center">
       <ShiftDatepicker
+        minDate={
+          selectedSemester !== null
+            ? new Date(selectedSemester.beginDate)
+            : undefined
+        }
+        maxDate={
+          selectedSemester !== null
+            ? new Date(selectedSemester.endDate)
+            : undefined
+        }
         activeDate={activeShiftDates}
         handleChangeDate={handleChangeDate}
         value={selectedDate != null ? new Date(selectedDate) : new Date()}
@@ -247,10 +263,15 @@ const ShiftPage = () => {
   };
 
   const handleChangeSemester = (
-    selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
+    _selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
+    const shiftSemester = _selectedSemester as Semester;
+    if (shiftSemester) {
+      setSelectedSemester(shiftSemester);
+      dispatch(updateSemesterBeginDate(String(shiftSemester.beginDate)));
+    }
     dispatch(updateCurrentSelectedDate(null));
-    dispatch(updateShiftSemester(selectedSemester));
+    dispatch(updateShiftSemester(_selectedSemester));
   };
 
   return (
