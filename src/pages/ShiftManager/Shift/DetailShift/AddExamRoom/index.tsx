@@ -10,10 +10,10 @@ import ExamineeTable from 'components/ExamineeTable';
 import ExamineeTransferListDialog from 'components/ExamineeTransferListDialog';
 import GetAvailableExamRoomsCard from 'components/GetAvailableExamRoomsCard';
 import LoadingIndicator from 'components/LoadingIndicator';
+import Attendance from 'dtos/attendance.dto';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import AvailableRoomsDto from 'dtos/availableRooms.dto';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
-import ExamineeSeat from 'dtos/examineeSeat.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
 import {
@@ -45,8 +45,13 @@ const AddExamRoomPage = () => {
     Examinee[][] | null
   >(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const { isLoading, defaultExamRoomSize, currentSubject, shift } =
-    useAppSelector(state => state.addExamRoom);
+  const {
+    isLoading,
+    defaultExamRoomSize,
+    currentSubject,
+    shift,
+    removedExaminees,
+  } = useAppSelector(state => state.addExamRoom);
 
   const handleError = () => {
     setExamRooms(null);
@@ -86,12 +91,13 @@ const AddExamRoomPage = () => {
 
   const handleCreateExamRoom = async () => {
     if (listExamineesByRoom && examRooms && currentSubject && shift) {
+      const filteredRemovedExamineesList = listExamineesByRoom[
+        selectedIndex
+      ].filter(value => !removedExaminees.includes(value));
       const appUserIdList = new Set(
-        listExamineesByRoom[selectedIndex].map(
-          (value, index) => value.examinee.appUserId,
-        ),
+        filteredRemovedExamineesList.map(value => value.examinee.appUserId),
       );
-      const examSeats: ExamineeSeat[] = listExamineesByRoom[selectedIndex].map(
+      const attendances: Attendance[] = filteredRemovedExamineesList.map(
         (value, index) => ({
           examinee: {
             appUserId: value.examinee.appUserId,
@@ -100,7 +106,7 @@ const AddExamRoomPage = () => {
         }),
       );
       const payload: CreateExamRoomDto = {
-        examSeats,
+        attendances,
         shift: {
           shiftId: id,
         },

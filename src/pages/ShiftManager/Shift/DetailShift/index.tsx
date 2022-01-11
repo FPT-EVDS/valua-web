@@ -1,14 +1,6 @@
 /* eslint-disable prefer-destructuring */
-import { Add, ChevronLeft, FiberManualRecord } from '@mui/icons-material';
-import {
-  Avatar,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Add, FiberManualRecord } from '@mui/icons-material';
+import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { green, grey, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -55,7 +47,7 @@ const DetailShiftPage = () => {
   } = useAppSelector(state => state.examRoom);
   const rows: GridRowModel[] = examRooms.map((examRoom, index) => ({
     ...examRoom,
-    id: examRoom.examRoomID,
+    id: examRoom.examRoomId,
   }));
   const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
@@ -185,14 +177,14 @@ const DetailShiftPage = () => {
       sortable: false,
       filterable: false,
       headerName: 'Room name',
-      flex: 0.1,
+      flex: 0.2,
     },
     {
       field: 'subject',
       sortable: false,
       filterable: false,
       headerName: 'Subject',
-      flex: 0.1,
+      flex: 0.2,
       valueFormatter: ({ value }) => (value as unknown as Subject).subjectName,
     },
     {
@@ -273,6 +265,7 @@ const DetailShiftPage = () => {
       type: 'actions',
       getActions: ({ getValue, id: rowId }) => {
         const staff = getValue(rowId, 'staff') as Account;
+        const status = getValue(rowId, 'status');
         const deleteItems = [
           <GridActionsCellItem
             label="Assign"
@@ -309,6 +302,7 @@ const DetailShiftPage = () => {
           />,
         ];
         if (staff) deleteItems.shift();
+        if (status === ExamRoomStatus.Disabled) deleteItems.pop();
         return deleteItems;
       },
     },

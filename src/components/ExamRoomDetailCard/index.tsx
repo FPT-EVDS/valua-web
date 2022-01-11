@@ -77,7 +77,7 @@ const ExamRoomDetailCard = ({
   }
 
   const initialValues: UpdateExamRoomDto = {
-    examRoomId: examRoom.examRoomID,
+    examRoomId: examRoom.examRoomId,
     room: examRoom.room,
     staff: examRoom.staff,
     subject: examRoom.subject,
@@ -218,7 +218,7 @@ const ExamRoomDetailCard = ({
                 disabled={!isEditable}
                 variant="contained"
                 color="error"
-                onClick={() => handleDelete(String(examRoom.examRoomID))}
+                onClick={() => handleDelete(String(examRoom.examRoomId))}
                 sx={{ minWidth: 120 }}
               >
                 Delete

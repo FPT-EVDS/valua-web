@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import { Close, Event } from '@mui/icons-material';
 import { DateTimePicker, LoadingButton } from '@mui/lab';
 import {
@@ -28,25 +29,24 @@ import React, { useEffect } from 'react';
 interface Props {
   open: boolean;
   handleClose: () => void;
-  // eslint-disable-next-line react/require-default-props
   initialValues?: ShiftDto;
 }
 
 const ShiftDetailDialog: React.FC<Props> = ({
   open,
   handleClose,
-  initialValues = {
-    shiftId: null,
-    semester: null,
-    beginTime: add(new Date(), { days: 1, hours: 1 }),
-    finishTime: add(new Date(), { days: 1, hours: 2 }),
-  },
+  initialValues,
 }) => {
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const { isLoading, semester } = useAppSelector(state => state.shift);
   const formik = useFormik({
-    initialValues: { ...initialValues, semester },
+    initialValues: initialValues || {
+      shiftId: null,
+      semester,
+      beginTime: add(new Date(), { days: 1, hours: 1 }),
+      finishTime: add(new Date(), { days: 1, hours: 2 }),
+    },
     validationSchema: shiftSchema,
     onSubmit: async (payload: ShiftDto) => {
       try {

@@ -27,12 +27,11 @@ const SemesterDropdown = ({
 
   const fetchSemesters = async () => {
     const response = await semesterServices.searchSemestersByName(payload);
-    setSemesterOptions(response.data.semesters);
-    if (value) {
-      onChange(value);
-    } else {
-      onChange(response.data.semesters[0]);
-    }
+    const { semesters } = response.data;
+    const filteredSemesters = semesters.filter(semester => semester.isActive);
+    setSemesterOptions(filteredSemesters);
+    if (value) onChange(value);
+    else onChange(filteredSemesters[0]);
     setIsLoading(false);
   };
 

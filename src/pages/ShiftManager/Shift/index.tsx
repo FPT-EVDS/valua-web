@@ -29,7 +29,6 @@ import {
 } from 'features/shift/shiftSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -48,11 +47,11 @@ const ShiftPage = () => {
     });
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(0);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
+    selectedDate,
     current: { shifts, totalItems },
     semester,
     activeShiftDates,
@@ -69,7 +68,6 @@ const ShiftPage = () => {
       const { field, sort } = sortModel[0];
       sortParam = `${field},${String(sort)}`;
     }
-    dispatch(updateCurrentSelectedDate(selectedDate));
     dispatch(
       getShifts({
         page,
@@ -78,11 +76,7 @@ const ShiftPage = () => {
         date: selectedDate ? new Date(selectedDate) : undefined,
       }),
     )
-      // eslint-disable-next-line promise/always-return
-      .then(result => {
-        const { selectedDate: currentSelectedDate } = unwrapResult(result);
-        setSelectedDate(currentSelectedDate);
-      })
+      .then(result => unwrapResult(result))
       .catch(error => showErrorMessage(String(error)));
   };
 
@@ -91,10 +85,11 @@ const ShiftPage = () => {
   }, [page, sortModel, semester, selectedDate]);
 
   useEffect(() => {
-    if (semester)
+    if (semester) {
       dispatch(getShiftCalendar(semester.semesterId))
         .then(result => unwrapResult(result))
         .catch(error => showErrorMessage(error));
+    }
   }, [semester]);
 
   const handleDeleteShift = async (shiftId: string) => {
@@ -223,7 +218,9 @@ const ShiftPage = () => {
   ];
 
   const handleChangeDate = (date: Date | null) => {
-    setSelectedDate(date);
+    dispatch(
+      updateCurrentSelectedDate(format(new Date(String(date)), 'yyyy-MM-dd')),
+    );
   };
 
   const AddButton = () => (
@@ -231,7 +228,7 @@ const ShiftPage = () => {
       <ShiftDatepicker
         activeDate={activeShiftDates}
         handleChangeDate={handleChangeDate}
-        value={selectedDate ? new Date(selectedDate) : new Date()}
+        value={selectedDate != null ? new Date(selectedDate) : new Date()}
       />
       <Button
         variant="contained"
@@ -252,7 +249,7 @@ const ShiftPage = () => {
   const handleChangeSemester = (
     selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
-    setSelectedDate(null);
+    dispatch(updateCurrentSelectedDate(null));
     dispatch(updateShiftSemester(selectedSemester));
   };
 

@@ -17,6 +17,7 @@ interface ShiftsState {
   isLoading: boolean;
   error: string;
   current: ShiftsDto;
+  selectedDate: string | null;
   semester: Pick<Semester, 'semesterId' | 'semesterName'> | null;
   activeShiftDates: Record<string, number> | null;
 }
@@ -92,6 +93,7 @@ const initialState: ShiftsState = {
   semester: null,
   activeShiftDates: null,
   error: '',
+  selectedDate: null,
   current: {
     selectedDate: null,
     shifts: [] as Shift[],
@@ -113,21 +115,24 @@ export const shiftSlice = createSlice({
       > | null>,
     ) => {
       state.semester = action.payload;
-      state.current.selectedDate = null;
+      state.selectedDate = null;
     },
-    updateCurrentSelectedDate: (state, action: PayloadAction<Date | null>) => {
-      state.current.selectedDate = action.payload;
+    updateCurrentSelectedDate: (
+      state,
+      action: PayloadAction<string | null>,
+    ) => {
+      state.selectedDate = action.payload;
     },
   },
   extraReducers: builder => {
     builder
       .addCase(getShifts.fulfilled, (state, action) => {
-        if (state.semester === null) {
-          state.semester = action.payload.shifts[0].semester;
-        }
         state.current = action.payload;
         state.error = '';
         state.isLoading = false;
+        if (state.selectedDate === null) {
+          state.selectedDate = state.current.selectedDate;
+        }
       })
       .addCase(getShiftCalendar.fulfilled, (state, action) => {
         state.activeShiftDates = action.payload;
@@ -145,9 +150,8 @@ export const shiftSlice = createSlice({
           else state.activeShiftDates[parsedBeginTime] = 1;
         }
         if (
-          state.current.selectedDate &&
-          format(new Date(state.current.selectedDate), 'yyyy-MM-dd') ===
-            parsedBeginTime
+          state.selectedDate &&
+          format(new Date(state.selectedDate), 'yyyy-MM-dd') === parsedBeginTime
         )
           state.current.shifts.unshift(action.payload);
         state.current.totalItems += 1;
@@ -181,12 +185,7 @@ export const shiftSlice = createSlice({
         state.error = String(action.payload);
       })
       .addMatcher(
-        isAnyOf(
-          getShifts.rejected,
-          addShift.rejected,
-          updateShift.rejected,
-          deleteShift.rejected,
-        ),
+        isAnyOf(addShift.rejected, updateShift.rejected, deleteShift.rejected),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
           state.error = action.payload;

@@ -117,9 +117,9 @@ export const detailExamRoomSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(addExamSeat.fulfilled, (state, action) => {
-        state.examRoom?.examSeats.push(action.payload);
+        state.examRoom?.attendances.push(action.payload);
         if (state.examRoom)
-          state.examRoom.examSeats = state.examRoom?.examSeats.sort(
+          state.examRoom.attendances = state.examRoom?.attendances.sort(
             (firstEl, secondEl) => firstEl.position - secondEl.position,
           );
         state.error = '';
@@ -127,8 +127,8 @@ export const detailExamRoomSlice = createSlice({
       })
       .addCase(removeExamSeat.fulfilled, (state, action) => {
         if (state.examRoom) {
-          const { examSeats } = state.examRoom;
-          state.examRoom.examSeats = examSeats.filter(
+          const { attendances } = state.examRoom;
+          state.examRoom.attendances = attendances.filter(
             seat => seat.examSeatId !== action.meta.arg.examSeatId,
           );
         }
@@ -144,7 +144,7 @@ export const detailExamRoomSlice = createSlice({
         (state, action) => {
           state.examRoom = {
             ...action.payload,
-            examSeats: action.payload.examSeats.sort(
+            attendances: action.payload.attendances.sort(
               (first, second) => first.position - second.position,
             ),
           };

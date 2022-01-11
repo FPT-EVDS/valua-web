@@ -13,6 +13,7 @@ import Role from 'enums/role.enum';
 import { getUserProfile } from 'features/auth/authSlice';
 import { SnackbarProvider } from 'notistack';
 import ManagerDashboard from 'pages/Manager';
+import NotFoundPage from 'pages/NotFound';
 import ShiftManagerDashboard from 'pages/ShiftManager';
 import React, { RefObject, useEffect } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
@@ -71,6 +72,7 @@ const App = (): JSX.Element => {
             />
             <Route path="/oauth2/redirect" component={OAuth2RedirectHandler} />
             <Route path="/login" exact component={LoginPage} />
+            <Route component={NotFoundPage} />
           </Switch>
         </LocalizationProvider>
       </SnackbarProvider>

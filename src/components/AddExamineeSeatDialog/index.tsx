@@ -40,7 +40,7 @@ const AddExamineeSeatDialog: React.FC<Props> = ({
   const formik = useFormik({
     initialValues: {
       examRoom: {
-        examRoomID: examRoomId,
+        examRoomId,
       },
       examinee: {
         appUserId: '',

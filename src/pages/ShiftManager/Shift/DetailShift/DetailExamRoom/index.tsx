@@ -201,7 +201,7 @@ const DetailExamRoomPage = () => {
                     Add examinee
                   </Button>
                 </Stack>
-                <ExamSeatTable data={examRoom.examSeats} />
+                <ExamSeatTable data={examRoom.attendances} />
               </Stack>
             </Grid>
           </>

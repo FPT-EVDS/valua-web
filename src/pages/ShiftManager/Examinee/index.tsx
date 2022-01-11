@@ -127,7 +127,7 @@ const ExamineePage = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      flex: 0.1,
+      flex: 0.25,
       type: 'actions',
       getActions: params => {
         const subject = params.getValue(params.id, 'subject') as Subject;
@@ -164,6 +164,7 @@ const ExamineePage = () => {
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <EVDSDataGrid
         pagination
+        rowHeight={60}
         leftActions={
           <SemesterDropdown
             textFieldProps={{

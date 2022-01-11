@@ -54,7 +54,7 @@ const ExamSeatTable = ({ data }: Props) => {
           removeExamSeat({
             examSeatId: examinee.examSeatId,
             examinee: { appUserId: examinee.examinee.appUserId },
-            examRoom: { examRoomID: examRoom.examRoomID },
+            examRoom: { examRoomId: examRoom.examRoomId },
           }),
         );
         unwrapResult(result);
@@ -73,7 +73,11 @@ const ExamSeatTable = ({ data }: Props) => {
   }, [data]);
 
   return (
-    <TableContainer component={Paper} sx={{ display: 'flex', height: '100%' }}>
+    <TableContainer
+      component={Paper}
+      sx={{ display: 'flex', height: '100%' }}
+      elevation={2}
+    >
       <Table sx={{ flexGrow: 1 }}>
         <TableHead>
           <TableRow>

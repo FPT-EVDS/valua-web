@@ -39,7 +39,7 @@ const AssignStaffDialog: React.FC<Props> = ({
     current: { examRooms },
   } = useAppSelector(state => state.examRoom);
   const dispatch = useAppDispatch();
-  const examRoom = examRooms.find(item => item.examRoomID === examRoomId);
+  const examRoom = examRooms.find(item => item.examRoomId === examRoomId);
   const [currentStaff, setCurrentStaff] = useState<Pick<
     Account,
     | 'appUserId'
@@ -52,7 +52,7 @@ const AssignStaffDialog: React.FC<Props> = ({
 
   const formik = useFormik({
     initialValues: {
-      examRoomId: examRoom?.examRoomID || '',
+      examRoomId: examRoom?.examRoomId || '',
       staffId: '',
     },
     onSubmit: async (payload: AssignStaffToExamRoomDto) => {

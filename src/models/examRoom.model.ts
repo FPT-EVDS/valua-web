@@ -5,7 +5,7 @@ import Room from './room.model';
 import Subject from './subject.model';
 
 export default interface ExamRoom {
-  examRoomID: string;
+  examRoomId: string;
   examRoomName: string;
   staff: Pick<
     Account,

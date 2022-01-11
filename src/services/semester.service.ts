@@ -75,9 +75,7 @@ const semesterServices = {
         },
       });
     }
-    return axiosClient.get(url, {
-      params: { sort: 'beginDate,desc' },
-    });
+    return axiosClient.get(url);
   },
   addSubjects: (
     payload: AddSubjectToSemesterDto,
