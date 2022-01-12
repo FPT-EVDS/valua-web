@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import { Build, Close } from '@mui/icons-material';
+import { Architecture, Close } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Avatar,
@@ -114,7 +114,7 @@ const ToolDetailDialog: React.FC<Props> = ({
               }}
               variant="square"
             >
-              <Build fontSize="large" />
+              <Architecture fontSize="large" />
             </Avatar>
           </Box>
           <Grid container spacing={2}>

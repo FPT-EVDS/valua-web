@@ -114,8 +114,12 @@ export const subjectSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(addSubject.fulfilled, (state, action) => {
-        if (state.current.currentPage === 0)
+        if (state.current.currentPage === 0) {
           state.current.subjects.unshift(action.payload);
+          if (action.payload.tools === null) {
+            state.current.subjects[0].tools = [];
+          }
+        }
         state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;
@@ -125,6 +129,9 @@ export const subjectSlice = createSlice({
           subject => subject.subjectId === action.payload.subjectId,
         );
         state.current.subjects[index] = action.payload;
+        if (action.payload.tools === null) {
+          state.current.subjects[index].tools = [];
+        }
         state.error = '';
         state.isLoading = false;
       })

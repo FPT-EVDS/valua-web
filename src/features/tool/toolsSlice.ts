@@ -115,6 +115,11 @@ export const toolsSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(searchByToolName.fulfilled, (state, action) => {
+        state.current = action.payload;
+        state.error = '';
+        state.isLoading = false;
+      })
       .addMatcher(
         isAnyOf(disableTool.fulfilled, activeTool.fulfilled),
         (state, action) => {
@@ -126,11 +131,6 @@ export const toolsSlice = createSlice({
           state.isLoading = false;
         },
       )
-      .addMatcher(isAnyOf(searchByToolName.fulfilled), (state, action) => {
-        state.current = action.payload;
-        state.error = '';
-        state.isLoading = false;
-      })
       .addMatcher(
         isAnyOf(
           addTool.rejected,
