@@ -1,10 +1,4 @@
-import {
-  Add,
-  ChevronLeft,
-  Delete,
-  FiberManualRecord,
-  School,
-} from '@mui/icons-material';
+import { Add, Delete, FiberManualRecord, School } from '@mui/icons-material';
 import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
@@ -16,8 +10,10 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AddSubjectToSemesterDialog from 'components/AddSubjectToSemesterDialog';
+import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
+import NotFoundItem from 'components/NotFoundItem';
 import OverviewCard from 'components/OverviewCard';
 import SemesterDetailCard from 'components/SemesterDetailCard';
 import { format } from 'date-fns';
@@ -29,10 +25,10 @@ import {
   removeSubjectFromSemester,
   searchSemesterSubjects,
 } from 'features/semester/detailSemesterSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 interface ParamProps {
   id: string;
@@ -45,20 +41,19 @@ interface SemesterProps {
 const DetailSemesterPage = () => {
   const [open, setOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const { semester, semesterSubjects, isLoading } = useAppSelector(
     state => state.detailSemester,
   );
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this semester ?`,
+      title: `Do you want to disable this semester ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const history = useHistory();
   const { id } = useParams<ParamProps>();
 
   const fetchSemester = async (semesterId: string) => {
@@ -81,20 +76,14 @@ const DetailSemesterPage = () => {
           }),
         );
         unwrapResult(result);
-        enqueueSnackbar('Remove subject success', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Remove subject successfully');
         setConfirmDialogProps(prevState => ({
           ...prevState,
           open: false,
         }));
       }
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -106,19 +95,13 @@ const DetailSemesterPage = () => {
     try {
       const result = await dispatch(disableSemester(semesterId));
       unwrapResult(result);
-      enqueueSnackbar('Disable semester success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable semester successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -130,15 +113,9 @@ const DetailSemesterPage = () => {
     try {
       const result = await dispatch(enableSemester(semesterId));
       unwrapResult(result);
-      enqueueSnackbar('Enable semester success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Enable semester successfully');
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
     }
   };
 
@@ -146,7 +123,7 @@ const DetailSemesterPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: 'Do you want to delete this semester ?',
+      title: 'Do you want to disable this semester ?',
       handleAccept: () => handleDeleteSemester(semesterId),
     }));
   };
@@ -244,12 +221,7 @@ const DetailSemesterPage = () => {
   );
 
   useEffect(() => {
-    fetchSemester(id).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    fetchSemester(id).catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -276,52 +248,45 @@ const DetailSemesterPage = () => {
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
-      <Box
-        display="flex"
-        alignItems="center"
-        onClick={() => history.push('/manager/semester')}
-        sx={{ cursor: 'pointer' }}
-      >
-        <ChevronLeft />
-        <div>Back to semester page</div>
-      </Box>
-      <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
-        {semester && (
-          <>
-            <AddSubjectToSemesterDialog
-              open={open}
-              handleClose={() => setOpen(false)}
-            />
-            <Grid item xs={12} md={9} lg={4}>
-              <Stack spacing={3}>
-                <OverviewCard
-                  title={semester.semesterName}
-                  icon={<School fontSize="large" />}
-                  status={
-                    semester.isActive ? Status.isActive : Status.isDisable
-                  }
-                  content={<OverviewContent semester={semester} />}
-                  actionButtons={<GroupButtons />}
-                  isSingleAction
-                />
-                <SemesterDetailCard isLoading={isLoading} semester={semester} />
-              </Stack>
-            </Grid>
-            <Grid item xs={12} lg={8}>
-              <EVDSDataGrid
-                autoPageSize
-                rowsPerPageOptions={[10]}
-                title={`${semester.semesterName}'s subjects`}
-                isLoading={isLoading}
-                rows={rows}
-                handleSearch={handleSearch}
-                columns={columns}
-                addButton={<AddButton />}
+      <BackToPreviousPageButton
+        title="Back to semester page"
+        route="/manager/semester"
+      />
+      {semester ? (
+        <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
+          <AddSubjectToSemesterDialog
+            open={open}
+            handleClose={() => setOpen(false)}
+          />
+          <Grid item xs={12} md={9} lg={4}>
+            <Stack spacing={3}>
+              <OverviewCard
+                title={semester.semesterName}
+                icon={<School fontSize="large" />}
+                status={semester.isActive ? Status.isActive : Status.isDisable}
+                content={<OverviewContent semester={semester} />}
+                actionButtons={<GroupButtons />}
+                isSingleAction
               />
-            </Grid>
-          </>
-        )}
-      </Grid>
+              <SemesterDetailCard isLoading={isLoading} semester={semester} />
+            </Stack>
+          </Grid>
+          <Grid item xs={12} lg={8}>
+            <EVDSDataGrid
+              autoPageSize
+              rowsPerPageOptions={[10]}
+              title={`${semester.semesterName}'s subjects`}
+              isLoading={isLoading}
+              rows={rows}
+              handleSearch={handleSearch}
+              columns={columns}
+              addButton={<AddButton />}
+            />
+          </Grid>
+        </Grid>
+      ) : (
+        <NotFoundItem isLoading={isLoading} message="Semester not found" />
+      )}
     </div>
   );
 };

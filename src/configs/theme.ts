@@ -19,6 +19,15 @@ declare module '@mui/material/Button' {
 }
 
 const themeOptions = createTheme({
+  components: {
+    MuiFormLabel: {
+      styleOverrides: {
+        asterisk: {
+          color: '#db3131',
+        },
+      },
+    },
+  },
   palette: {
     primary: {
       main: '#1890ff',

@@ -1,4 +1,4 @@
-export enum ExamRoomStatus {
+enum ExamRoomStatus {
   'Disabled' = 0,
   'NotReady' = 1,
   'Ready' = 2,

@@ -7,10 +7,13 @@ import { IconButton } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import PrivateRoute from 'common/PrivateRoutes';
+import OAuth2RedirectHandler from 'components/OAuth2RedirectHandler';
+import AppConstants from 'enums/app';
 import Role from 'enums/role.enum';
 import { getUserProfile } from 'features/auth/authSlice';
 import { SnackbarProvider } from 'notistack';
 import ManagerDashboard from 'pages/Manager';
+import NotFoundPage from 'pages/NotFound';
 import ShiftManagerDashboard from 'pages/ShiftManager';
 import React, { RefObject, useEffect } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
@@ -31,7 +34,7 @@ const App = (): JSX.Element => {
   };
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('access_token');
+    const accessToken = localStorage.getItem(AppConstants.ACCESS_TOKEN);
     if (accessToken) {
       handleGetProfile().catch(() => {
         history.push('/login');
@@ -67,7 +70,9 @@ const App = (): JSX.Element => {
               path="/shift-manager"
               component={ShiftManagerDashboard}
             />
+            <Route path="/oauth2/redirect" component={OAuth2RedirectHandler} />
             <Route path="/login" exact component={LoginPage} />
+            <Route component={NotFoundPage} />
           </Switch>
         </LocalizationProvider>
       </SnackbarProvider>

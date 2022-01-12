@@ -7,7 +7,7 @@ const ActiveStatus = [
   },
   {
     value: Status.isDisable,
-    label: 'Disable',
+    label: 'Inactive',
   },
   {
     value: Status.isReady,

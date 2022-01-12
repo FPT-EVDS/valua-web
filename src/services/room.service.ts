@@ -1,11 +1,8 @@
 import { AxiosResponse } from 'axios';
-import AddCameraToRoomDto from 'dtos/addCameraToRoom.dto';
 import DisableRoomDto from 'dtos/disableRoom.dto';
 import RoomDto from 'dtos/room.dto';
 import RoomsDto from 'dtos/rooms.dto';
-import RoomWithCamera from 'dtos/roomWithCamera.dto';
 import SearchByNameDto from 'dtos/searchByName.dto';
-import Camera from 'models/camera.model';
 import Room from 'models/room.model';
 
 import axiosClient from './axiosClient';
@@ -15,7 +12,7 @@ const roomServices = {
     const url = `/rooms`;
     return axiosClient.get(url, { params: { numOfPage } });
   },
-  getRoom: (id: string): Promise<AxiosResponse<RoomWithCamera>> => {
+  getRoom: (id: string): Promise<AxiosResponse<{ room: Room }>> => {
     const url = `/rooms/${id}`;
     return axiosClient.get(url, { params: { id } });
   },
@@ -56,17 +53,6 @@ const roomServices = {
         sort,
       },
     });
-  },
-  addCameraToRoom: ({
-    roomId,
-    cameraId,
-  }: AddCameraToRoomDto): Promise<AxiosResponse<Camera>> => {
-    const url = `/rooms/${roomId}/addCamera`;
-    return axiosClient.patch(url, { cameraId });
-  },
-  removeCameraFromRoom: (roomId: string): Promise<AxiosResponse<Camera>> => {
-    const url = `/rooms/${roomId}/removeCamera`;
-    return axiosClient.patch(url);
   },
 };
 

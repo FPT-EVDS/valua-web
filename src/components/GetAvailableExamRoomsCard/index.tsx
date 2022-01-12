@@ -23,8 +23,8 @@ import {
   updateCurrentSubject,
 } from 'features/examRoom/addExamRoomSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Subject from 'models/subject.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -45,7 +45,7 @@ const GetAvailableExamRoomsCard = ({
   handleError,
 }: Props) => {
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage } = useCustomSnackbar();
   const { shift, defaultExamRoomSize } = useAppSelector(
     state => state.addExamRoom,
   );
@@ -56,12 +56,6 @@ const GetAvailableExamRoomsCard = ({
     const actionResult = await dispatch(getShift(id));
     unwrapResult(actionResult);
   };
-
-  const showErrorMessage = (error: string) =>
-    enqueueSnackbar(String(error), {
-      variant: 'error',
-      preventDuplicate: true,
-    });
 
   const formik = useFormik({
     initialValues: {

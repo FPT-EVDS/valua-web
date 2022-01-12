@@ -15,11 +15,13 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import SlideTransition from 'components/SlideTransition';
+import ToolDropdown from 'components/ToolDropdown';
 import { subjectSchema } from 'configs/validations';
 import SubjectDto from 'dtos/subject.dto';
 import { addSubject, updateSubject } from 'features/subject/subjectsSlice';
 import { useFormik } from 'formik';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
+import Tool from 'models/tool.model';
 import React, { useEffect } from 'react';
 
 interface Props {
@@ -37,11 +39,12 @@ const SubjectDetailDialog: React.FC<Props> = ({
     subjectId: null,
     subjectCode: '',
     subjectName: '',
+    tools: [],
   },
   isUpdate,
   isActive,
 }) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.subjects.isLoading);
   const formik = useFormik({
@@ -50,23 +53,17 @@ const SubjectDetailDialog: React.FC<Props> = ({
     onSubmit: async (payload: SubjectDto) => {
       try {
         const message = isUpdate
-          ? `Update subject ${String(payload.subjectCode)} success`
-          : 'Create subject success';
+          ? `Update subject ${String(payload.subjectCode)} successfully`
+          : 'Create subject successfully';
         const result = isUpdate
           ? await dispatch(updateSubject(payload))
           : await dispatch(addSubject(payload));
         unwrapResult(result);
-        enqueueSnackbar(message, {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage(message);
         formik.resetForm();
         handleClose();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -76,15 +73,14 @@ const SubjectDetailDialog: React.FC<Props> = ({
     handleClose();
   };
 
+  const handleChangeTools = async (selectedTools: Tool[] | null) => {
+    await formik.setFieldValue('tools', selectedTools);
+  };
+
   const refreshForm = async (values: SubjectDto) => formik.setValues(values);
 
   useEffect(() => {
-    refreshForm(initialValues).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    refreshForm(initialValues).catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValues]);
 
@@ -132,9 +128,10 @@ const SubjectDetailDialog: React.FC<Props> = ({
             <Grid item xs={12}>
               <TextField
                 autoFocus
+                required
                 name="subjectCode"
                 margin="dense"
-                label="Subject Code"
+                label="Subject code"
                 fullWidth
                 variant="outlined"
                 value={formik.values.subjectCode}
@@ -155,6 +152,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
             <Grid item xs={12}>
               <TextField
                 autoFocus
+                required
                 name="subjectName"
                 margin="dense"
                 label="Name"
@@ -173,6 +171,15 @@ const SubjectDetailDialog: React.FC<Props> = ({
                   formik.touched.subjectName && formik.errors.subjectName
                 }
                 onChange={formik.handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ToolDropdown
+                disabled={!isActive}
+                error={Boolean(formik.errors.tools)}
+                helperText={String(formik.errors.tools)}
+                onChange={value => handleChangeTools(value)}
+                value={formik.values.tools ?? []}
               />
             </Grid>
           </Grid>

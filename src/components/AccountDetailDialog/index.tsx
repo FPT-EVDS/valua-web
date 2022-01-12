@@ -36,6 +36,7 @@ import { accountSchema } from 'configs/validations';
 import AppUserDto from 'dtos/appUser.dto';
 import { addAccount } from 'features/account/accountsSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Role from 'models/role.model';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
@@ -103,7 +104,7 @@ const rolesProps: AvatarWithTextProps[] = [
 // eslint-disable-next-line sonarjs/cognitive-complexity
 const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.account.isLoading);
   const formik = useFormik({
@@ -138,18 +139,12 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
         if (image) formData.append('image', image as unknown as Blob);
         const result = await dispatch(addAccount(formData));
         unwrapResult(result);
-        enqueueSnackbar('Create account success', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Create account successfully');
         formik.resetForm();
         setCurrentStep(0);
         handleClose();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -306,6 +301,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12}>
                       <TextField
                         name="companyId"
+                        required
                         autoFocus
                         margin="dense"
                         label={
@@ -339,6 +335,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12} md={6}>
                       <TextField
                         autoFocus
+                        required
                         name="fullName"
                         margin="dense"
                         label="Full name"
@@ -368,6 +365,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12} md={6}>
                       <TextField
                         name="gender"
+                        required
                         select
                         margin="dense"
                         label="Gender"
@@ -392,6 +390,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12}>
                       <TextField
                         name="email"
+                        required
                         autoFocus
                         margin="dense"
                         label="Email"
@@ -428,6 +427,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                           <TextField
                             {...params}
                             name="birthdate"
+                            required
                             autoFocus
                             margin="dense"
                             fullWidth
@@ -450,6 +450,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12} md={6}>
                       <TextField
                         name="phoneNumber"
+                        required
                         autoFocus
                         margin="dense"
                         label="Phone number"
@@ -480,6 +481,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Grid item xs={12}>
                       <TextField
                         name="address"
+                        required
                         autoFocus
                         margin="dense"
                         label="Address"
@@ -512,6 +514,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                           <TextField
                             name="classCode"
                             autoFocus
+                            required
                             margin="dense"
                             label="Class"
                             fullWidth

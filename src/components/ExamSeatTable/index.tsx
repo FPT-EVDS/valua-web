@@ -13,8 +13,8 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { removeExamSeat } from 'features/examRoom/detailExamRoomSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import ExamSeat from 'models/examSeat.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -23,7 +23,7 @@ interface Props {
 
 const ExamSeatTable = ({ data }: Props) => {
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const examRoom = useAppSelector(state => state.detailExamRoom.examRoom);
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(data);
@@ -54,23 +54,16 @@ const ExamSeatTable = ({ data }: Props) => {
           removeExamSeat({
             examSeatId: examinee.examSeatId,
             examinee: { appUserId: examinee.examinee.appUserId },
-            examRoom: { examRoomID: examRoom.examRoomID },
+            examRoom: { examRoomId: examRoom.examRoomId },
           }),
         );
         unwrapResult(result);
         setRows(prev => prev.filter((item, itemIndex) => index !== itemIndex));
-        enqueueSnackbar(
+        showSuccessMessage(
           `${examinee.examinee.fullName} has been successfully removed`,
-          {
-            variant: 'success',
-            preventDuplicate: true,
-          },
         );
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     }
   };
@@ -80,7 +73,11 @@ const ExamSeatTable = ({ data }: Props) => {
   }, [data]);
 
   return (
-    <TableContainer component={Paper} sx={{ display: 'flex', height: '100%' }}>
+    <TableContainer
+      component={Paper}
+      sx={{ display: 'flex', height: '100%' }}
+      elevation={2}
+    >
       <Table sx={{ flexGrow: 1 }}>
         <TableHead>
           <TableRow>

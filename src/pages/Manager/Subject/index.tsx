@@ -1,14 +1,18 @@
 /* eslint-disable prefer-destructuring */
-import { Add, FiberManualRecord } from '@mui/icons-material';
+import { Add, FiberManualRecord, InfoOutlined } from '@mui/icons-material';
 import {
   Box,
   Button,
   MenuItem,
   Stack,
   TextField,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
   Typography,
 } from '@mui/material';
 import { green, red } from '@mui/material/colors';
+import { styled } from '@mui/styles';
 import {
   GridActionsCellItem,
   GridActionsColDef,
@@ -22,7 +26,6 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import SubjectDetailDialog from 'components/SubjectDetailDialog';
-import activeStatus from 'configs/constants/activeStatus';
 import SubjectDto from 'dtos/subject.dto';
 import Status from 'enums/status.enum';
 import {
@@ -30,8 +33,17 @@ import {
   disableSubject,
   searchBySubjectName,
 } from 'features/subject/subjectsSlice';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
+import Tool from 'models/tool.model';
 import React, { useEffect, useState } from 'react';
+
+const CustomWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  [`& .${tooltipClasses.tooltip}`]: {
+    maxWidth: 200,
+  },
+});
 
 const SubjectPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
@@ -42,14 +54,14 @@ const SubjectPage = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this subject ?`,
+      title: `Do you want to disable this subject ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
@@ -63,6 +75,7 @@ const SubjectPage = () => {
     subjectId: null,
     subjectCode: '',
     subjectName: '',
+    tools: [],
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [filterStatus, setFilterStatus] = useState('');
@@ -85,12 +98,7 @@ const SubjectPage = () => {
   };
 
   useEffect(() => {
-    fetchSubjects().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    fetchSubjects().catch(error => showErrorMessage(error));
   }, [page, sortModel]);
 
   useEffect(() => {
@@ -101,15 +109,9 @@ const SubjectPage = () => {
     try {
       const result = await dispatch(activeSubject(subjectId));
       unwrapResult(result);
-      enqueueSnackbar('Enable subject success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Enable subject successfully');
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
     }
   };
 
@@ -117,19 +119,13 @@ const SubjectPage = () => {
     try {
       const result = await dispatch(disableSubject(subject));
       unwrapResult(result);
-      enqueueSnackbar('Disable subject success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable subject successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -143,7 +139,7 @@ const SubjectPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove subject ${name}`,
+      title: `Do you want to disable subject ${name}`,
       handleAccept: () => handleDeleteSubject(subjectId),
     }));
   };
@@ -158,6 +154,29 @@ const SubjectPage = () => {
     },
     { field: 'subjectName', headerName: 'Name', flex: 0.1, minWidth: 130 },
     {
+      field: 'tools',
+      headerName: 'Allowed tools',
+      flex: 0.1,
+      sortable: false,
+      renderCell: ({ id, field, getValue }) => {
+        const tools = getValue(id, field) as Tool[];
+        let tooltipText = 'No tools allowed';
+        if (tools.length > 0) {
+          tooltipText = tools.map(tool => tool.toolName).join(', ');
+        }
+        return (
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Typography variant="body2">{tools.length}</Typography>
+            {tools.length > 0 && (
+              <CustomWidthTooltip title={tooltipText} arrow>
+                <InfoOutlined fontSize="small" color="info" />
+              </CustomWidthTooltip>
+            )}
+          </Stack>
+        );
+      },
+    },
+    {
       field: 'isActive',
       headerName: 'Status',
       flex: 0.1,
@@ -165,7 +184,7 @@ const SubjectPage = () => {
       renderCell: params => {
         const active = params.getValue(params.id, params.field);
         const color = active ? green[500] : red[500];
-        const statusText = active ? 'Active' : 'Disable';
+        const statusText = active ? 'Active' : 'Inactive';
         return (
           <Box display="flex" alignItems="center">
             <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
@@ -215,7 +234,7 @@ const SubjectPage = () => {
             }}
           />,
           <GridActionsCellItem
-            label="Delete"
+            label="Disable"
             sx={{ color: red[500] }}
             showInMenu
             onClick={() => showDeleteConfirmation(params)}
@@ -270,11 +289,12 @@ const SubjectPage = () => {
           <MenuItem key="all-status" value="">
             All
           </MenuItem>
-          {activeStatus.map(option => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
+          <MenuItem key="actived" value="1">
+            Active
+          </MenuItem>
+          <MenuItem key="disabled" value="0">
+            Inactive
+          </MenuItem>
         </TextField>
       </Stack>
       <Stack direction="row" sx={{ marginTop: 1 }} justifyContent="flex-end">

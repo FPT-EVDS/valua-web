@@ -83,7 +83,7 @@ export const examRoomsSlice = createSlice({
       })
       .addCase(assignStaff.fulfilled, (state, action) => {
         const index = state.current.examRooms.findIndex(
-          item => item.examRoomID === action.payload.examRoomID,
+          item => item.examRoomId === action.payload.examRoomId,
         );
         if (index > -1) state.current.examRooms[index] = action.payload;
         state.isLoading = false;
@@ -91,7 +91,7 @@ export const examRoomsSlice = createSlice({
       })
       .addCase(deleteExamRoom.fulfilled, (state, action) => {
         const index = state.current.examRooms.findIndex(
-          item => item.examRoomID === action.meta.arg,
+          item => item.examRoomId === action.meta.arg,
         );
         if (index > -1) state.current.examRooms.splice(index, 1);
         state.isLoading = false;

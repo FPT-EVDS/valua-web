@@ -6,7 +6,7 @@ import Shift from './shift.model';
 
 export default interface DetailExamRoom extends ExamRoom {
   shift: Pick<Shift, 'shiftId' | 'beginTime' | 'finishTime'>;
-  examSeats: ExamSeat[];
+  attendances: ExamSeat[];
   status: ExamRoomStatus;
   createdDate: Date;
   lastModifiedDate: Date;

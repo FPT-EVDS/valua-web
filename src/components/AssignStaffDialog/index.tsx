@@ -17,8 +17,8 @@ import StaffDropdown from 'components/StaffDropdown';
 import AssignStaffToExamRoomDto from 'dtos/assignStaffToExamRoom.dto';
 import { assignStaff } from 'features/examRoom/examRoomSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Account from 'models/account.model';
-import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 
 interface Props {
@@ -34,12 +34,12 @@ const AssignStaffDialog: React.FC<Props> = ({
   open,
   handleClose,
 }) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const {
     current: { examRooms },
   } = useAppSelector(state => state.examRoom);
   const dispatch = useAppDispatch();
-  const examRoom = examRooms.find(item => item.examRoomID === examRoomId);
+  const examRoom = examRooms.find(item => item.examRoomId === examRoomId);
   const [currentStaff, setCurrentStaff] = useState<Pick<
     Account,
     | 'appUserId'
@@ -52,24 +52,18 @@ const AssignStaffDialog: React.FC<Props> = ({
 
   const formik = useFormik({
     initialValues: {
-      examRoomId: examRoom?.examRoomID || '',
+      examRoomId: examRoom?.examRoomId || '',
       staffId: '',
     },
     onSubmit: async (payload: AssignStaffToExamRoomDto) => {
       try {
         const result = await dispatch(assignStaff(payload));
         unwrapResult(result);
-        enqueueSnackbar('Assign staff success', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Assign staff successfully');
         formik.resetForm();
         handleClose();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });

@@ -18,8 +18,8 @@ import addSubjectsSchema from 'configs/validations/addSubjectsSchema';
 import AddSubjectToSemesterDto from 'dtos/addSubjectToSemester.dto';
 import { addSubjectsToSemester } from 'features/semester/detailSemesterSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Subject from 'models/subject.model';
-import { useSnackbar } from 'notistack';
 import React from 'react';
 
 interface Props {
@@ -28,7 +28,7 @@ interface Props {
 }
 
 const AddSubjectToSemesterDialog: React.FC<Props> = ({ open, handleClose }) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const { semester, canAddSubjects } = useAppSelector(
     state => state.detailSemester,
@@ -51,18 +51,12 @@ const AddSubjectToSemesterDialog: React.FC<Props> = ({ open, handleClose }) => {
         unwrapResult(result);
         const message = `Add ${
           formik.values.subjects.length
-        } subjects to ${String(semester?.semesterName)} success`;
-        enqueueSnackbar(message, {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        } subjects to ${String(semester?.semesterName)} successfully`;
+        showSuccessMessage(message);
         formik.resetForm();
         handleClose();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });

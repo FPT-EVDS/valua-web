@@ -1,4 +1,4 @@
-export enum ShiftStatus {
+enum ShiftStatus {
   'Inactive' = 0,
   'NotReady' = 1,
   'Ready' = 2,

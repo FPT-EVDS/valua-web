@@ -19,9 +19,9 @@ import genders from 'configs/constants/genders.constant';
 import { appUserSchema } from 'configs/validations';
 import { updateUserProfile } from 'features/auth/authSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import User from 'models/user.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -30,7 +30,7 @@ interface Props {
 }
 
 const ProfileDetailCard = ({ user, isLoading }: Props) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
   const [isEditable, setIsEditable] = useState(
@@ -47,15 +47,9 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
         };
         const result = await dispatch(updateUserProfile(data));
         unwrapResult(result);
-        enqueueSnackbar('Update profile success', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Update profile successfully');
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -79,12 +73,7 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
   };
 
   useEffect(() => {
-    refreshFormValues().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    refreshFormValues().catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 

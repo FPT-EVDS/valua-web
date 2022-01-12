@@ -40,7 +40,7 @@ const AccountOverviewCard = ({ account, actionButtons }: Props) => (
               ml={0.5}
               color={account?.isActive ? green[500] : red[500]}
             >
-              {account?.isActive ? 'Active' : 'Disable'}
+              {account?.isActive ? 'Active' : 'Inactive'}
             </Typography>
           </Box>
           <Typography gutterBottom color="text.secondary">

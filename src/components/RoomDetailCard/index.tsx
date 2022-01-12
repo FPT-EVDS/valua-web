@@ -17,9 +17,9 @@ import { roomSchema } from 'configs/validations';
 import RoomDto from 'dtos/room.dto';
 import { updateRoom } from 'features/room/detailRoomSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import Room from 'models/room.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -28,7 +28,7 @@ interface Props {
 }
 
 const RoomDetailCard = ({ room, isLoading }: Props) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
   const [isEditable, setIsEditable] = useState(
@@ -42,15 +42,9 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
       try {
         const result = await dispatch(updateRoom(payload));
         unwrapResult(result);
-        enqueueSnackbar('Update room success', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Update room successfully');
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -62,12 +56,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
   };
 
   useEffect(() => {
-    refreshFormValues().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    refreshFormValues().catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [room]);
 
@@ -106,6 +95,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
               <TextField
+                required
                 name="roomName"
                 margin="dense"
                 label="Name"
@@ -124,6 +114,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
             </Grid>
             <Grid item xs={12} md={4}>
               <TextField
+                required
                 name="floor"
                 margin="dense"
                 label="Floor"
@@ -142,6 +133,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
             </Grid>
             <Grid item xs={12} md={4}>
               <TextField
+                required
                 name="seatCount"
                 margin="dense"
                 label="Seat count"

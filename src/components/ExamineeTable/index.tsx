@@ -49,6 +49,9 @@ const ExamineeTable = ({ data }: Props) => {
   const handleRemoveExaminee = (examinee: Examinee, index: number) => {
     dispatch(updateRemovedExaminees([...removedItems, examinee]));
     setRows(prev => prev.filter((item, itemIndex) => index !== itemIndex));
+    if (rows.length % 10 === 1 && page > 0) {
+      setPage(prevPage => prevPage - 1);
+    }
   };
 
   useEffect(() => {
@@ -73,7 +76,7 @@ const ExamineeTable = ({ data }: Props) => {
           ).map((row, index) => (
             <TableRow key={row.subjectExamineeID}>
               <TableCell component="th" scope="row" align="center">
-                {index + 1}
+                {page * rowsPerPage + index + 1}
               </TableCell>
               <TableCell align="center">{row.examinee.fullName}</TableCell>
               <TableCell align="center">{row.examinee.companyId}</TableCell>

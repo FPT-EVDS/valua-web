@@ -8,7 +8,13 @@ import axiosClient from './axiosClient';
 const authServices = {
   login: (payload: LoginDto): Promise<AxiosResponse<LoginUser>> => {
     const url = '/authentication/login';
-    return axiosClient.post(url, { ...payload, skipAuthRefresh: true });
+    return axiosClient.post(url, { ...payload });
+  },
+  loginWithGoogle: () => {
+    const redirectUri = process.env.REACT_APP_REDIRECT_URI ?? '';
+    return `${String(
+      axiosClient.defaults.baseURL,
+    )}/oauth2/authorize/google?redirect_uri=${redirectUri}`;
   },
   getUserProfile: (): Promise<AxiosResponse<User>> => {
     const url = '/authentication/profile';

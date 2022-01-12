@@ -1,8 +1,7 @@
 import { FiberManualRecord } from '@mui/icons-material';
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
-  GridActionsCellItem,
   GridActionsColDef,
   GridColDef,
   GridRowModel,
@@ -18,9 +17,9 @@ import {
   searchSubjectBySemester,
   updateExamineeSemester,
 } from 'features/subjectExaminee/subjectExamineeSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
 import Subject from 'models/subject.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -37,9 +36,8 @@ const ExamineePage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const [open, setOpen] = useState(false);
   const [page, setPage] = useState(0);
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
@@ -67,51 +65,12 @@ const ExamineePage = () => {
         }),
       )
         .then(result => unwrapResult(result))
-        .catch(error =>
-          enqueueSnackbar(error, {
-            variant: 'error',
-            preventDuplicate: true,
-          }),
-        );
+        .catch(error => showErrorMessage(error));
   };
 
   useEffect(() => {
     fetchExamineeSubject();
   }, [page, sortModel, selectedSemester]);
-
-  // const handleDeleteSubject = async (shiftId: string) => {
-  //   try {
-  //     const result = await dispatch(deleteShift(shiftId));
-  //     unwrapResult(result);
-  //     enqueueSnackbar('Delete shift success', {
-  //       variant: 'success',
-  //       preventDuplicate: true,
-  //     });
-  //     setConfirmDialogProps(prevState => ({
-  //       ...prevState,
-  //       open: false,
-  //     }));
-  //   } catch (error) {
-  //     enqueueSnackbar(error, {
-  //       variant: 'error',
-  //       preventDuplicate: true,
-  //     });
-  //     setConfirmDialogProps(prevState => ({
-  //       ...prevState,
-  //       open: false,
-  //     }));
-  //   }
-  // };
-
-  // const showDeleteConfirmation = ({ getValue, id }: GridRowParams) => {
-  //   const shiftId = String(getValue(id, 'shiftId'));
-  //   setConfirmDialogProps(prevState => ({
-  //     ...prevState,
-  //     open: true,
-  //     title: `Do you want to disable this shift`,
-  //     handleAccept: () => handleDeleteSubject(shiftId),
-  //   }));
-  // };
 
   const columns: Array<GridColDef | GridActionsColDef> = [
     {
@@ -134,15 +93,15 @@ const ExamineePage = () => {
     },
     {
       field: 'totalExaminees',
+      flex: 0.2,
       headerName: 'Total examinees',
-      flex: 0.3,
       minWidth: 130,
       sortable: false,
     },
     {
       field: 'totalUnassigned',
+      flex: 0.2,
       headerName: 'Total unassigned',
-      flex: 0.3,
       minWidth: 130,
       sortable: false,
     },
@@ -168,13 +127,13 @@ const ExamineePage = () => {
     {
       field: 'actions',
       headerName: 'Actions',
+      flex: 0.25,
       type: 'actions',
       getActions: params => {
         const subject = params.getValue(params.id, 'subject') as Subject;
         return [
-          <GridActionsCellItem
-            label="View detail"
-            showInMenu
+          <Button
+            variant="text"
             onClick={() =>
               history.push(
                 `${url}/subject?semesterId=${String(
@@ -182,12 +141,9 @@ const ExamineePage = () => {
                 )}&subjectId=${subject.subjectId}`,
               )
             }
-          />,
-          <GridActionsCellItem
-            label="Delete"
-            showInMenu
-            sx={{ color: red[500] }}
-          />,
+          >
+            View detail
+          </Button>,
         ];
       },
     },
@@ -208,9 +164,9 @@ const ExamineePage = () => {
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <EVDSDataGrid
         pagination
+        rowHeight={60}
         leftActions={
           <SemesterDropdown
-            payload={{ beginDate: new Date() }}
             textFieldProps={{
               size: 'small',
             }}

@@ -18,7 +18,7 @@ import { roomSchema } from 'configs/validations';
 import RoomDto from 'dtos/room.dto';
 import { addRoom } from 'features/room/roomsSlice';
 import { useFormik } from 'formik';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React from 'react';
 
 interface Props {
@@ -41,7 +41,7 @@ const RoomDetailDialog: React.FC<Props> = ({
     seatCount: 30,
   },
 }) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.room.isLoading);
   const formik = useFormik({
@@ -51,16 +51,10 @@ const RoomDetailDialog: React.FC<Props> = ({
       try {
         const result = await dispatch(addRoom(payload));
         unwrapResult(result);
-        enqueueSnackbar('Create room success', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Create room successfully');
         formik.resetForm();
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -109,6 +103,7 @@ const RoomDetailDialog: React.FC<Props> = ({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
+                required
                 autoFocus
                 name="roomName"
                 margin="dense"
@@ -128,6 +123,7 @@ const RoomDetailDialog: React.FC<Props> = ({
             </Grid>
             <Grid item xs={12}>
               <TextField
+                required
                 name="seatCount"
                 autoFocus
                 margin="dense"
@@ -149,6 +145,7 @@ const RoomDetailDialog: React.FC<Props> = ({
             </Grid>
             <Grid item xs={12}>
               <TextField
+                required
                 name="floor"
                 autoFocus
                 margin="dense"

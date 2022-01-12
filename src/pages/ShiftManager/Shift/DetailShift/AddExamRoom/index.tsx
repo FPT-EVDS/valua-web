@@ -1,28 +1,29 @@
-import { Add, ChevronLeft, Info } from '@mui/icons-material';
+import { Add, Info } from '@mui/icons-material';
 import { Box, Button, Grid, Stack, Typography, useTheme } from '@mui/material';
 import { red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AvailableRoomTable from 'components/AvailableRoomTable';
+import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import CustomTooltip from 'components/CustomTooltip';
 import ExamineeTable from 'components/ExamineeTable';
 import ExamineeTransferListDialog from 'components/ExamineeTransferListDialog';
 import GetAvailableExamRoomsCard from 'components/GetAvailableExamRoomsCard';
 import LoadingIndicator from 'components/LoadingIndicator';
+import Attendance from 'dtos/attendance.dto';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import AvailableRoomsDto from 'dtos/availableRooms.dto';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
-import ExamineeSeat from 'dtos/examineeSeat.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
 import {
   createExamRoom,
   updateRemovedExaminees,
 } from 'features/examRoom/addExamRoomSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Examinee from 'models/examinee.model';
-import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import examRoomServices from 'services/examRoom.service';
 import { chunk } from 'utils';
 
@@ -33,9 +34,8 @@ interface ParamProps {
 const AddExamRoomPage = () => {
   const { id } = useParams<ParamProps>();
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const theme = useTheme();
-  const history = useHistory();
   const [isOpen, setIsOpen] = useState(false);
   const [examRooms, setExamRooms] = useState<AvailableRoomsDto | null>(null);
   const [examinees, setExaminees] = useState<AvailableExamineesDto | null>(
@@ -45,14 +45,13 @@ const AddExamRoomPage = () => {
     Examinee[][] | null
   >(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const { isLoading, defaultExamRoomSize, currentSubject, shift } =
-    useAppSelector(state => state.addExamRoom);
-
-  const showErrorMessage = (error: string) =>
-    enqueueSnackbar(error, {
-      variant: 'error',
-      preventDuplicate: true,
-    });
+  const {
+    isLoading,
+    defaultExamRoomSize,
+    currentSubject,
+    shift,
+    removedExaminees,
+  } = useAppSelector(state => state.addExamRoom);
 
   const handleError = () => {
     setExamRooms(null);
@@ -92,12 +91,13 @@ const AddExamRoomPage = () => {
 
   const handleCreateExamRoom = async () => {
     if (listExamineesByRoom && examRooms && currentSubject && shift) {
+      const filteredRemovedExamineesList = listExamineesByRoom[
+        selectedIndex
+      ].filter(value => !removedExaminees.includes(value));
       const appUserIdList = new Set(
-        listExamineesByRoom[selectedIndex].map(
-          (value, index) => value.examinee.appUserId,
-        ),
+        filteredRemovedExamineesList.map(value => value.examinee.appUserId),
       );
-      const examSeats: ExamineeSeat[] = listExamineesByRoom[selectedIndex].map(
+      const attendances: Attendance[] = filteredRemovedExamineesList.map(
         (value, index) => ({
           examinee: {
             appUserId: value.examinee.appUserId,
@@ -106,7 +106,7 @@ const AddExamRoomPage = () => {
         }),
       );
       const payload: CreateExamRoomDto = {
-        examSeats,
+        attendances,
         shift: {
           shiftId: id,
         },
@@ -139,10 +139,7 @@ const AddExamRoomPage = () => {
           totalRooms: filteredExamRooms.length,
         });
         setSelectedIndex(-1);
-        enqueueSnackbar('Created exam room successfully.', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Created exam room successfully');
       } catch (error) {
         showErrorMessage(error);
       }
@@ -151,16 +148,10 @@ const AddExamRoomPage = () => {
 
   return (
     <div>
-      <Box
-        width={220}
-        display="flex"
-        alignItems="center"
-        sx={{ cursor: 'pointer' }}
-        onClick={() => history.push(`/shift-manager/shift/${id}`)}
-      >
-        <ChevronLeft />
-        <div>Back to detail shift page</div>
-      </Box>
+      <BackToPreviousPageButton
+        title="Back to detail shift page"
+        route={`/shift-manager/shift/${id}`}
+      />
       <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
         <Grid item xs={12} lg={4}>
           <Stack spacing={3}>

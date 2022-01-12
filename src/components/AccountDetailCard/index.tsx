@@ -30,9 +30,9 @@ import { accountSchema } from 'configs/validations';
 import AppUserDto from 'dtos/appUser.dto';
 import { updateAccount } from 'features/account/detailAccountSlice';
 import { useFormik } from 'formik';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import Account from 'models/account.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
@@ -42,7 +42,7 @@ interface Props {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 const AccountDetailCard = ({ account, isLoading }: Props) => {
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
   const [isEditable, setIsEditable] = useState(
@@ -65,15 +65,9 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
         };
         const result = await dispatch(updateAccount(data));
         unwrapResult(result);
-        enqueueSnackbar('Update account success', {
-          variant: 'success',
-          preventDuplicate: true,
-        });
+        showSuccessMessage('Update account successfully');
       } catch (error) {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       }
     },
   });
@@ -106,12 +100,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
   };
 
   useEffect(() => {
-    refreshFormValues().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    refreshFormValues().catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account]);
 
@@ -144,8 +133,9 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                name="companyId"
                 autoFocus
+                name="companyId"
+                required
                 margin="dense"
                 label={
                   formik.values.userRole.roleID === 3
@@ -176,6 +166,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
             <Grid item xs={12} md={6}>
               <TextField
                 autoFocus
+                required
                 name="fullName"
                 margin="dense"
                 label="Full name"
@@ -204,6 +195,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
               <TextField
                 name="gender"
                 select
+                required
                 margin="dense"
                 label="Gender"
                 fullWidth
@@ -225,6 +217,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
               <TextField
                 name="email"
                 autoFocus
+                required
                 margin="dense"
                 label="Email"
                 type="email"
@@ -258,6 +251,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                   <TextField
                     {...params}
                     name="birthdate"
+                    required
                     autoFocus
                     margin="dense"
                     fullWidth
@@ -281,6 +275,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
               <TextField
                 name="phoneNumber"
                 autoFocus
+                required
                 margin="dense"
                 label="Phone number"
                 value={formik.values.phoneNumber}
@@ -311,6 +306,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
               <TextField
                 name="address"
                 autoFocus
+                required
                 margin="dense"
                 disabled={!isEditable}
                 label="Address"
@@ -338,6 +334,7 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                   <TextField
                     name="classCode"
                     autoFocus
+                    required
                     margin="dense"
                     label="Class"
                     fullWidth

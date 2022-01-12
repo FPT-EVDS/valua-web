@@ -3,7 +3,6 @@ import AddSubjectToSemesterDto from 'dtos/addSubjectToSemester.dto';
 import DisableSemesterDto from 'dtos/disableSemester.dto';
 import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto';
 import SearchByDateDto from 'dtos/searchByDate.dto';
-import SearchByNameDto from 'dtos/searchByName.dto';
 import SearchSemesterParamsDto from 'dtos/searchSemesterParams.dto';
 import SemesterDto from 'dtos/semester.dto';
 import SemestersDto from 'dtos/semesters.dto';
@@ -59,25 +58,24 @@ const semesterServices = {
       },
     });
   },
-  searchSemestersByName: ({
-    page,
-    search,
-    sort,
-    status,
-    beginDate,
-    endDate,
-  }: SearchSemesterParamsDto): Promise<AxiosResponse<SemestersDto>> => {
+  searchSemestersByName: (
+    payload: SearchSemesterParamsDto | undefined,
+  ): Promise<AxiosResponse<SemestersDto>> => {
     const url = '/semesters';
-    return axiosClient.get(url, {
-      params: {
-        page,
-        search,
-        sort,
-        status,
-        beginDate,
-        endDate,
-      },
-    });
+    if (payload) {
+      const { page, search, sort, status, beginDate, endDate } = payload;
+      return axiosClient.get(url, {
+        params: {
+          page,
+          search,
+          sort,
+          status,
+          beginDate,
+          endDate,
+        },
+      });
+    }
+    return axiosClient.get(url);
   },
   addSubjects: (
     payload: AddSubjectToSemesterDto,

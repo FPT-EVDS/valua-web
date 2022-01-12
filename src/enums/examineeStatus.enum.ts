@@ -1,4 +1,4 @@
-export enum ExamineeStatus {
+enum ExamineeStatus {
   'Unassigned' = 1,
   'Assigned' = 2,
   'Removed' = 3,

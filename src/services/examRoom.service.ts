@@ -100,14 +100,14 @@ const examRoomServices = {
   addNewSeatToExamRoom: (
     payload: DetailExamSeat,
   ): Promise<AxiosResponse<ExamSeat>> => {
-    const url = '/examSeats';
+    const url = '/attendances';
     return axiosClient.post(url, payload);
   },
   removeSeatFromExamRoom: ({
     examSeatId,
     ...otherPayload
   }: DetailExamSeat): Promise<AxiosResponse<ExamSeat>> => {
-    const url = `/examSeats/${String(examSeatId)}`;
+    const url = `/attendance/${String(examSeatId)}`;
     return axiosClient.patch(url, otherPayload);
   },
 };

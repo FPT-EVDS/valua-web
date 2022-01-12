@@ -51,6 +51,7 @@ const AddSemesterSubjectsDropdown = ({
   return (
     <Autocomplete
       multiple
+      limitTags={5}
       disableCloseOnSelect
       loading={isLoading}
       options={subjectOptions}

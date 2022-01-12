@@ -1,5 +1,6 @@
 import { useAppSelector } from 'app/hooks';
-import { Role } from 'enums/role.enum';
+import AppConstants from 'enums/app';
+import Role from 'enums/role.enum';
 import React from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
 
@@ -10,7 +11,7 @@ interface Props extends RouteProps {
 
 const PrivateRoute = ({ requiredRole = null, ...routeProps }: Props) => {
   const user = useAppSelector(state => state.auth.user);
-  const isLoggedIn = Boolean(localStorage.getItem('access_token'));
+  const isLoggedIn = Boolean(localStorage.getItem(AppConstants.ACCESS_TOKEN));
   if (!isLoggedIn) return <Redirect to="/login" />;
   if (user) {
     const { role } = user;

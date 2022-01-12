@@ -1,15 +1,7 @@
 /* eslint-disable prefer-destructuring */
-import { Add, ChevronLeft, FiberManualRecord } from '@mui/icons-material';
-import {
-  Avatar,
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  Stack,
-  Typography,
-} from '@mui/material';
-import { green, grey, orange, red } from '@mui/material/colors';
+import { Add, FiberManualRecord } from '@mui/icons-material';
+import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { green, grey, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
   GridActionsColDef,
@@ -20,16 +12,18 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AssignStaffDialog from 'components/AssignStaffDialog';
+import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
+import NotFoundItem from 'components/NotFoundItem';
 import ShiftDetailCard from 'components/ShiftDetailCard';
 import ExamRoomStatus from 'enums/examRoomStatus.enum';
 import { deleteExamRoom, getExamRooms } from 'features/examRoom/examRoomSlice';
 import { deleteShift, getShift } from 'features/shift/detailShiftSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Account from 'models/account.model';
 import Room from 'models/room.model';
 import Subject from 'models/subject.model';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -40,7 +34,7 @@ interface ParamProps {
 const DetailShiftPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const history = useHistory();
   const { id } = useParams<ParamProps>();
   const [open, setOpen] = useState(false);
@@ -53,7 +47,7 @@ const DetailShiftPage = () => {
   } = useAppSelector(state => state.examRoom);
   const rows: GridRowModel[] = examRooms.map((examRoom, index) => ({
     ...examRoom,
-    id: examRoom.examRoomID,
+    id: examRoom.examRoomId,
   }));
   const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
@@ -65,12 +59,6 @@ const DetailShiftPage = () => {
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
-    });
-
-  const showErrorMessage = (error: string) =>
-    enqueueSnackbar(error, {
-      variant: 'error',
-      preventDuplicate: true,
     });
 
   const fetchShift = async (shiftId: string) => {
@@ -102,7 +90,10 @@ const DetailShiftPage = () => {
   }, [page, sortModel, searchValue]);
 
   useEffect(() => {
-    if (id) fetchShift(id).catch(error => showErrorMessage(error));
+    if (id)
+      fetchShift(id).catch(error => {
+        showErrorMessage(error);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -110,10 +101,7 @@ const DetailShiftPage = () => {
     try {
       const result = await dispatch(deleteShift(shiftId));
       unwrapResult(result);
-      enqueueSnackbar('This shift has been successfully deleted', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('This shift has been successfully deleted');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -132,10 +120,7 @@ const DetailShiftPage = () => {
     try {
       const result = await dispatch(deleteExamRoom(roomId));
       unwrapResult(result);
-      enqueueSnackbar('Exam room has been successfully deleted', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Exam room has been successfully deleted');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -192,14 +177,14 @@ const DetailShiftPage = () => {
       sortable: false,
       filterable: false,
       headerName: 'Room name',
-      flex: 0.1,
+      flex: 0.2,
     },
     {
       field: 'subject',
       sortable: false,
       filterable: false,
       headerName: 'Subject',
-      flex: 0.1,
+      flex: 0.2,
       valueFormatter: ({ value }) => (value as unknown as Subject).subjectName,
     },
     {
@@ -280,6 +265,7 @@ const DetailShiftPage = () => {
       type: 'actions',
       getActions: ({ getValue, id: rowId }) => {
         const staff = getValue(rowId, 'staff') as Account;
+        const status = getValue(rowId, 'status');
         const deleteItems = [
           <GridActionsCellItem
             label="Assign"
@@ -316,6 +302,7 @@ const DetailShiftPage = () => {
           />,
         ];
         if (staff) deleteItems.shift();
+        if (status === ExamRoomStatus.Disabled) deleteItems.pop();
         return deleteItems;
       },
     },
@@ -332,50 +319,42 @@ const DetailShiftPage = () => {
           examRoomId={currentRoomId}
         />
       )}
-      <Box
-        width={180}
-        display="flex"
-        alignItems="center"
-        onClick={() => history.push('/shift-manager/shift')}
-        sx={{ cursor: 'pointer' }}
-      >
-        <ChevronLeft />
-        <div>Back to shift page</div>
-      </Box>
-      <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
-        {shift ? (
-          <>
-            <Grid item xs={12} lg={3}>
-              <ShiftDetailCard
-                shift={shift}
-                isLoading={isLoading}
-                handleDelete={showDeleteConfirmation}
-              />
-            </Grid>
-            <Grid item xs={12} lg={9}>
-              <EVDSDataGrid
-                pagination
-                rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
-                pageSize={DEFAULT_PAGE_SIZE}
-                sortingMode="server"
-                sortModel={sortModel}
-                onSortModelChange={handleSortModelChange}
-                rowCount={totalItems}
-                isLoading={isExamRoomLoading}
-                title="Exam room list"
-                handleSearch={handleSearch}
-                columns={columns}
-                rows={rows}
-                page={page}
-                onPageChange={newPage => setPage(newPage)}
-                addButton={<AddButton />}
-              />
-            </Grid>
-          </>
-        ) : (
-          <CircularProgress />
-        )}
-      </Grid>
+      <BackToPreviousPageButton
+        title="Back to shift page"
+        route="/shift-manager/shift"
+      />
+      {shift ? (
+        <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
+          <Grid item xs={12} lg={3}>
+            <ShiftDetailCard
+              shift={shift}
+              isLoading={isLoading}
+              handleDelete={showDeleteConfirmation}
+            />
+          </Grid>
+          <Grid item xs={12} lg={9}>
+            <EVDSDataGrid
+              pagination
+              rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
+              pageSize={DEFAULT_PAGE_SIZE}
+              sortingMode="server"
+              sortModel={sortModel}
+              onSortModelChange={handleSortModelChange}
+              rowCount={totalItems}
+              isLoading={isExamRoomLoading}
+              title="Exam room list"
+              handleSearch={handleSearch}
+              columns={columns}
+              rows={rows}
+              page={page}
+              onPageChange={newPage => setPage(newPage)}
+              addButton={<AddButton />}
+            />
+          </Grid>
+        </Grid>
+      ) : (
+        <NotFoundItem isLoading={isLoading} message="Shift not found" />
+      )}
     </div>
   );
 };

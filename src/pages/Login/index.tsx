@@ -1,12 +1,12 @@
 import './styles.scss';
 
+import GoogleIcon from '@mui/icons-material/Google';
 import {
   Box,
   Button,
   Card,
   CardContent,
   Divider,
-  Link,
   TextField,
   Typography,
 } from '@mui/material';
@@ -15,16 +15,21 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import { ReactComponent as Logo } from 'assets/images/logo.svg';
 import backgroundImage from 'assets/images/stacked-waves-haikei.png';
-import GoogleLoginButton from 'components/GoogleLoginButton';
 import LoginDto from 'dtos/login.dto';
+import AppConstants from 'enums/app';
 import Role from 'enums/role.enum';
 import { login } from 'features/auth/authSlice';
 import { useFormik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import authServices from 'services/auth.service';
+
+interface HistoryState {
+  error: Error;
+}
 
 const LoginPage = () => {
-  const history = useHistory();
+  const history = useHistory<HistoryState>();
   const [errorMessage, setErrorMessage] = useState('');
   const dispatch = useAppDispatch();
   const formik = useFormik({
@@ -41,8 +46,8 @@ const LoginPage = () => {
           appUser: { role, refreshToken },
         } = user;
         if (role === Role.Manager || role === Role.ShiftManager) {
-          localStorage.setItem('access_token', token);
-          localStorage.setItem('refresh_token', refreshToken);
+          localStorage.setItem(AppConstants.ACCESS_TOKEN, token);
+          localStorage.setItem(AppConstants.REFRESH_TOKEN, refreshToken);
         }
         if (role === Role.Manager) history.push('/manager');
         else if (role === Role.ShiftManager) history.push('/shift-manager');
@@ -53,6 +58,13 @@ const LoginPage = () => {
       }
     },
   });
+
+  useEffect(() => {
+    if (history.location.state) {
+      const { error } = history.location.state;
+      setErrorMessage(error.message);
+    }
+  }, []);
 
   return (
     <Box
@@ -112,11 +124,6 @@ const LoginPage = () => {
               <Typography variant="subtitle1" component="div" color={red[500]}>
                 {errorMessage}
               </Typography>
-              {/* <Box display="flex" justifyContent="right" my={1}>
-                <Link href="#" underline="hover">
-                  Forgot your password?
-                </Link>
-              </Box> */}
               <Button
                 type="submit"
                 fullWidth
@@ -126,8 +133,18 @@ const LoginPage = () => {
               >
                 Log In
               </Button>
-              {/* <Divider light>OR</Divider>
-              <GoogleLoginButton /> */}
+              <Divider light>OR</Divider>
+              <Button
+                href={authServices.loginWithGoogle()}
+                variant="contained"
+                fullWidth
+                color="google"
+                size="large"
+                sx={{ mt: 3, mb: 2 }}
+                startIcon={<GoogleIcon />}
+              >
+                Login with Google
+              </Button>
             </Box>
           </Box>
         </CardContent>

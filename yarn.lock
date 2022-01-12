@@ -1644,6 +1644,11 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
+"@juggle/resize-observer@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.3.1.tgz#b50a781709c81e10701004214340f25475a171a0"
+  integrity sha512-zMM9Ds+SawiUkakS7y94Ymqx+S0ORzpG3frZirN3l+UlXUmSUR7hF4wxCVqW+ei94JzV5kt0uXBcoOEAuiydrw==
+
 "@mui/core@5.0.0-alpha.51":
   version "5.0.0-alpha.51"
   resolved "https://registry.yarnpkg.com/@mui/core/-/core-5.0.0-alpha.51.tgz#3c5f715a0ee5ab123e0987047b8e4651964ecc54"
@@ -3797,6 +3802,11 @@ camelcase@^6.0.0, camelcase@^6.1.0, camelcase@^6.2.0:
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-6.2.0.tgz#924af881c9d525ac9d87f40d964e5cea982a1809"
   integrity sha512-c7wVvbw3f37nuobQNtgsgG9POC9qMbNuMQmTCqZv23b6MIz0fcYpBiOlv9gEN/hdLdnZTDQhg6e9Dq5M1vKvfg==
 
+can-use-dom@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/can-use-dom/-/can-use-dom-0.1.0.tgz#22cc4a34a0abc43950f42c6411024a3f6366b45a"
+  integrity sha1-IsxKNKCrxDlQ9CxkEQJKP2NmtFo=
+
 caniuse-api@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/caniuse-api/-/caniuse-api-3.0.0.tgz#5e4d90e2274961d46291997df599e3ed008ee4c0"
@@ -4309,6 +4319,11 @@ core-js@^2.4.0:
   version "2.6.12"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
   integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
+
+core-js@^3.0.1:
+  version "3.20.1"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.20.1.tgz#eb1598047b7813572f1dc24b7c6a95528c99eef3"
+  integrity sha512-btdpStYFQScnNVQ5slVcr858KP0YWYjV16eGJQw8Gg7CWtu/2qNvIM3qVRIR3n1pK2R9NNOrTevbvAYxajwEjg==
 
 core-js@^3.6.5:
   version "3.18.1"
@@ -10854,7 +10869,16 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.6.1:
+  version "15.8.0"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.0.tgz#d237e624c45a9846e469f5f31117f970017ff588"
+  integrity sha512-fDGekdaHh65eI3lMi5OnErU6a8Ighg2KjcjQxO7m8VHyWjcPyj5kiOgV1LQDOOOgVy3+5FgjXvdSSX7B8/5/4g==
+  dependencies:
+    loose-envify "^1.4.0"
+    object-assign "^4.1.1"
+    react-is "^16.13.1"
+
+prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -11038,13 +11062,6 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-alice-carousel@^2.5.1:
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/react-alice-carousel/-/react-alice-carousel-2.5.1.tgz#d8b27f942d342bf57367eb2c3301358a28758381"
-  integrity sha512-UeAd+O83TEiCxbDMMd9xAOLRr+xPNFPai9W6cNQgmIfEBgOiKDdntpTnhhwfXKoirXxQcbPlg9eG7FG9D1M4SA==
-  dependencies:
-    vanilla-swipe "^2.2.0"
-
 react-app-polyfill@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-app-polyfill/-/react-app-polyfill-2.0.0.tgz#a0bea50f078b8a082970a9d853dc34b6dcc6a3cf"
@@ -11114,14 +11131,6 @@ react-fast-compare@^2.0.1:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
-
-react-google-login@^5.2.2:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/react-google-login/-/react-google-login-5.2.2.tgz#a20b46440c6c1610175ef75baf427118ff0e9859"
-  integrity sha512-JUngfvaSMcOuV0lFff7+SzJ2qviuNMQdqlsDJkUM145xkGPVIfqWXq9Ui+2Dr6jdJWH5KYdynz9+4CzKjI5u6g==
-  dependencies:
-    "@types/react" "*"
-    prop-types "^15.6.0"
 
 react-is@^16.10.2, react-is@^16.13.1, react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
@@ -12182,6 +12191,26 @@ simple-swizzle@^0.2.2:
   dependencies:
     is-arrayish "^0.3.1"
 
+simplebar-react@^2.3.6:
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/simplebar-react/-/simplebar-react-2.3.6.tgz#27945a80b221caae8f241155cdba1bb6c201ebff"
+  integrity sha512-Igm/MRdt+LQ8edTTzjRoaATfXPPMByuUsVvHQHrkX7SH4jmvL85VshtOVcXFrOBspv9vqQtnIrOq/j9VmRSNDQ==
+  dependencies:
+    prop-types "^15.6.1"
+    simplebar "^5.3.6"
+
+simplebar@^5.3.6:
+  version "5.3.6"
+  resolved "https://registry.yarnpkg.com/simplebar/-/simplebar-5.3.6.tgz#d9383576a09a6fd09e19543f8e9906a3e87c3896"
+  integrity sha512-FJUMbV+hNDd/m+1/fvD41TXKd5mSdlI5zgBygkaQIV3SffNbcLhSbJT6ufTs8ZNRLJ6i+qc/KCFMqWmvlGWMhA==
+  dependencies:
+    "@juggle/resize-observer" "^3.3.1"
+    can-use-dom "^0.1.0"
+    core-js "^3.0.1"
+    lodash.debounce "^4.0.8"
+    lodash.memoize "^4.1.2"
+    lodash.throttle "^4.1.1"
+
 sisteransi@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
@@ -12209,6 +12238,11 @@ slice-ansi@^4.0.0:
     ansi-styles "^4.0.0"
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
+
+slick-carousel@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/slick-carousel/-/slick-carousel-1.8.1.tgz#a4bfb29014887bb66ce528b90bd0cda262cc8f8d"
+  integrity sha512-XB9Ftrf2EEKfzoQXt3Nitrt/IPbT+f1fgqBdoxO3W/+JYvtEOW6EgxnWfr9GH6nmULv7Y2tPmEX3koxThVmebA==
 
 snapdragon-node@^2.0.1:
   version "2.1.1"
@@ -13420,11 +13454,6 @@ value-equal@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/value-equal/-/value-equal-1.0.1.tgz#1e0b794c734c5c0cade179c437d356d931a34d6c"
   integrity sha512-NOJ6JZCAWr0zlxZt+xqCHNTEKOsrks2HQd4MqhP1qy4z1SkbEP467eNx6TgDKXMvUOb+OENfJCZwM+16n7fRfw==
-
-vanilla-swipe@^2.2.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/vanilla-swipe/-/vanilla-swipe-2.3.0.tgz#a2cd466aabed00c1e8abd7b69a86940bf9319516"
-  integrity sha512-4m8vZ/kckRG7RQUYNg+0lGILMHT08KEgwePlRLzediDSu7aQFBLB0V2n36vUmYqq5CVWASOzZ8zpnQFZXIbHbA==
 
 vary@~1.1.2:
   version "1.1.2"

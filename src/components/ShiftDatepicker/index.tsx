@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import { DatePicker, PickersDay, PickersDayProps } from '@mui/lab';
 import { Badge, TextField } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
@@ -5,13 +6,20 @@ import { format } from 'date-fns';
 import React from 'react';
 
 interface Props {
-  // eslint-disable-next-line react/require-default-props
   activeDate: Record<string, number> | null;
   value: Date | null;
   handleChangeDate: (selectedDate: Date | null) => void;
+  minDate?: Date;
+  maxDate?: Date;
 }
 
-const ShiftDatepicker = ({ activeDate, value, handleChangeDate }: Props) => {
+const ShiftDatepicker = ({
+  activeDate,
+  value,
+  handleChangeDate,
+  minDate,
+  maxDate,
+}: Props) => {
   const isLoading = useAppSelector(state => state.shift.isLoading);
   const renderDay = (
     day: Date,
@@ -40,6 +48,8 @@ const ShiftDatepicker = ({ activeDate, value, handleChangeDate }: Props) => {
   return (
     <DatePicker
       value={value}
+      minDate={minDate}
+      maxDate={maxDate}
       inputFormat="dd/MM/yyyy"
       onChange={handleChangeDate}
       loading={isLoading}

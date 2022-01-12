@@ -31,7 +31,7 @@ import {
   disableAccount,
   searchAccount,
 } from 'features/account/accountsSlice';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
@@ -45,14 +45,14 @@ const AccountPage = () => {
   const [filterRole, setFilterRole] = useState('');
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this account ?`,
+      title: `Do you want to disable this account ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
@@ -83,10 +83,7 @@ const AccountPage = () => {
     )
       .then(result => unwrapResult(result))
       .catch(error => {
-        enqueueSnackbar(error, {
-          variant: 'error',
-          preventDuplicate: true,
-        });
+        showErrorMessage(error);
       });
   };
 
@@ -102,19 +99,13 @@ const AccountPage = () => {
     try {
       const result = await dispatch(disableAccount(appUserId));
       unwrapResult(result);
-      enqueueSnackbar('Disable account success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable account successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -126,15 +117,9 @@ const AccountPage = () => {
     try {
       const result = await dispatch(activeAccount(appUserId));
       unwrapResult(result);
-      enqueueSnackbar('Enable account success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Enable account successfully');
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
     }
   };
 
@@ -368,6 +353,7 @@ const AccountPage = () => {
         rowHeight={60}
         rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
         pageSize={DEFAULT_PAGE_SIZE}
+        paginationMode="server"
         sortingMode="server"
         sortModel={sortModel}
         onSortModelChange={handleSortModelChange}

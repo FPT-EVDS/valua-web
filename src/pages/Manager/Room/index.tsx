@@ -3,7 +3,6 @@ import { Add, FiberManualRecord } from '@mui/icons-material';
 import {
   Box,
   Button,
-  Link,
   MenuItem,
   Stack,
   TextField,
@@ -26,14 +25,9 @@ import RoomDetailDialog from 'components/RoomDetailDialog';
 import RoomStatus from 'configs/constants/roomStatus';
 import Status from 'enums/status.enum';
 import { disableRoom, searchByRoomName } from 'features/room/roomsSlice';
-import Camera from 'models/camera.model';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect, useState } from 'react';
-import {
-  Link as RouterLink,
-  useHistory,
-  useRouteMatch,
-} from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const RoomPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
@@ -44,27 +38,23 @@ const RoomPage = () => {
   const { url } = useRouteMatch();
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to delete this room ?`,
+      title: `Do you want to disable this room ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
     current: { rooms, totalItems },
   } = useAppSelector(state => state.room);
-  const rows: GridRowModel[] = rooms.map(roomWithCamera => {
-    const { room, camera } = roomWithCamera;
-    return {
-      ...room,
-      camera,
-      id: room.roomId,
-    };
-  });
+  const rows: GridRowModel[] = rooms.map(room => ({
+    ...room.room,
+    id: room.room.roomId,
+  }));
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [filterStatus, setFilterStatus] = useState('');
 
@@ -86,12 +76,7 @@ const RoomPage = () => {
   };
 
   useEffect(() => {
-    fetchRooms().catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    fetchRooms().catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, sortModel]);
 
@@ -103,19 +88,13 @@ const RoomPage = () => {
     try {
       const result = await dispatch(disableRoom(roomId));
       unwrapResult(result);
-      enqueueSnackbar('Disable room success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable room successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -129,7 +108,7 @@ const RoomPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to remove room ${name}`,
+      title: `Do you want to disable room ${name}`,
       handleAccept: () => handleDeleteRoom(roomId),
     }));
   };
@@ -148,30 +127,6 @@ const RoomPage = () => {
       headerName: 'Seats Count',
       flex: 0.05,
       minWidth: 130,
-    },
-    {
-      field: 'camera',
-      headerName: 'Assigned Camera',
-      flex: 0.1,
-      sortable: false,
-      minWidth: 130,
-      renderCell: params => {
-        const camera = params.getValue(
-          params.id,
-          params.field,
-        ) as Camera | null;
-        return camera ? (
-          <Link
-            component={RouterLink}
-            to={`/manager/camera/${camera.cameraId}`}
-            underline="hover"
-          >
-            {camera.cameraName}
-          </Link>
-        ) : (
-          <Typography variant="subtitle1">N/A</Typography>
-        );
-      },
     },
     {
       field: 'status',
@@ -195,7 +150,7 @@ const RoomPage = () => {
 
           case Status.isDisable:
             color = red[500];
-            statusText = 'Disable';
+            statusText = 'Inactive';
             break;
 
           default:
@@ -230,7 +185,7 @@ const RoomPage = () => {
             onClick={() => history.push(`${url}/${roomId}?edit=true`)}
           />,
           <GridActionsCellItem
-            label="Delete"
+            label="Disable"
             sx={{ color: red[500] }}
             showInMenu
             onClick={() => showDeleteConfirmation(params)}

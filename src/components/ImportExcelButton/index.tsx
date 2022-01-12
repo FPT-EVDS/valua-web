@@ -19,6 +19,7 @@ import CustomDropzone from 'components/CustomDropzone';
 import SlideTransition from 'components/SlideTransition';
 import SubjectExamineesDto from 'dtos/subjectExaminees.dto';
 import { addExaminees } from 'features/subjectExaminee/subjectExamineeSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import { useSnackbar } from 'notistack';
 import React, { useCallback, useState } from 'react';
 import { FileError, useDropzone } from 'react-dropzone';
@@ -55,7 +56,7 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles(prev => [...prev, ...acceptedFiles]);
@@ -116,18 +117,12 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
         try {
           const result = await dispatch(addExaminees(data));
           unwrapResult(result);
-          enqueueSnackbar(`Import ${files.length} file(s) successfully`, {
-            variant: 'success',
-            preventDuplicate: true,
-          });
+          showSuccessMessage(`Import ${files.length} file(s) successfully`);
           setFiles([]);
           handleClose();
         } catch (error) {
           setIsLoading(false);
-          enqueueSnackbar(error, {
-            variant: 'error',
-            preventDuplicate: true,
-          });
+          showErrorMessage(error);
         }
       }
     });

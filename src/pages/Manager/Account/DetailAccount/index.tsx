@@ -1,20 +1,21 @@
-import { ChevronLeft } from '@mui/icons-material';
 import { Box, Button, CircularProgress, Grid } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import DetailAccountCard from 'components/AccountDetailCard';
 import AccountOverviewCard from 'components/AccountOverviewCard';
+import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
+import NotFoundItem from 'components/NotFoundItem';
 import {
   activeAccount,
   disableAccount,
   getAccount,
   resetPassword,
 } from 'features/account/detailAccountSlice';
-import { useSnackbar } from 'notistack';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 interface ParamProps {
   id: string;
@@ -22,9 +23,8 @@ interface ParamProps {
 
 const DetailAccountPage = () => {
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const { account, isLoading } = useAppSelector(state => state.detailAccount);
-  const history = useHistory();
   const { id } = useParams<ParamProps>();
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
@@ -45,19 +45,13 @@ const DetailAccountPage = () => {
     try {
       const result = await dispatch(disableAccount(accountId));
       unwrapResult(result);
-      enqueueSnackbar('Disable account success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Disable account successfully');
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
       }));
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -69,15 +63,9 @@ const DetailAccountPage = () => {
     try {
       const result = await dispatch(activeAccount(accountId));
       unwrapResult(result);
-      enqueueSnackbar('Active account success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Active account successfully');
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
     }
   };
 
@@ -85,15 +73,9 @@ const DetailAccountPage = () => {
     try {
       const result = await dispatch(resetPassword(appUserId));
       unwrapResult(result);
-      enqueueSnackbar('Reset password success', {
-        variant: 'success',
-        preventDuplicate: true,
-      });
+      showSuccessMessage('Reset password successfully');
     } catch (error) {
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      });
+      showErrorMessage(error);
     }
   };
 
@@ -159,42 +141,32 @@ const DetailAccountPage = () => {
   );
 
   useEffect(() => {
-    fetchAccount(id).catch(error =>
-      enqueueSnackbar(error, {
-        variant: 'error',
-        preventDuplicate: true,
-      }),
-    );
+    fetchAccount(id).catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
-      <Box
-        display="flex"
-        alignItems="center"
-        onClick={() => history.push('/manager/account')}
-        sx={{ cursor: 'pointer' }}
-      >
-        <ChevronLeft />
-        <div>Back to account page</div>
-      </Box>
-      <Grid container mt={2} spacing={2}>
-        {account && (
-          <>
-            <Grid item xs={12} md={9} lg={4}>
-              <AccountOverviewCard
-                account={account}
-                actionButtons={<GroupButtons />}
-              />
-            </Grid>
-            <Grid item xs={12} lg={8}>
-              <DetailAccountCard account={account} isLoading={isLoading} />
-            </Grid>
-          </>
-        )}
-      </Grid>
+      <BackToPreviousPageButton
+        title="Back to account page"
+        route="/manager/account"
+      />
+      {account ? (
+        <Grid container mt={2} spacing={2}>
+          <Grid item xs={12} md={9} lg={4}>
+            <AccountOverviewCard
+              account={account}
+              actionButtons={<GroupButtons />}
+            />
+          </Grid>
+          <Grid item xs={12} lg={8}>
+            <DetailAccountCard account={account} isLoading={isLoading} />
+          </Grid>
+        </Grid>
+      ) : (
+        <NotFoundItem isLoading={isLoading} message="Account not found" />
+      )}
     </div>
   );
 };

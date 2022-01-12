@@ -46,7 +46,7 @@ const OverviewCard: React.FC<Props> = ({
 
     case Status.isDisable:
       statusColor = red[500];
-      statusText = 'Disable';
+      statusText = 'Inactive';
       break;
 
     default:
