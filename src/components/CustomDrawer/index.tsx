@@ -70,7 +70,7 @@ const DrawerContent = ({ items }: DrawerContentProps): JSX.Element => {
       <Toolbar>
         <Box
           component="img"
-          sx={{ height: 48, objectFit: 'contain' }}
+          sx={{ height: 48, width: 200 }}
           src={logo}
           alt="logo"
           className="logo"
