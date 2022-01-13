@@ -13,7 +13,7 @@ import {
 import { red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
-import { ReactComponent as Logo } from 'assets/images/logo.svg';
+import logo from 'assets/images/logo-under.png';
 import backgroundImage from 'assets/images/stacked-waves-haikei.png';
 import LoginDto from 'dtos/login.dto';
 import AppConstants from 'enums/app';
@@ -73,23 +73,16 @@ const LoginPage = () => {
     >
       <Card sx={{ minWidth: '30%', minHeight: '40%', mx: 1 }}>
         <CardContent>
-          <div className="logo">
-            <Logo width={72} height={72} />
-          </div>
-          <Typography
-            variant="h2"
-            sx={{
-              fontSize: '1.4rem',
-              fontWeight: 'bold',
-              textAlign: 'center',
-            }}
-            gutterBottom
-          >
-            Exam Violation Detection System
-          </Typography>
+          <Box
+            className="logo"
+            component="img"
+            src={logo}
+            display="flex"
+            justifyContent="center"
+            sx={{ width: 192, height: 192 }}
+          />
           <Box
             sx={{
-              marginTop: 4,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',

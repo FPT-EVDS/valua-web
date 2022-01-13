@@ -42,7 +42,7 @@ const themeOptions = createTheme({
     },
   },
   typography: {
-    fontFamily: ['Poppins, Roboto'].join(','),
+    fontFamily: ['Public Sans, Roboto'].join(','),
   },
 });
 
