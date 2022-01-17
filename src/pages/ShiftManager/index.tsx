@@ -1,10 +1,12 @@
 import {
+  Assignment,
+  AssignmentOutlined,
   Dashboard as DashboardIcon,
   DashboardOutlined,
   Event,
   EventOutlined,
-  Group,
-  GroupOutlined,
+  Groups,
+  GroupsOutlined,
   Menu as MenuIcon,
 } from '@mui/icons-material';
 import { AppBar, Box, IconButton, Stack, Toolbar } from '@mui/material';
@@ -19,6 +21,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import DashboardPage from './Dashboard';
 import ExamineePage from './Examinee';
 import DetailExamineePage from './Examinee/DetailExaminee';
+import ReportPage from './Report';
 import ShiftPage from './Shift';
 import DetailShiftPage from './Shift/DetailShift';
 import AddExamRoomPage from './Shift/DetailShift/AddExamRoom';
@@ -33,8 +36,8 @@ const drawerItems: Array<DrawerItem> = [
   },
   {
     name: 'Examinee',
-    icon: <GroupOutlined />,
-    activeIcon: <Group color="primary" />,
+    icon: <GroupsOutlined />,
+    activeIcon: <Groups color="primary" />,
     to: '/shift-manager/examinee',
   },
   {
@@ -42,6 +45,12 @@ const drawerItems: Array<DrawerItem> = [
     icon: <EventOutlined />,
     activeIcon: <Event color="primary" />,
     to: '/shift-manager/shift',
+  },
+  {
+    name: 'Report',
+    icon: <AssignmentOutlined />,
+    activeIcon: <Assignment color="primary" />,
+    to: '/shift-manager/report',
   },
 ];
 
@@ -129,6 +138,7 @@ const ShiftManagerDashboard = (): JSX.Element => {
             component={DetailExamRoomPage}
             exact
           />
+          <Route path="/shift-manager/report" component={ReportPage} exact />
           <Route path="/shift-manager/profile" component={ProfilePage} exact />
           <Redirect from="/shift-manager" to="/shift-manager/dashboard" />
         </Switch>

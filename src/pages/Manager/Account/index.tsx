@@ -23,7 +23,7 @@ import AccountDetailDialog from 'components/AccountDetailDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import StringAvatar from 'components/StringAvatar';
-import activeStatus from 'configs/constants/activeStatus';
+import activeStatus from 'configs/constants/activeStatus.constant';
 import accountRoles from 'configs/constants/roles.constant';
 import Status from 'enums/status.enum';
 import {
