@@ -20,7 +20,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AvatarWithTitle from 'components/AvatarWithTitle';
 import EVDSDataGrid from 'components/EVDSDataGrid';
-import { format } from 'date-fns/esm';
+import { format } from 'date-fns';
 import ReportType from 'enums/reportType.enum';
 import { getReports } from 'features/report/reportsSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
@@ -51,7 +51,6 @@ const ReportPage = () => {
   const fetchReports = async () => {
     let sortParam = '';
     if (sortModel.length > 0) {
-      console.log({ sortModel });
       const { field, sort } = sortModel[0];
       sortParam = `${field},${String(sort)}`;
     }
@@ -146,7 +145,6 @@ const ReportPage = () => {
     },
     {
       field: 'createdDate',
-      sortable: false,
       filterable: false,
       headerName: 'Reported at',
       flex: 0.05,
@@ -165,7 +163,7 @@ const ReportPage = () => {
         return [
           <Button
             variant="text"
-            onClick={() => history.push(`${url}/reports/${reportId}`)}
+            onClick={() => history.push(`${url}/${reportId}`)}
           >
             View detail
           </Button>,

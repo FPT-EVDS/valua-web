@@ -22,6 +22,7 @@ import DashboardPage from './Dashboard';
 import ExamineePage from './Examinee';
 import DetailExamineePage from './Examinee/DetailExaminee';
 import ReportPage from './Report';
+import DetailReportPage from './Report/DetailReport';
 import ShiftPage from './Shift';
 import DetailShiftPage from './Shift/DetailShift';
 import AddExamRoomPage from './Shift/DetailShift/AddExamRoom';
@@ -139,6 +140,10 @@ const ShiftManagerDashboard = (): JSX.Element => {
             exact
           />
           <Route path="/shift-manager/report" component={ReportPage} exact />
+          <Route
+            path="/shift-manager/report/:id"
+            component={DetailReportPage}
+          />
           <Route path="/shift-manager/profile" component={ProfilePage} exact />
           <Redirect from="/shift-manager" to="/shift-manager/dashboard" />
         </Switch>

@@ -5,6 +5,7 @@ import authReducer from 'features/auth/authSlice';
 import addExamRoomReducer from 'features/examRoom/addExamRoomSlice';
 import detailExamRoomReducer from 'features/examRoom/detailExamRoomSlice';
 import examRoomReducer from 'features/examRoom/examRoomSlice';
+import detailReportReducer from 'features/report/detailReportSlice';
 import reportsReducer from 'features/report/reportsSlice';
 import detailRoomReducer from 'features/room/detailRoomSlice';
 import roomReducer from 'features/room/roomsSlice';
@@ -36,6 +37,7 @@ export const store = configureStore({
     addExamRoom: addExamRoomReducer,
     detailExamRoom: detailExamRoomReducer,
     reports: reportsReducer,
+    detailReport: detailReportReducer,
   },
 });
 

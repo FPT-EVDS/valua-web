@@ -25,7 +25,7 @@ import AccountPage from './Account';
 import DetailAccountPage from './Account/DetailAccount';
 import Dashboard from './Dashboard';
 import RoomPage from './Room';
-import DetailRoomPage from './Room/DetailRoomPage';
+import DetailRoomPage from './Room/DetailRoom';
 import SemesterPage from './Semester';
 import DetailSemesterPage from './Semester/DetailSemester';
 import SubjectPage from './Subject';
