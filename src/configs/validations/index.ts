@@ -4,6 +4,7 @@ import addSubjectsSchema from './addSubjectsSchema';
 import appUserSchema from './appUserSchema';
 import detailExamRoomSchema from './detailExamRoomSchema';
 import removeExamineeSchema from './removeExamineeSchema';
+import resolveReportSchema from './resolveReportSchema';
 import roomSchema from './roomSchema';
 import semesterSchema from './semesterSchema';
 import shiftSchema from './shiftSchema';
@@ -17,6 +18,7 @@ export {
   appUserSchema,
   detailExamRoomSchema,
   removeExamineeSchema,
+  resolveReportSchema,
   roomSchema,
   semesterSchema,
   shiftSchema,

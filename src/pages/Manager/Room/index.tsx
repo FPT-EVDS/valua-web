@@ -22,7 +22,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import RoomDetailDialog from 'components/RoomDetailDialog';
-import RoomStatus from 'configs/constants/roomStatus';
+import RoomStatus from 'configs/constants/roomStatus.constant';
 import Status from 'enums/status.enum';
 import { disableRoom, searchByRoomName } from 'features/room/roomsSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';

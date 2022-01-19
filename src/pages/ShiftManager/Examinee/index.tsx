@@ -127,7 +127,8 @@ const ExamineePage = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      flex: 0.25,
+      flex: 0.1,
+      minWidth: 130,
       type: 'actions',
       getActions: params => {
         const subject = params.getValue(params.id, 'subject') as Subject;
