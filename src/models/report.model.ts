@@ -29,7 +29,6 @@ export default interface Report {
   description?: string;
   note?: string;
   imageUrl?: string;
-  isResolved?: boolean;
   createdDate: Date;
   lastModifiedDate: Date;
 }
