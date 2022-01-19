@@ -49,8 +49,13 @@ const ReportDetailCard = ({ report, isLoading }: DetailReportCardProps) => {
     },
   });
 
+  const refreshFormField = async () => {
+    await formik.setFieldValue('solution', report.solution || '');
+  };
+
   useEffect(() => {
     setIsDisabled(!!report.solution);
+    refreshFormField().catch(error => showErrorMessage(error));
   }, [report]);
 
   return (
