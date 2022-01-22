@@ -93,10 +93,11 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
   const handleProcessFiles = async () => {
     setIsLoading(true);
     const data: SubjectExamineesDto[] = [];
-    files.forEach(async file => {
-      const params = file.name.split(/_|\./g);
-      const workbook = XLSX.read(await file.arrayBuffer());
-      workbook.SheetNames.forEach(async sheet => {
+    const buffers = await Promise.all(files.map(file => file.arrayBuffer()));
+    const params = files.map(file => file.name.split(/_|\./g));
+    buffers.forEach(buffer => {
+      const workbook = XLSX.read(buffer);
+      workbook.SheetNames.forEach((sheet, index) => {
         const rowObject: ExamineeProps[] = XLSX.utils.sheet_to_json(
           workbook.Sheets[sheet],
           options,
@@ -109,23 +110,23 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
         }));
         data.push({
           examineeList,
-          semesterName: params[0],
-          subjectCode: params[1],
+          semesterName: params[index][0],
+          subjectCode: params[index][1],
         });
       });
-      if (data.length > 0) {
-        try {
-          const result = await dispatch(addExaminees(data));
-          unwrapResult(result);
-          showSuccessMessage(`Import ${files.length} file(s) successfully`);
-          setFiles([]);
-          handleClose();
-        } catch (error) {
-          setIsLoading(false);
-          showErrorMessage(error);
-        }
-      }
     });
+    if (data.length > 0) {
+      try {
+        const result = await dispatch(addExaminees(data));
+        unwrapResult(result);
+        showSuccessMessage(`Import ${files.length} file(s) successfully`);
+        setFiles([]);
+        handleClose();
+      } catch (error) {
+        setIsLoading(false);
+        showErrorMessage(error);
+      }
+    }
     setIsLoading(false);
   };
 

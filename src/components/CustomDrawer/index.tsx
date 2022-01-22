@@ -1,5 +1,3 @@
-import './styles.scss';
-
 import {
   alpha,
   Box,
@@ -70,7 +68,7 @@ const DrawerContent = ({ items }: DrawerContentProps): JSX.Element => {
       <Toolbar>
         <Box
           component="img"
-          sx={{ height: 48, width: 200 }}
+          sx={{ height: 48, width: 200, objectFit: 'cover' }}
           src={logo}
           alt="logo"
           className="logo"

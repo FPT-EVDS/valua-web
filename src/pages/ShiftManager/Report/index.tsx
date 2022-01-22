@@ -88,8 +88,6 @@ const ReportPage = () => {
       field: 'reportType',
       filterable: false,
       headerName: 'Type',
-      flex: 0.05,
-      minWidth: 120,
       valueFormatter: (params: GridValueFormatterParams) => {
         const reportType = params.value as ReportType;
         return reportType === ReportType.Regulation ? 'Regulation' : 'Incident';
@@ -127,7 +125,7 @@ const ReportPage = () => {
       field: 'solution',
       headerName: 'Status',
       sortable: false,
-      flex: 0.05,
+      flex: 0.1,
       minWidth: 130,
       renderCell: params => {
         const isResolved = params.getValue(params.id, params.field);
@@ -147,7 +145,7 @@ const ReportPage = () => {
       field: 'createdDate',
       filterable: false,
       headerName: 'Reported at',
-      flex: 0.05,
+      flex: 0.1,
       minWidth: 140,
       valueFormatter: ({ value }: GridValueFormatterParams) =>
         format(new Date(String(value)), 'dd/MM/yyyy HH:mm'),

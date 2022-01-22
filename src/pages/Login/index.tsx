@@ -79,7 +79,7 @@ const LoginPage = () => {
             src={logo}
             display="flex"
             justifyContent="center"
-            sx={{ width: 192, height: 192 }}
+            sx={{ width: 192, height: 192, marginX: 'auto' }}
           />
           <Box
             sx={{

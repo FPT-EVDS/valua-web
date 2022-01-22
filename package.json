@@ -25,6 +25,8 @@
     "axios": "^0.21.4",
     "axios-auth-refresh": "^3.2.1",
     "date-fns": "^2.24.0",
+    "devextreme": "21.2",
+    "devextreme-react": "21.2",
     "formik": "^2.2.9",
     "husky": "^7.0.2",
     "lint-staged": "^11.1.2",
@@ -38,7 +40,6 @@
     "react-scripts": "4.0.3",
     "recharts": "^2.1.5",
     "simplebar-react": "^2.3.6",
-    "slick-carousel": "^1.8.1",
     "typescript": "~4.1.5",
     "xlsx": "^0.17.3",
     "yup": "^0.32.9"

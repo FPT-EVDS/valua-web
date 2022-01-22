@@ -5,6 +5,7 @@ import {
   Badge,
   Box,
   Button,
+  Grid,
   IconButton,
   Stack,
   SvgIcon,
@@ -59,15 +60,16 @@ const CustomDropzone = ({
           {fileRejections[0].errors[0].message}
         </Alert>
       )}
-      <Box
+      <Grid
+        container
+        spacing={2}
+        justifyContent={hasUploadFiles ? 'flex-start' : 'center'}
+        alignItems={hasUploadFiles ? 'flex-start' : 'center'}
+        flexDirection={hasUploadFiles ? 'row' : 'column'}
+        flex={1}
+        margin={0}
         sx={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: hasUploadFiles ? 'row' : 'column',
-          justifyContent: hasUploadFiles ? 'flex-start' : 'center',
-          alignItems: hasUploadFiles ? 'flex-start' : 'center',
           textAlign: 'center',
-          height: 300,
           width: '100%',
           padding: 2,
           borderWidth: 2,
@@ -90,37 +92,39 @@ const CustomDropzone = ({
         {acceptedFiles.length > 0 ? (
           <>
             {acceptedFiles.map((file, index) => (
-              <Stack
-                key={file.name}
-                justifyContent="center"
-                spacing={1}
-                alignItems="center"
-                marginRight={1}
-                sx={{ width: 96 }}
-              >
-                <Badge
+              <Grid item xl={3} lg={4} xs={6}>
+                <Stack
                   key={file.name}
-                  badgeContent={
-                    <IconButton onClick={() => handleRemoveFile(index)}>
-                      <Cancel />
-                    </IconButton>
-                  }
+                  justifyContent="center"
+                  spacing={1}
+                  alignItems="center"
                 >
-                  <SvgIcon sx={{ width: 48, height: 48 }}>
-                    <XLSXIcon />
-                  </SvgIcon>
-                </Badge>
-                <Typography variant="caption" noWrap sx={{ width: '100%' }}>
-                  {file.name}
-                </Typography>
-              </Stack>
+                  <Badge
+                    key={file.name}
+                    badgeContent={
+                      <IconButton onClick={() => handleRemoveFile(index)}>
+                        <Cancel />
+                      </IconButton>
+                    }
+                  >
+                    <SvgIcon sx={{ width: 48, height: 48 }}>
+                      <XLSXIcon />
+                    </SvgIcon>
+                  </Badge>
+                  <Typography variant="caption" noWrap sx={{ width: '100%' }}>
+                    {file.name}
+                  </Typography>
+                </Stack>
+              </Grid>
             ))}
-            <IconButton onClick={handleButtonClick} sx={{ marginTop: 1 }}>
-              <Add />
-            </IconButton>
+            <Grid item xl={3} lg={4} xs={6}>
+              <IconButton onClick={handleButtonClick} sx={{ marginTop: 1 }}>
+                <Add />
+              </IconButton>
+            </Grid>
           </>
         ) : (
-          <>
+          <Grid item>
             <Box>
               <CloudUpload sx={{ height: 64, width: 64, color: grey[600] }} />
               <Typography
@@ -132,9 +136,9 @@ const CustomDropzone = ({
               </Typography>
             </Box>
             <Button onClick={handleButtonClick}>Upload files</Button>
-          </>
+          </Grid>
         )}
-      </Box>
+      </Grid>
     </>
   );
 };

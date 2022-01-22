@@ -87,20 +87,20 @@ const ExamineePage = () => {
     {
       field: 'subjectName',
       headerName: 'Subject name',
-      flex: 0.3,
+      flex: 0.1,
       minWidth: 130,
       renderCell: ({ row }) => (row.subject as Subject).subjectName,
     },
     {
       field: 'totalExaminees',
-      flex: 0.2,
+      flex: 0.1,
       headerName: 'Total examinees',
       minWidth: 130,
       sortable: false,
     },
     {
       field: 'totalUnassigned',
-      flex: 0.2,
+      flex: 0.1,
       headerName: 'Total unassigned',
       minWidth: 130,
       sortable: false,

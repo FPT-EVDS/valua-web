@@ -9,7 +9,14 @@ import {
   GroupsOutlined,
   Menu as MenuIcon,
 } from '@mui/icons-material';
-import { AppBar, Box, IconButton, Stack, Toolbar } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  Container,
+  IconButton,
+  Stack,
+  Toolbar,
+} from '@mui/material';
 import { useAppSelector } from 'app/hooks';
 import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
@@ -105,48 +112,57 @@ const ShiftManagerDashboard = (): JSX.Element => {
         handleDrawerToggle={handleDrawerToggle}
         mobileOpen={mobileOpen}
       />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, height: '100vh', overflow: 'auto' }}
+      >
         <Toolbar />
-        <Switch>
-          <Route
-            path="/shift-manager/dashboard"
-            component={DashboardPage}
-            exact
-          />
-          <Route
-            path="/shift-manager/examinee"
-            component={ExamineePage}
-            exact
-          />
-          <Route
-            path="/shift-manager/examinee/subject"
-            component={DetailExamineePage}
-            exact
-          />
-          <Route path="/shift-manager/shift" component={ShiftPage} exact />
-          <Route
-            path="/shift-manager/shift/:id"
-            component={DetailShiftPage}
-            exact
-          />
-          <Route
-            path="/shift-manager/shift/:id/examRoom/add"
-            component={AddExamRoomPage}
-            exact
-          />
-          <Route
-            path="/shift-manager/shift/:id/examRoom/:examRoomId"
-            component={DetailExamRoomPage}
-            exact
-          />
-          <Route path="/shift-manager/report" component={ReportPage} exact />
-          <Route
-            path="/shift-manager/report/:id"
-            component={DetailReportPage}
-          />
-          <Route path="/shift-manager/profile" component={ProfilePage} exact />
-          <Redirect from="/shift-manager" to="/shift-manager/dashboard" />
-        </Switch>
+        <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+          <Switch>
+            <Route
+              path="/shift-manager/dashboard"
+              component={DashboardPage}
+              exact
+            />
+            <Route
+              path="/shift-manager/examinee"
+              component={ExamineePage}
+              exact
+            />
+            <Route
+              path="/shift-manager/examinee/subject"
+              component={DetailExamineePage}
+              exact
+            />
+            <Route path="/shift-manager/shift" component={ShiftPage} exact />
+            <Route
+              path="/shift-manager/shift/:id"
+              component={DetailShiftPage}
+              exact
+            />
+            <Route
+              path="/shift-manager/shift/:id/examRoom/add"
+              component={AddExamRoomPage}
+              exact
+            />
+            <Route
+              path="/shift-manager/shift/:id/examRoom/:examRoomId"
+              component={DetailExamRoomPage}
+              exact
+            />
+            <Route path="/shift-manager/report" component={ReportPage} exact />
+            <Route
+              path="/shift-manager/report/:id"
+              component={DetailReportPage}
+            />
+            <Route
+              path="/shift-manager/profile"
+              component={ProfilePage}
+              exact
+            />
+            <Redirect from="/shift-manager" to="/shift-manager/dashboard" />
+          </Switch>
+        </Container>
       </Box>
     </Box>
   );
