@@ -2,6 +2,7 @@
 import 'devextreme/dist/css/dx.light.css';
 import './index.scss';
 
+import { format } from 'date-fns';
 import Scheduler, { Resource, Scrolling } from 'devextreme-react/scheduler';
 import React from 'react';
 
@@ -13,7 +14,7 @@ interface Props {
   height?: number;
 }
 
-const ExamRoomScheduler = ({ height = 650 }: Props) => {
+const ExamRoomScheduler = ({ height = 550 }: Props) => {
   const groups = ['day'];
   return (
     <Scheduler
@@ -23,19 +24,19 @@ const ExamRoomScheduler = ({ height = 650 }: Props) => {
       editing={false}
       height={height}
       firstDayOfWeek={1}
-      startDayHour={0}
-      maxAppointmentsPerCell={1}
-      endDayHour={24}
+      startDayHour={6}
+      endDayHour={18}
       onAppointmentDblClick={e => {
         e.cancel = true;
       }}
       onAppointmentFormOpening={e => {
         e.cancel = true;
       }}
+      crossScrollingEnabled
       appointmentTooltipComponent={AppointmentTooltip}
       appointmentComponent={Appointment}
       showAllDayPanel={false}
-      crossScrollingEnabled
+      timeCellRender={data => <div>{format(new Date(data.date), 'HH:mm')}</div>}
       cellDuration={60}
     >
       <Resource dataSource={daysOfWeek} fieldExpr="day" useColorAsDefault />

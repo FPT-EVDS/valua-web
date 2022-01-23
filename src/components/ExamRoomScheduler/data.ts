@@ -43,61 +43,21 @@ export const daysOfWeek = [...Array.from({ length: 7 })].map((value, index) => {
   };
 });
 
-export const mockData: AppoinmentData[] = [
-  {
-    day: firstDayOfWeek.getDate(),
-    text: 'MAE101 - Room 202',
-    totalExamRooms: 20,
-    totalReports: 2,
-    startDate: add(beginOfDate, { hours: 7 }),
-    endDate: add(beginOfDate, { hours: 8 }),
+export const mockData: AppoinmentData[] = [...Array.from({ length: 7 })].map(
+  (value, index) => {
+    const randomStartTime = Math.floor(Math.random() * 6) + 6;
+    const randomDuration = Math.floor(Math.random() * 6);
+    const randomMinute = Math.floor(Math.random() * 60);
+    return {
+      day: add(firstDayOfWeek, { days: index }).getDate(),
+      text: 'Tooltip text',
+      startDate: add(beginOfDate, { hours: randomStartTime }),
+      endDate: add(beginOfDate, {
+        hours: randomStartTime + randomDuration + 1,
+        minutes: randomMinute,
+      }),
+      totalExamRooms: randomDuration,
+      totalReports: randomMinute,
+    };
   },
-  {
-    day: add(firstDayOfWeek, { days: 1 }).getDate(),
-    text: 'JPD101 - Room 303',
-    totalExamRooms: 20,
-    totalReports: 2,
-    startDate: add(beginOfDate, { hours: 2 }),
-    endDate: add(beginOfDate, { hours: 3 }),
-  },
-  {
-    day: add(firstDayOfWeek, { days: 2 }).getDate(),
-    text: 'PRJ321 - Room 022',
-    totalExamRooms: 20,
-    totalReports: 2,
-    startDate: add(beginOfDate, { hours: 0 }),
-    endDate: add(beginOfDate, { hours: 1 }),
-  },
-  {
-    day: add(firstDayOfWeek, { days: 3 }).getDate(),
-    text: 'MLN101 - Room 030',
-    totalExamRooms: 20,
-    totalReports: 2,
-    startDate: add(beginOfDate, { hours: 0 }),
-    endDate: add(beginOfDate, { hours: 1 }),
-  },
-  {
-    day: add(firstDayOfWeek, { days: 4 }).getDate(),
-    text: 'HCM202 - Room 404',
-    totalExamRooms: 20,
-    totalReports: 2,
-    startDate: add(beginOfDate, { hours: 14 }),
-    endDate: add(beginOfDate, { hours: 18 }),
-  },
-  {
-    day: add(firstDayOfWeek, { days: 5 }).getDate(),
-    text: 'VOV101 - Room 024',
-    totalExamRooms: 20,
-    totalReports: 2,
-    startDate: add(beginOfDate, { hours: 3 }),
-    endDate: add(beginOfDate, { hours: 12 }),
-  },
-  {
-    day: add(firstDayOfWeek, { days: 6 }).getDate(),
-    text: 'Random title 7',
-    totalExamRooms: 20,
-    totalReports: 2,
-    startDate: add(beginOfDate, { hours: 7 }),
-    endDate: add(beginOfDate, { hours: 9 }),
-  },
-];
+);
