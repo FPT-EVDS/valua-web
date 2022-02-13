@@ -5,6 +5,7 @@ import ExamineeSubject from 'dtos/examineeSubject.dto';
 import RemoveSubjectExamineeDto from 'dtos/removeExaminee.dto';
 import SearchParams from 'dtos/searchParams.dto';
 import { SearchSubjectExamineeParams } from 'dtos/searchSubjectExamineeParams.dto';
+import SubjectExamineesDashboardDto from 'dtos/subjectExamineeDashboard.dto';
 import SubjectExamineesDto from 'dtos/subjectExaminees.dto';
 import SubjectExaminee from 'models/subjectExaminee.model';
 
@@ -44,6 +45,12 @@ const subjectExamineesServices = {
   }: RemoveSubjectExamineeDto): Promise<AxiosResponse<SubjectExaminee>> => {
     const url = `/subjectExaminees/${subjectExamineeId}`;
     return axiosClient.put(url, { removedReason });
+  },
+  getSubjectExamineeOverview: (): Promise<
+    AxiosResponse<SubjectExamineesDashboardDto>
+  > => {
+    const url = '/subjectExaminees/overview';
+    return axiosClient.get(url);
   },
 };
 export default subjectExamineesServices;

@@ -2,14 +2,18 @@ import { Typography } from '@mui/material';
 import React from 'react';
 import { formatTime } from 'utils';
 
-import { mockData } from '../data';
+import { AppoinmentData } from '../data';
 
 interface AppoinmentProps {
-  index: number;
+  data: {
+    appointmentData: AppoinmentData;
+  };
 }
 
-const Appointment = ({ index }: AppoinmentProps) => {
-  const { startDate, endDate, totalExamRooms } = mockData[index];
+const Appointment = ({ data }: AppoinmentProps) => {
+  const {
+    appointmentData: { startDate, endDate, totalExamRooms },
+  } = data;
   return (
     <>
       <Typography fontSize={13} fontWeight="bold" gutterBottom={false}>

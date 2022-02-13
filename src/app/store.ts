@@ -13,6 +13,7 @@ import detailSemesterReducer from 'features/semester/detailSemesterSlice';
 import semesterReducer from 'features/semester/semestersSlice';
 import detailShiftReducer from 'features/shift/detailShiftSlice';
 import shiftReducer from 'features/shift/shiftSlice';
+import shiftManagerDashboardReducer from 'features/shiftManagerDashboard/shiftManagerDashboardSlice';
 import subjectReducer from 'features/subject/subjectsSlice';
 import detailSubjectExamineeReducer from 'features/subjectExaminee/detailExamineeSubjectSlice';
 import subjectExamineeReducer from 'features/subjectExaminee/subjectExamineeSlice';
@@ -38,6 +39,7 @@ export const store = configureStore({
     detailExamRoom: detailExamRoomReducer,
     reports: reportsReducer,
     detailReport: detailReportReducer,
+    shiftManagerDashboard: shiftManagerDashboardReducer,
   },
 });
 

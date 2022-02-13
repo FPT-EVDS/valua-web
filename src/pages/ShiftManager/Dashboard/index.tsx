@@ -8,26 +8,65 @@ import {
   Typography,
 } from '@mui/material';
 import { blue, green, red, teal } from '@mui/material/colors';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import DashboardCard from 'components/DashboardCard';
 import ExamRoomScheduler from 'components/ExamRoomScheduler';
+import LoadingIndicator from 'components/LoadingIndicator';
 import ReportChart from 'components/ReportChart';
-import { format } from 'date-fns';
-import React from 'react';
+import {
+  getReportOverview,
+  getShiftOverview,
+  getSubjectExamineeOverview,
+} from 'features/shiftManagerDashboard/shiftManagerDashboardSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
+import React, { useEffect } from 'react';
 
 const DashboardPage = () => {
-  const currentDate = format(new Date(), 'dd/MM/yyyy HH:mm');
+  const dispatch = useAppDispatch();
+  const { showErrorMessage } = useCustomSnackbar();
+  const { subjectExaminee, report, shift } = useAppSelector(
+    state => state.shiftManagerDashboard,
+  );
+
+  const fetchSubjectExaminees = () => {
+    dispatch(getSubjectExamineeOverview())
+      .then(result => unwrapResult(result))
+      .catch(error => showErrorMessage(String(error)));
+  };
+
+  const fetchReports = () => {
+    dispatch(getReportOverview())
+      .then(result => unwrapResult(result))
+      .catch(error => showErrorMessage(String(error)));
+  };
+
+  const fetchShifts = () => {
+    dispatch(getShiftOverview())
+      .then(result => unwrapResult(result))
+      .catch(error => showErrorMessage(String(error)));
+  };
+
+  useEffect(() => {
+    fetchSubjectExaminees();
+    fetchReports();
+    fetchShifts();
+  }, []);
+
   return (
     <Box component="div">
       <Grid container spacing={3}>
         <Grid item xl={3} lg={4} md={6} xs={12}>
+          {/* Shift card */}
           <DashboardCard
             color={blue[500]}
             subtitle="Total shifts"
-            title="24"
+            title={shift.data ? shift.data.totalShifts.toString() : ''}
+            isLoading={shift.isLoading}
             icon={<EventOutlined />}
           >
             <Typography color="textSecondary" variant="caption" fontSize={13}>
-              First shift starts in: {currentDate}
+              {shift.data?.message}
             </Typography>
           </DashboardCard>
         </Grid>
@@ -35,19 +74,24 @@ const DashboardPage = () => {
           <DashboardCard
             color={green[600]}
             subtitle="Total reports"
-            title="20"
+            isLoading={report.isLoading}
+            title={report.data ? report.data.totalReports.toString() : ''}
             icon={<Assignment />}
           >
             <Typography variant="caption" color="error" fontSize={13}>
-              3 unresolved reports remain
+              {report.data?.totalUnresolved} unresolved reports remain
             </Typography>
           </DashboardCard>
         </Grid>
         <Grid item xl={3} lg={4} md={6} xs={12}>
+          {/* Examinee card */}
           <DashboardCard
             color={teal[500]}
             subtitle="Total examinees"
-            title="1200"
+            isLoading={subjectExaminee.isLoading}
+            title={
+              subjectExaminee.data ? subjectExaminee.data.total.toString() : ''
+            }
             icon={<Groups />}
           >
             <Typography color="textSecondary" variant="caption" fontSize={13}>
@@ -60,7 +104,7 @@ const DashboardPage = () => {
                 marginX={0.7}
                 fontWeight="700"
               >
-                400
+                {subjectExaminee.data?.assigned}
               </Typography>
               | Unassigned:
               <Typography
@@ -71,7 +115,7 @@ const DashboardPage = () => {
                 color={red[500]}
                 fontWeight="700"
               >
-                400
+                {subjectExaminee.data?.unassigned}
               </Typography>
               | Exempted:
               <Typography
@@ -81,7 +125,7 @@ const DashboardPage = () => {
                 marginX={0.7}
                 fontWeight="700"
               >
-                400
+                {subjectExaminee.data?.exempted}
               </Typography>
             </Typography>
           </DashboardCard>
@@ -99,7 +143,11 @@ const DashboardPage = () => {
               }
             />
             <CardContent>
-              <ExamRoomScheduler />
+              {!shift.isLoading && shift.data !== null ? (
+                <ExamRoomScheduler shifts={shift.data.shifts} />
+              ) : (
+                <LoadingIndicator />
+              )}
             </CardContent>
           </Card>
         </Grid>

@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import DisableShiftDto from 'dtos/disableShift.dto';
 import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
+import ShiftDashboardDto from 'dtos/shiftDashboard.dto';
 import ShiftsDto from 'dtos/shifts.dto';
 import Shift from 'models/shift.model';
 
@@ -45,6 +46,10 @@ const shiftServices = {
     id: string,
   ): Promise<AxiosResponse<Record<string, number>>> => {
     const url = `/shifts/calendar/${id}`;
+    return axiosClient.get(url);
+  },
+  getShiftOverview: (): Promise<AxiosResponse<ShiftDashboardDto>> => {
+    const url = '/shifts/overview';
     return axiosClient.get(url);
   },
 };
