@@ -15,10 +15,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { green, grey, orange, red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import SemesterDropdown from 'components/SemesterDropdown';
+import ShiftConfig from 'configs/constants/shiftConfig.status';
 import { shiftSchema } from 'configs/validations';
 import { format } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
@@ -45,37 +45,12 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
     String(query.get('edit')) === 'true',
   );
 
-  let statusColor = '#1890ff';
-  let statusText = 'Ready';
-  switch (shift.status) {
-    case ShiftStatus.Inactive:
-      statusColor = grey[500];
-      statusText = 'Inactive';
-      break;
-
-    case ShiftStatus.NotReady:
-      statusColor = red[500];
-      statusText = 'Not ready';
-      break;
-
-    case ShiftStatus.Ready:
-      statusColor = '#1890ff';
-      statusText = 'Ready';
-      break;
-
-    case ShiftStatus.Ongoing:
-      statusColor = orange[400];
-      statusText = 'Ongoing';
-      break;
-
-    case ShiftStatus.Finished:
-      statusColor = green[500];
-      statusText = 'Finished';
-      break;
-
-    default:
-      break;
-  }
+  const shiftConfigIndex = ShiftConfig.findIndex(
+    value => value.value === shift.status,
+  );
+  // Set default config as unknown
+  let shiftConfig = ShiftConfig[ShiftConfig.length - 1];
+  if (shiftConfigIndex > -1) shiftConfig = ShiftConfig[shiftConfigIndex];
 
   const initialValues: ShiftDto = shift;
   const formik = useFormik({
@@ -130,7 +105,8 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           </Typography>
         }
         action={
-          shift.status !== ShiftStatus.Inactive && (
+          shift.status !== ShiftStatus.Locked &&
+          shift.status !== ShiftStatus.Removed && (
             <IconButton onClick={() => setIsEditable(prevState => !prevState)}>
               {isEditable ? (
                 <EditOff sx={{ fontSize: 20 }} />
@@ -230,8 +206,8 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
             <Grid item xs={12}>
               <Box color="text.secondary">
                 Status:
-                <Typography display="inline" ml={0.5} color={statusColor}>
-                  {statusText}
+                <Typography display="inline" ml={0.5} color={shiftConfig.color}>
+                  {shiftConfig.label}
                 </Typography>
               </Box>
             </Grid>

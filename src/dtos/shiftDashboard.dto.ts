@@ -1,11 +1,12 @@
 import Semester from 'models/semester.model';
-import Shift from 'models/shift.model';
+
+import DashboardShift from './dashboardShift.dto';
 
 export default interface ShiftDashboardDto {
   currentSemester: Pick<Semester, 'semesterId' | 'semesterName'>;
   week: string;
   totalShiftsInWeek: number;
-  shifts: Array<Pick<Shift, 'shiftId' | 'beginTime' | 'finishTime' | 'status'>>;
+  shifts: DashboardShift[];
   message: string;
   totalShifts: number;
 }

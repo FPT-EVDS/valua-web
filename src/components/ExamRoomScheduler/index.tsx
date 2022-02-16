@@ -2,19 +2,12 @@
 import 'devextreme/dist/css/dx.light.css';
 import './index.scss';
 
-import {
-  green,
-  indigo,
-  lightBlue,
-  orange,
-  pink,
-  purple,
-  red,
-} from '@mui/material/colors';
+import ShiftConfig from 'configs/constants/shiftConfig.status';
 import { add, format, startOfWeek } from 'date-fns';
 import Scheduler, { Resource, Scrolling } from 'devextreme-react/scheduler';
-import Shift from 'models/shift.model';
+import DashboardShift from 'dtos/dashboardShift.dto';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Appointment from './Appoinment';
 import AppointmentTooltip from './AppoinmentTooltip';
@@ -22,20 +15,11 @@ import { AppoinmentData } from './data';
 
 interface Props {
   height?: number;
-  shifts: Array<Pick<Shift, 'shiftId' | 'beginTime' | 'finishTime' | 'status'>>;
+  shifts: DashboardShift[];
 }
 
-const dayOfWeekColors = [
-  indigo[500],
-  pink[500],
-  green[500],
-  orange[500],
-  lightBlue[500],
-  purple[500],
-  red[500],
-];
-
 const ExamRoomScheduler = ({ height = 550, shifts }: Props) => {
+  const history = useHistory();
   const groups = ['day'];
   // "2022/02/07 - 2022/02/13" => should convert to start and end week
   const firstDayOfWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
@@ -50,19 +34,34 @@ const ExamRoomScheduler = ({ height = 550, shifts }: Props) => {
     return {
       id: dayOfWeek.getDate(),
       text: format(dayOfWeek, 'eeee (dd/MM)'),
-      color: dayOfWeekColors[index],
     };
   });
 
-  // FIXME: fix report and total exam room data
+  // Shift color based on status
+  const shiftColors = ShiftConfig.map(({ color, value }) => ({
+    id: value,
+    color,
+  }));
+
   const chartData: AppoinmentData[] = [
     ...Array.from({ length: shifts.length }),
   ].map((value, index) => {
-    const { beginTime, finishTime } = shifts[index];
+    const {
+      shiftId,
+      beginTime,
+      finishTime,
+      numOfTotalExamRooms,
+      numOfTotalReports,
+      numOfTotalLockedAttendances,
+      status,
+      numOfAbsent,
+    } = shifts[index];
     const shiftBeginTime = new Date(beginTime);
     const shiftFinishTime = new Date(finishTime);
     return {
+      shiftId,
       day: shiftBeginTime.getDate(),
+      date: shiftBeginTime,
       startDate: add(beginOfDate, {
         hours: shiftBeginTime.getHours(),
         minutes: shiftBeginTime.getMinutes(),
@@ -71,8 +70,11 @@ const ExamRoomScheduler = ({ height = 550, shifts }: Props) => {
         hours: shiftFinishTime.getHours(),
         minutes: shiftFinishTime.getMinutes(),
       }),
-      totalExamRooms: Math.floor(Math.random() * 10),
-      totalReports: Math.floor(Math.random() * 10),
+      totalExamRooms: numOfTotalExamRooms,
+      totalReports: numOfTotalReports,
+      totalAttendances: numOfTotalLockedAttendances,
+      status,
+      totalAbsences: numOfAbsent,
     };
   });
 
@@ -91,6 +93,10 @@ const ExamRoomScheduler = ({ height = 550, shifts }: Props) => {
       }}
       onAppointmentFormOpening={e => {
         e.cancel = true;
+        const { shiftId } = e.appointmentData as AppoinmentData;
+        if (shiftId) {
+          history.push(`/shift-manager/shift/${shiftId}`);
+        }
       }}
       crossScrollingEnabled
       appointmentTooltipComponent={AppointmentTooltip}
@@ -99,7 +105,8 @@ const ExamRoomScheduler = ({ height = 550, shifts }: Props) => {
       timeCellRender={data => <div>{format(new Date(data.date), 'HH:mm')}</div>}
       cellDuration={60}
     >
-      <Resource dataSource={daysOfWeek} fieldExpr="day" useColorAsDefault />
+      <Resource dataSource={daysOfWeek} fieldExpr="day" />
+      <Resource dataSource={shiftColors} fieldExpr="status" useColorAsDefault />
       <Scrolling mode="virtual" />
     </Scheduler>
   );

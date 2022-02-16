@@ -1,10 +1,10 @@
-import Report from 'models/report.model';
 import Semester from 'models/semester.model';
+
+import ReportOfWeek from './reportOfWeek.dto';
 
 export default interface ReportDashboardDto {
   currentSemester: Pick<Semester, 'semesterId' | 'semesterName'>;
-  // FIXME: backend not correctly return
-  reportsOfWeek: Array<Report>;
+  reportsOfWeek: Array<ReportOfWeek> | null;
   totalUnresolved: number;
   totalReports: number;
 }

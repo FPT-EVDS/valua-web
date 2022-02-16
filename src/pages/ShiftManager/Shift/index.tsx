@@ -17,6 +17,7 @@ import EVDSDataGrid from 'components/EVDSDataGrid';
 import SemesterDropdown from 'components/SemesterDropdown';
 import ShiftDatepicker from 'components/ShiftDatepicker';
 import ShiftDetailDialog from 'components/ShiftDetailDialog';
+import ShiftConfig from 'configs/constants/shiftConfig.status';
 import { format } from 'date-fns';
 import ShiftStatus from 'enums/shiftStatus.enum';
 import Status from 'enums/status.enum';
@@ -150,43 +151,20 @@ const ShiftPage = () => {
       flex: 0.1,
       minWidth: 130,
       renderCell: params => {
-        const active = params.getValue(params.id, 'status');
-        let color = '#1890ff';
-        let statusText = 'Ready';
-        switch (active) {
-          case ShiftStatus.Inactive:
-            color = grey[500];
-            statusText = 'Inactive';
-            break;
-
-          case ShiftStatus.NotReady:
-            color = red[500];
-            statusText = 'Not ready';
-            break;
-
-          case ShiftStatus.Ready:
-            color = '#1890ff';
-            statusText = 'Ready';
-            break;
-
-          case ShiftStatus.Ongoing:
-            color = orange[400];
-            statusText = 'Ongoing';
-            break;
-
-          case ShiftStatus.Finished:
-            color = green[500];
-            statusText = 'Finished';
-            break;
-
-          default:
-            break;
-        }
+        const shiftStatus = params.getValue(params.id, 'status') as ShiftStatus;
+        const shiftConfigIndex = ShiftConfig.findIndex(
+          value => value.value === shiftStatus,
+        );
+        // Set default config as unknown
+        let shiftConfig = ShiftConfig[ShiftConfig.length - 1];
+        if (shiftConfigIndex > -1) shiftConfig = ShiftConfig[shiftConfigIndex];
         return (
           <Box display="flex" alignItems="center">
-            <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
-            <Typography variant="subtitle1" color={color}>
-              {statusText}
+            <FiberManualRecord
+              sx={{ fontSize: 14, marginRight: 1, color: shiftConfig.color }}
+            />
+            <Typography variant="subtitle1" color={shiftConfig.color}>
+              {shiftConfig.label}
             </Typography>
           </Box>
         );

@@ -1,5 +1,14 @@
+import {
+  AssignmentOutlined,
+  FiberManualRecord,
+  GroupsOutlined,
+  LocationOnOutlined,
+  NoAccountsOutlined,
+} from '@mui/icons-material';
 import { Stack, Typography } from '@mui/material';
-import { green, red } from '@mui/material/colors';
+import ShiftConfig from 'configs/constants/shiftConfig.status';
+import { format } from 'date-fns';
+import ShiftStatus from 'enums/shiftStatus.enum';
 import React from 'react';
 import { formatTime } from 'utils';
 
@@ -12,42 +21,77 @@ interface AppoinmentProps {
 }
 
 const AppointmentTooltip = ({ data: { appointmentData } }: AppoinmentProps) => {
-  const { startDate, endDate, totalExamRooms, totalReports } = appointmentData;
+  const {
+    date,
+    startDate,
+    endDate,
+    totalExamRooms,
+    totalReports,
+    totalAttendances,
+    totalAbsences,
+    status,
+  } = appointmentData;
+  const shiftStatus =
+    ShiftConfig.find(config => config.value === status) ??
+    ShiftConfig[ShiftConfig.length - 1];
   return (
-    <Stack padding={1.5}>
-      <Typography variant="h6" textAlign="left">
-        Time: {formatTime(startDate)} - {formatTime(endDate)}
-      </Typography>
-      <Typography color="textSecondary" textAlign="left" variant="subtitle2">
-        Total exam rooms: {totalExamRooms}
-      </Typography>
-      <Typography color="textSecondary" textAlign="left" variant="subtitle2">
-        Total reports: {totalReports}
-      </Typography>
-      <Typography color="textSecondary" textAlign="left" variant="subtitle2">
-        Assigned:
-        <Typography
-          display="inline"
-          variant="caption"
-          fontSize={13}
-          color={green[500]}
-          marginX={0.7}
-          fontWeight="700"
-        >
-          400
+    <Stack padding={1.5} spacing={1}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="h6" textAlign="left" fontSize={18}>
+          Time: {format(date, 'dd/MM')} {formatTime(startDate)} -{' '}
+          {formatTime(endDate)}
         </Typography>
-        | Absent:
-        <Typography
-          display="inline"
-          variant="caption"
-          fontSize={13}
-          marginX={0.7}
-          color={red[500]}
-          fontWeight="700"
-        >
-          400
+        <Stack direction="row" spacing={0.5} alignItems="center">
+          <Typography
+            variant="caption"
+            fontSize={14}
+            color={shiftStatus.color}
+            fontWeight="bold"
+          >
+            {shiftStatus?.label}
+          </Typography>
+          <FiberManualRecord
+            fontSize="small"
+            sx={{ color: shiftStatus?.color }}
+          />
+        </Stack>
+      </Stack>
+      <Stack direction="row" spacing={1.5} alignItems="center">
+        <LocationOnOutlined fontSize="small" />
+        <Typography color="textSecondary" textAlign="left" variant="subtitle2">
+          Exam rooms: {totalExamRooms}
         </Typography>
-      </Typography>
+      </Stack>
+      <Stack direction="row" spacing={1.5} alignItems="center">
+        <GroupsOutlined fontSize="small" />
+        <Typography color="textSecondary" textAlign="left" variant="subtitle2">
+          Attendances: {totalAttendances}
+        </Typography>
+      </Stack>
+      {status === ShiftStatus.Finished && (
+        <>
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <AssignmentOutlined fontSize="small" />
+            <Typography
+              color="textSecondary"
+              textAlign="left"
+              variant="subtitle2"
+            >
+              Reports: {totalReports}
+            </Typography>
+          </Stack>
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <NoAccountsOutlined fontSize="small" />
+            <Typography
+              color="textSecondary"
+              textAlign="left"
+              variant="subtitle2"
+            >
+              Absences: {totalAbsences}
+            </Typography>
+          </Stack>
+        </>
+      )}
     </Stack>
   );
 };

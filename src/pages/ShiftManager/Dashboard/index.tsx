@@ -1,10 +1,16 @@
-import { Assignment, EventOutlined, Groups } from '@mui/icons-material';
+import {
+  Assignment,
+  EventOutlined,
+  FiberManualRecord,
+  Groups,
+} from '@mui/icons-material';
 import {
   Box,
   Card,
   CardContent,
   CardHeader,
   Grid,
+  Stack,
   Typography,
 } from '@mui/material';
 import { blue, green, red, teal } from '@mui/material/colors';
@@ -14,6 +20,7 @@ import DashboardCard from 'components/DashboardCard';
 import ExamRoomScheduler from 'components/ExamRoomScheduler';
 import LoadingIndicator from 'components/LoadingIndicator';
 import ReportChart from 'components/ReportChart';
+import ShiftConfig from 'configs/constants/shiftConfig.status';
 import {
   getReportOverview,
   getShiftOverview,
@@ -55,6 +62,11 @@ const DashboardPage = () => {
 
   return (
     <Box component="div">
+      <Typography variant="h1" fontSize={28} mb={2} fontWeight="bold">
+        {subjectExaminee.data
+          ? `${subjectExaminee.data.currentSemester.semesterName} dashboard`
+          : 'Overview dashboard'}
+      </Typography>
       <Grid container spacing={3}>
         <Grid item xl={3} lg={4} md={6} xs={12}>
           {/* Shift card */}
@@ -78,7 +90,15 @@ const DashboardPage = () => {
             title={report.data ? report.data.totalReports.toString() : ''}
             icon={<Assignment />}
           >
-            <Typography variant="caption" color="error" fontSize={13}>
+            <Typography
+              variant="caption"
+              color={
+                report.data && report.data.totalUnresolved > 0
+                  ? 'error'
+                  : 'textSecondary'
+              }
+              fontSize={13}
+            >
               {report.data?.totalUnresolved} unresolved reports remain
             </Typography>
           </DashboardCard>
@@ -144,7 +164,44 @@ const DashboardPage = () => {
             />
             <CardContent>
               {!shift.isLoading && shift.data !== null ? (
-                <ExamRoomScheduler shifts={shift.data.shifts} />
+                <>
+                  <ExamRoomScheduler shifts={shift.data.shifts} />
+                  {/* Legend */}
+                  <Box
+                    mt={2}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexWrap: 'wrap',
+                      columnGap: '20px',
+                    }}
+                  >
+                    {ShiftConfig.map(
+                      (config, index) =>
+                        index !== ShiftConfig.length - 1 && (
+                          <Stack
+                            direction="row"
+                            spacing={0.5}
+                            alignItems="center"
+                          >
+                            <FiberManualRecord
+                              fontSize="small"
+                              sx={{ color: config?.color }}
+                            />
+                            <Typography
+                              variant="caption"
+                              fontSize={14}
+                              color={config.color}
+                              fontWeight="bold"
+                            >
+                              {config.label}
+                            </Typography>
+                          </Stack>
+                        ),
+                    )}
+                  </Box>
+                </>
               ) : (
                 <LoadingIndicator />
               )}
@@ -164,7 +221,10 @@ const DashboardPage = () => {
               }
             />
             <CardContent sx={{ height: 350 }}>
-              <ReportChart />
+              <ReportChart
+                isLoading={report.isLoading}
+                data={report.data?.reportsOfWeek}
+              />
             </CardContent>
           </Card>
         </Grid>
