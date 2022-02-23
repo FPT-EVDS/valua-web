@@ -18,7 +18,6 @@ import {
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import AvatarWithTitle from 'components/AvatarWithTitle';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import { format } from 'date-fns';
 import ReportType from 'enums/reportType.enum';
@@ -28,6 +27,14 @@ import Account from 'models/account.model';
 import ExamRoom from 'models/examRoom.model';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+
+const parseCellValueToFullname = (params: GridValueFormatterParams) => {
+  if (params.value !== null) {
+    const { fullName } = params.value as Account;
+    return fullName;
+  }
+  return 'N/A';
+};
 
 const ReportPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
@@ -88,6 +95,7 @@ const ReportPage = () => {
       field: 'reportType',
       filterable: false,
       headerName: 'Type',
+      minWidth: 130,
       valueFormatter: (params: GridValueFormatterParams) => {
         const reportType = params.value as ReportType;
         return reportType === ReportType.Regulation ? 'Regulation' : 'Incident';
@@ -96,30 +104,20 @@ const ReportPage = () => {
     {
       field: 'reporter',
       headerName: 'Reporter',
-      headerAlign: 'center',
       flex: 0.1,
-      minWidth: 150,
+      minWidth: 130,
       sortable: false,
       filterable: false,
-      renderCell: ({ getValue, id, field }) => {
-        const { imageUrl, fullName } = getValue(id, field) as Account;
-        return <AvatarWithTitle title={fullName} imageUrl={imageUrl} />;
-      },
-      align: 'center',
+      valueFormatter: parseCellValueToFullname,
     },
     {
       field: 'reportedUser',
       headerName: 'Reported examinee',
       flex: 0.1,
-      minWidth: 150,
-      headerAlign: 'center',
+      minWidth: 130,
       sortable: false,
       filterable: false,
-      renderCell: ({ getValue, id, field }) => {
-        const { imageUrl, fullName } = getValue(id, field) as Account;
-        return <AvatarWithTitle title={fullName} imageUrl={imageUrl} />;
-      },
-      align: 'center',
+      valueFormatter: parseCellValueToFullname,
     },
     {
       field: 'solution',

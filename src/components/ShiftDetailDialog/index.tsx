@@ -1,26 +1,29 @@
 /* eslint-disable react/require-default-props */
-import { Close, Event } from '@mui/icons-material';
+
+import { WeekView } from '@devexpress/dx-react-scheduler-material-ui';
+import { Close } from '@mui/icons-material';
 import { DateTimePicker, LoadingButton } from '@mui/lab';
 import {
-  Avatar,
   Box,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
   IconButton,
+  Paper,
+  Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import SemesterDropdown from 'components/SemesterDropdown';
+import ShiftScheduler from 'components/ShiftScheduler';
 import SlideTransition from 'components/SlideTransition';
 import { shiftSchema } from 'configs/validations';
-import { add } from 'date-fns';
+import { add, format, isEqual } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
-import { addShift } from 'features/shift/shiftSlice';
+import { addShift, getShiftOverview } from 'features/shift/shiftSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
@@ -39,10 +42,11 @@ const ShiftDetailDialog: React.FC<Props> = ({
 }) => {
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
-  const { isLoading, semester } = useAppSelector(state => state.shift);
-  const [selectedSemester, setSelectedSemester] = useState<Semester | null>(
-    null,
+  const { isLoading, shift: shiftSchedule } = useAppSelector(
+    state => state.shift,
   );
+  const [semester, setSemester] = useState<Semester | null>(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const formik = useFormik({
     initialValues: initialValues || {
       shiftId: null,
@@ -77,25 +81,71 @@ const ShiftDetailDialog: React.FC<Props> = ({
     _selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
     const shiftSemester = _selectedSemester as Semester;
-    await formik.setFieldValue('semester', _selectedSemester);
     if (shiftSemester) {
-      setSelectedSemester(shiftSemester);
+      setSemester(shiftSemester);
+      await formik.setFieldValue('semester', _selectedSemester);
       await handleChangeBeginTime(shiftSemester.beginDate);
       await handleChangeFinishTime(
-        add(new Date(shiftSemester.beginDate), { hours: 1, minutes: 30 }),
+        add(new Date(shiftSemester.beginDate), { hours: 1 }),
       );
     }
+  };
+
+  const fetchShifts = () => {
+    const selectedDate =
+      semester?.semesterId !== shiftSchedule.data?.currentSemester.semesterId
+        ? undefined
+        : format(currentDate, 'yyyy/MM/dd');
+    dispatch(
+      getShiftOverview({
+        selectedDate,
+        semesterId: semester?.semesterId,
+      }),
+    )
+      .then(result => {
+        const shifts = unwrapResult(result);
+        const startOfWeek = new Date(shifts.week.split(' - ')[0]);
+        if (!isEqual(startOfWeek, currentDate)) {
+          setCurrentDate(startOfWeek);
+        }
+        return shifts;
+      })
+      .catch(error => showErrorMessage(String(error)));
   };
 
   useEffect(() => {
     handleChangeSemester(semester).catch(error => showErrorMessage(error));
   }, [semester]);
 
+  useEffect(() => {
+    if (shiftSchedule.data) {
+      const startOfWeek = new Date(shiftSchedule.data.week.split(' - ')[0]);
+      // If change day or change semester, fetch shift overview
+      if (
+        !isEqual(startOfWeek, currentDate) ||
+        shiftSchedule.data.currentSemester.semesterId !== semester?.semesterId
+      ) {
+        fetchShifts();
+      }
+    } else fetchShifts();
+  }, [semester, currentDate]);
+
+  const handleCellDoubleClick = async (props: WeekView.TimeTableCellProps) => {
+    const { startDate, endDate } = props;
+    if (startDate) {
+      await handleChangeBeginTime(startDate);
+    }
+    if (endDate) {
+      await handleChangeFinishTime(endDate);
+    }
+  };
+
   return (
     <Dialog
       open={open}
       onClose={handleClose}
       fullWidth
+      maxWidth="xl"
       TransitionComponent={SlideTransition}
     >
       <DialogTitle>
@@ -112,124 +162,121 @@ const ShiftDetailDialog: React.FC<Props> = ({
           </IconButton>
         </Grid>
       </DialogTitle>
-      <Box component="form" onSubmit={formik.handleSubmit} pb={2}>
-        <DialogContent>
-          <Box display="flex" justifyContent="center">
-            <Avatar
-              sx={{
-                bgcolor: '#1890ff',
-                mb: 2,
-                width: 150,
-                height: 150,
-                borderRadius: '3px',
-              }}
-              variant="square"
-            >
-              <Event fontSize="large" />
-            </Avatar>
-          </Box>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <SemesterDropdown
-                value={formik.values.semester}
-                isEditable
-                onChange={handleChangeSemester}
-                textFieldProps={{
-                  error:
-                    formik.touched.semester && Boolean(formik.errors.semester),
-                  helperText: formik.touched.semester && formik.errors.semester,
-                  InputLabelProps: {
-                    shrink: true,
-                  },
-                  label: 'Semester',
-                  name: 'semester',
-                }}
-              />
+      <DialogContent>
+        <Box
+          component="form"
+          pb={2}
+          display="flex"
+          justifyContent="center"
+          noValidate
+        >
+          <Grid container spacing={2} mt={2}>
+            <Grid item lg={9}>
+              <Paper elevation={2}>
+                <ShiftScheduler
+                  isLoading={shiftSchedule.isLoading}
+                  currentDate={currentDate}
+                  shifts={shiftSchedule.data?.shifts}
+                  handleCellDoubleClick={handleCellDoubleClick}
+                  handleCurrentDateChange={setCurrentDate}
+                />
+              </Paper>
             </Grid>
-            <Grid item xs={12}>
-              <DateTimePicker
-                label="Begin time"
-                minDate={
-                  selectedSemester !== null
-                    ? new Date(selectedSemester.beginDate)
-                    : undefined
-                }
-                maxDate={
-                  selectedSemester !== null
-                    ? new Date(selectedSemester.endDate)
-                    : undefined
-                }
-                value={formik.values.beginTime}
-                inputFormat="dd/MM/yyyy HH:mm"
-                onChange={handleChangeBeginTime}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    name="beginTime"
-                    autoFocus
-                    margin="dense"
-                    fullWidth
-                    variant="outlined"
-                    InputLabelProps={{
+            <Grid item xs={12} lg={3}>
+              <Stack spacing={4}>
+                <SemesterDropdown
+                  value={formik.values.semester}
+                  isEditable
+                  onChange={handleChangeSemester}
+                  textFieldProps={{
+                    error:
+                      formik.touched.semester &&
+                      Boolean(formik.errors.semester),
+                    helperText:
+                      formik.touched.semester && formik.errors.semester,
+                    InputLabelProps: {
                       shrink: true,
-                    }}
-                    error={
-                      formik.touched.beginTime &&
-                      Boolean(formik.errors.beginTime)
-                    }
-                    helperText={
-                      formik.touched.beginTime && formik.errors.beginTime
-                    }
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <DateTimePicker
-                label="End time"
-                value={formik.values.finishTime}
-                inputFormat="dd/MM/yyyy HH:mm"
-                onChange={handleChangeFinishTime}
-                minDateTime={new Date(formik.values.beginTime)}
-                maxDate={
-                  selectedSemester !== null
-                    ? new Date(selectedSemester.endDate)
-                    : undefined
-                }
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    name="endTime"
-                    margin="dense"
-                    fullWidth
-                    variant="outlined"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    error={
-                      formik.touched.finishTime &&
-                      Boolean(formik.errors.finishTime)
-                    }
-                    helperText={
-                      formik.touched.finishTime && formik.errors.finishTime
-                    }
-                  />
-                )}
-              />
+                    },
+                    label: 'Semester',
+                    name: 'semester',
+                  }}
+                />
+                <DateTimePicker
+                  label="Begin time"
+                  minDate={
+                    semester !== null ? new Date(semester.beginDate) : undefined
+                  }
+                  maxDate={
+                    semester !== null ? new Date(semester.endDate) : undefined
+                  }
+                  value={formik.values.beginTime}
+                  inputFormat="dd/MM/yyyy HH:mm"
+                  onChange={handleChangeBeginTime}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      name="beginTime"
+                      margin="dense"
+                      fullWidth
+                      variant="outlined"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      error={
+                        formik.touched.beginTime &&
+                        Boolean(formik.errors.beginTime)
+                      }
+                      helperText={
+                        formik.touched.beginTime && formik.errors.beginTime
+                      }
+                    />
+                  )}
+                />
+                <DateTimePicker
+                  label="End time"
+                  value={formik.values.finishTime}
+                  inputFormat="dd/MM/yyyy HH:mm"
+                  onChange={handleChangeFinishTime}
+                  minDateTime={new Date(formik.values.beginTime)}
+                  maxDate={
+                    semester !== null ? new Date(semester.endDate) : undefined
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      name="endTime"
+                      margin="dense"
+                      fullWidth
+                      variant="outlined"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      error={
+                        formik.touched.finishTime &&
+                        Boolean(formik.errors.finishTime)
+                      }
+                      helperText={
+                        formik.touched.finishTime && formik.errors.finishTime
+                      }
+                    />
+                  )}
+                />
+                <Box display="flex" justifyContent="center">
+                  <LoadingButton
+                    type="submit"
+                    variant="contained"
+                    onClick={() => formik.handleSubmit()}
+                    sx={{ width: 150 }}
+                    loading={isLoading}
+                  >
+                    Create
+                  </LoadingButton>
+                </Box>
+              </Stack>
             </Grid>
           </Grid>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center' }}>
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            sx={{ width: 150 }}
-            loading={isLoading}
-          >
-            Create
-          </LoadingButton>
-        </DialogActions>
-      </Box>
+        </Box>
+      </DialogContent>
     </Dialog>
   );
 };

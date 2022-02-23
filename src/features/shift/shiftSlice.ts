@@ -5,22 +5,23 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import { format } from 'date-fns';
 import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
+import ShiftDashboardDto from 'dtos/shiftDashboard.dto';
+import ShiftOverviewParams from 'dtos/shiftOverviewParams.dto';
 import ShiftsDto from 'dtos/shifts.dto';
-import Semester from 'models/semester.model';
 import Shift from 'models/shift.model';
 import shiftServices from 'services/shift.service';
 
 interface ShiftsState {
+  shift: {
+    data: ShiftDashboardDto | null;
+    isLoading: boolean;
+    error: string;
+  };
   isLoading: boolean;
   error: string;
   current: ShiftsDto;
-  selectedDate: string | null;
-  beginDate: string | null;
-  semester: Pick<Semester, 'semesterId' | 'semesterName'> | null;
-  activeShiftDates: Record<string, number> | null;
 }
 
 export const getShifts = createAsyncThunk(
@@ -28,19 +29,6 @@ export const getShifts = createAsyncThunk(
   async (payload: SearchShiftParamsDto, { rejectWithValue }) => {
     try {
       const response = await shiftServices.getShifts(payload);
-      return response.data;
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      return rejectWithValue(axiosError.response?.data);
-    }
-  },
-);
-
-export const getShiftCalendar = createAsyncThunk(
-  'shifts/calendar',
-  async (semesterId: string, { rejectWithValue }) => {
-    try {
-      const response = await shiftServices.getShiftCalendar(semesterId);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -88,17 +76,31 @@ export const addShift = createAsyncThunk(
   },
 );
 
+export const getShiftOverview = createAsyncThunk(
+  'shifts/overview',
+  async (payload: ShiftOverviewParams, { rejectWithValue }) => {
+    try {
+      const response = await shiftServices.getShiftOverview(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: ShiftsState = {
   isLoading: false,
-  semester: null,
-  activeShiftDates: null,
   error: '',
-  selectedDate: null,
-  beginDate: null,
+  shift: {
+    data: null,
+    error: '',
+    isLoading: false,
+  },
   current: {
-    selectedDate: null,
     shifts: [] as Shift[],
+    selectedSemester: null,
     currentPage: 0,
     totalItems: 0,
     totalPages: 0,
@@ -108,56 +110,16 @@ const initialState: ShiftsState = {
 export const shiftSlice = createSlice({
   name: 'shift',
   initialState,
-  reducers: {
-    updateShiftSemester: (
-      state,
-      action: PayloadAction<Pick<
-        Semester,
-        'semesterId' | 'semesterName'
-      > | null>,
-    ) => {
-      state.semester = action.payload;
-      state.selectedDate = null;
-    },
-    updateCurrentSelectedDate: (
-      state,
-      action: PayloadAction<string | null>,
-    ) => {
-      state.selectedDate = action.payload;
-    },
-    updateSemesterBeginDate: (state, action: PayloadAction<string | null>) => {
-      state.beginDate = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(getShifts.fulfilled, (state, action) => {
         state.current = action.payload;
         state.error = '';
         state.isLoading = false;
-        if (state.selectedDate === null) {
-          state.selectedDate = state.current.selectedDate;
-        }
-      })
-      .addCase(getShiftCalendar.fulfilled, (state, action) => {
-        state.activeShiftDates = action.payload;
-        state.error = '';
-        state.isLoading = false;
       })
       .addCase(addShift.fulfilled, (state, action) => {
-        const parsedBeginTime = format(
-          new Date(action.payload.beginTime),
-          'yyyy-MM-dd',
-        );
-        if (state.activeShiftDates) {
-          if (state.activeShiftDates[parsedBeginTime] !== undefined)
-            state.activeShiftDates[parsedBeginTime] += 1;
-          else state.activeShiftDates[parsedBeginTime] = 1;
-        }
-        if (
-          state.selectedDate &&
-          format(new Date(state.selectedDate), 'yyyy-MM-dd') === parsedBeginTime
-        )
+        if (state.current.currentPage === 0)
           state.current.shifts.unshift(action.payload);
         state.current.totalItems += 1;
         state.error = '';
@@ -171,6 +133,11 @@ export const shiftSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(getShiftOverview.fulfilled, (state, action) => {
+        state.shift.data = action.payload;
+        state.shift.error = '';
+        state.shift.isLoading = false;
+      })
       .addCase(deleteShift.fulfilled, (state, action) => {
         const index = state.current.shifts.findIndex(
           shift => shift.shiftId === action.payload.shiftId,
@@ -179,19 +146,21 @@ export const shiftSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(getShiftCalendar.rejected, (state, action) => {
-        state.current = initialState.current;
-        state.activeShiftDates = null;
-        state.isLoading = false;
-        state.error = String(action.payload);
+      .addCase(getShiftOverview.rejected, (state, action) => {
+        state.shift.error = String(action.payload);
+        state.shift.isLoading = false;
       })
-      .addCase(getShifts.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = String(action.payload);
-        state.selectedDate = state.beginDate;
+      .addCase(getShiftOverview.pending, state => {
+        state.shift.error = '';
+        state.shift.isLoading = true;
       })
       .addMatcher(
-        isAnyOf(addShift.rejected, updateShift.rejected, deleteShift.rejected),
+        isAnyOf(
+          addShift.rejected,
+          updateShift.rejected,
+          deleteShift.rejected,
+          getShifts.rejected,
+        ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
           state.error = action.payload;
@@ -203,7 +172,6 @@ export const shiftSlice = createSlice({
           addShift.pending,
           updateShift.pending,
           deleteShift.pending,
-          getShiftCalendar.pending,
         ),
         state => {
           state.isLoading = true;
@@ -212,11 +180,5 @@ export const shiftSlice = createSlice({
       );
   },
 });
-
-export const {
-  updateShiftSemester,
-  updateCurrentSelectedDate,
-  updateSemesterBeginDate,
-} = shiftSlice.actions;
 
 export default shiftSlice.reducer;

@@ -3,21 +3,19 @@ import DisableShiftDto from 'dtos/disableShift.dto';
 import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftDashboardDto from 'dtos/shiftDashboard.dto';
+import ShiftOverviewParams from 'dtos/shiftOverviewParams.dto';
 import ShiftsDto from 'dtos/shifts.dto';
 import Shift from 'models/shift.model';
 
 import axiosClient from './axiosClient';
 
 const shiftServices = {
-  getShifts: ({
-    page,
-    sort,
-    semesterId,
-    date,
-  }: SearchShiftParamsDto): Promise<AxiosResponse<ShiftsDto>> => {
+  getShifts: (
+    params: SearchShiftParamsDto,
+  ): Promise<AxiosResponse<ShiftsDto>> => {
     const url = `/shifts`;
     return axiosClient.get(url, {
-      params: { page, sort, semester: semesterId, date },
+      params: { ...params },
     });
   },
   getShift: (id: string): Promise<AxiosResponse<Shift>> => {
@@ -48,9 +46,11 @@ const shiftServices = {
     const url = `/shifts/calendar/${id}`;
     return axiosClient.get(url);
   },
-  getShiftOverview: (): Promise<AxiosResponse<ShiftDashboardDto>> => {
+  getShiftOverview: (
+    params?: ShiftOverviewParams,
+  ): Promise<AxiosResponse<ShiftDashboardDto>> => {
     const url = '/shifts/overview';
-    return axiosClient.get(url);
+    return axiosClient.get(url, { params: { ...params } });
   },
 };
 

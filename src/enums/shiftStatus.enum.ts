@@ -5,6 +5,7 @@ enum ShiftStatus {
   'Ready' = 3,
   'Locked' = 4,
   'Ongoing' = 5,
+  'Staffing' = 6,
 }
 
 export default ShiftStatus;

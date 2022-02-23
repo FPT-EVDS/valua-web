@@ -1,4 +1,13 @@
-import { green, grey, indigo, orange, red, teal } from '@mui/material/colors';
+import {
+  blue,
+  green,
+  grey,
+  indigo,
+  orange,
+  pink,
+  red,
+  teal,
+} from '@mui/material/colors';
 import ShiftStatus from 'enums/shiftStatus.enum';
 
 const ShiftConfig = [
@@ -30,7 +39,12 @@ const ShiftConfig = [
   {
     value: ShiftStatus.Ongoing,
     label: 'Ongoing',
-    color: teal[500],
+    color: blue[500],
+  },
+  {
+    value: ShiftStatus.Staffing,
+    label: 'Staffing',
+    color: pink[500],
   },
   {
     value: -1,

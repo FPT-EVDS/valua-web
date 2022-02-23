@@ -6,7 +6,7 @@ export default interface ShiftDashboardDto {
   currentSemester: Pick<Semester, 'semesterId' | 'semesterName'>;
   week: string;
   totalShiftsInWeek: number;
-  shifts: DashboardShift[];
+  shifts: DashboardShift[] | null;
   message: string;
   totalShifts: number;
 }

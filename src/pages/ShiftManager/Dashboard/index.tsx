@@ -1,7 +1,7 @@
 import {
   Assignment,
+  ChevronRight,
   EventOutlined,
-  FiberManualRecord,
   Groups,
 } from '@mui/icons-material';
 import {
@@ -20,7 +20,6 @@ import DashboardCard from 'components/DashboardCard';
 import ExamRoomScheduler from 'components/ExamRoomScheduler';
 import LoadingIndicator from 'components/LoadingIndicator';
 import ReportChart from 'components/ReportChart';
-import ShiftConfig from 'configs/constants/shiftConfig.status';
 import {
   getReportOverview,
   getShiftOverview,
@@ -28,6 +27,7 @@ import {
 } from 'features/shiftManagerDashboard/shiftManagerDashboardSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
 const DashboardPage = () => {
   const dispatch = useAppDispatch();
@@ -90,16 +90,20 @@ const DashboardPage = () => {
             title={report.data ? report.data.totalReports.toString() : ''}
             icon={<Assignment />}
           >
-            <Typography
-              variant="caption"
-              color={
-                report.data && report.data.totalUnresolved > 0
-                  ? 'error'
-                  : 'textSecondary'
-              }
-              fontSize={13}
-            >
-              {report.data?.totalUnresolved} unresolved reports remain
+            <Typography variant="caption" color="textSecondary" fontSize={13}>
+              Unresolved:{' '}
+              <Typography
+                variant="caption"
+                fontWeight="bold"
+                color={
+                  report.data && report.data.totalUnresolved > 0
+                    ? red[500]
+                    : green[500]
+                }
+                fontSize={13}
+              >
+                {report.data?.totalUnresolved}
+              </Typography>
             </Typography>
           </DashboardCard>
         </Grid>
@@ -154,53 +158,37 @@ const DashboardPage = () => {
           <Card elevation={2}>
             <CardHeader
               title={
-                <Typography
-                  sx={{ fontWeight: 'medium', fontSize: 18 }}
-                  variant="h5"
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
                 >
-                  Exam rooms assigment
-                </Typography>
+                  <Typography
+                    sx={{ fontWeight: 'medium', fontSize: 18 }}
+                    variant="h5"
+                  >
+                    Shift schedule
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    spacing={0.5}
+                    alignItems="center"
+                    component={RouterLink}
+                    to="/shift-manager/shift"
+                    sx={{ textDecoration: 'none' }}
+                  >
+                    <Typography fontSize={15} color="primary">
+                      View detail
+                    </Typography>
+                    <ChevronRight color="primary" fontSize="small" />
+                  </Stack>
+                </Box>
               }
             />
             <CardContent>
               {!shift.isLoading && shift.data !== null ? (
                 <>
                   <ExamRoomScheduler shifts={shift.data.shifts} />
-                  {/* Legend */}
-                  <Box
-                    mt={2}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexWrap: 'wrap',
-                      columnGap: '20px',
-                    }}
-                  >
-                    {ShiftConfig.map(
-                      (config, index) =>
-                        index !== ShiftConfig.length - 1 && (
-                          <Stack
-                            direction="row"
-                            spacing={0.5}
-                            alignItems="center"
-                          >
-                            <FiberManualRecord
-                              fontSize="small"
-                              sx={{ color: config?.color }}
-                            />
-                            <Typography
-                              variant="caption"
-                              fontSize={14}
-                              color={config.color}
-                              fontWeight="bold"
-                            >
-                              {config.label}
-                            </Typography>
-                          </Stack>
-                        ),
-                    )}
-                  </Box>
                 </>
               ) : (
                 <LoadingIndicator />
@@ -212,12 +200,31 @@ const DashboardPage = () => {
           <Card sx={{ height: 400 }} elevation={2}>
             <CardHeader
               title={
-                <Typography
-                  sx={{ fontWeight: 'medium', fontSize: 18 }}
-                  variant="h5"
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
                 >
-                  Report
-                </Typography>
+                  <Typography
+                    sx={{ fontWeight: 'medium', fontSize: 18 }}
+                    variant="h5"
+                  >
+                    Report
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    spacing={0.5}
+                    alignItems="center"
+                    component={RouterLink}
+                    to="/shift-manager/report"
+                    sx={{ textDecoration: 'none' }}
+                  >
+                    <Typography fontSize={15} color="primary">
+                      View detail
+                    </Typography>
+                    <ChevronRight color="primary" fontSize="small" />
+                  </Stack>
+                </Box>
               }
             />
             <CardContent sx={{ height: 350 }}>
