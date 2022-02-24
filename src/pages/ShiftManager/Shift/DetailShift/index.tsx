@@ -18,6 +18,7 @@ import EVDSDataGrid from 'components/EVDSDataGrid';
 import NotFoundItem from 'components/NotFoundItem';
 import ShiftDetailCard from 'components/ShiftDetailCard';
 import ExamRoomStatus from 'enums/examRoomStatus.enum';
+import ShiftStatus from 'enums/shiftStatus.enum';
 import { deleteExamRoom, getExamRooms } from 'features/examRoom/examRoomSlice';
 import { deleteShift, getShift } from 'features/shift/detailShiftSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
@@ -177,15 +178,17 @@ const DetailShiftPage = () => {
       sortable: false,
       filterable: false,
       headerName: 'Room name',
-      flex: 0.2,
+      minWidth: 180,
+      flex: 0.1,
     },
     {
       field: 'subject',
       sortable: false,
       filterable: false,
       headerName: 'Subject',
-      flex: 0.2,
-      valueFormatter: ({ value }) => (value as unknown as Subject).subjectName,
+      minWidth: 100,
+      flex: 0.1,
+      valueFormatter: ({ value }) => (value as unknown as Subject).subjectCode,
     },
     {
       field: 'room',
@@ -201,12 +204,13 @@ const DetailShiftPage = () => {
       filterable: false,
       headerName: 'Staff',
       flex: 0.1,
+      minWidth: 120,
       renderCell: ({ getValue, id: rowId, field }) => {
         const staff = getValue(rowId, field) as Account | null;
         return (
           <>
             {staff ? (
-              <Stack direction="row" spacing={2} alignItems="center">
+              <Stack direction="row" spacing={1} alignItems="center">
                 <Avatar
                   alt={`${staff.fullName}`}
                   src={String(staff.imageUrl)}
@@ -225,7 +229,7 @@ const DetailShiftPage = () => {
       field: 'status',
       headerName: 'Status',
       flex: 0.1,
-      minWidth: 130,
+      minWidth: 90,
       renderCell: ({ getValue, id: rowId, field }) => {
         const status = getValue(rowId, field);
         let color = grey[500].toString();
@@ -263,6 +267,7 @@ const DetailShiftPage = () => {
       field: 'actions',
       headerName: 'Actions',
       type: 'actions',
+      hide: shift?.status === ShiftStatus.Finished,
       getActions: ({ getValue, id: rowId }) => {
         const staff = getValue(rowId, 'staff') as Account;
         const status = getValue(rowId, 'status');
@@ -348,7 +353,7 @@ const DetailShiftPage = () => {
               rows={rows}
               page={page}
               onPageChange={newPage => setPage(newPage)}
-              addButton={<AddButton />}
+              addButton={shift.status !== ShiftStatus.Finished && <AddButton />}
             />
           </Grid>
         </Grid>

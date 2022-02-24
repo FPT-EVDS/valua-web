@@ -27,7 +27,6 @@ import ShiftDetailDialog from 'components/ShiftDetailDialog';
 import ShiftConfig from 'configs/constants/shiftConfig.status';
 import { format } from 'date-fns';
 import ShiftStatus from 'enums/shiftStatus.enum';
-import Status from 'enums/status.enum';
 import { deleteShift, getShifts } from 'features/shift/shiftSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
@@ -35,6 +34,12 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const ShiftPage = () => {
+  const isAllowEditStatuses = new Set([
+    ShiftStatus.Locked,
+    ShiftStatus.Removed,
+    ShiftStatus.Finished,
+    ShiftStatus.Staffing,
+  ]);
   const DEFAULT_PAGE_SIZE = 20;
   const history = useHistory();
   const { url } = useRouteMatch();
@@ -165,7 +170,7 @@ const ShiftPage = () => {
       type: 'actions',
       getActions: params => {
         const shiftId = params.getValue(params.id, 'shiftId') as string;
-        const status = params.getValue(params.id, 'status') as Status;
+        const status = params.getValue(params.id, 'status') as ShiftStatus;
         const deleteItems = [
           <GridActionsCellItem
             label="View detail"
@@ -184,7 +189,7 @@ const ShiftPage = () => {
             onClick={() => showDeleteConfirmation(params)}
           />,
         ];
-        if (status === Status.isDisable) deleteItems.pop();
+        if (isAllowEditStatuses.has(status)) deleteItems.splice(1, 2);
         return deleteItems;
       },
     },

@@ -52,6 +52,12 @@ const shiftServices = {
     const url = '/shifts/overview';
     return axiosClient.get(url, { params: { ...params } });
   },
+  startStaffing: (
+    payload: Pick<Shift, 'shiftId'>[],
+  ): Promise<AxiosResponse<Array<Shift>>> => {
+    const url = '/shifts/staffing';
+    return axiosClient.post(url, payload);
+  },
 };
 
 export default shiftServices;

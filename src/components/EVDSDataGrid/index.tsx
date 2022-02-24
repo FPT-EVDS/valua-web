@@ -178,9 +178,11 @@ const EVDSDataGridHeader = ({
               </StyledMenu>
             </Grid>
           )}
-          <Grid item alignItems="stretch" display="flex">
-            {addButton}
-          </Grid>
+          {addButton && (
+            <Grid item alignItems="stretch" display="flex">
+              {addButton}
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </Grid>

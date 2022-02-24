@@ -1,5 +1,5 @@
 /* eslint-disable prefer-destructuring */
-import { Edit, EditOff } from '@mui/icons-material';
+import { Badge, Edit, EditOff, FileDownload } from '@mui/icons-material';
 import { DateTimePicker } from '@mui/lab';
 import {
   Box,
@@ -9,6 +9,7 @@ import {
   CardContent,
   CardHeader,
   CircularProgress,
+  darken,
   Grid,
   IconButton,
   Stack,
@@ -16,20 +17,22 @@ import {
   Typography,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useAppDispatch } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import SemesterDropdown from 'components/SemesterDropdown';
 import ShiftConfig from 'configs/constants/shiftConfig.status';
 import { shiftSchema } from 'configs/validations';
 import { format } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftStatus from 'enums/shiftStatus.enum';
-import { updateShift } from 'features/shift/detailShiftSlice';
+import { startStaffing, updateShift } from 'features/shift/detailShiftSlice';
+import saveAs from 'file-saver';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import Semester from 'models/semester.model';
 import Shift from 'models/shift.model';
 import React, { useEffect, useState } from 'react';
+import attendanceServices from 'services/attendance.service';
 
 interface Props {
   shift: Shift;
@@ -38,6 +41,12 @@ interface Props {
 }
 
 const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
+  const isNotAllowEditStatuses = [
+    ShiftStatus.Locked,
+    ShiftStatus.Removed,
+    ShiftStatus.Finished,
+    ShiftStatus.Staffing,
+  ];
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
@@ -92,6 +101,30 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shift]);
 
+  const handleSaveFile = async (shiftId: string) => {
+    try {
+      const response = await attendanceServices.downloadAttendances(shiftId);
+      const fileExtension = '.xls';
+      const fileName = `${shift.semester.semesterName} ${format(
+        new Date(shift.beginTime),
+        'dd-MM-yyyy--HH:mm',
+      )}${fileExtension}`;
+      saveAs(response.data, fileName);
+    } catch (error) {
+      showErrorMessage(String(error));
+    }
+  };
+
+  const handleStaffing = async (shiftId: string) => {
+    try {
+      const result = await dispatch(startStaffing([{ shiftId }]));
+      unwrapResult(result);
+      showSuccessMessage('Start staffing successfully');
+    } catch (error) {
+      showErrorMessage(error);
+    }
+  };
+
   return (
     <Card sx={{ minWidth: 275 }} elevation={2}>
       <CardHeader
@@ -105,8 +138,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           </Typography>
         }
         action={
-          shift.status !== ShiftStatus.Locked &&
-          shift.status !== ShiftStatus.Removed && (
+          !isNotAllowEditStatuses.includes(shift.status) && (
             <IconButton onClick={() => setIsEditable(prevState => !prevState)}>
               {isEditable ? (
                 <EditOff sx={{ fontSize: 20 }} />
@@ -217,24 +249,64 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           {isLoading ? (
             <CircularProgress />
           ) : (
-            <Stack spacing={2} direction="row">
-              <Button
-                disabled={!isEditable}
-                type="submit"
-                variant="contained"
-                sx={{ minWidth: 120 }}
-              >
-                Update
-              </Button>
-              <Button
-                disabled={!isEditable}
-                variant="contained"
-                color="error"
-                onClick={() => handleDelete(String(shift.shiftId))}
-                sx={{ minWidth: 120 }}
-              >
-                Delete
-              </Button>
+            <Stack spacing={2}>
+              <Stack spacing={2} direction="row">
+                {shift.status === ShiftStatus.Finished ? (
+                  <Button
+                    variant="contained"
+                    sx={{
+                      minWidth: 120,
+                      backgroundColor: '#47B881',
+                      ':hover': { backgroundColor: darken('#47B881', 0.05) },
+                    }}
+                    startIcon={<FileDownload />}
+                    onClick={async () => {
+                      if (shift.shiftId) {
+                        await handleSaveFile(shift.shiftId);
+                      }
+                    }}
+                  >
+                    Export attendance
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      disabled={!isEditable}
+                      type="submit"
+                      variant="contained"
+                      sx={{ minWidth: 120 }}
+                    >
+                      Update
+                    </Button>
+                    <Button
+                      disabled={!isEditable}
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleDelete(String(shift.shiftId))}
+                      sx={{ minWidth: 120 }}
+                    >
+                      Delete
+                    </Button>
+                  </>
+                )}
+              </Stack>
+              {shift.status === ShiftStatus.NotReady && (
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#26A69A',
+                    ':hover': { backgroundColor: darken('#26A69A', 0.05) },
+                  }}
+                  startIcon={<Badge />}
+                  onClick={async () => {
+                    if (shift) {
+                      await handleStaffing(String(shift.shiftId));
+                    }
+                  }}
+                >
+                  Start staffing
+                </Button>
+              )}
             </Stack>
           )}
         </CardActions>

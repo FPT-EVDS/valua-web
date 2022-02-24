@@ -98,7 +98,7 @@ const ReportPage = () => {
       minWidth: 130,
       valueFormatter: (params: GridValueFormatterParams) => {
         const reportType = params.value as ReportType;
-        return reportType === ReportType.Regulation ? 'Regulation' : 'Incident';
+        return reportType === ReportType.Violation ? 'Violation' : 'Incident';
       },
     },
     {
