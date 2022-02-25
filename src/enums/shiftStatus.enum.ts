@@ -1,11 +1,11 @@
 enum ShiftStatus {
   'Removed' = 0,
   'Finished' = 1,
-  'NotReady' = 2,
+  'Locked' = 2,
   'Ready' = 3,
-  'Locked' = 4,
-  'Ongoing' = 5,
-  'Staffing' = 6,
+  'NotReady' = 4,
+  'Staffing' = 5,
+  'Ongoing' = 6,
 }
 
 export default ShiftStatus;
