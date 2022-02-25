@@ -1,4 +1,4 @@
-## EVDS WEB
+## Valua Web
 # How to install
 - Install Node V14 LTS ( note: V16 will not run due to the SCSS library ). Download link: https://nodejs.org/dist/v14.16.1/
 ![image](https://user-images.githubusercontent.com/54258769/139083262-266b6f1d-80d4-4ccc-b502-ef3c483ce9e4.png)
@@ -15,3 +15,14 @@
 - After yarn finished, run **yarn start** to run the project. It will run at http://localhost:3000
 - Result:
 ![image](https://user-images.githubusercontent.com/54258769/139084854-edfc40e7-da94-473e-8421-b25a52afb43c.png)
+
+# How to run in production mode
+- Step 1: Run <code>npm install -g serve</code>
+- Step 2: Navigate to valua-web root folder
+- Step 3: Run <code>yarn build</code> (Might took a while)
+- Step 4: Run <code>serve -s build</code>
+- The final result should be:
+
+![image](https://user-images.githubusercontent.com/54258769/155705865-412da008-c2cd-4a09-933d-2d0c01826468.png)
+
+
