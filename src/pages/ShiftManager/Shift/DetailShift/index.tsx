@@ -33,6 +33,13 @@ interface ParamProps {
 }
 
 const DetailShiftPage = () => {
+  const isNotAllowEditStatuses = new Set([
+    ShiftStatus.Ongoing,
+    ShiftStatus.Locked,
+    ShiftStatus.Removed,
+    ShiftStatus.Finished,
+    ShiftStatus.Staffing,
+  ]);
   const DEFAULT_PAGE_SIZE = 20;
   const dispatch = useAppDispatch();
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
@@ -267,7 +274,7 @@ const DetailShiftPage = () => {
       field: 'actions',
       headerName: 'Actions',
       type: 'actions',
-      hide: shift?.status === ShiftStatus.Finished,
+      hide: shift ? isNotAllowEditStatuses.has(shift.status) : false,
       getActions: ({ getValue, id: rowId }) => {
         const staff = getValue(rowId, 'staff') as Account;
         const status = getValue(rowId, 'status');
@@ -353,7 +360,9 @@ const DetailShiftPage = () => {
               rows={rows}
               page={page}
               onPageChange={newPage => setPage(newPage)}
-              addButton={shift.status !== ShiftStatus.Finished && <AddButton />}
+              addButton={
+                !isNotAllowEditStatuses.has(shift.status) && <AddButton />
+              }
             />
           </Grid>
         </Grid>

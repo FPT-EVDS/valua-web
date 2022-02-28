@@ -75,6 +75,19 @@ export const startStaffing = createAsyncThunk(
   },
 );
 
+export const lockShift = createAsyncThunk(
+  'detailShift/lock',
+  async (payload: Pick<Shift, 'shiftId'>[], { rejectWithValue }) => {
+    try {
+      const response = await shiftServices.lockShifts(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: DetailShiftState = {
   isLoading: false,
@@ -102,6 +115,12 @@ export const detailShiftSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(lockShift.fulfilled, (state, action) => {
+        // eslint-disable-next-line prefer-destructuring
+        state.shift = action.payload.lockedShifts[0];
+        state.error = '';
+        state.isLoading = false;
+      })
       .addMatcher(
         isAnyOf(getShift.fulfilled, addShift.fulfilled, updateShift.fulfilled),
         (state, action) => {
@@ -117,6 +136,7 @@ export const detailShiftSlice = createSlice({
           addShift.pending,
           updateShift.pending,
           startStaffing.pending,
+          lockShift.pending,
         ),
         state => {
           state.isLoading = true;
@@ -130,6 +150,7 @@ export const detailShiftSlice = createSlice({
           addShift.rejected,
           updateShift.rejected,
           startStaffing.rejected,
+          lockShift.rejected,
         ),
         (state, action) => {
           state.isLoading = false;

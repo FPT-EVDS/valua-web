@@ -1,5 +1,5 @@
 /* eslint-disable prefer-destructuring */
-import { Badge, Edit, EditOff, FileDownload } from '@mui/icons-material';
+import { Badge, Edit, EditOff, FileDownload, Lock } from '@mui/icons-material';
 import { DateTimePicker } from '@mui/lab';
 import {
   Box,
@@ -24,7 +24,11 @@ import { shiftSchema } from 'configs/validations';
 import { format } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftStatus from 'enums/shiftStatus.enum';
-import { startStaffing, updateShift } from 'features/shift/detailShiftSlice';
+import {
+  lockShift,
+  startStaffing,
+  updateShift,
+} from 'features/shift/detailShiftSlice';
 import saveAs from 'file-saver';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
@@ -42,6 +46,7 @@ interface Props {
 
 const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
   const isNotAllowEditStatuses = [
+    ShiftStatus.Ongoing,
     ShiftStatus.Locked,
     ShiftStatus.Removed,
     ShiftStatus.Finished,
@@ -120,6 +125,16 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
       const result = await dispatch(startStaffing([{ shiftId }]));
       unwrapResult(result);
       showSuccessMessage('Start staffing successfully');
+    } catch (error) {
+      showErrorMessage(error);
+    }
+  };
+
+  const handleLockShift = async (shiftId: string) => {
+    try {
+      const result = await dispatch(lockShift([{ shiftId }]));
+      unwrapResult(result);
+      showSuccessMessage('Lock shift successfully');
     } catch (error) {
       showErrorMessage(error);
     }
@@ -305,6 +320,21 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
                   }}
                 >
                   Start staffing
+                </Button>
+              )}
+              {shift.status === ShiftStatus.Ready && (
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#26A69A',
+                    ':hover': { backgroundColor: darken('#26A69A', 0.05) },
+                  }}
+                  startIcon={<Lock />}
+                  onClick={async () => {
+                    await handleLockShift(String(shift.shiftId));
+                  }}
+                >
+                  Lock shift
                 </Button>
               )}
             </Stack>

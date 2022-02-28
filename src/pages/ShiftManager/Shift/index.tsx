@@ -35,6 +35,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const ShiftPage = () => {
   const isAllowEditStatuses = new Set([
+    ShiftStatus.Ongoing,
     ShiftStatus.Locked,
     ShiftStatus.Removed,
     ShiftStatus.Finished,

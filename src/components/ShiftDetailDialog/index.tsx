@@ -95,7 +95,7 @@ const ShiftDetailDialog: React.FC<Props> = ({
     const selectedDate =
       semester?.semesterId !== shiftSchedule.data?.currentSemester.semesterId
         ? undefined
-        : format(currentDate, 'yyyy/MM/dd');
+        : format(currentDate, 'yyyy-MM-dd');
     dispatch(
       getShiftOverview({
         selectedDate,

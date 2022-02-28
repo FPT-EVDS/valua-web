@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import DisableShiftDto from 'dtos/disableShift.dto';
+import LockedShiftsDto from 'dtos/lockedShifts.dto';
 import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftDashboardDto from 'dtos/shiftDashboard.dto';
@@ -56,6 +57,12 @@ const shiftServices = {
     payload: Pick<Shift, 'shiftId'>[],
   ): Promise<AxiosResponse<Array<Shift>>> => {
     const url = '/shifts/staffing';
+    return axiosClient.post(url, payload);
+  },
+  lockShifts: (
+    payload: Pick<Shift, 'shiftId'>[],
+  ): Promise<AxiosResponse<LockedShiftsDto>> => {
+    const url = '/shifts/lock';
     return axiosClient.post(url, payload);
   },
 };
