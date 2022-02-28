@@ -19,6 +19,7 @@ import { useAppDispatch } from 'app/hooks';
 import RoomDropdown from 'components/RoomDropdown';
 import SemesterSubjectsDropdown from 'components/SemesterSubjectDropdown';
 import StaffDropdown from 'components/StaffDropdown';
+import { notAllowedEditExamRoomStatuses } from 'configs/constants/shiftConfig.status';
 import { detailExamRoomSchema } from 'configs/validations';
 import { format } from 'date-fns';
 import UpdateExamRoomDto from 'dtos/updateExamRoom.dto';
@@ -138,7 +139,8 @@ const ExamRoomDetailCard = ({
           </Typography>
         }
         action={
-          examRoom.status !== ExamRoomStatus.Disabled && (
+          examRoom.status !== ExamRoomStatus.Disabled &&
+          !notAllowedEditExamRoomStatuses.has(shift.status) && (
             <IconButton onClick={() => setIsEditable(prevState => !prevState)}>
               {isEditable ? (
                 <EditOff sx={{ fontSize: 20 }} />
@@ -205,7 +207,15 @@ const ExamRoomDetailCard = ({
           {isLoading ? (
             <CircularProgress />
           ) : (
-            <Stack spacing={2} direction="row">
+            <Stack
+              spacing={2}
+              direction="row"
+              sx={{
+                display: notAllowedEditExamRoomStatuses.has(shift.status)
+                  ? 'none'
+                  : 'inherit',
+              }}
+            >
               <Button
                 disabled={!isEditable}
                 type="submit"

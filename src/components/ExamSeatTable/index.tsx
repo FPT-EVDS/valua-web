@@ -19,9 +19,10 @@ import React, { useEffect, useState } from 'react';
 
 interface Props {
   data: ExamSeat[];
+  hideActions: boolean;
 }
 
-const ExamSeatTable = ({ data }: Props) => {
+const ExamSeatTable = ({ data, hideActions }: Props) => {
   const dispatch = useAppDispatch();
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const examRoom = useAppSelector(state => state.detailExamRoom.examRoom);
@@ -84,7 +85,7 @@ const ExamSeatTable = ({ data }: Props) => {
             <TableCell align="center">Position</TableCell>
             <TableCell align="center">Examinee name</TableCell>
             <TableCell align="center">Student code</TableCell>
-            <TableCell align="center">Action</TableCell>
+            {!hideActions && <TableCell align="center">Action</TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -98,16 +99,18 @@ const ExamSeatTable = ({ data }: Props) => {
               </TableCell>
               <TableCell align="center">{row.examinee.fullName}</TableCell>
               <TableCell align="center">{row.examinee.companyId}</TableCell>
-              <TableCell align="center">
-                {rows.length > 1 && (
-                  <Button
-                    variant="text"
-                    onClick={() => handleRemoveExaminee(row, index)}
-                  >
-                    Remove
-                  </Button>
-                )}
-              </TableCell>
+              {!hideActions && (
+                <TableCell align="center">
+                  {rows.length > 1 && (
+                    <Button
+                      variant="text"
+                      onClick={() => handleRemoveExaminee(row, index)}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </TableCell>
+              )}
             </TableRow>
           ))}
           {emptyRows > 0 && (

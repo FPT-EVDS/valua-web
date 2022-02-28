@@ -17,6 +17,7 @@ import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import ExamRoomDetailCard from 'components/ExamRoomDetailCard';
 import ExamSeatTable from 'components/ExamSeatTable';
+import { notAllowedEditExamRoomStatuses } from 'configs/constants/shiftConfig.status';
 import { format } from 'date-fns';
 import {
   deleteExamRoom,
@@ -193,15 +194,20 @@ const DetailExamRoomPage = () => {
                       Exam seat list
                     </Typography>
                   </Box>
-                  <Button
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={() => setOpen(true)}
-                  >
-                    Add examinee
-                  </Button>
+                  {!notAllowedEditExamRoomStatuses.has(shift.status) && (
+                    <Button
+                      variant="contained"
+                      startIcon={<Add />}
+                      onClick={() => setOpen(true)}
+                    >
+                      Add examinee
+                    </Button>
+                  )}
                 </Stack>
-                <ExamSeatTable data={examRoom.attendances} />
+                <ExamSeatTable
+                  data={examRoom.attendances}
+                  hideActions={notAllowedEditExamRoomStatuses.has(shift.status)}
+                />
               </Stack>
             </Grid>
           </>

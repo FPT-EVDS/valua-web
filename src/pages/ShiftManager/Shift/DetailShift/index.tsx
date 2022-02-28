@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 import { Add, FiberManualRecord } from '@mui/icons-material';
 import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material';
-import { green, grey, red } from '@mui/material/colors';
+import { green, grey, orange, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
   GridActionsColDef,
@@ -17,8 +17,8 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import NotFoundItem from 'components/NotFoundItem';
 import ShiftDetailCard from 'components/ShiftDetailCard';
+import { notAllowEditShiftStatuses } from 'configs/constants/shiftConfig.status';
 import ExamRoomStatus from 'enums/examRoomStatus.enum';
-import ShiftStatus from 'enums/shiftStatus.enum';
 import { deleteExamRoom, getExamRooms } from 'features/examRoom/examRoomSlice';
 import { deleteShift, getShift } from 'features/shift/detailShiftSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
@@ -33,13 +33,6 @@ interface ParamProps {
 }
 
 const DetailShiftPage = () => {
-  const isNotAllowEditStatuses = new Set([
-    ShiftStatus.Ongoing,
-    ShiftStatus.Locked,
-    ShiftStatus.Removed,
-    ShiftStatus.Finished,
-    ShiftStatus.Staffing,
-  ]);
   const DEFAULT_PAGE_SIZE = 20;
   const dispatch = useAppDispatch();
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
@@ -53,7 +46,7 @@ const DetailShiftPage = () => {
     current: { totalItems, examRooms },
     isLoading: isExamRoomLoading,
   } = useAppSelector(state => state.examRoom);
-  const rows: GridRowModel[] = examRooms.map((examRoom, index) => ({
+  const rows: GridRowModel[] = examRooms.map(examRoom => ({
     ...examRoom,
     id: examRoom.examRoomId,
   }));
@@ -243,12 +236,12 @@ const DetailShiftPage = () => {
         let statusText = 'Unknown';
         switch (status) {
           case ExamRoomStatus.Disabled:
-            color = grey[500];
+            color = red[500];
             statusText = 'Disabled';
             break;
 
           case ExamRoomStatus.NotReady:
-            color = red[500];
+            color = orange[400];
             statusText = 'Not ready';
             break;
 
@@ -274,7 +267,6 @@ const DetailShiftPage = () => {
       field: 'actions',
       headerName: 'Actions',
       type: 'actions',
-      hide: shift ? isNotAllowEditStatuses.has(shift.status) : false,
       getActions: ({ getValue, id: rowId }) => {
         const staff = getValue(rowId, 'staff') as Account;
         const status = getValue(rowId, 'status');
@@ -315,6 +307,9 @@ const DetailShiftPage = () => {
         ];
         if (staff) deleteItems.shift();
         if (status === ExamRoomStatus.Disabled) deleteItems.pop();
+        if (shift?.status && notAllowEditShiftStatuses.has(shift.status)) {
+          deleteItems.splice(1, 2);
+        }
         return deleteItems;
       },
     },
@@ -361,7 +356,7 @@ const DetailShiftPage = () => {
               page={page}
               onPageChange={newPage => setPage(newPage)}
               addButton={
-                !isNotAllowEditStatuses.has(shift.status) && <AddButton />
+                !notAllowEditShiftStatuses.has(shift.status) && <AddButton />
               }
             />
           </Grid>

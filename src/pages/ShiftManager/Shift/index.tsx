@@ -24,7 +24,9 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import SemesterDropdown from 'components/SemesterDropdown';
 import ShiftDetailDialog from 'components/ShiftDetailDialog';
-import ShiftConfig from 'configs/constants/shiftConfig.status';
+import ShiftConfig, {
+  notAllowEditShiftStatuses,
+} from 'configs/constants/shiftConfig.status';
 import { format } from 'date-fns';
 import ShiftStatus from 'enums/shiftStatus.enum';
 import { deleteShift, getShifts } from 'features/shift/shiftSlice';
@@ -34,13 +36,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 const ShiftPage = () => {
-  const isAllowEditStatuses = new Set([
-    ShiftStatus.Ongoing,
-    ShiftStatus.Locked,
-    ShiftStatus.Removed,
-    ShiftStatus.Finished,
-    ShiftStatus.Staffing,
-  ]);
   const DEFAULT_PAGE_SIZE = 20;
   const history = useHistory();
   const { url } = useRouteMatch();
@@ -190,7 +185,7 @@ const ShiftPage = () => {
             onClick={() => showDeleteConfirmation(params)}
           />,
         ];
-        if (isAllowEditStatuses.has(status)) deleteItems.splice(1, 2);
+        if (notAllowEditShiftStatuses.has(status)) deleteItems.splice(1, 2);
         return deleteItems;
       },
     },

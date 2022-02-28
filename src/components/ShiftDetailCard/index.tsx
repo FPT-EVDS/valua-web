@@ -17,9 +17,11 @@ import {
   Typography,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useAppDispatch } from 'app/hooks';
 import SemesterDropdown from 'components/SemesterDropdown';
-import ShiftConfig from 'configs/constants/shiftConfig.status';
+import ShiftConfig, {
+  notAllowEditShiftStatuses,
+} from 'configs/constants/shiftConfig.status';
 import { shiftSchema } from 'configs/validations';
 import { format } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
@@ -45,13 +47,6 @@ interface Props {
 }
 
 const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
-  const isNotAllowEditStatuses = [
-    ShiftStatus.Ongoing,
-    ShiftStatus.Locked,
-    ShiftStatus.Removed,
-    ShiftStatus.Finished,
-    ShiftStatus.Staffing,
-  ];
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
@@ -153,7 +148,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           </Typography>
         }
         action={
-          !isNotAllowEditStatuses.includes(shift.status) && (
+          !notAllowEditShiftStatuses.has(shift.status) && (
             <IconButton onClick={() => setIsEditable(prevState => !prevState)}>
               {isEditable ? (
                 <EditOff sx={{ fontSize: 20 }} />
@@ -266,7 +261,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           ) : (
             <Stack spacing={2}>
               <Stack spacing={2} direction="row">
-                {shift.status === ShiftStatus.Finished ? (
+                {shift.status === ShiftStatus.Finished && (
                   <Button
                     variant="contained"
                     sx={{
@@ -283,7 +278,8 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
                   >
                     Export attendance
                   </Button>
-                ) : (
+                )}
+                {!notAllowEditShiftStatuses.has(shift.status) && (
                   <>
                     <Button
                       disabled={!isEditable}

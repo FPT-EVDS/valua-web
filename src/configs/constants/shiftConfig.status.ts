@@ -6,7 +6,6 @@ import {
   orange,
   pink,
   red,
-  teal,
 } from '@mui/material/colors';
 import ShiftStatus from 'enums/shiftStatus.enum';
 
@@ -53,4 +52,22 @@ const ShiftConfig = [
   },
 ];
 
+const notAllowEditShiftStatuses = new Set([
+  ShiftStatus.Ongoing,
+  ShiftStatus.Locked,
+  ShiftStatus.Removed,
+  ShiftStatus.Finished,
+  ShiftStatus.Staffing,
+]);
+
+const notAllowedEditExamRoomStatuses = new Set([
+  ShiftStatus.Ongoing,
+  ShiftStatus.Locked,
+  ShiftStatus.Removed,
+  ShiftStatus.Finished,
+  ShiftStatus.Staffing,
+]);
+
 export default ShiftConfig;
+
+export { notAllowedEditExamRoomStatuses, notAllowEditShiftStatuses };
