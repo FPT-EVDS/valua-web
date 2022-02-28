@@ -111,13 +111,14 @@ export const detailShiftSlice = createSlice({
       })
       .addCase(startStaffing.fulfilled, (state, action) => {
         // eslint-disable-next-line prefer-destructuring
-        state.shift = action.payload[0];
+        if (state.shift) state.shift.status = action.payload[0].status;
         state.error = '';
         state.isLoading = false;
       })
       .addCase(lockShift.fulfilled, (state, action) => {
         // eslint-disable-next-line prefer-destructuring
-        state.shift = action.payload.lockedShifts[0];
+        if (state.shift)
+          state.shift.status = action.payload.lockedShifts[0].status;
         state.error = '';
         state.isLoading = false;
       })
