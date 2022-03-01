@@ -18,16 +18,11 @@ const subjectExamineesServices = {
     const url = `/subjectExaminees`;
     return axiosClient.post(url, payload);
   },
-  searchBySemester: ({
-    page,
-    semesterId,
-    size,
-    sort,
-  }: SearchParams & { semesterId: string }): Promise<
-    AxiosResponse<ExamineeSubject>
-  > => {
+  searchBySemester: (
+    payload: SearchParams & { semesterId: string; isReady?: number },
+  ): Promise<AxiosResponse<ExamineeSubject>> => {
     const url = '/subjectExaminees';
-    return axiosClient.get(url, { params: { page, semesterId, size, sort } });
+    return axiosClient.get(url, { params: { ...payload } });
   },
   getDetail: (
     payload: SearchSubjectExamineeParams,

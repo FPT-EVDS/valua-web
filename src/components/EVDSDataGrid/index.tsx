@@ -122,7 +122,9 @@ const EVDSDataGridHeader = ({
         <Typography variant="h5" component="div" sx={{ marginRight: 2 }}>
           {title}
         </Typography>
-        <Box sx={{ width: 200 }}>{leftActions}</Box>
+        <Box sx={{ width: 200, alignItems: 'center', display: 'flex' }}>
+          {leftActions}
+        </Box>
       </Grid>
       <Grid item>
         <Grid container spacing={spacing} alignItems="center">
