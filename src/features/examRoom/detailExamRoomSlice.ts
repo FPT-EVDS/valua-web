@@ -5,10 +5,11 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import DetailExamSeat from 'dtos/detailExamSeat.dto';
+import AddAttendanceDto from 'dtos/addAttendance.dto';
 import UpdateExamRoomDto from 'dtos/updateExamRoom.dto';
 import DetailExamRoom from 'models/detailExamRoom.model';
 import Shift from 'models/shift.model';
+import attendanceServices from 'services/attendance.service';
 import examRoomServices from 'services/examRoom.service';
 import shiftServices from 'services/shift.service';
 
@@ -58,11 +59,11 @@ export const updateExamRoom = createAsyncThunk(
   },
 );
 
-export const removeExamSeat = createAsyncThunk(
-  'detailExamRoom/removeExamSeat',
-  async (payload: DetailExamSeat, { rejectWithValue }) => {
+export const removeAttendance = createAsyncThunk(
+  'detailExamRoom/removeAttendance',
+  async (payload: string, { rejectWithValue }) => {
     try {
-      const response = await examRoomServices.removeSeatFromExamRoom(payload);
+      const response = await attendanceServices.removeAttendance(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -71,11 +72,11 @@ export const removeExamSeat = createAsyncThunk(
   },
 );
 
-export const addExamSeat = createAsyncThunk(
-  'detailExamRoom/addExamSeat',
-  async (payload: DetailExamSeat, { rejectWithValue }) => {
+export const addAttendance = createAsyncThunk(
+  'detailExamRoom/addAttendance',
+  async (payload: AddAttendanceDto, { rejectWithValue }) => {
     try {
-      const response = await examRoomServices.addNewSeatToExamRoom(payload);
+      const response = await attendanceServices.addAttendance(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -116,7 +117,7 @@ export const detailExamRoomSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(addExamSeat.fulfilled, (state, action) => {
+      .addCase(addAttendance.fulfilled, (state, action) => {
         state.examRoom?.attendances.push(action.payload);
         if (state.examRoom)
           state.examRoom.attendances = state.examRoom?.attendances.sort(
@@ -125,17 +126,18 @@ export const detailExamRoomSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(removeExamSeat.fulfilled, (state, action) => {
+      .addCase(removeAttendance.fulfilled, (state, action) => {
         if (state.examRoom) {
           const { attendances } = state.examRoom;
           state.examRoom.attendances = attendances.filter(
-            seat => seat.examSeatId !== action.meta.arg.examSeatId,
+            seat => seat.attendanceId !== action.meta.arg,
           );
         }
         state.error = '';
         state.isLoading = false;
       })
       .addCase(deleteExamRoom.fulfilled, (state, action) => {
+        if (state.examRoom) state.examRoom.status = action.payload.status;
         state.error = '';
         state.isLoading = false;
       })
@@ -157,8 +159,8 @@ export const detailExamRoomSlice = createSlice({
           getDetailExamRoom.rejected,
           updateExamRoom.rejected,
           getShift.rejected,
-          addExamSeat.rejected,
-          removeExamSeat.rejected,
+          addAttendance.rejected,
+          removeAttendance.rejected,
           deleteExamRoom.rejected,
         ),
         (state, action: PayloadAction<string>) => {
@@ -171,8 +173,8 @@ export const detailExamRoomSlice = createSlice({
           getDetailExamRoom.pending,
           updateExamRoom.pending,
           getShift.pending,
-          addExamSeat.pending,
-          removeExamSeat.pending,
+          addAttendance.pending,
+          removeAttendance.pending,
           deleteExamRoom.pending,
         ),
         state => {

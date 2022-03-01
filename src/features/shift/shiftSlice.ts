@@ -89,6 +89,32 @@ export const getShiftOverview = createAsyncThunk(
   },
 );
 
+export const startStaffing = createAsyncThunk(
+  'shifts/staffing',
+  async (payload: Pick<Shift, 'shiftId'>[], { rejectWithValue }) => {
+    try {
+      const response = await shiftServices.startStaffing(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const lockShifts = createAsyncThunk(
+  'shifts/locking',
+  async (payload: Pick<Shift, 'shiftId'>[], { rejectWithValue }) => {
+    try {
+      const response = await shiftServices.lockShifts(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: ShiftsState = {
   isLoading: false,
@@ -146,6 +172,30 @@ export const shiftSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(startStaffing.fulfilled, (state, action) => {
+        action.payload.forEach(updatedShift => {
+          const index = state.current.shifts.findIndex(
+            shift => shift.shiftId === updatedShift.shiftId,
+          );
+          if (index > -1) {
+            state.current.shifts[index].status = updatedShift.status;
+          }
+        });
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(lockShifts.fulfilled, (state, action) => {
+        action.payload.lockedShifts.forEach(lockShift => {
+          const index = state.current.shifts.findIndex(
+            shift => shift.shiftId === lockShift.shiftId,
+          );
+          if (index > -1) {
+            state.current.shifts[index].status = lockShift.status;
+          }
+        });
+        state.error = '';
+        state.isLoading = false;
+      })
       .addCase(getShiftOverview.rejected, (state, action) => {
         state.shift.error = String(action.payload);
         state.shift.isLoading = false;
@@ -160,6 +210,8 @@ export const shiftSlice = createSlice({
           updateShift.rejected,
           deleteShift.rejected,
           getShifts.rejected,
+          startStaffing.rejected,
+          lockShifts.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;

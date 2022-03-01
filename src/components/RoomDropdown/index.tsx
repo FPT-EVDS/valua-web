@@ -69,7 +69,6 @@ const RoomDropdown = ({
           {...params}
           label="Exam room"
           name="examRoom"
-          autoFocus
           margin="dense"
           fullWidth
           error={error}

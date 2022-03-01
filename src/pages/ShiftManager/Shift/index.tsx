@@ -22,8 +22,10 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ButtonMenu, { ButtonMenuItemProps } from 'components/ButtonMenu';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
+import LockShiftsDialog from 'components/LockShiftsDialog';
 import SemesterDropdown from 'components/SemesterDropdown';
 import ShiftDetailDialog from 'components/ShiftDetailDialog';
+import StaffingDialog from 'components/StaffingDialog';
 import ShiftConfig, {
   notAllowEditShiftStatuses,
 } from 'configs/constants/shiftConfig.status';
@@ -49,6 +51,8 @@ const ShiftPage = () => {
       handleAccept: () => null,
     });
   const [open, setOpen] = useState(false);
+  const [openStaffing, setOpenStaffing] = useState(false);
+  const [openLock, setOpenLock] = useState(false);
   const [page, setPage] = useState(0);
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
@@ -203,12 +207,16 @@ const ShiftPage = () => {
       {
         label: 'Start staffing',
         icon: <PlayArrow />,
-        handleItemClick: () => {},
+        handleItemClick: () => {
+          setOpenStaffing(true);
+        },
       },
       {
         label: 'Lock all',
         icon: <Lock />,
-        handleItemClick: () => {},
+        handleItemClick: () => {
+          setOpenLock(true);
+        },
       },
     ];
     return (
@@ -288,6 +296,14 @@ const ShiftPage = () => {
     <div>
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <ShiftDetailDialog open={open} handleClose={() => setOpen(false)} />
+      <StaffingDialog
+        open={openStaffing}
+        handleClose={() => setOpenStaffing(false)}
+      />
+      <LockShiftsDialog
+        open={openLock}
+        handleClose={() => setOpenLock(false)}
+      />
       <EVDSDataGrid
         pagination
         paginationMode="server"

@@ -175,40 +175,11 @@ const DetailExamRoomPage = () => {
               </Stack>
             </Grid>
             <Grid item xs={12} lg={8}>
-              <Stack spacing={3}>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Box
-                    display="flex"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      sx={{ marginRight: 1 }}
-                    >
-                      Exam seat list
-                    </Typography>
-                  </Box>
-                  {!notAllowedEditExamRoomStatuses.has(shift.status) && (
-                    <Button
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() => setOpen(true)}
-                    >
-                      Add examinee
-                    </Button>
-                  )}
-                </Stack>
-                <ExamSeatTable
-                  data={examRoom.attendances}
-                  hideActions={notAllowedEditExamRoomStatuses.has(shift.status)}
-                />
-              </Stack>
+              <ExamSeatTable
+                data={examRoom.attendances}
+                hideActions={notAllowedEditExamRoomStatuses.has(shift.status)}
+                onActionButtonClick={() => setOpen(true)}
+              />
             </Grid>
           </>
         )}

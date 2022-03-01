@@ -4,7 +4,6 @@ import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import AvailableRoomsDto from 'dtos/availableRooms.dto';
 import AvailableStaffDto from 'dtos/availableStaff.dto';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
-import DetailExamSeat from 'dtos/detailExamSeat.dto';
 import DisableExamRoom from 'dtos/disableExamRoom.dto';
 import ExamRoomsDto from 'dtos/examRooms.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
@@ -13,7 +12,6 @@ import SearchExamRoomsDto from 'dtos/searchExamRooms.dto';
 import UpdateExamRoomDto from 'dtos/updateExamRoom.dto';
 import DetailExamRoom from 'models/detailExamRoom.model';
 import ExamRoom from 'models/examRoom.model';
-import ExamSeat from 'models/examSeat.model';
 
 import axiosClient from './axiosClient';
 
@@ -96,19 +94,6 @@ const examRoomServices = {
         value: 0,
       },
     ]);
-  },
-  addNewSeatToExamRoom: (
-    payload: DetailExamSeat,
-  ): Promise<AxiosResponse<ExamSeat>> => {
-    const url = '/attendances';
-    return axiosClient.post(url, payload);
-  },
-  removeSeatFromExamRoom: ({
-    examSeatId,
-    ...otherPayload
-  }: DetailExamSeat): Promise<AxiosResponse<ExamSeat>> => {
-    const url = `/attendance/${String(examSeatId)}`;
-    return axiosClient.patch(url, otherPayload);
   },
 };
 
