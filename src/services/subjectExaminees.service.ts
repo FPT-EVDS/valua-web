@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import AddedExamineeSubject from 'dtos/addedExamineeSubject.dto';
 import DetailSubjectExamineeDto from 'dtos/detailSubjectExaminee';
 import ExamineeSubject from 'dtos/examineeSubject.dto';
+import ImportExcelDto from 'dtos/importExcel.dto';
 import RemoveSubjectExamineeDto from 'dtos/removeExaminee.dto';
 import SearchParams from 'dtos/searchParams.dto';
 import { SearchSubjectExamineeParams } from 'dtos/searchSubjectExamineeParams.dto';
@@ -17,6 +18,23 @@ const subjectExamineesServices = {
   ): Promise<AxiosResponse<AddedExamineeSubject[]>> => {
     const url = `/subjectExaminees`;
     return axiosClient.post(url, payload);
+  },
+  import: (payload: FormData): Promise<AxiosResponse<ImportExcelDto[]>> => {
+    const url = '/subjectExaminees/import';
+    return axiosClient.post(url, payload, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  downloadFailedImportFile: (path: string): Promise<AxiosResponse> => {
+    const url = `/${path}`;
+    return axiosClient.get(url, {
+      responseType: 'blob',
+      headers: {
+        Accept: '*/*',
+      },
+    });
   },
   searchBySemester: (
     payload: SearchParams & { semesterId: string; isReady?: number },

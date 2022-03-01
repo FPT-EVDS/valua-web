@@ -44,7 +44,6 @@ import {
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
-import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 
 interface RemoveExamineeDialogProps {
@@ -260,9 +259,8 @@ const DetailExamineePage = () => {
         );
       },
     },
-    { field: 'companyId', headerName: 'ID', flex: 0.1, minWidth: 130 },
-    { field: 'fullName', headerName: 'Full name', flex: 0.2, minWidth: 250 },
-    { field: 'email', headerName: 'Email', flex: 0.2, minWidth: 250 },
+    { field: 'companyId', headerName: 'ID', flex: 0.06, minWidth: 80 },
+    { field: 'fullName', headerName: 'Full name', flex: 0.1, minWidth: 200 },
     {
       field: 'phoneNumber',
       headerName: 'Phone number',
@@ -400,6 +398,7 @@ const DetailExamineePage = () => {
           {examineeSubject && (
             <EVDSDataGrid
               pagination
+              paginationMode="server"
               rowHeight={60}
               rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
               pageSize={DEFAULT_PAGE_SIZE}

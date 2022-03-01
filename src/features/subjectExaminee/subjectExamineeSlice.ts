@@ -47,6 +47,19 @@ export const addExaminees = createAsyncThunk(
   },
 );
 
+export const importExaminees = createAsyncThunk(
+  'subjectExaminee/import',
+  async (payload: FormData, { rejectWithValue }) => {
+    try {
+      const response = await subjectExamineesServices.import(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: SubjectsState = {
   isLoading: false,
@@ -78,6 +91,10 @@ export const subjectExamineeSlice = createSlice({
     builder
       .addCase(searchSubjectBySemester.fulfilled, (state, action) => {
         state.current = action.payload;
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(importExaminees.fulfilled, (state, action) => {
         state.error = '';
         state.isLoading = false;
       })
