@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import DisableToolDto from 'dtos/disableTool.dto';
 import SearchByNameDto from 'dtos/searchByName.dto';
 import ToolDto from 'dtos/tool.dto';
+import ToolOverviewDto from 'dtos/toolOverview.dto';
 import ToolsDto from 'dtos/tools.dto';
 import Tool from 'models/tool.model';
 
@@ -57,6 +58,10 @@ const toolServices = {
         size,
       },
     });
+  },
+  getToolOverview: (): Promise<AxiosResponse<ToolOverviewDto>> => {
+    const url = '/tools/overview';
+    return axiosClient.get(url);
   },
 };
 

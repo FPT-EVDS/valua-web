@@ -132,8 +132,22 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
     setFiles([]);
   };
 
-  const handleCloseModal = () => {
+  const deleteImportFiles = async () => {
+    const fileNames: string[] = importResults
+      .filter(result => result.fileUrl)
+      .map(item => String(item.fileName));
+    if (fileNames.length > 0) {
+      try {
+        await subjectExamineesServices.deleteFailedImportFile(fileNames);
+      } catch (error) {
+        showErrorMessage(error);
+      }
+    }
+  };
+
+  const handleCloseModal = async () => {
     resetModal();
+    await deleteImportFiles();
     handleClose();
   };
 

@@ -88,7 +88,7 @@ const ReportPage = () => {
       minWidth: 220,
       valueFormatter: (params: GridValueFormatterParams) => {
         const examRoom = params.value as ExamRoom;
-        return examRoom.examRoomName;
+        return examRoom.room.roomName;
       },
     },
     {

@@ -265,7 +265,10 @@ const ShiftDetailDialog: React.FC<Props> = ({
                   <LoadingButton
                     type="submit"
                     variant="contained"
-                    onClick={() => formik.handleSubmit()}
+                    onClick={e => {
+                      e.preventDefault();
+                      formik.handleSubmit();
+                    }}
                     sx={{ width: 150 }}
                     loading={isLoading}
                   >

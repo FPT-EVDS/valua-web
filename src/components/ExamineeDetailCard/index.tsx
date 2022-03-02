@@ -4,6 +4,7 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  InputAdornment,
   TextField,
   Typography,
 } from '@mui/material';
@@ -45,6 +46,21 @@ const ExamineeDetailCard = ({ examineeSubject }: Props) => (
               label="Subject"
               fullWidth
               value={examineeSubject.subject.subjectName}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Number of exams"
+              fullWidth
+              value={examineeSubject.subject.numberOfExam}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">exams</InputAdornment>
+                ),
+              }}
               InputLabelProps={{
                 shrink: true,
               }}

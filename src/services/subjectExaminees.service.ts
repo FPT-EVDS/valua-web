@@ -36,6 +36,12 @@ const subjectExamineesServices = {
       },
     });
   },
+  deleteFailedImportFile: (fileNames: string[]): Promise<AxiosResponse> => {
+    const url = '/subjectExaminees/failedImports/delete';
+    return axiosClient.post(url, {
+      fileNames,
+    });
+  },
   searchBySemester: (
     payload: SearchParams & { semesterId: string; isReady?: number },
   ): Promise<AxiosResponse<ExamineeSubject>> => {

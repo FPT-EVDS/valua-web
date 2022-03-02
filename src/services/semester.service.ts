@@ -5,6 +5,7 @@ import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto
 import SearchByDateDto from 'dtos/searchByDate.dto';
 import SearchSemesterParamsDto from 'dtos/searchSemesterParams.dto';
 import SemesterDto from 'dtos/semester.dto';
+import SemesterOverviewDto from 'dtos/semesterOverview.dto';
 import SemestersDto from 'dtos/semesters.dto';
 import Semester from 'models/semester.model';
 
@@ -90,6 +91,10 @@ const semesterServices = {
     const { semesterId, subjectId } = payload;
     const url = `/semesters/${semesterId}/removeSubjects`;
     return axiosClient.patch(url, { subjectId });
+  },
+  getSemesterOverview: (): Promise<AxiosResponse<SemesterOverviewDto>> => {
+    const url = '/semesters/overview';
+    return axiosClient.get(url);
   },
 };
 
