@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import AccountOverview from 'dtos/accountOverview.dto';
+import AccountOverviewDto from 'dtos/accountOverview.dto';
 import AccountsDto from 'dtos/accounts.dto';
 import AppUserDto from 'dtos/appUser.dto';
 import AppUserDtoStatus from 'dtos/appUserDtoStatus';
@@ -73,7 +73,7 @@ const accountServices = {
     const url = `/accounts/reset/${accountId}`;
     return axiosClient.post(url);
   },
-  getAccountOverview: (): Promise<AxiosResponse<AccountOverview>> => {
+  getAccountOverview: (): Promise<AxiosResponse<AccountOverviewDto>> => {
     const url = '/accounts/overview';
     return axiosClient.get(url);
   },

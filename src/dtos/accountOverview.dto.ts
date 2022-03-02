@@ -1,4 +1,4 @@
-export default interface AccountOverview {
+export default interface AccountOverviewDto {
   totalAccount: number;
   totalExaminee: number;
   totalStaff: number;

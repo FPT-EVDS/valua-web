@@ -3,14 +3,11 @@ import { Box, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { ReactComponent as Empty } from 'assets/images/empty.svg';
 import LoadingIndicator from 'components/LoadingIndicator';
-import { format } from 'date-fns';
-import ReportOfWeek from 'dtos/reportOfWeek.dto';
 import React from 'react';
 import {
   Bar,
   BarChart,
   CartesianGrid,
-  Label,
   Legend,
   ResponsiveContainer,
   Tooltip,
@@ -20,16 +17,12 @@ import {
 
 interface Props {
   isLoading?: boolean;
-  data?: ReportOfWeek[] | null;
+  data?: { [key: string]: number } | null;
 }
 
-const ReportChart = ({ data, isLoading = false }: Props) => {
+const AccountBarChart = ({ data, isLoading = false }: Props) => {
   const chartData = data
-    ? data.map(report => ({
-        name: format(new Date(report.date), 'dd/MM'),
-        vr: report.violationReports,
-        ir: report.incidentReports,
-      }))
+    ? Object.entries(data).map(([key, value]) => ({ name: key, value }))
     : [];
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
@@ -43,8 +36,7 @@ const ReportChart = ({ data, isLoading = false }: Props) => {
             <YAxis allowDecimals={false} />
             <Tooltip />
             <Legend />
-            <Bar dataKey="vr" name="Violation report" fill="#47B881" />
-            <Bar dataKey="ir" name="Incident report" fill="#1890FF" />
+            <Bar dataKey="value" name="Total accounts" fill="#1890ff" />
           </BarChart>
         ) : (
           <Box
@@ -64,4 +56,4 @@ const ReportChart = ({ data, isLoading = false }: Props) => {
   );
 };
 
-export default ReportChart;
+export default AccountBarChart;
