@@ -13,7 +13,7 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { AxiosError } from 'axios';
-import SemesterSubjectsDropdown from 'components/SemesterSubjectDropdown';
+import SubjectExamineeSemesterDropdown from 'components/SubjectExamineeSemesterDropdown';
 import { addExamRoomSchema } from 'configs/validations';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
@@ -119,7 +119,7 @@ const GetAvailableExamRoomsCard = ({
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <SemesterSubjectsDropdown
+              <SubjectExamineeSemesterDropdown
                 semesterId={shift?.semester.semesterId}
                 helperText={formik.errors.subjectId}
                 error={Boolean(formik.errors.subjectId)}

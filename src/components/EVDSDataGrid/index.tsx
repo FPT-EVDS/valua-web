@@ -147,7 +147,12 @@ const EVDSDataGridHeader = ({
             </Grid>
           )}
           {hasFilter && (
-            <Grid item alignItems="stretch" display="flex">
+            <Grid
+              item
+              alignItems="stretch"
+              display="flex"
+              mr={hasSearch ? 0 : 2}
+            >
               <Button
                 variant="outlined"
                 startIcon={<FilterAlt />}
@@ -173,9 +178,11 @@ const EVDSDataGridHeader = ({
               </StyledMenu>
             </Grid>
           )}
-          <Grid item alignItems="stretch" display="flex">
-            {addButton}
-          </Grid>
+          {addButton && (
+            <Grid item alignItems="stretch" display="flex">
+              {addButton}
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </Grid>

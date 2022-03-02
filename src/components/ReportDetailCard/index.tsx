@@ -1,17 +1,23 @@
 import { LoadingButton } from '@mui/lab';
 import {
+  Avatar,
   Box,
   Card,
   CardActions,
   CardContent,
   CardHeader,
   Grid,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import { resolveReportSchema } from 'configs/validations';
+import ReportType from 'enums/reportType.enum';
 import { resolveReport } from 'features/report/detailReportSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
@@ -123,6 +129,27 @@ const ReportDetailCard = ({ report, isLoading }: DetailReportCardProps) => {
                 helperText={formik.touched.solution && formik.errors.solution}
                 onChange={formik.handleChange}
               />
+            </Grid>
+            <Grid item xs={12}>
+              {report.reportType === ReportType.Violation && (
+                <Stack>
+                  <Typography color="text.secondary">
+                    Reported examinee:
+                  </Typography>
+                  <ListItem disableGutters disablePadding>
+                    <ListItemAvatar>
+                      <Avatar
+                        src={String(report.reportedUser?.imageUrl)}
+                        alt={report.reportedUser?.fullName}
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={report.reportedUser?.fullName}
+                      secondary={report.reportedUser?.companyId}
+                    />
+                  </ListItem>
+                </Stack>
+              )}
             </Grid>
           </Grid>
         </CardContent>

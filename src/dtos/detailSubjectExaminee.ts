@@ -9,7 +9,10 @@ export default interface DetailSubjectExamineeDto
   extends SearchParams,
     PagingDto {
   totalUnassignedExaminees: number;
-  subject: Pick<Subject, 'subjectId' | 'subjectCode' | 'subjectName'>;
+  subject: Pick<
+    Subject,
+    'subjectId' | 'subjectCode' | 'subjectName' | 'numberOfExam'
+  >;
   semester: Pick<Semester, 'semesterId' | 'semesterName'>;
   examinees: Array<SubjectExaminee>;
 }

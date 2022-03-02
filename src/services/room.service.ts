@@ -1,6 +1,7 @@
 import { AxiosResponse } from 'axios';
 import DisableRoomDto from 'dtos/disableRoom.dto';
 import RoomDto from 'dtos/room.dto';
+import RoomOverviewDto from 'dtos/roomOverview.dto';
 import RoomsDto from 'dtos/rooms.dto';
 import SearchByNameDto from 'dtos/searchByName.dto';
 import Room from 'models/room.model';
@@ -53,6 +54,10 @@ const roomServices = {
         sort,
       },
     });
+  },
+  getRoomOverview: (): Promise<AxiosResponse<RoomOverviewDto>> => {
+    const url = '/rooms/overview';
+    return axiosClient.get(url);
   },
 };
 

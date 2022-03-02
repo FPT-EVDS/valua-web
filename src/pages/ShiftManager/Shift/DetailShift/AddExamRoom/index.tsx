@@ -1,6 +1,5 @@
-import { Add, Info } from '@mui/icons-material';
-import { Box, Button, Grid, Stack, Typography, useTheme } from '@mui/material';
-import { red } from '@mui/material/colors';
+import { Info } from '@mui/icons-material';
+import { Alert, Grid, Stack, Typography, useTheme } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AvailableRoomTable from 'components/AvailableRoomTable';
@@ -166,7 +165,7 @@ const AddExamRoomPage = () => {
               examRooms &&
               examRooms.availableRooms.length > 0 && (
                 <>
-                  <Stack direction="row" alignItems="center">
+                  <Stack spacing={2}>
                     <Typography
                       variant="h6"
                       component="div"
@@ -175,12 +174,9 @@ const AddExamRoomPage = () => {
                       Room list
                     </Typography>
                     {examinees && examinees.totalExaminees > 0 && (
-                      <CustomTooltip
-                        title={`There are ${examinees.totalExaminees} examinees left unassigned`}
-                        color={red[500]}
-                      >
-                        <Info color="error" />
-                      </CustomTooltip>
+                      <Alert severity="error">
+                        {`There are ${examinees.totalExaminees} examinees left unassigned`}
+                      </Alert>
                     )}
                   </Stack>
                   <AvailableRoomTable
@@ -197,63 +193,37 @@ const AddExamRoomPage = () => {
           </Stack>
         </Grid>
         <Grid item xs={12} lg={8}>
-          <Stack spacing={3}>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              {!isLoading &&
-                examRooms?.availableRooms[selectedIndex] &&
-                selectedIndex > -1 &&
-                listExamineesByRoom && (
-                  <>
-                    <ExamineeTransferListDialog
-                      handleClose={() => setIsOpen(false)}
-                      listExamineeByRoom={listExamineesByRoom}
-                      roomName={
-                        examRooms.availableRooms[selectedIndex].roomName
-                      }
-                      handleListExamineeByRoom={setListExamineesByRoom}
-                      selectedIndex={selectedIndex}
-                      open={isOpen}
-                    />
-                    <Box
-                      display="flex"
-                      justifyContent="flex-start"
-                      alignItems="center"
-                    >
-                      <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{ marginRight: 1 }}
+          {!isLoading &&
+            selectedIndex > -1 &&
+            examRooms?.availableRooms[selectedIndex] &&
+            listExamineesByRoom && (
+              <>
+                <ExamineeTransferListDialog
+                  handleClose={() => setIsOpen(false)}
+                  listExamineeByRoom={listExamineesByRoom}
+                  roomName={examRooms.availableRooms[selectedIndex].roomName}
+                  handleListExamineeByRoom={setListExamineesByRoom}
+                  selectedIndex={selectedIndex}
+                  open={isOpen}
+                />
+                <ExamineeTable
+                  title={examRooms.availableRooms[selectedIndex].roomName}
+                  data={listExamineesByRoom[selectedIndex]}
+                  leftActions={
+                    listExamineesByRoom[selectedIndex].length !==
+                      defaultExamRoomSize && (
+                      <CustomTooltip
+                        title={`Recommend room size is ${defaultExamRoomSize}`}
+                        color={theme.palette.warning.main}
                       >
-                        {examRooms.availableRooms[selectedIndex].roomName}
-                      </Typography>
-                      {listExamineesByRoom[selectedIndex].length !==
-                        defaultExamRoomSize && (
-                        <CustomTooltip
-                          title={`Recommend room size is ${defaultExamRoomSize}`}
-                          color={theme.palette.warning.main}
-                        >
-                          <Info color="warning" />
-                        </CustomTooltip>
-                      )}
-                    </Box>
-                    <Button
-                      variant="contained"
-                      startIcon={<Add />}
-                      onClick={() => setIsOpen(true)}
-                    >
-                      Add examinee
-                    </Button>
-                  </>
-                )}
-            </Stack>
-            {!isLoading && selectedIndex > -1 && listExamineesByRoom && (
-              <ExamineeTable data={listExamineesByRoom[selectedIndex]} />
+                        <Info color="warning" />
+                      </CustomTooltip>
+                    )
+                  }
+                  onActionButtonClick={() => setIsOpen(true)}
+                />
+              </>
             )}
-          </Stack>
         </Grid>
       </Grid>
     </div>

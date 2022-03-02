@@ -14,8 +14,8 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ExamineeDropdown from 'components/ExamineeDropdown';
 import SlideTransition from 'components/SlideTransition';
-import DetailExamSeat from 'dtos/detailExamSeat.dto';
-import { addExamSeat } from 'features/examRoom/detailExamRoomSlice';
+import AddAttendanceDto from 'dtos/addAttendance.dto';
+import { addAttendance } from 'features/examRoom/detailExamRoomSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Examinee from 'models/examinee.model';
@@ -46,12 +46,12 @@ const AddExamineeSeatDialog: React.FC<Props> = ({
         appUserId: '',
       },
     },
-    onSubmit: async (payload: DetailExamSeat) => {
+    onSubmit: async (payload: AddAttendanceDto) => {
       try {
-        const result = await dispatch(addExamSeat(payload));
-        const examSeat = unwrapResult(result);
+        const result = await dispatch(addAttendance(payload));
+        const attendance = unwrapResult(result);
         showSuccessMessage(
-          `${examSeat.examinee.fullName} has been successfully added to this exam room`,
+          `${attendance.examinee.fullName} has been successfully added to this exam room`,
         );
         formik.resetForm();
         setCurrentExaminee(null);

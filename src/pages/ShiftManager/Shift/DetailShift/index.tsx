@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 import { Add, FiberManualRecord } from '@mui/icons-material';
 import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material';
-import { green, grey, red } from '@mui/material/colors';
+import { green, grey, orange, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
   GridActionsColDef,
@@ -17,6 +17,7 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import NotFoundItem from 'components/NotFoundItem';
 import ShiftDetailCard from 'components/ShiftDetailCard';
+import { notAllowEditShiftStatuses } from 'configs/constants/shiftConfig.status';
 import ExamRoomStatus from 'enums/examRoomStatus.enum';
 import { deleteExamRoom, getExamRooms } from 'features/examRoom/examRoomSlice';
 import { deleteShift, getShift } from 'features/shift/detailShiftSlice';
@@ -45,7 +46,7 @@ const DetailShiftPage = () => {
     current: { totalItems, examRooms },
     isLoading: isExamRoomLoading,
   } = useAppSelector(state => state.examRoom);
-  const rows: GridRowModel[] = examRooms.map((examRoom, index) => ({
+  const rows: GridRowModel[] = examRooms.map(examRoom => ({
     ...examRoom,
     id: examRoom.examRoomId,
   }));
@@ -177,15 +178,17 @@ const DetailShiftPage = () => {
       sortable: false,
       filterable: false,
       headerName: 'Room name',
-      flex: 0.2,
+      minWidth: 180,
+      flex: 0.1,
     },
     {
       field: 'subject',
       sortable: false,
       filterable: false,
       headerName: 'Subject',
-      flex: 0.2,
-      valueFormatter: ({ value }) => (value as unknown as Subject).subjectName,
+      minWidth: 100,
+      flex: 0.1,
+      valueFormatter: ({ value }) => (value as unknown as Subject).subjectCode,
     },
     {
       field: 'room',
@@ -201,12 +204,13 @@ const DetailShiftPage = () => {
       filterable: false,
       headerName: 'Staff',
       flex: 0.1,
+      minWidth: 120,
       renderCell: ({ getValue, id: rowId, field }) => {
         const staff = getValue(rowId, field) as Account | null;
         return (
           <>
             {staff ? (
-              <Stack direction="row" spacing={2} alignItems="center">
+              <Stack direction="row" spacing={1} alignItems="center">
                 <Avatar
                   alt={`${staff.fullName}`}
                   src={String(staff.imageUrl)}
@@ -225,19 +229,19 @@ const DetailShiftPage = () => {
       field: 'status',
       headerName: 'Status',
       flex: 0.1,
-      minWidth: 130,
+      minWidth: 90,
       renderCell: ({ getValue, id: rowId, field }) => {
         const status = getValue(rowId, field);
         let color = grey[500].toString();
         let statusText = 'Unknown';
         switch (status) {
           case ExamRoomStatus.Disabled:
-            color = grey[500];
+            color = red[500];
             statusText = 'Disabled';
             break;
 
           case ExamRoomStatus.NotReady:
-            color = red[500];
+            color = orange[400];
             statusText = 'Not ready';
             break;
 
@@ -303,6 +307,9 @@ const DetailShiftPage = () => {
         ];
         if (staff) deleteItems.shift();
         if (status === ExamRoomStatus.Disabled) deleteItems.pop();
+        if (shift?.status && notAllowEditShiftStatuses.has(shift.status)) {
+          deleteItems.splice(1, 2);
+        }
         return deleteItems;
       },
     },
@@ -348,7 +355,9 @@ const DetailShiftPage = () => {
               rows={rows}
               page={page}
               onPageChange={newPage => setPage(newPage)}
-              addButton={<AddButton />}
+              addButton={
+                !notAllowEditShiftStatuses.has(shift.status) && <AddButton />
+              }
             />
           </Grid>
         </Grid>

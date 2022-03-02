@@ -99,7 +99,6 @@ const StaffDropdown = ({
           {...params}
           label="Assigned Staff"
           name="staff"
-          autoFocus
           margin="dense"
           error={error}
           helperText={error && helperText}

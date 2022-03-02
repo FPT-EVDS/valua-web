@@ -22,7 +22,7 @@ export default interface Report {
     | 'phoneNumber'
     | 'imageUrl'
     | 'companyId'
-  >;
+  > | null;
   examRoom: ExamRoom;
   solution?: string;
   reportType: ReportType;

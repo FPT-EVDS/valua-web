@@ -1,6 +1,6 @@
 enum ReportType {
-  'Regulation' = 1,
-  'Incident' = 2,
+  'Incident' = 1,
+  'Violation' = 2,
 }
 
 export default ReportType;

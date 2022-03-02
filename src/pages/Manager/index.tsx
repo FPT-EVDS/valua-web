@@ -13,7 +13,7 @@ import {
   SupervisorAccount,
   SupervisorAccountOutlined,
 } from '@mui/icons-material';
-import { AppBar, Box, IconButton, Toolbar } from '@mui/material';
+import { AppBar, Box, Container, IconButton, Toolbar } from '@mui/material';
 import { useAppSelector } from 'app/hooks';
 import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
@@ -115,21 +115,29 @@ const ManagerDashboard = (): JSX.Element => {
         handleDrawerToggle={handleDrawerToggle}
         mobileOpen={mobileOpen}
       />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, height: '100vh', overflow: 'auto' }}
+      >
         <Toolbar />
-        <Switch>
-          <Route path="/manager/dashboard" component={Dashboard} exact />
-          <Route path="/manager/account" component={AccountPage} exact />
-          <Route path="/manager/account/:id" component={DetailAccountPage} />
-          <Route path="/manager/room" component={RoomPage} exact />
-          <Route path="/manager/room/:id" component={DetailRoomPage} />
-          <Route path="/manager/semester" component={SemesterPage} exact />
-          <Route path="/manager/semester/:id" component={DetailSemesterPage} />
-          <Route path="/manager/subject" component={SubjectPage} exact />
-          <Route path="/manager/tool" component={ToolPage} exact />
-          <Route path="/manager/profile" component={ProfilePage} exact />
-          <Redirect from="/manager" to="/manager/dashboard" />
-        </Switch>
+        <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+          <Switch>
+            <Route path="/manager/dashboard" component={Dashboard} exact />
+            <Route path="/manager/account" component={AccountPage} exact />
+            <Route path="/manager/account/:id" component={DetailAccountPage} />
+            <Route path="/manager/room" component={RoomPage} exact />
+            <Route path="/manager/room/:id" component={DetailRoomPage} />
+            <Route path="/manager/semester" component={SemesterPage} exact />
+            <Route
+              path="/manager/semester/:id"
+              component={DetailSemesterPage}
+            />
+            <Route path="/manager/subject" component={SubjectPage} exact />
+            <Route path="/manager/tool" component={ToolPage} exact />
+            <Route path="/manager/profile" component={ProfilePage} exact />
+            <Redirect from="/manager" to="/manager/dashboard" />
+          </Switch>
+        </Container>
       </Box>
     </Box>
   );

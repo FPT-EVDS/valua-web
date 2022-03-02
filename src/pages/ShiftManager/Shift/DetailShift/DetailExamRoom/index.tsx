@@ -1,7 +1,5 @@
-import { Add } from '@mui/icons-material';
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -17,6 +15,7 @@ import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import ExamRoomDetailCard from 'components/ExamRoomDetailCard';
 import ExamSeatTable from 'components/ExamSeatTable';
+import { notAllowedEditExamRoomStatuses } from 'configs/constants/shiftConfig.status';
 import { format } from 'date-fns';
 import {
   deleteExamRoom,
@@ -174,35 +173,11 @@ const DetailExamRoomPage = () => {
               </Stack>
             </Grid>
             <Grid item xs={12} lg={8}>
-              <Stack spacing={3}>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Box
-                    display="flex"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      sx={{ marginRight: 1 }}
-                    >
-                      Exam seat list
-                    </Typography>
-                  </Box>
-                  <Button
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={() => setOpen(true)}
-                  >
-                    Add examinee
-                  </Button>
-                </Stack>
-                <ExamSeatTable data={examRoom.attendances} />
-              </Stack>
+              <ExamSeatTable
+                data={examRoom.attendances}
+                hideActions={notAllowedEditExamRoomStatuses.has(shift.status)}
+                onActionButtonClick={() => setOpen(true)}
+              />
             </Grid>
           </>
         )}

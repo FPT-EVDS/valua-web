@@ -5,6 +5,7 @@ import {
   Badge,
   Box,
   Button,
+  Grid,
   IconButton,
   Stack,
   SvgIcon,
@@ -21,16 +22,17 @@ interface Props extends DropzoneState {
   handleRemoveFile: (index: number) => void;
 }
 
-const CustomDropzone = ({
-  getRootProps,
-  getInputProps,
-  isDragActive,
-  isDragAccept,
-  isDragReject,
-  acceptedFiles,
-  fileRejections,
-  handleRemoveFile,
-}: Props) => {
+const CustomDropzone = (props: Props) => {
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isDragAccept,
+    isDragReject,
+    acceptedFiles,
+    fileRejections,
+    handleRemoveFile,
+  } = props;
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLInputElement>(null);
   const theme = useTheme();
@@ -50,24 +52,25 @@ const CustomDropzone = ({
 
   return (
     <>
-      {isOpen && (
+      {isOpen && fileRejections.length > 0 && (
         <Alert
           severity="error"
-          sx={{ marginBottom: 2, display: isOpen ? 'flex' : 'none' }}
+          sx={{ marginBottom: 2 }}
           onClose={() => setIsOpen(false)}
         >
           {fileRejections[0].errors[0].message}
         </Alert>
       )}
-      <Box
+      <Grid
+        container
+        spacing={2}
+        justifyContent={hasUploadFiles ? 'flex-start' : 'center'}
+        alignItems={hasUploadFiles ? 'flex-start' : 'center'}
+        flexDirection={hasUploadFiles ? 'row' : 'column'}
+        flex={1}
+        margin={0}
         sx={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: hasUploadFiles ? 'row' : 'column',
-          justifyContent: hasUploadFiles ? 'flex-start' : 'center',
-          alignItems: hasUploadFiles ? 'flex-start' : 'center',
           textAlign: 'center',
-          height: 300,
           width: '100%',
           padding: 2,
           borderWidth: 2,
@@ -80,9 +83,9 @@ const CustomDropzone = ({
           transition: 'border .24s ease-in-out',
         }}
         {...getRootProps({
-          isDragActive,
-          isDragAccept,
-          isDragReject,
+          isdragactive: String(isDragActive),
+          isdragaccept: String(isDragAccept),
+          isdragreject: String(isDragReject),
           className: 'dropzone',
         })}
       >
@@ -90,37 +93,33 @@ const CustomDropzone = ({
         {acceptedFiles.length > 0 ? (
           <>
             {acceptedFiles.map((file, index) => (
-              <Stack
-                key={file.name}
-                justifyContent="center"
-                spacing={1}
-                alignItems="center"
-                marginRight={1}
-                sx={{ width: 96 }}
-              >
-                <Badge
-                  key={file.name}
-                  badgeContent={
-                    <IconButton onClick={() => handleRemoveFile(index)}>
-                      <Cancel />
-                    </IconButton>
-                  }
-                >
-                  <SvgIcon sx={{ width: 48, height: 48 }}>
-                    <XLSXIcon />
-                  </SvgIcon>
-                </Badge>
-                <Typography variant="caption" noWrap sx={{ width: '100%' }}>
-                  {file.name}
-                </Typography>
-              </Stack>
+              <Grid item xl={3} lg={4} xs={6} key={file.name}>
+                <Stack justifyContent="center" spacing={1} alignItems="center">
+                  <Badge
+                    badgeContent={
+                      <IconButton onClick={() => handleRemoveFile(index)}>
+                        <Cancel />
+                      </IconButton>
+                    }
+                  >
+                    <SvgIcon sx={{ width: 48, height: 48 }}>
+                      <XLSXIcon />
+                    </SvgIcon>
+                  </Badge>
+                  <Typography variant="caption" noWrap sx={{ width: '100%' }}>
+                    {file.name}
+                  </Typography>
+                </Stack>
+              </Grid>
             ))}
-            <IconButton onClick={handleButtonClick} sx={{ marginTop: 1 }}>
-              <Add />
-            </IconButton>
+            <Grid item xl={3} lg={4} xs={6}>
+              <IconButton onClick={handleButtonClick} sx={{ marginTop: 1 }}>
+                <Add />
+              </IconButton>
+            </Grid>
           </>
         ) : (
-          <>
+          <Grid item>
             <Box>
               <CloudUpload sx={{ height: 64, width: 64, color: grey[600] }} />
               <Typography
@@ -132,9 +131,9 @@ const CustomDropzone = ({
               </Typography>
             </Box>
             <Button onClick={handleButtonClick}>Upload files</Button>
-          </>
+          </Grid>
         )}
-      </Box>
+      </Grid>
     </>
   );
 };

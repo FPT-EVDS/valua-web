@@ -1,5 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
+import { format } from 'date-fns';
+
 interface JwToken {
   exp: number;
   iat: number;
@@ -33,4 +35,6 @@ function debounce<T extends unknown[], U>(
   };
 }
 
-export { chunk, debounce, parseJwt };
+const formatTime = (date: Date) => format(date, 'HH:mm');
+
+export { chunk, debounce, formatTime, parseJwt };

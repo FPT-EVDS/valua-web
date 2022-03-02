@@ -34,10 +34,12 @@ const refreshAuthLogic = async (failedRequest: {
   response: { config: { headers: { [x: string]: string } } };
 }) => {
   const refreshToken = localStorage.getItem(AppConstants.REFRESH_TOKEN);
+  const accessToken = localStorage.getItem(AppConstants.ACCESS_TOKEN);
   try {
     const response = await axiosClient.get('/authentication/refreshToken', {
       headers: {
         refreshToken,
+        Authorization: `Bearer ${String(accessToken)}`,
       },
       skipAuthRefresh: true,
     } as AxiosAuthRefreshRequestConfig);

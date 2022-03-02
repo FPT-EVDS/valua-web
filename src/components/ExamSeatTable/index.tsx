@@ -1,66 +1,48 @@
-import {
-  Button,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableFooter,
-  TableHead,
-  TablePagination,
-  TableRow,
-} from '@mui/material';
+import { Add } from '@mui/icons-material';
+import { Button } from '@mui/material';
+import { GridActionsColDef, GridColDef } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { removeExamSeat } from 'features/examRoom/detailExamRoomSlice';
+import EVDSDataGrid from 'components/EVDSDataGrid';
+import { removeAttendance } from 'features/examRoom/detailExamRoomSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
-import ExamSeat from 'models/examSeat.model';
+import Account from 'models/account.model';
+import Attendance from 'models/attendance.model';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
-  data: ExamSeat[];
+  data: Attendance[];
+  hideActions: boolean;
+  // eslint-disable-next-line react/require-default-props
+  onActionButtonClick?: () => void;
 }
 
-const ExamSeatTable = ({ data }: Props) => {
+const transformAttendancesToRows = (attendances: Attendance[]) =>
+  attendances.map(attendance => ({
+    ...attendance,
+    id: attendance.attendanceId,
+  }));
+
+const ExamSeatTable = ({ data, hideActions, onActionButtonClick }: Props) => {
+  const DEFAULT_PAGE_SIZE = 10;
   const dispatch = useAppDispatch();
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const examRoom = useAppSelector(state => state.detailExamRoom.examRoom);
   const [page, setPage] = useState(0);
-  const [rows, setRows] = useState(data);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const emptyRows =
-    page > 0
-      ? Math.max(0, (1 + page) * rowsPerPage - rows.length)
-      : Math.max(0, rowsPerPage - data.length);
+  const [rows, setRows] = useState(transformAttendancesToRows(data));
 
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number,
-  ) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleRemoveExaminee = async (examinee: ExamSeat, index: number) => {
+  const handleRemoveExaminee = async (attendance: Attendance) => {
     if (examRoom) {
       try {
         const result = await dispatch(
-          removeExamSeat({
-            examSeatId: examinee.examSeatId,
-            examinee: { appUserId: examinee.examinee.appUserId },
-            examRoom: { examRoomId: examRoom.examRoomId },
-          }),
+          removeAttendance(attendance.attendanceId),
         );
         unwrapResult(result);
-        setRows(prev => prev.filter((item, itemIndex) => index !== itemIndex));
+        setRows(prev =>
+          prev.filter(item => item.attendanceId !== attendance.attendanceId),
+        );
         showSuccessMessage(
-          `${examinee.examinee.fullName} has been successfully removed`,
+          `${attendance.examinee.fullName} has been successfully removed`,
         );
       } catch (error) {
         showErrorMessage(error);
@@ -69,74 +51,98 @@ const ExamSeatTable = ({ data }: Props) => {
   };
 
   useEffect(() => {
-    setRows(data);
+    setRows(transformAttendancesToRows(data));
   }, [data]);
 
-  return (
-    <TableContainer
-      component={Paper}
-      sx={{ display: 'flex', height: '100%' }}
-      elevation={2}
+  const columns: Array<GridColDef | GridActionsColDef> = [
+    { field: 'attendanceId', hide: true },
+    { field: 'examinee', hide: true },
+    { field: 'index', hide: true },
+    {
+      field: 'position',
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center',
+      filterable: false,
+      headerName: 'Pos',
+      minWidth: 30,
+    },
+    {
+      field: 'companyId',
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center',
+      filterable: false,
+      headerName: 'Student code',
+      minWidth: 100,
+      flex: 0.1,
+      valueFormatter: ({ api, id }) => {
+        const account = api.getCellValue(id, 'examinee') as Account;
+        return account.companyId;
+      },
+    },
+    {
+      field: 'fullName',
+      sortable: false,
+      filterable: false,
+      headerName: 'Name',
+      headerAlign: 'center',
+      align: 'center',
+      minWidth: 180,
+      flex: 0.1,
+      valueFormatter: ({ api, id }) => {
+        const account = api.getCellValue(id, 'examinee') as Account;
+        return account.fullName;
+      },
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      flex: 0.1,
+      minWidth: 130,
+      type: 'actions',
+      hide: hideActions,
+      getActions: ({ row }) => {
+        const attendance = row as Attendance;
+        return rows.length > 1
+          ? [
+              <Button
+                variant="text"
+                onClick={() => handleRemoveExaminee(attendance)}
+              >
+                Remove
+              </Button>,
+            ]
+          : [];
+      },
+    },
+  ];
+
+  const AddButton = () => (
+    <Button
+      variant="contained"
+      startIcon={<Add />}
+      onClick={onActionButtonClick}
     >
-      <Table sx={{ flexGrow: 1 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell align="center">Position</TableCell>
-            <TableCell align="center">Examinee name</TableCell>
-            <TableCell align="center">Student code</TableCell>
-            <TableCell align="center">Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map((row, index) => (
-            <TableRow key={row.examSeatId}>
-              <TableCell component="th" scope="row" align="center">
-                {row.position}
-              </TableCell>
-              <TableCell align="center">{row.examinee.fullName}</TableCell>
-              <TableCell align="center">{row.examinee.companyId}</TableCell>
-              <TableCell align="center">
-                {rows.length > 1 && (
-                  <Button
-                    variant="text"
-                    onClick={() => handleRemoveExaminee(row, index)}
-                  >
-                    Remove
-                  </Button>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 60 * emptyRows }}>
-              <TableCell colSpan={4} />
-            </TableRow>
-          )}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[10]}
-              colSpan={4}
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
-    </TableContainer>
+      Add examinee
+    </Button>
+  );
+
+  return (
+    <EVDSDataGrid
+      title="Exam seat list"
+      columns={columns}
+      isLoading={false}
+      rows={rows}
+      addButton={!hideActions && <AddButton />}
+      pagination
+      hasSearch={false}
+      rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
+      pageSize={DEFAULT_PAGE_SIZE}
+      rowCount={data.length}
+      page={page}
+      onPageChange={newPage => setPage(newPage)}
+    />
   );
 };
 

@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios';
+import ReportDashboardDto from 'dtos/reportDashboard.dto';
 import ReportsDto from 'dtos/reports.dto';
 import ResolveReportDto from 'dtos/resolveReport.dto';
 import SearchByNameDto from 'dtos/searchByName.dto';
@@ -23,6 +24,10 @@ const reportServices = {
   }: ResolveReportDto): Promise<AxiosResponse<Report>> => {
     const url = `/reports/${reportId}`;
     return axiosClient.patch(url, { solution });
+  },
+  getReportOverview: (): Promise<AxiosResponse<ReportDashboardDto>> => {
+    const url = '/reports/overview';
+    return axiosClient.get(url);
   },
 };
 

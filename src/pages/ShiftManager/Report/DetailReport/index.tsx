@@ -68,7 +68,12 @@ const ImageCard = ({ imageUrl }: ImageCardProps) => {
               component="img"
               src={imageUrl}
               alt="report"
-              sx={{ width: '100%', height: '100%' }}
+              sx={{
+                width: '100%',
+                height: '100%',
+                maxHeight: 300,
+                objectFit: 'cover',
+              }}
             />
             <Lightbox
               images={[{ src: imageUrl }]}
@@ -150,6 +155,9 @@ const DetailReportPage = () => {
                           )}
                         </Typography>
                       )}
+                      <Typography color="text.secondary">
+                        Reported by:
+                      </Typography>
                       <ListItem disableGutters disablePadding>
                         <ListItemAvatar>
                           <Avatar

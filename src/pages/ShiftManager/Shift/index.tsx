@@ -1,7 +1,14 @@
 /* eslint-disable prefer-destructuring */
-import { Add, FiberManualRecord } from '@mui/icons-material';
-import { Box, Button, Stack, Typography } from '@mui/material';
-import { green, grey, orange, red } from '@mui/material/colors';
+import { Add, FiberManualRecord, Lock, PlayArrow } from '@mui/icons-material';
+import {
+  Box,
+  Button,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
   GridActionsColDef,
@@ -12,22 +19,19 @@ import {
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import ButtonMenu, { ButtonMenuItemProps } from 'components/ButtonMenu';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
+import LockShiftsDialog from 'components/LockShiftsDialog';
 import SemesterDropdown from 'components/SemesterDropdown';
-import ShiftDatepicker from 'components/ShiftDatepicker';
 import ShiftDetailDialog from 'components/ShiftDetailDialog';
+import StaffingDialog from 'components/StaffingDialog';
+import ShiftConfig, {
+  notAllowEditShiftStatuses,
+} from 'configs/constants/shiftConfig.status';
 import { format } from 'date-fns';
 import ShiftStatus from 'enums/shiftStatus.enum';
-import Status from 'enums/status.enum';
-import {
-  deleteShift,
-  getShiftCalendar,
-  getShifts,
-  updateCurrentSelectedDate,
-  updateSemesterBeginDate,
-  updateShiftSemester,
-} from 'features/shift/shiftSlice';
+import { deleteShift, getShifts } from 'features/shift/shiftSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
 import React, { useEffect, useState } from 'react';
@@ -47,24 +51,23 @@ const ShiftPage = () => {
       handleAccept: () => null,
     });
   const [open, setOpen] = useState(false);
+  const [openStaffing, setOpenStaffing] = useState(false);
+  const [openLock, setOpenLock] = useState(false);
   const [page, setPage] = useState(0);
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const {
     isLoading,
-    selectedDate,
-    current: { shifts, totalItems, selectedDate: currentSelectedDate },
-    semester,
-    activeShiftDates,
+    current: { shifts, totalItems, selectedSemester },
   } = useAppSelector(state => state.shift);
   const rows: GridRowModel[] = shifts.map(shift => ({
     ...shift,
     id: shift.shiftId,
   }));
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
-  const [selectedSemester, setSelectedSemester] = useState<Semester | null>(
-    null,
-  );
+  const [filterStatus, setFilterStatus] = useState(-1);
+  const [dropdownSemesterValue, setDropdownSemesterValue] =
+    useState<Semester | null>(null);
 
   const fetchShift = () => {
     let sortParam = '';
@@ -72,31 +75,23 @@ const ShiftPage = () => {
       const { field, sort } = sortModel[0];
       sortParam = `${field},${String(sort)}`;
     }
-    if (selectedDate === null || selectedDate !== currentSelectedDate) {
-      dispatch(
-        getShifts({
-          page,
-          sort: sortParam,
-          semesterId: semester ? semester.semesterId : undefined,
-          date: selectedDate ? new Date(selectedDate) : undefined,
-        }),
-      )
-        .then(result => unwrapResult(result))
-        .catch(error => showErrorMessage(String(error)));
-    }
+    dispatch(
+      getShifts({
+        page,
+        sort: sortParam,
+        semesterId: dropdownSemesterValue
+          ? dropdownSemesterValue.semesterId
+          : undefined,
+        status: filterStatus >= 0 ? filterStatus : undefined,
+      }),
+    )
+      .then(result => unwrapResult(result))
+      .catch(error => showErrorMessage(String(error)));
   };
 
   useEffect(() => {
     fetchShift();
-  }, [page, sortModel, semester, selectedDate]);
-
-  useEffect(() => {
-    if (semester) {
-      dispatch(getShiftCalendar(semester.semesterId))
-        .then(result => unwrapResult(result))
-        .catch(error => showErrorMessage(error));
-    }
-  }, [semester]);
+  }, [page, sortModel, dropdownSemesterValue]);
 
   const handleDeleteShift = async (shiftId: string) => {
     try {
@@ -150,43 +145,20 @@ const ShiftPage = () => {
       flex: 0.1,
       minWidth: 130,
       renderCell: params => {
-        const active = params.getValue(params.id, 'status');
-        let color = '#1890ff';
-        let statusText = 'Ready';
-        switch (active) {
-          case ShiftStatus.Inactive:
-            color = grey[500];
-            statusText = 'Inactive';
-            break;
-
-          case ShiftStatus.NotReady:
-            color = red[500];
-            statusText = 'Not ready';
-            break;
-
-          case ShiftStatus.Ready:
-            color = '#1890ff';
-            statusText = 'Ready';
-            break;
-
-          case ShiftStatus.Ongoing:
-            color = orange[400];
-            statusText = 'Ongoing';
-            break;
-
-          case ShiftStatus.Finished:
-            color = green[500];
-            statusText = 'Finished';
-            break;
-
-          default:
-            break;
-        }
+        const shiftStatus = params.getValue(params.id, 'status') as ShiftStatus;
+        const shiftConfigIndex = ShiftConfig.findIndex(
+          value => value.value === shiftStatus,
+        );
+        // Set default config as unknown
+        let shiftConfig = ShiftConfig[ShiftConfig.length - 1];
+        if (shiftConfigIndex > -1) shiftConfig = ShiftConfig[shiftConfigIndex];
         return (
           <Box display="flex" alignItems="center">
-            <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
-            <Typography variant="subtitle1" color={color}>
-              {statusText}
+            <FiberManualRecord
+              sx={{ fontSize: 14, marginRight: 1, color: shiftConfig.color }}
+            />
+            <Typography variant="subtitle1" color={shiftConfig.color}>
+              {shiftConfig.label}
             </Typography>
           </Box>
         );
@@ -198,7 +170,7 @@ const ShiftPage = () => {
       type: 'actions',
       getActions: params => {
         const shiftId = params.getValue(params.id, 'shiftId') as string;
-        const status = params.getValue(params.id, 'status') as Status;
+        const status = params.getValue(params.id, 'status') as ShiftStatus;
         const deleteItems = [
           <GridActionsCellItem
             label="View detail"
@@ -217,46 +189,42 @@ const ShiftPage = () => {
             onClick={() => showDeleteConfirmation(params)}
           />,
         ];
-        if (status === Status.isDisable) deleteItems.pop();
+        if (notAllowEditShiftStatuses.has(status)) deleteItems.splice(1, 2);
         return deleteItems;
       },
     },
   ];
 
-  const handleChangeDate = (date: Date | null) => {
-    dispatch(
-      updateCurrentSelectedDate(format(new Date(String(date)), 'yyyy-MM-dd')),
+  const AddButton = () => {
+    const items: ButtonMenuItemProps[] = [
+      {
+        label: 'Add shift',
+        icon: <Add />,
+        handleItemClick: () => {
+          setOpen(true);
+        },
+      },
+      {
+        label: 'Start staffing',
+        icon: <PlayArrow />,
+        handleItemClick: () => {
+          setOpenStaffing(true);
+        },
+      },
+      {
+        label: 'Lock all',
+        icon: <Lock />,
+        handleItemClick: () => {
+          setOpenLock(true);
+        },
+      },
+    ];
+    return (
+      <Stack direction="row" spacing={2} alignItems="center">
+        <ButtonMenu items={items} />
+      </Stack>
     );
   };
-
-  const AddButton = () => (
-    <Stack direction="row" spacing={2} alignItems="center">
-      <ShiftDatepicker
-        minDate={
-          selectedSemester !== null
-            ? new Date(selectedSemester.beginDate)
-            : undefined
-        }
-        maxDate={
-          selectedSemester !== null
-            ? new Date(selectedSemester.endDate)
-            : undefined
-        }
-        activeDate={activeShiftDates}
-        handleChangeDate={handleChangeDate}
-        value={selectedDate != null ? new Date(selectedDate) : new Date()}
-      />
-      <Button
-        variant="contained"
-        startIcon={<Add />}
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        Add shift
-      </Button>
-    </Stack>
-  );
 
   const handleSortModelChange = (newModel: GridSortModel) => {
     setSortModel(newModel);
@@ -265,33 +233,96 @@ const ShiftPage = () => {
   const handleChangeSemester = (
     _selectedSemester: Pick<Semester, 'semesterId' | 'semesterName'> | null,
   ) => {
-    const shiftSemester = _selectedSemester as Semester;
+    const shiftSemester = _selectedSemester as Semester | null;
     if (shiftSemester) {
-      setSelectedSemester(shiftSemester);
-      dispatch(updateSemesterBeginDate(String(shiftSemester.beginDate)));
+      setDropdownSemesterValue(shiftSemester);
     }
-    dispatch(updateCurrentSelectedDate(null));
-    dispatch(updateShiftSemester(_selectedSemester));
   };
+
+  const FilterItems = () => (
+    <Box>
+      <Stack>
+        <TextField
+          name="status"
+          select
+          value={filterStatus}
+          label="Status"
+          margin="dense"
+          size="small"
+          fullWidth
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          SelectProps={{
+            displayEmpty: true,
+          }}
+          onChange={event => {
+            setFilterStatus(parseInt(event.target.value, 10));
+          }}
+        >
+          <MenuItem key="all-status" value={-1}>
+            All
+          </MenuItem>
+          {ShiftConfig.map(
+            (config, index) =>
+              index < ShiftConfig.length - 1 && (
+                <MenuItem key={config.value} value={config.value}>
+                  {config.label}
+                </MenuItem>
+              ),
+          )}
+        </TextField>
+      </Stack>
+      <Stack direction="row" sx={{ marginTop: 1 }} justifyContent="flex-end">
+        <Button
+          variant="text"
+          sx={{ marginRight: 1 }}
+          size="small"
+          onClick={() => {
+            setFilterStatus(-1);
+          }}
+        >
+          Reset
+        </Button>
+        <Button variant="contained" size="small" onClick={() => fetchShift()}>
+          Apply
+        </Button>
+      </Stack>
+    </Box>
+  );
 
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <ShiftDetailDialog open={open} handleClose={() => setOpen(false)} />
+      <StaffingDialog
+        open={openStaffing}
+        handleClose={() => setOpenStaffing(false)}
+      />
+      <LockShiftsDialog
+        open={openLock}
+        handleClose={() => setOpenLock(false)}
+      />
       <EVDSDataGrid
         pagination
-        rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
+        paginationMode="server"
         leftActions={
-          <SemesterDropdown
-            textFieldProps={{
-              size: 'small',
-            }}
-            isEditable
-            value={semester}
-            onChange={handleChangeSemester}
-          />
+          selectedSemester && (
+            <SemesterDropdown
+              textFieldProps={{
+                size: 'small',
+              }}
+              isEditable
+              value={dropdownSemesterValue}
+              onChange={handleChangeSemester}
+            />
+          )
         }
+        rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
         pageSize={DEFAULT_PAGE_SIZE}
+        hasFilter
+        filterItems={<FilterItems />}
         sortingMode="server"
         sortModel={sortModel}
         onSortModelChange={handleSortModelChange}

@@ -1,5 +1,5 @@
 /* eslint-disable prefer-destructuring */
-import { Edit, EditOff } from '@mui/icons-material';
+import { Badge, Edit, EditOff, FileDownload, Lock } from '@mui/icons-material';
 import { DateTimePicker } from '@mui/lab';
 import {
   Box,
@@ -9,27 +9,36 @@ import {
   CardContent,
   CardHeader,
   CircularProgress,
+  darken,
   Grid,
   IconButton,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
-import { green, grey, orange, red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import SemesterDropdown from 'components/SemesterDropdown';
+import ShiftConfig, {
+  notAllowEditShiftStatuses,
+} from 'configs/constants/shiftConfig.status';
 import { shiftSchema } from 'configs/validations';
 import { format } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftStatus from 'enums/shiftStatus.enum';
-import { updateShift } from 'features/shift/detailShiftSlice';
+import {
+  lockShift,
+  startStaffing,
+  updateShift,
+} from 'features/shift/detailShiftSlice';
+import saveAs from 'file-saver';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import Semester from 'models/semester.model';
 import Shift from 'models/shift.model';
 import React, { useEffect, useState } from 'react';
+import attendanceServices from 'services/attendance.service';
 
 interface Props {
   shift: Shift;
@@ -45,37 +54,12 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
     String(query.get('edit')) === 'true',
   );
 
-  let statusColor = '#1890ff';
-  let statusText = 'Ready';
-  switch (shift.status) {
-    case ShiftStatus.Inactive:
-      statusColor = grey[500];
-      statusText = 'Inactive';
-      break;
-
-    case ShiftStatus.NotReady:
-      statusColor = red[500];
-      statusText = 'Not ready';
-      break;
-
-    case ShiftStatus.Ready:
-      statusColor = '#1890ff';
-      statusText = 'Ready';
-      break;
-
-    case ShiftStatus.Ongoing:
-      statusColor = orange[400];
-      statusText = 'Ongoing';
-      break;
-
-    case ShiftStatus.Finished:
-      statusColor = green[500];
-      statusText = 'Finished';
-      break;
-
-    default:
-      break;
-  }
+  const shiftConfigIndex = ShiftConfig.findIndex(
+    value => value.value === shift.status,
+  );
+  // Set default config as unknown
+  let shiftConfig = ShiftConfig[ShiftConfig.length - 1];
+  if (shiftConfigIndex > -1) shiftConfig = ShiftConfig[shiftConfigIndex];
 
   const initialValues: ShiftDto = shift;
   const formik = useFormik({
@@ -117,6 +101,40 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shift]);
 
+  const handleSaveFile = async (shiftId: string) => {
+    try {
+      const response = await attendanceServices.downloadAttendances(shiftId);
+      const fileExtension = '.xls';
+      const fileName = `${shift.semester.semesterName} ${format(
+        new Date(shift.beginTime),
+        'dd-MM-yyyy--HH:mm',
+      )}${fileExtension}`;
+      saveAs(response.data, fileName);
+    } catch (error) {
+      showErrorMessage(String(error));
+    }
+  };
+
+  const handleStaffing = async (shiftId: string) => {
+    try {
+      const result = await dispatch(startStaffing([{ shiftId }]));
+      unwrapResult(result);
+      showSuccessMessage('Start staffing successfully');
+    } catch (error) {
+      showErrorMessage(error);
+    }
+  };
+
+  const handleLockShift = async (shiftId: string) => {
+    try {
+      const result = await dispatch(lockShift([{ shiftId }]));
+      unwrapResult(result);
+      showSuccessMessage('Lock shift successfully');
+    } catch (error) {
+      showErrorMessage(error);
+    }
+  };
+
   return (
     <Card sx={{ minWidth: 275 }} elevation={2}>
       <CardHeader
@@ -130,7 +148,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           </Typography>
         }
         action={
-          shift.status !== ShiftStatus.Inactive && (
+          !notAllowEditShiftStatuses.has(shift.status) && (
             <IconButton onClick={() => setIsEditable(prevState => !prevState)}>
               {isEditable ? (
                 <EditOff sx={{ fontSize: 20 }} />
@@ -230,8 +248,8 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
             <Grid item xs={12}>
               <Box color="text.secondary">
                 Status:
-                <Typography display="inline" ml={0.5} color={statusColor}>
-                  {statusText}
+                <Typography display="inline" ml={0.5} color={shiftConfig.color}>
+                  {shiftConfig.label}
                 </Typography>
               </Box>
             </Grid>
@@ -241,24 +259,80 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           {isLoading ? (
             <CircularProgress />
           ) : (
-            <Stack spacing={2} direction="row">
-              <Button
-                disabled={!isEditable}
-                type="submit"
-                variant="contained"
-                sx={{ minWidth: 120 }}
-              >
-                Update
-              </Button>
-              <Button
-                disabled={!isEditable}
-                variant="contained"
-                color="error"
-                onClick={() => handleDelete(String(shift.shiftId))}
-                sx={{ minWidth: 120 }}
-              >
-                Delete
-              </Button>
+            <Stack spacing={2}>
+              <Stack spacing={2} direction="row">
+                {shift.status === ShiftStatus.Finished && (
+                  <Button
+                    variant="contained"
+                    sx={{
+                      minWidth: 120,
+                      backgroundColor: '#47B881',
+                      ':hover': { backgroundColor: darken('#47B881', 0.05) },
+                    }}
+                    startIcon={<FileDownload />}
+                    onClick={async () => {
+                      if (shift.shiftId) {
+                        await handleSaveFile(shift.shiftId);
+                      }
+                    }}
+                  >
+                    Export attendance
+                  </Button>
+                )}
+                {!notAllowEditShiftStatuses.has(shift.status) && (
+                  <>
+                    <Button
+                      disabled={!isEditable}
+                      type="submit"
+                      variant="contained"
+                      sx={{ minWidth: 120 }}
+                    >
+                      Update
+                    </Button>
+                    <Button
+                      disabled={!isEditable}
+                      variant="contained"
+                      color="error"
+                      onClick={() => handleDelete(String(shift.shiftId))}
+                      sx={{ minWidth: 120 }}
+                    >
+                      Delete
+                    </Button>
+                  </>
+                )}
+              </Stack>
+              {shift.status === ShiftStatus.NotReady && (
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#26A69A',
+                    ':hover': { backgroundColor: darken('#26A69A', 0.05) },
+                  }}
+                  startIcon={<Badge />}
+                  onClick={async () => {
+                    if (shift) {
+                      await handleStaffing(String(shift.shiftId));
+                    }
+                  }}
+                >
+                  Start staffing
+                </Button>
+              )}
+              {shift.status === ShiftStatus.Ready && (
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: '#26A69A',
+                    ':hover': { backgroundColor: darken('#26A69A', 0.05) },
+                  }}
+                  startIcon={<Lock />}
+                  onClick={async () => {
+                    await handleLockShift(String(shift.shiftId));
+                  }}
+                >
+                  Lock shift
+                </Button>
+              )}
             </Stack>
           )}
         </CardActions>
