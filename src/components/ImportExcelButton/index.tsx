@@ -89,8 +89,10 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
   };
 
   const dropzone = useDropzone({
-    accept:
-      '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel',
+    accept: `.csv, .xls, .xlsx, text/csv, application/csv,
+      text/comma-separated-values, application/csv, application/excel,
+      application/vnd.msexcel, text/anytext, application/vnd. ms-excel,
+      application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`,
     multiple: true,
     onDrop,
     noClick: true,
