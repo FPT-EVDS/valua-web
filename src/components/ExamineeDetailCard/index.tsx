@@ -45,7 +45,7 @@ const ExamineeDetailCard = ({ examineeSubject }: Props) => (
             <TextField
               label="Subject"
               fullWidth
-              value={examineeSubject.subject.subjectName}
+              value={`${examineeSubject.subject.subjectCode} - ${examineeSubject.subject.subjectName}`}
               InputLabelProps={{
                 shrink: true,
               }}
