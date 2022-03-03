@@ -38,7 +38,6 @@ import { addAccount } from 'features/account/accountsSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Role from 'models/role.model';
-import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 
 interface Props {
@@ -177,7 +176,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
       open={open}
       onClose={handleCloseModal}
       fullWidth
-      maxWidth="md"
+      maxWidth={currentStep === 0 ? 'sm' : 'md'}
       TransitionComponent={SlideTransition}
       PaperProps={{ sx: { overflowX: 'hidden' } }}
     >
