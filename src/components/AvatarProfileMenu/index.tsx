@@ -17,9 +17,10 @@ import { Link, useHistory } from 'react-router-dom';
 
 interface Props {
   user: User | null;
+  path: string;
 }
 
-const AvatarProfileMenu = ({ user }: Props) => {
+const AvatarProfileMenu = ({ user, path }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const history = useHistory();
 
@@ -83,7 +84,7 @@ const AvatarProfileMenu = ({ user }: Props) => {
           </Typography>
         </Box>
         <Divider sx={{ my: 1 }} />
-        <MenuItem component={Link} to="/shift-manager/profile">
+        <MenuItem component={Link} to={path}>
           <ListItemIcon>
             <AccountCircle fontSize="small" />
           </ListItemIcon>

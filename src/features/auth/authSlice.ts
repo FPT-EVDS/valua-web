@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import ChangePasswordDto from 'dtos/changePassword.dto';
 import LoginDto from 'dtos/login.dto';
 import User from 'models/user.model';
 import authServices from 'services/auth.service';
@@ -50,6 +51,19 @@ export const updateUserProfile = createAsyncThunk(
     }
   },
 );
+
+export const changePassword = createAsyncThunk(
+  'authentication/changePassword',
+  async (payload: ChangePasswordDto, { rejectWithValue }) => {
+    try {
+      const response = await authServices.changePassword(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
 // Define the initial state using that type
 const initialState: AuthState = {
   isLoading: false,
@@ -68,6 +82,10 @@ export const authSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(changePassword.fulfilled, state => {
+        state.error = '';
+        state.isLoading = false;
+      })
       .addMatcher(
         isAnyOf(getUserProfile.fulfilled, updateUserProfile.fulfilled),
         (state, action) => {
@@ -81,6 +99,7 @@ export const authSlice = createSlice({
           login.pending,
           getUserProfile.pending,
           updateUserProfile.pending,
+          changePassword.pending,
         ),
         state => {
           state.isLoading = true;
@@ -92,6 +111,7 @@ export const authSlice = createSlice({
           login.rejected,
           getUserProfile.rejected,
           updateUserProfile.rejected,
+          changePassword.rejected,
         ),
         (state, action) => {
           state.isLoading = false;

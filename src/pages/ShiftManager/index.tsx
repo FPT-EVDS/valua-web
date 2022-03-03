@@ -102,7 +102,7 @@ const ShiftManagerDashboard = (): JSX.Element => {
             spacing={{ xs: 0.5, sm: 1.5 }}
           >
             <NotificationMenu />
-            <AvatarProfileMenu user={user} />
+            <AvatarProfileMenu user={user} path="/shift-manager/profile" />
           </Stack>
         </Toolbar>
       </AppBar>

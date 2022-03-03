@@ -105,7 +105,7 @@ const ManagerDashboard = (): JSX.Element => {
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'flex' } }}>
-            <AvatarProfileMenu user={user} />
+            <AvatarProfileMenu user={user} path="/manager/profile" />
           </Box>
         </Toolbar>
       </AppBar>
