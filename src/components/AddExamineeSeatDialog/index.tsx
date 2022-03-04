@@ -91,7 +91,7 @@ const AddExamineeSeatDialog: React.FC<Props> = ({
           </IconButton>
         </Grid>
       </DialogTitle>
-      <Box component="form" pb={2} onSubmit={formik.handleSubmit}>
+      <Box component="form" pb={2} onSubmit={formik.handleSubmit} noValidate>
         <DialogContent>
           {examRoom && (
             <ExamineeDropdown

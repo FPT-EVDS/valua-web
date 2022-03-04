@@ -102,7 +102,7 @@ const RemoveExamineeDialog = ({
   return (
     <div>
       <Dialog open={open} onClose={handleCloseModal} fullWidth>
-        <Box component="form" onSubmit={formik.handleSubmit}>
+        <Box component="form" onSubmit={formik.handleSubmit} noValidate>
           <DialogTitle sx={{ m: 0, p: 2 }}>
             {title || 'Confirm remove'}
             <IconButton

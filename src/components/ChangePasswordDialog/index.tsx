@@ -15,7 +15,6 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import SlideTransition from 'components/SlideTransition';
 import { changePasswordSchema } from 'configs/validations';
-import ChangePasswordDto from 'dtos/changePassword.dto';
 import { changePassword } from 'features/auth/authSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';

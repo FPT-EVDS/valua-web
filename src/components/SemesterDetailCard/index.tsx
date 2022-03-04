@@ -94,7 +94,7 @@ const SemesterDetailCard = ({ semester, isLoading }: Props) => {
           )
         }
       />
-      <Box component="form" onSubmit={formik.handleSubmit} pb={2}>
+      <Box component="form" onSubmit={formik.handleSubmit} pb={2} noValidate>
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>

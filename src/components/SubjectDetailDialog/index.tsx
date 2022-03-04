@@ -108,7 +108,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
           </IconButton>
         </Grid>
       </DialogTitle>
-      <Box component="form" onSubmit={formik.handleSubmit} pb={2}>
+      <Box component="form" onSubmit={formik.handleSubmit} pb={2} noValidate>
         <DialogContent>
           <Box display="flex" justifyContent="center">
             <Avatar

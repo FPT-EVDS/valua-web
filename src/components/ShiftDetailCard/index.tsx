@@ -159,7 +159,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           )
         }
       />
-      <Box component="form" onSubmit={formik.handleSubmit}>
+      <Box component="form" onSubmit={formik.handleSubmit} noValidate>
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
