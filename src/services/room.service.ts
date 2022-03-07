@@ -59,6 +59,10 @@ const roomServices = {
     const url = '/rooms/overview';
     return axiosClient.get(url);
   },
+  getFloorList: (): Promise<AxiosResponse<{ [key: number]: string }>> => {
+    const url = '/rooms/floors';
+    return axiosClient.get(url);
+  },
 };
 
 export default roomServices;
