@@ -1,5 +1,13 @@
 import { Info } from '@mui/icons-material';
-import { Alert, Grid, Stack, Typography, useTheme } from '@mui/material';
+import {
+  Alert,
+  Button,
+  Grid,
+  Stack,
+  Tooltip,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AvailableRoomTable from 'components/AvailableRoomTable';
@@ -10,14 +18,12 @@ import ExamineeTransferListDialog from 'components/ExamineeTransferListDialog';
 import GetAvailableExamRoomsCard from 'components/GetAvailableExamRoomsCard';
 import LoadingIndicator from 'components/LoadingIndicator';
 import Attendance from 'dtos/attendance.dto';
-import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import AvailableRoomsDto from 'dtos/availableRooms.dto';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
-import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
 import {
   createExamRoom,
-  updateRemovedExaminees,
+  updateExaminees,
 } from 'features/examRoom/addExamRoomSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Examinee from 'models/examinee.model';
@@ -37,9 +43,6 @@ const AddExamRoomPage = () => {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [examRooms, setExamRooms] = useState<AvailableRoomsDto | null>(null);
-  const [examinees, setExaminees] = useState<AvailableExamineesDto | null>(
-    null,
-  );
   const [listExamineesByRoom, setListExamineesByRoom] = useState<
     Examinee[][] | null
   >(null);
@@ -50,11 +53,11 @@ const AddExamRoomPage = () => {
     currentSubject,
     shift,
     removedExaminees,
+    examinees,
   } = useAppSelector(state => state.addExamRoom);
 
   const handleError = () => {
     setExamRooms(null);
-    setExaminees(null);
     setSelectedIndex(-1);
     setListExamineesByRoom(null);
   };
@@ -70,20 +73,12 @@ const AddExamRoomPage = () => {
     }
   };
 
-  const handleGetAvailableExaminees = async (
-    payload: GetAvailableExamineesDto,
-  ) => {
-    const response = await examRoomServices.getAvailableExaminees(payload);
-    setExaminees(response.data);
-  };
-
   const handleChangeRoom = (value: number) => {
     setSelectedIndex(value);
     if (examinees && examRooms) {
       const examineePerRoom = Math.ceil(
         examinees.totalExaminees / examRooms.totalRooms,
       );
-      dispatch(updateRemovedExaminees([]));
       setListExamineesByRoom(chunk(examinees.examinees, examineePerRoom));
     }
   };
@@ -117,7 +112,7 @@ const AddExamRoomPage = () => {
         },
       };
       try {
-        const result = await dispatch(createExamRoom(payload));
+        const result = await dispatch(createExamRoom([payload]));
         unwrapResult(result);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const filteredExaminees = examinees!.examinees.filter(
@@ -129,13 +124,66 @@ const AddExamRoomPage = () => {
                 (examRoom, index) => index !== selectedIndex,
               )
             : [];
-        setExaminees({
-          examinees: filteredExaminees,
-          totalExaminees: filteredExaminees?.length || 0,
-        });
+        dispatch(
+          updateExaminees({
+            examinees: filteredExaminees,
+            totalExaminees: filteredExaminees?.length || 0,
+          }),
+        );
         setExamRooms({
           availableRooms: filteredExamRooms,
           totalRooms: filteredExamRooms.length,
+        });
+        setSelectedIndex(-1);
+        showSuccessMessage('Created exam room successfully');
+      } catch (error) {
+        showErrorMessage(error);
+      }
+    }
+  };
+
+  const handleCreateAllExamRoom = async () => {
+    if (examinees && examRooms && currentSubject) {
+      const examineePerRoom = Math.ceil(
+        examinees.totalExaminees / examRooms.totalRooms,
+      );
+      const listExamineesPerRoom = chunk(examinees.examinees, examineePerRoom);
+      const payload: CreateExamRoomDto[] = listExamineesPerRoom.map(
+        (value, index) => {
+          const attendances: Attendance[] = value.map(
+            (examinee, examineeIndex) => ({
+              examinee: {
+                appUserId: examinee.examinee.appUserId,
+              },
+              position: examineeIndex + 1,
+            }),
+          );
+          return {
+            attendances,
+            shift: {
+              shiftId: id,
+            },
+            room: {
+              roomId: examRooms.availableRooms[index].roomId,
+            },
+            subject: {
+              subjectId: currentSubject?.subjectId,
+            },
+          };
+        },
+      );
+      try {
+        const result = await dispatch(createExamRoom(payload));
+        unwrapResult(result);
+        dispatch(
+          updateExaminees({
+            examinees: [],
+            totalExaminees: 0,
+          }),
+        );
+        setExamRooms({
+          availableRooms: [],
+          totalRooms: 0,
         });
         setSelectedIndex(-1);
         showSuccessMessage('Created exam room successfully');
@@ -156,9 +204,7 @@ const AddExamRoomPage = () => {
           <Stack spacing={3}>
             <GetAvailableExamRoomsCard
               shiftId={id}
-              examinees={examinees}
               handleSubmit={handleGetAvailableRooms}
-              handleGetAvailableExaminees={handleGetAvailableExaminees}
               handleError={handleError}
             />
             {!isLoading ? (
@@ -166,13 +212,24 @@ const AddExamRoomPage = () => {
               examRooms.availableRooms.length > 0 && (
                 <>
                   <Stack spacing={2}>
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      sx={{ marginRight: 1 }}
-                    >
-                      Room list
-                    </Typography>
+                    <Stack direction="row" justifyContent="space-between">
+                      <Typography
+                        variant="h6"
+                        component="div"
+                        sx={{ marginRight: 1 }}
+                      >
+                        Room list
+                      </Typography>
+                      <Tooltip title="Auto assign examinees to room">
+                        <Button
+                          variant="contained"
+                          onClick={handleCreateAllExamRoom}
+                          size="small"
+                        >
+                          Assign automatically
+                        </Button>
+                      </Tooltip>
+                    </Stack>
                     {examinees && examinees.totalExaminees > 0 && (
                       <Alert severity="error">
                         {`There are ${examinees.totalExaminees} examinees left unassigned`}

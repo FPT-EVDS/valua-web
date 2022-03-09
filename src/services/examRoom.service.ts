@@ -52,7 +52,7 @@ const examRoomServices = {
     return axiosClient.post(url, { shiftId });
   },
   createExamRoom: (
-    payload: CreateExamRoomDto,
+    payload: CreateExamRoomDto[],
   ): Promise<AxiosResponse<ExamRoom>> => {
     const url = '/examRooms';
     return axiosClient.post(url, payload);
