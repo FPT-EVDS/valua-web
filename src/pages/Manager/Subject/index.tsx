@@ -74,6 +74,7 @@ const SubjectPage = () => {
     subjectId: null,
     subjectCode: '',
     subjectName: '',
+    numberOfExam: 1,
     tools: [],
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
@@ -153,10 +154,20 @@ const SubjectPage = () => {
     },
     { field: 'subjectName', headerName: 'Name', flex: 0.1, minWidth: 130 },
     {
+      field: 'numberOfExam',
+      headerName: 'Number of exams',
+      flex: 0.05,
+      minWidth: 130,
+      headerAlign: 'center',
+      align: 'center',
+    },
+    {
       field: 'tools',
       headerName: 'Allowed tools',
       flex: 0.1,
       sortable: false,
+      headerAlign: 'center',
+      align: 'center',
       renderCell: ({ id, field, getValue }) => {
         const tools = getValue(id, field) as Tool[];
         let tooltipText = 'No tools allowed';
