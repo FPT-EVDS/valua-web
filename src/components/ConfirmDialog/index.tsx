@@ -13,7 +13,7 @@ import React from 'react';
 export interface ConfirmDialogProps {
   loading?: boolean;
   title: string;
-  content: string;
+  content?: string;
   open: boolean;
   handleClose: () => void;
   handleAccept: () => void;
@@ -30,20 +30,22 @@ const ConfirmDialog = ({
   <div>
     <Dialog open={open} onClose={handleClose} fullWidth>
       <DialogTitle>{loading ? 'Processing...' : title}</DialogTitle>
-      <DialogContent>
-        {loading ? (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            height={150}
-          >
-            <CircularProgress />
-          </Box>
-        ) : (
-          <DialogContentText>{content}</DialogContentText>
-        )}
-      </DialogContent>
+      {content && (
+        <DialogContent>
+          {loading ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height={150}
+            >
+              <CircularProgress />
+            </Box>
+          ) : (
+            <DialogContentText>{content}</DialogContentText>
+          )}
+        </DialogContent>
+      )}
       {!loading && (
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

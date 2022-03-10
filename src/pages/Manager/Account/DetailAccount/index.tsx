@@ -29,7 +29,6 @@ const DetailAccountPage = () => {
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
       title: `Do you want to disable ${String(account?.fullName)} ?`,
-      content: "This action can't be revert",
       open: false,
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),

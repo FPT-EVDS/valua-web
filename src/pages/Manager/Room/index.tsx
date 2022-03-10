@@ -24,7 +24,11 @@ import EVDSDataGrid from 'components/EVDSDataGrid';
 import RoomDetailDialog from 'components/RoomDetailDialog';
 import RoomStatus from 'configs/constants/roomStatus.constant';
 import Status from 'enums/status.enum';
-import { disableRoom, searchByRoomName } from 'features/room/roomsSlice';
+import {
+  disableRoom,
+  enableRoom,
+  searchByRoomName,
+} from 'features/room/roomsSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -39,7 +43,6 @@ const RoomPage = () => {
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
       title: `Do you want to disable this room ?`,
-      content: "This action can't be revert",
       open: false,
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
@@ -113,6 +116,16 @@ const RoomPage = () => {
     }));
   };
 
+  const handleEnableRoom = async (roomId: string) => {
+    try {
+      const result = await dispatch(enableRoom(roomId));
+      unwrapResult(result);
+      showSuccessMessage('Enable room successfully');
+    } catch (error) {
+      showErrorMessage(error);
+    }
+  };
+
   const columns: Array<GridColDef | GridActionsColDef> = [
     { field: 'roomId', hide: true },
     { field: 'roomName', headerName: 'Name', flex: 0.1, minWidth: 130 },
@@ -173,7 +186,7 @@ const RoomPage = () => {
       getActions: params => {
         const roomId = String(params.getValue(params.id, 'roomId'));
         const status = params.getValue(params.id, 'status');
-        const deleteItems = [
+        const menuItems = [
           <GridActionsCellItem
             label="View detail"
             showInMenu
@@ -192,9 +205,17 @@ const RoomPage = () => {
           />,
         ];
         if (status === Status.isDisable) {
-          deleteItems.splice(1, 2);
+          menuItems.splice(1, 2);
+          menuItems.push(
+            <GridActionsCellItem
+              label="Enable"
+              sx={{ color: green[500] }}
+              showInMenu
+              onClick={() => handleEnableRoom(roomId)}
+            />,
+          );
         }
-        return deleteItems;
+        return menuItems;
       },
     },
   ];

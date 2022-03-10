@@ -56,6 +56,19 @@ export const disableRoom = createAsyncThunk(
   },
 );
 
+export const enableRoom = createAsyncThunk(
+  'rooms/enable',
+  async (roomId: string, { rejectWithValue }) => {
+    try {
+      const response = await roomServices.enableRoom(roomId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 export const searchByRoomName = createAsyncThunk(
   'rooms/searchByName',
   async (payload: SearchByNameDto, { rejectWithValue }) => {
@@ -94,14 +107,17 @@ export const roomSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(disableRoom.fulfilled, (state, action) => {
-        const index = state.current.rooms.findIndex(
-          room => room.room.roomId === action.payload.roomId,
-        );
-        state.current.rooms[index].room.status = action.payload.status;
-        state.error = '';
-        state.isLoading = false;
-      })
+      .addMatcher(
+        isAnyOf(enableRoom.fulfilled, disableRoom.fulfilled),
+        (state, action) => {
+          const index = state.current.rooms.findIndex(
+            room => room.room.roomId === action.payload.roomId,
+          );
+          state.current.rooms[index].room.status = action.payload.status;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
       .addMatcher(
         isAnyOf(getRooms.fulfilled, searchByRoomName.fulfilled),
         (state, action) => {
@@ -116,6 +132,7 @@ export const roomSlice = createSlice({
           disableRoom.rejected,
           getRooms.rejected,
           searchByRoomName.rejected,
+          enableRoom.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -128,6 +145,7 @@ export const roomSlice = createSlice({
           disableRoom.pending,
           getRooms.pending,
           searchByRoomName.pending,
+          enableRoom.pending,
         ),
         state => {
           state.isLoading = true;
