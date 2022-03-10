@@ -27,7 +27,14 @@ const useCustomSnackbar = () => {
     });
   };
 
-  return { showErrorMessage, showSuccessMessage };
+  const showInfoMessage = (message: string) => {
+    enqueueSnackbar(message, {
+      variant: 'info',
+      preventDuplicate: true,
+    });
+  };
+
+  return { showErrorMessage, showSuccessMessage, showInfoMessage };
 };
 
 export default useCustomSnackbar;

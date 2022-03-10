@@ -17,13 +17,16 @@ import {
   Stack,
   Toolbar,
 } from '@mui/material';
+import { Client, IFrame, StompSubscription } from '@stomp/stompjs';
 import { useAppSelector } from 'app/hooks';
 import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
 import NotificationMenu from 'components/NotificationMenu';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import ProfilePage from 'pages/Profile';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import SockJS from 'sockjs-client';
 
 import DashboardPage from './Dashboard';
 import ExamineePage from './Examinee';
@@ -62,14 +65,55 @@ const drawerItems: Array<DrawerItem> = [
   },
 ];
 
+const WEB_SOCKET_URL = `${String(process.env.REACT_APP_API_URL)}/websocket`;
+
 const ShiftManagerDashboard = (): JSX.Element => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { showInfoMessage, showErrorMessage } = useCustomSnackbar();
   const user = useAppSelector(state => state.auth.user);
+  const [subscription, setSubscription] = useState<StompSubscription | null>(
+    null,
+  );
   const drawerWidth = 240;
 
   const handleDrawerToggle = (): void => {
     setMobileOpen(!mobileOpen);
   };
+
+  const onMessageReceived = (payload: IFrame) => {
+    const data = JSON.parse(payload.body);
+    showInfoMessage(data.message);
+  };
+
+  const client = new Client({
+    brokerURL: WEB_SOCKET_URL,
+    webSocketFactory: () => new SockJS(WEB_SOCKET_URL),
+    onConnect: () => {
+      const clientSubscribtion = client.subscribe(
+        `/web/notification/${String(user?.companyId)}`,
+        onMessageReceived,
+      );
+      setSubscription(clientSubscribtion);
+    },
+    onStompError: frame => {
+      showErrorMessage(frame.headers.message);
+    },
+  });
+
+  const handleLogout = async () => {
+    if (subscription) {
+      subscription.unsubscribe();
+      setSubscription(null);
+    }
+    client.forceDisconnect();
+    await client.deactivate();
+  };
+
+  useEffect(() => {
+    if (user && !client.active) {
+      client.activate();
+    }
+  }, [user]);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -102,7 +146,11 @@ const ShiftManagerDashboard = (): JSX.Element => {
             spacing={{ xs: 0.5, sm: 1.5 }}
           >
             <NotificationMenu />
-            <AvatarProfileMenu user={user} path="/shift-manager/profile" />
+            <AvatarProfileMenu
+              user={user}
+              path="/shift-manager/profile"
+              logoutCallback={handleLogout}
+            />
           </Stack>
         </Toolbar>
       </AppBar>

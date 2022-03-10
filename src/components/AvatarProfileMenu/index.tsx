@@ -18,9 +18,11 @@ import { Link, useHistory } from 'react-router-dom';
 interface Props {
   user: User | null;
   path: string;
+  // eslint-disable-next-line react/require-default-props
+  logoutCallback?: () => Promise<void>;
 }
 
-const AvatarProfileMenu = ({ user, path }: Props) => {
+const AvatarProfileMenu = ({ user, path, logoutCallback }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const history = useHistory();
 
@@ -91,9 +93,10 @@ const AvatarProfileMenu = ({ user, path }: Props) => {
           <ListItemText>My profile</ListItemText>
         </MenuItem>
         <MenuItem
-          onClick={() => {
+          onClick={async () => {
             localStorage.removeItem(AppConstants.ACCESS_TOKEN);
             localStorage.removeItem(AppConstants.REFRESH_TOKEN);
+            if (logoutCallback) await logoutCallback();
             history.push('/');
           }}
         >

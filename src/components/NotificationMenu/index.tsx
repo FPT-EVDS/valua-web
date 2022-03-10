@@ -1,9 +1,4 @@
-import {
-  AccessTime,
-  ChevronRight,
-  Comment,
-  Notifications,
-} from '@mui/icons-material';
+import { ChevronRight, Notifications } from '@mui/icons-material';
 import {
   Badge,
   Box,
