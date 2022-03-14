@@ -21,8 +21,7 @@ const accountSchema = object({
     ),
   email: string()
     .defined('Email is required')
-    .email('Please enter a valid email')
-    .max(50, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`),
+    .email('Please enter a valid email'),
   fullName: string()
     .defined('Full name is required')
     .matches(
@@ -45,7 +44,7 @@ const accountSchema = object({
         10,
         value => `Maximum length of class field is ${value.max} characters`,
       ),
-    otherwise: string().notRequired(),
+    otherwise: string().nullable().notRequired(),
   }),
   companyId: string().when('userRole', {
     is: (value: Role) => value.roleID === 3,
