@@ -104,7 +104,21 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
           <Grid container spacing={2}>
             <Grid item xs={12} md={4}>
               <TextField
-                autoFocus
+                name="companyId"
+                margin="dense"
+                label="Company ID"
+                fullWidth
+                variant="outlined"
+                value={formik.values.companyId}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={formik.handleChange}
+                disabled
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
                 name="email"
                 margin="dense"
                 label="Email"
@@ -120,7 +134,6 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
             </Grid>
             <Grid item xs={12} md={4}>
               <TextField
-                autoFocus
                 name="fullName"
                 margin="dense"
                 label="Fullname"

@@ -197,7 +197,7 @@ const AddExamRoomPage = () => {
     <div>
       <BackToPreviousPageButton
         title="Back to detail shift page"
-        route={`/shift-manager/shift/${id}`}
+        route={`/shift-manager/shifts/${id}`}
       />
       <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
         <Grid item xs={12} lg={4}>

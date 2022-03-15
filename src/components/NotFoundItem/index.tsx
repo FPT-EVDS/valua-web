@@ -3,12 +3,16 @@ import { ReactComponent as NotFoundLogo } from 'assets/images/not-found.svg';
 import React from 'react';
 
 interface Props {
-  isLoading: boolean;
+  // eslint-disable-next-line react/require-default-props
+  isLoading?: boolean;
   // eslint-disable-next-line react/require-default-props
   message?: string;
 }
 
-const NotFoundItem = ({ isLoading, message = 'Item not found' }: Props) => (
+const NotFoundItem = ({
+  isLoading = false,
+  message = 'Item not found',
+}: Props) => (
   <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
     {isLoading ? (
       <CircularProgress />

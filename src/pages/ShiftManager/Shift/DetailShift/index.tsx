@@ -107,7 +107,7 @@ const DetailShiftPage = () => {
         ...prevState,
         open: false,
       }));
-      history.push('/shift-manager/shift');
+      history.push('/shift-manager/shifts');
     } catch (error) {
       showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
@@ -148,7 +148,7 @@ const DetailShiftPage = () => {
     <Button
       variant="contained"
       startIcon={<Add />}
-      onClick={() => history.push(`/shift-manager/shift/${id}/examRoom/add`)}
+      onClick={() => history.push(`/shift-manager/shifts/${id}/exam-rooms/add`)}
     >
       Add new
     </Button>
@@ -285,7 +285,7 @@ const DetailShiftPage = () => {
             showInMenu
             sx={{ justifyContent: 'right' }}
             onClick={() =>
-              history.push(`/shift-manager/shift/${id}/examRoom/${rowId}`)
+              history.push(`/shift-manager/shifts/${id}/exam-rooms/${rowId}`)
             }
           />,
           <GridActionsCellItem
@@ -294,7 +294,7 @@ const DetailShiftPage = () => {
             sx={{ justifyContent: 'right' }}
             onClick={() =>
               history.push(
-                `/shift-manager/shift/${id}/examRoom/${rowId}?edit=true`,
+                `/shift-manager/shifts/${id}/exam-rooms/${rowId}?edit=true`,
               )
             }
           />,
@@ -328,7 +328,7 @@ const DetailShiftPage = () => {
       )}
       <BackToPreviousPageButton
         title="Back to shift page"
-        route="/shift-manager/shift"
+        route="/shift-manager/shifts"
       />
       {shift ? (
         <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
