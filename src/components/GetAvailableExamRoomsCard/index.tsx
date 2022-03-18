@@ -118,7 +118,7 @@ const GetAvailableExamRoomsCard = ({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <SubjectExamineeSemesterDropdown
-                semesterId={shift?.semester.semesterId}
+                shiftId={String(shift?.shiftId)}
                 helperText={formik.errors.subjectId}
                 error={Boolean(formik.errors.subjectId)}
                 onChange={handleChangeSubject}
