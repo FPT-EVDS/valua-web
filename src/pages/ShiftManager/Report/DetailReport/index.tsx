@@ -100,8 +100,7 @@ const DetailReportPage = () => {
 
   useEffect(() => {
     fetchReport(id).catch(error => showErrorMessage(error));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id]);
 
   return (
     <div>

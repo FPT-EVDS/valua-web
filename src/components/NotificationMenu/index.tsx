@@ -93,6 +93,8 @@ const NotificationMenu = () => {
   const handleNotificationTap = (notification: Notification) => {
     if (user?.role === Role.ShiftManager) {
       history.push(`/shift-manager${notification.route}`);
+    } else {
+      history.push(`/manager${notification.route}`);
     }
   };
 
