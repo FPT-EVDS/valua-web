@@ -122,7 +122,7 @@ const DetailRoomPage = () => {
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <BackToPreviousPageButton
         title="Back to room page"
-        route="/manager/room"
+        route="/manager/rooms"
       />
       {room ? (
         <Grid container mt={2} spacing={2}>

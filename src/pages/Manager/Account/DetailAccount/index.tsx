@@ -149,7 +149,7 @@ const DetailAccountPage = () => {
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <BackToPreviousPageButton
         title="Back to account page"
-        route="/manager/account"
+        route="/manager/accounts"
       />
       {account ? (
         <Grid container mt={2} spacing={2}>

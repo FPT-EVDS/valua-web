@@ -249,7 +249,7 @@ const DetailSemesterPage = () => {
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <BackToPreviousPageButton
         title="Back to semester page"
-        route="/manager/semester"
+        route="/manager/semesters"
       />
       {semester ? (
         <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
