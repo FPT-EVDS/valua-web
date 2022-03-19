@@ -39,6 +39,8 @@ const FloorDropdown = ({
         });
         setFloorOptions(options);
         if (value) {
+          onChange(options[value].key);
+        } else {
           onChange(options[0].key);
         }
         return data;

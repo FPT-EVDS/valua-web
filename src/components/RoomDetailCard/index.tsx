@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
+import FloorDropdown from 'components/FloorDropdown';
 import { roomSchema } from 'configs/validations';
 import RoomDto from 'dtos/room.dto';
 import { updateRoom } from 'features/room/detailRoomSlice';
@@ -53,6 +54,10 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
     if (room) {
       await formik.setValues(room);
     }
+  };
+
+  const handleFloorChange = async (payload: number | null) => {
+    await formik.setFieldValue('floor', payload);
   };
 
   useEffect(() => {
@@ -100,6 +105,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
                 margin="dense"
                 label="Name"
                 fullWidth
+                disabled={!isEditable}
                 variant="outlined"
                 value={formik.values.roomName}
                 InputLabelProps={{
@@ -113,22 +119,20 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
               />
             </Grid>
             <Grid item xs={12} md={4}>
-              <TextField
-                required
-                name="floor"
-                margin="dense"
-                label="Floor"
-                type="number"
-                inputMode="numeric"
-                fullWidth
+              <FloorDropdown
+                onChange={handleFloorChange}
+                isEditable={isEditable}
                 value={formik.values.floor}
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
+                textFieldProps={{
+                  required: true,
+                  error: formik.touched.floor && Boolean(formik.errors.floor),
+                  helperText: formik.touched.floor && formik.errors.floor,
+                  InputLabelProps: {
+                    shrink: true,
+                  },
+                  label: 'Floor',
+                  name: 'floor',
                 }}
-                error={formik.touched.floor && Boolean(formik.errors.floor)}
-                helperText={formik.touched.floor && formik.errors.floor}
-                onChange={formik.handleChange}
               />
             </Grid>
             <Grid item xs={12} md={4}>
@@ -140,6 +144,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
                 type="number"
                 inputMode="numeric"
                 fullWidth
+                disabled={!isEditable}
                 value={formik.values.seatCount}
                 variant="outlined"
                 InputLabelProps={{
@@ -159,6 +164,7 @@ const RoomDetailCard = ({ room, isLoading }: Props) => {
                 margin="dense"
                 label="Description"
                 rows={8}
+                disabled={!isEditable}
                 value={formik.values.description}
                 fullWidth
                 variant="outlined"
