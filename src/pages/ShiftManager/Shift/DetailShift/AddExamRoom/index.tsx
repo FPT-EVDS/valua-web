@@ -226,7 +226,7 @@ const AddExamRoomPage = () => {
                           onClick={handleCreateAllExamRoom}
                           size="small"
                         >
-                          Assign automatically
+                          Create all
                         </Button>
                       </Tooltip>
                     </Stack>
