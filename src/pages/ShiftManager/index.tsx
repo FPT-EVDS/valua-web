@@ -17,13 +17,18 @@ import {
   Stack,
   Toolbar,
 } from '@mui/material';
-import { useAppSelector } from 'app/hooks';
+import { Client, IFrame, StompSubscription } from '@stomp/stompjs';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
 import NotificationMenu from 'components/NotificationMenu';
+import { addNotification } from 'features/notification/notificationsSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
+import Notification from 'models/notification.model';
 import ProfilePage from 'pages/Profile';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import SockJS from 'sockjs-client';
 
 import DashboardPage from './Dashboard';
 import ExamineePage from './Examinee';
@@ -46,30 +51,75 @@ const drawerItems: Array<DrawerItem> = [
     name: 'Examinee',
     icon: <GroupsOutlined />,
     activeIcon: <Groups color="primary" />,
-    to: '/shift-manager/examinee',
+    to: '/shift-manager/examinees',
   },
   {
     name: 'Shift',
     icon: <EventOutlined />,
     activeIcon: <Event color="primary" />,
-    to: '/shift-manager/shift',
+    to: '/shift-manager/shifts',
   },
   {
     name: 'Report',
     icon: <AssignmentOutlined />,
     activeIcon: <Assignment color="primary" />,
-    to: '/shift-manager/report',
+    to: '/shift-manager/reports',
   },
 ];
 
+const WEB_SOCKET_URL = `${String(process.env.REACT_APP_API_URL)}/websocket`;
+
 const ShiftManagerDashboard = (): JSX.Element => {
+  const dispatch = useAppDispatch();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { showInfoMessage, showErrorMessage } = useCustomSnackbar();
   const user = useAppSelector(state => state.auth.user);
+  const [subscription, setSubscription] = useState<StompSubscription | null>(
+    null,
+  );
   const drawerWidth = 240;
 
   const handleDrawerToggle = (): void => {
     setMobileOpen(!mobileOpen);
   };
+
+  const onMessageReceived = (payload: IFrame) => {
+    if (payload) {
+      const data = JSON.parse(payload.body).notification as Notification;
+      dispatch(addNotification(data));
+      showInfoMessage('You received a new notification');
+    }
+  };
+
+  const client = new Client({
+    brokerURL: WEB_SOCKET_URL,
+    webSocketFactory: () => new SockJS(WEB_SOCKET_URL),
+    onConnect: () => {
+      const clientSubscribtion = client.subscribe(
+        `/web/notification/${String(user?.companyId)}`,
+        onMessageReceived,
+      );
+      setSubscription(clientSubscribtion);
+    },
+    onStompError: frame => {
+      showErrorMessage(frame.headers.message);
+    },
+  });
+
+  const handleLogout = async () => {
+    if (subscription) {
+      subscription.unsubscribe();
+      setSubscription(null);
+    }
+    client.forceDisconnect();
+    await client.deactivate();
+  };
+
+  useEffect(() => {
+    if (user && !client.active) {
+      client.activate();
+    }
+  }, [user]);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -102,7 +152,11 @@ const ShiftManagerDashboard = (): JSX.Element => {
             spacing={{ xs: 0.5, sm: 1.5 }}
           >
             <NotificationMenu />
-            <AvatarProfileMenu user={user} />
+            <AvatarProfileMenu
+              user={user}
+              path="/shift-manager/profile"
+              logoutCallback={handleLogout}
+            />
           </Stack>
         </Toolbar>
       </AppBar>
@@ -125,34 +179,34 @@ const ShiftManagerDashboard = (): JSX.Element => {
               exact
             />
             <Route
-              path="/shift-manager/examinee"
+              path="/shift-manager/examinees"
               component={ExamineePage}
               exact
             />
             <Route
-              path="/shift-manager/examinee/subject"
+              path="/shift-manager/examinees/subject"
               component={DetailExamineePage}
               exact
             />
-            <Route path="/shift-manager/shift" component={ShiftPage} exact />
+            <Route path="/shift-manager/shifts" component={ShiftPage} exact />
             <Route
-              path="/shift-manager/shift/:id"
+              path="/shift-manager/shifts/:id"
               component={DetailShiftPage}
               exact
             />
             <Route
-              path="/shift-manager/shift/:id/examRoom/add"
+              path="/shift-manager/shifts/:id/exam-rooms/add"
               component={AddExamRoomPage}
               exact
             />
             <Route
-              path="/shift-manager/shift/:id/examRoom/:examRoomId"
+              path="/shift-manager/shifts/:id/exam-rooms/:examRoomId"
               component={DetailExamRoomPage}
               exact
             />
-            <Route path="/shift-manager/report" component={ReportPage} exact />
+            <Route path="/shift-manager/reports" component={ReportPage} exact />
             <Route
-              path="/shift-manager/report/:id"
+              path="/shift-manager/reports/:id"
               component={DetailReportPage}
             />
             <Route

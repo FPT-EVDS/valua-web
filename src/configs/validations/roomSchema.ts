@@ -10,6 +10,7 @@ const roomSchema = object({
     value => `${ValidationMessage.MAX_LENGTH} ${value.max}`,
   ),
   floor: number()
+    .typeError('Floor is required')
     .defined('Floor is required')
     .min(0, value => `Minimum floor is ${value.min}`),
   seatCount: number()

@@ -76,7 +76,7 @@ const DetailExamRoomPage = () => {
         ...prevState,
         open: false,
       }));
-      history.push(`/shift-manager/shift/${id}`);
+      history.push(`/shift-manager/shifts/${id}`);
     } catch (error) {
       showErrorMessage(error);
       setConfirmDialogProps(prevState => ({
@@ -99,7 +99,7 @@ const DetailExamRoomPage = () => {
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <BackToPreviousPageButton
         title="Back to detail shift page"
-        route={`/shift-manager/shift/${id}`}
+        route={`/shift-manager/shifts/${id}`}
       />
       <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
         {examRoom && shift && (

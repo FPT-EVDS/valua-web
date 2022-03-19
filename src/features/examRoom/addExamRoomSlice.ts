@@ -5,7 +5,9 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
+import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import Examinee from 'models/examinee.model';
 import Shift from 'models/shift.model';
 import Subject from 'models/subject.model';
@@ -21,6 +23,7 @@ interface ExamRoomState {
     'subjectId' | 'subjectName' | 'subjectCode'
   > | null;
   defaultExamRoomSize: number;
+  examinees: AvailableExamineesDto | null;
   removedExaminees: Examinee[];
 }
 
@@ -31,6 +34,7 @@ const initialState: ExamRoomState = {
   isLoading: false,
   error: '',
   defaultExamRoomSize: 20,
+  examinees: null,
   removedExaminees: [],
 };
 
@@ -49,9 +53,22 @@ export const getShift = createAsyncThunk(
 
 export const createExamRoom = createAsyncThunk(
   'addExamRoom/createExamRoom',
-  async (payload: CreateExamRoomDto, { rejectWithValue }) => {
+  async (payload: CreateExamRoomDto[], { rejectWithValue }) => {
     try {
       const response = await examRoomServices.createExamRoom(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const getAvailableExaminees = createAsyncThunk(
+  'addExamRoom/getAvailableExaminees',
+  async (payload: GetAvailableExamineesDto, { rejectWithValue }) => {
+    try {
+      const response = await examRoomServices.getAvailableExaminees(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -66,6 +83,9 @@ export const addExamRoomSlice = createSlice({
   reducers: {
     updateRemovedExaminees: (state, action: PayloadAction<Examinee[]>) => {
       state.removedExaminees = action.payload;
+    },
+    updateExaminees: (state, action: PayloadAction<AvailableExamineesDto>) => {
+      state.examinees = action.payload;
     },
     updateCurrentSubject: (
       state,
@@ -84,26 +104,42 @@ export const addExamRoomSlice = createSlice({
         state.isLoading = false;
         state.error = '';
       })
-      .addCase(createExamRoom.fulfilled, (state, action) => {
+      .addCase(createExamRoom.fulfilled, state => {
         state.removedExaminees = [];
         state.isLoading = false;
         state.error = '';
       })
+      .addCase(getAvailableExaminees.fulfilled, (state, action) => {
+        state.examinees = action.payload;
+        state.isLoading = false;
+        state.error = '';
+      })
       .addMatcher(
-        isAnyOf(getShift.rejected, createExamRoom.rejected),
+        isAnyOf(
+          getShift.rejected,
+          createExamRoom.rejected,
+          getAvailableExaminees.rejected,
+        ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
           state.error = action.payload;
         },
       )
-      .addMatcher(isAnyOf(getShift.pending, createExamRoom.pending), state => {
-        state.isLoading = true;
-        state.error = '';
-      });
+      .addMatcher(
+        isAnyOf(
+          getShift.pending,
+          createExamRoom.pending,
+          getAvailableExaminees.pending,
+        ),
+        state => {
+          state.isLoading = true;
+          state.error = '';
+        },
+      );
   },
 });
 
-export const { updateRemovedExaminees, updateCurrentSubject } =
+export const { updateRemovedExaminees, updateCurrentSubject, updateExaminees } =
   addExamRoomSlice.actions;
 
 export default addExamRoomSlice.reducer;

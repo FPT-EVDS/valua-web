@@ -174,7 +174,7 @@ const DashboardPage = () => {
                     spacing={0.5}
                     alignItems="center"
                     component={RouterLink}
-                    to="/shift-manager/shift"
+                    to="/shift-manager/shifts"
                     sx={{ textDecoration: 'none' }}
                   >
                     <Typography fontSize={15} color="primary">
@@ -216,7 +216,7 @@ const DashboardPage = () => {
                     spacing={0.5}
                     alignItems="center"
                     component={RouterLink}
-                    to="/shift-manager/report"
+                    to="/shift-manager/reports"
                     sx={{ textDecoration: 'none' }}
                   >
                     <Typography fontSize={15} color="primary">

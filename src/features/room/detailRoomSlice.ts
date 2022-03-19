@@ -49,6 +49,19 @@ export const disableRoom = createAsyncThunk(
   },
 );
 
+export const enableRoom = createAsyncThunk(
+  'detailRoom/enable',
+  async (roomId: string, { rejectWithValue }) => {
+    try {
+      const response = await roomServices.enableRoom(roomId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: DetailRoomState = {
   isLoading: false,
@@ -62,12 +75,6 @@ export const detailRoomSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(disableRoom.fulfilled, (state, action) => {
-        if (state.room) state.room.status = action.payload.status;
-        state.error = '';
-        state.isLoading = false;
-      })
-
       .addCase(getRoom.fulfilled, (state, action) => {
         state.room = action.payload.room;
         state.error = '';
@@ -79,14 +86,32 @@ export const detailRoomSlice = createSlice({
         state.isLoading = false;
       })
       .addMatcher(
-        isAnyOf(disableRoom.pending, getRoom.pending, updateRoom.pending),
+        isAnyOf(disableRoom.fulfilled, enableRoom.fulfilled),
+        (state, action) => {
+          if (state.room) state.room.status = action.payload.status;
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
+      .addMatcher(
+        isAnyOf(
+          disableRoom.pending,
+          getRoom.pending,
+          updateRoom.pending,
+          enableRoom.pending,
+        ),
         state => {
           state.isLoading = true;
           state.error = '';
         },
       )
       .addMatcher(
-        isAnyOf(disableRoom.rejected, getRoom.rejected, updateRoom.rejected),
+        isAnyOf(
+          disableRoom.rejected,
+          getRoom.rejected,
+          updateRoom.rejected,
+          enableRoom.rejected,
+        ),
         (state, action) => {
           state.isLoading = false;
           state.error = String(action.payload);

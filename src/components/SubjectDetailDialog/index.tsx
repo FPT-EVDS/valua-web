@@ -37,6 +37,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
   handleClose,
   initialValues = {
     subjectId: null,
+    numberOfExam: 1,
     subjectCode: '',
     subjectName: '',
     tools: [],
@@ -108,7 +109,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
           </IconButton>
         </Grid>
       </DialogTitle>
-      <Box component="form" onSubmit={formik.handleSubmit} pb={2}>
+      <Box component="form" onSubmit={formik.handleSubmit} pb={2} noValidate>
         <DialogContent>
           <Box display="flex" justifyContent="center">
             <Avatar
@@ -127,7 +128,6 @@ const SubjectDetailDialog: React.FC<Props> = ({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                autoFocus
                 required
                 name="subjectCode"
                 margin="dense"
@@ -151,7 +151,6 @@ const SubjectDetailDialog: React.FC<Props> = ({
             </Grid>
             <Grid item xs={12}>
               <TextField
-                autoFocus
                 required
                 name="subjectName"
                 margin="dense"
@@ -169,6 +168,30 @@ const SubjectDetailDialog: React.FC<Props> = ({
                 }
                 helperText={
                   formik.touched.subjectName && formik.errors.subjectName
+                }
+                onChange={formik.handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                name="numberOfExam"
+                type="number"
+                margin="dense"
+                label="Number of exams"
+                fullWidth
+                disabled={!isActive}
+                variant="outlined"
+                value={formik.values.numberOfExam}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                error={
+                  formik.touched.numberOfExam &&
+                  Boolean(formik.errors.numberOfExam)
+                }
+                helperText={
+                  formik.touched.numberOfExam && formik.errors.numberOfExam
                 }
                 onChange={formik.handleChange}
               />

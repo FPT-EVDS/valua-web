@@ -1,5 +1,4 @@
-/* eslint-disable react/require-default-props */
-import { Architecture, Close } from '@mui/icons-material';
+import { Close, Lock } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Avatar,
@@ -15,48 +14,38 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import SlideTransition from 'components/SlideTransition';
-import { toolSchema } from 'configs/validations';
-import ToolDto from 'dtos/tool.dto';
-import { addTool, updateTool } from 'features/tool/toolsSlice';
+import { changePasswordSchema } from 'configs/validations';
+import { changePassword } from 'features/auth/authSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 interface Props {
   open: boolean;
   handleClose: () => void;
-  initialValues?: ToolDto;
-  isActive: boolean;
-  isUpdate: boolean;
 }
 
-const ToolDetailDialog: React.FC<Props> = ({
-  open,
-  handleClose,
-  initialValues = {
-    toolId: null,
-    toolCode: '',
-    toolName: '',
-  },
-  isUpdate,
-  isActive,
-}) => {
+const ChangePasswordDialog: React.FC<Props> = ({ open, handleClose }) => {
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
+  const { isLoading } = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
-  const isLoading = useAppSelector(state => state.tools.isLoading);
   const formik = useFormik({
-    initialValues,
-    validationSchema: toolSchema,
-    onSubmit: async (payload: ToolDto) => {
+    initialValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    },
+    validationSchema: changePasswordSchema,
+    onSubmit: async ({ currentPassword, newPassword }) => {
       try {
-        const message = isUpdate
-          ? `Update tool ${String(payload.toolCode)} successfully`
-          : 'Create tool successfully';
-        const result = isUpdate
-          ? await dispatch(updateTool(payload))
-          : await dispatch(addTool(payload));
+        const result = await dispatch(
+          changePassword({
+            currentPassword,
+            newPassword,
+          }),
+        );
         unwrapResult(result);
-        showSuccessMessage(message);
+        showSuccessMessage('Change password successfully');
         formik.resetForm();
         handleClose();
       } catch (error) {
@@ -69,13 +58,6 @@ const ToolDetailDialog: React.FC<Props> = ({
     formik.resetForm();
     handleClose();
   };
-
-  const refreshForm = async (values: ToolDto) => formik.setValues(values);
-
-  useEffect(() => {
-    refreshForm(initialValues).catch(error => showErrorMessage(error));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialValues]);
 
   return (
     <Dialog
@@ -91,11 +73,7 @@ const ToolDetailDialog: React.FC<Props> = ({
           justifyContent="space-between"
           alignItems="center"
         >
-          {!isActive
-            ? `${formik.values.toolCode}'s detail`
-            : isUpdate
-            ? 'Update tool'
-            : 'Create tool'}
+          Update password
           <IconButton onClick={handleModalClose}>
             <Close />
           </IconButton>
@@ -114,7 +92,7 @@ const ToolDetailDialog: React.FC<Props> = ({
               }}
               variant="square"
             >
-              <Architecture fontSize="large" />
+              <Lock fontSize="large" />
             </Avatar>
           </Box>
           <Grid container spacing={2}>
@@ -122,61 +100,89 @@ const ToolDetailDialog: React.FC<Props> = ({
               <TextField
                 autoFocus
                 required
-                name="toolCode"
+                type="password"
+                name="currentPassword"
                 margin="dense"
-                label="Tool code"
+                label="Current password"
                 fullWidth
                 variant="outlined"
-                value={formik.values.toolCode}
+                value={formik.values.currentPassword}
                 InputLabelProps={{
                   shrink: true,
                 }}
-                disabled={!isActive}
                 error={
-                  formik.touched.toolCode && Boolean(formik.errors.toolCode)
+                  formik.touched.currentPassword &&
+                  Boolean(formik.errors.currentPassword)
                 }
-                helperText={formik.touched.toolCode && formik.errors.toolCode}
+                helperText={
+                  formik.touched.currentPassword &&
+                  formik.errors.currentPassword
+                }
                 onChange={formik.handleChange}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                autoFocus
                 required
-                name="toolName"
+                name="newPassword"
+                type="password"
                 margin="dense"
-                label="Name"
+                label="New password"
                 fullWidth
-                disabled={!isActive}
                 variant="outlined"
-                value={formik.values.toolName}
+                value={formik.values.newPassword}
                 InputLabelProps={{
                   shrink: true,
                 }}
                 error={
-                  formik.touched.toolName && Boolean(formik.errors.toolName)
+                  formik.touched.newPassword &&
+                  Boolean(formik.errors.newPassword)
                 }
-                helperText={formik.touched.toolName && formik.errors.toolName}
+                helperText={
+                  formik.touched.newPassword && formik.errors.newPassword
+                }
+                onChange={formik.handleChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                name="confirmPassword"
+                margin="dense"
+                type="password"
+                label="Retype your new password"
+                fullWidth
+                variant="outlined"
+                value={formik.values.confirmPassword}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                error={
+                  formik.touched.confirmPassword &&
+                  Boolean(formik.errors.confirmPassword)
+                }
+                helperText={
+                  formik.touched.confirmPassword &&
+                  formik.errors.confirmPassword
+                }
                 onChange={formik.handleChange}
               />
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
-          {isActive && (
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              sx={{ width: 150 }}
-              loading={isLoading}
-            >
-              {isUpdate ? 'Update' : 'Create'}
-            </LoadingButton>
-          )}
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            sx={{ width: 150 }}
+            loading={isLoading}
+          >
+            Update
+          </LoadingButton>
         </DialogActions>
       </Box>
     </Dialog>
   );
 };
 
-export default ToolDetailDialog;
+export default ChangePasswordDialog;

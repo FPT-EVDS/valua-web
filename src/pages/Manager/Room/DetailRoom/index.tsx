@@ -9,7 +9,11 @@ import OverviewCard from 'components/OverviewCard';
 import RoomDetailCard from 'components/RoomDetailCard';
 import { format } from 'date-fns';
 import Status from 'enums/status.enum';
-import { disableRoom, getRoom } from 'features/room/detailRoomSlice';
+import {
+  disableRoom,
+  enableRoom,
+  getRoom,
+} from 'features/room/detailRoomSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Room from 'models/room.model';
 import React, { useEffect, useState } from 'react';
@@ -30,7 +34,6 @@ const DetailRoomPage = () => {
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
       title: `Do you want to disable this room ?`,
-      content: "This action can't be revert",
       open: false,
       handleClose: () =>
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
@@ -77,6 +80,16 @@ const DetailRoomPage = () => {
     }));
   };
 
+  const handleEnableRoom = async (roomId: string) => {
+    try {
+      const result = await dispatch(enableRoom(roomId));
+      unwrapResult(result);
+      showSuccessMessage('Enable room successfully');
+    } catch (error) {
+      showErrorMessage(error);
+    }
+  };
+
   const GroupButtons = () => (
     <>
       {room?.status !== Status.isDisable ? (
@@ -88,7 +101,11 @@ const DetailRoomPage = () => {
           Disable room
         </Button>
       ) : (
-        <Button variant="text" color="success">
+        <Button
+          variant="text"
+          color="success"
+          onClick={() => handleEnableRoom(id)}
+        >
           Enable room
         </Button>
       )}
@@ -105,7 +122,7 @@ const DetailRoomPage = () => {
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
       <BackToPreviousPageButton
         title="Back to room page"
-        route="/manager/room"
+        route="/manager/rooms"
       />
       {room ? (
         <Grid container mt={2} spacing={2}>

@@ -43,7 +43,7 @@ const ShiftPage = () => {
   const { url } = useRouteMatch();
   const [confirmDialogProps, setConfirmDialogProps] =
     useState<ConfirmDialogProps>({
-      title: `Do you want to disable this shift ?`,
+      title: `Do you want to delete this shift ?`,
       content: "This action can't be revert",
       open: false,
       handleClose: () =>

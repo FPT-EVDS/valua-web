@@ -15,6 +15,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import logo from 'assets/images/logo-under.png';
 import backgroundImage from 'assets/images/stacked-waves-haikei.png';
+import loginSchema from 'configs/validations/loginSchema';
 import LoginDto from 'dtos/login.dto';
 import AppConstants from 'enums/app';
 import Role from 'enums/role.enum';
@@ -37,6 +38,7 @@ const LoginPage = () => {
       email: '',
       password: '',
     },
+    validationSchema: loginSchema,
     onSubmit: async (payload: LoginDto) => {
       try {
         const result = await dispatch(login(payload));
@@ -97,6 +99,8 @@ const LoginPage = () => {
                 inputMode="email"
                 type="email"
                 onChange={formik.handleChange}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -112,6 +116,10 @@ const LoginPage = () => {
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={
+                  formik.touched.password && Boolean(formik.errors.password)
+                }
+                helperText={formik.touched.password && formik.errors.password}
                 fullWidth
               />
               <Typography variant="subtitle1" component="div" color={red[500]}>

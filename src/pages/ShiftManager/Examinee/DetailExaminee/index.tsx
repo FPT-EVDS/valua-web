@@ -102,7 +102,7 @@ const RemoveExamineeDialog = ({
   return (
     <div>
       <Dialog open={open} onClose={handleCloseModal} fullWidth>
-        <Box component="form" onSubmit={formik.handleSubmit}>
+        <Box component="form" onSubmit={formik.handleSubmit} noValidate>
           <DialogTitle sx={{ m: 0, p: 2 }}>
             {title || 'Confirm remove'}
             <IconButton
@@ -355,7 +355,7 @@ const DetailExamineePage = () => {
       />
       <BackToPreviousPageButton
         title="Back to examinee page"
-        route="/shift-manager/examinee"
+        route="/shift-manager/examinees"
       />
       <Grid container mt={2} columnSpacing={6} rowSpacing={2}>
         <Grid item xs={12} md={9} lg={3}>

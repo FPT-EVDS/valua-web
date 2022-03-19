@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios';
+import ChangePasswordDto from 'dtos/changePassword.dto';
 import LoginDto from 'dtos/login.dto';
 import LoginUser from 'dtos/loginUser.dto';
 import User from 'models/user.model';
@@ -21,8 +22,14 @@ const authServices = {
     return axiosClient.get(url);
   },
   updateUserProfile: (payload: User): Promise<AxiosResponse<User>> => {
-    const url = `/authentication/profile`;
+    const url = '/authentication/profile';
     return axiosClient.put(url, payload);
+  },
+  changePassword: (
+    payload: ChangePasswordDto,
+  ): Promise<AxiosResponse<string>> => {
+    const url = '/authentication/changePassword';
+    return axiosClient.post(url, payload);
   },
 };
 

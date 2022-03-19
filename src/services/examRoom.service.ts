@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios';
 import AssignStaffToExamRoomDto from 'dtos/assignStaffToExamRoom.dto';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import AvailableRoomsDto from 'dtos/availableRooms.dto';
+import AvailableShiftDto from 'dtos/availableShift.dto';
 import AvailableStaffDto from 'dtos/availableStaff.dto';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
 import DisableExamRoom from 'dtos/disableExamRoom.dto';
@@ -52,7 +53,7 @@ const examRoomServices = {
     return axiosClient.post(url, { shiftId });
   },
   createExamRoom: (
-    payload: CreateExamRoomDto,
+    payload: CreateExamRoomDto[],
   ): Promise<AxiosResponse<ExamRoom>> => {
     const url = '/examRooms';
     return axiosClient.post(url, payload);
@@ -94,6 +95,12 @@ const examRoomServices = {
         value: 0,
       },
     ]);
+  },
+  getAvailableShifts: (
+    shiftId: string,
+  ): Promise<AxiosResponse<AvailableShiftDto>> => {
+    const url = `/examRooms/available/shift/${shiftId}`;
+    return axiosClient.get(url);
   },
 };
 

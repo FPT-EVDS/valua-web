@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useAppDispatch } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import SemesterDropdown from 'components/SemesterDropdown';
 import ShiftConfig, {
   notAllowEditShiftStatuses,
@@ -49,6 +49,9 @@ interface Props {
 const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
+  const {
+    current: { totalItems },
+  } = useAppSelector(state => state.examRoom);
   const query = useQuery();
   const [isEditable, setIsEditable] = useState(
     String(query.get('edit')) === 'true',
@@ -159,7 +162,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
           )
         }
       />
-      <Box component="form" onSubmit={formik.handleSubmit}>
+      <Box component="form" onSubmit={formik.handleSubmit} noValidate>
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -304,6 +307,7 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
               {shift.status === ShiftStatus.NotReady && (
                 <Button
                   variant="contained"
+                  disabled={totalItems <= 0}
                   sx={{
                     backgroundColor: '#26A69A',
                     ':hover': { backgroundColor: darken('#26A69A', 0.05) },

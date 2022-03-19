@@ -1,4 +1,4 @@
-export default interface GetAvailableExamRoomsDto {
+export default interface GetAvailableExamineesDto {
   shiftId: string;
   subjectId: string;
 }

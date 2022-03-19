@@ -100,14 +100,13 @@ const DetailReportPage = () => {
 
   useEffect(() => {
     fetchReport(id).catch(error => showErrorMessage(error));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id]);
 
   return (
     <div>
       <BackToPreviousPageButton
         title="Back to report page"
-        route="/shift-manager/report"
+        route="/shift-manager/reports"
       />
       {report ? (
         <Grid container mt={2} spacing={2}>

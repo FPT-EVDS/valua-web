@@ -17,9 +17,12 @@ import { Link, useHistory } from 'react-router-dom';
 
 interface Props {
   user: User | null;
+  path: string;
+  // eslint-disable-next-line react/require-default-props
+  logoutCallback?: () => Promise<void>;
 }
 
-const AvatarProfileMenu = ({ user }: Props) => {
+const AvatarProfileMenu = ({ user, path, logoutCallback }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const history = useHistory();
 
@@ -83,16 +86,17 @@ const AvatarProfileMenu = ({ user }: Props) => {
           </Typography>
         </Box>
         <Divider sx={{ my: 1 }} />
-        <MenuItem component={Link} to="/shift-manager/profile">
+        <MenuItem component={Link} to={path}>
           <ListItemIcon>
             <AccountCircle fontSize="small" />
           </ListItemIcon>
           <ListItemText>My profile</ListItemText>
         </MenuItem>
         <MenuItem
-          onClick={() => {
+          onClick={async () => {
             localStorage.removeItem(AppConstants.ACCESS_TOKEN);
             localStorage.removeItem(AppConstants.REFRESH_TOKEN);
+            if (logoutCallback) await logoutCallback();
             history.push('/');
           }}
         >

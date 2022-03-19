@@ -15,10 +15,9 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { AxiosError } from 'axios';
 import SubjectExamineeSemesterDropdown from 'components/SubjectExamineeSemesterDropdown';
 import { addExamRoomSchema } from 'configs/validations';
-import AvailableExamineesDto from 'dtos/availableExaminees.dto';
-import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
 import {
+  getAvailableExaminees,
   getShift,
   updateCurrentSubject,
 } from 'features/examRoom/addExamRoomSlice';
@@ -30,23 +29,17 @@ import React, { useEffect, useState } from 'react';
 interface Props {
   shiftId: string;
   handleSubmit: (payload: GetAvailableExamRoomsDto) => Promise<void>;
-  handleGetAvailableExaminees: (
-    payload: GetAvailableExamineesDto,
-  ) => Promise<void>;
-  examinees: AvailableExamineesDto | null;
   handleError: () => void;
 }
 
 const GetAvailableExamRoomsCard = ({
   shiftId,
-  examinees,
   handleSubmit,
-  handleGetAvailableExaminees,
   handleError,
 }: Props) => {
   const dispatch = useAppDispatch();
   const { showErrorMessage } = useCustomSnackbar();
-  const { shift, defaultExamRoomSize } = useAppSelector(
+  const { shift, defaultExamRoomSize, examinees } = useAppSelector(
     state => state.addExamRoom,
   );
   const [isLoading, setIsLoading] = useState(false);
@@ -87,10 +80,15 @@ const GetAvailableExamRoomsCard = ({
     dispatch(updateCurrentSubject(selectedSubject));
     try {
       if (shift && selectedSubject) {
-        await handleGetAvailableExaminees({
-          shiftId: String(shift.shiftId),
-          subjectId: selectedSubject.subjectId,
-        });
+        const result = await dispatch(
+          getAvailableExaminees({
+            shiftId: String(shift.shiftId),
+            subjectId: selectedSubject.subjectId,
+          }),
+        );
+        // reset state
+        handleError();
+        unwrapResult(result);
         setIsDisable(false);
       }
     } catch (error) {
@@ -115,12 +113,12 @@ const GetAvailableExamRoomsCard = ({
           </Typography>
         }
       />
-      <Box component="form" onSubmit={formik.handleSubmit}>
+      <Box component="form" onSubmit={formik.handleSubmit} noValidate>
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <SubjectExamineeSemesterDropdown
-                semesterId={shift?.semester.semesterId}
+                shiftId={String(shift?.shiftId)}
                 helperText={formik.errors.subjectId}
                 error={Boolean(formik.errors.subjectId)}
                 onChange={handleChangeSubject}

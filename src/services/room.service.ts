@@ -35,6 +35,16 @@ const roomServices = {
       },
     ]);
   },
+  enableRoom: (id: string): Promise<AxiosResponse<Room>> => {
+    const url = `/rooms/${id}`;
+    return axiosClient.patch(url, [
+      {
+        op: 'replace',
+        path: '/status',
+        value: 1,
+      },
+    ]);
+  },
   getRoomsForShift: (): Promise<AxiosResponse<Room[]>> => {
     const url = '/rooms/shiftManager/roomReady';
     return axiosClient.get(url);
@@ -57,6 +67,10 @@ const roomServices = {
   },
   getRoomOverview: (): Promise<AxiosResponse<RoomOverviewDto>> => {
     const url = '/rooms/overview';
+    return axiosClient.get(url);
+  },
+  getFloorList: (): Promise<AxiosResponse<{ [key: number]: string }>> => {
+    const url = '/rooms/floors';
     return axiosClient.get(url);
   },
 };

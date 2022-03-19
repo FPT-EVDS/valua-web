@@ -88,7 +88,7 @@ const AddSubjectToSemesterDialog: React.FC<Props> = ({ open, handleClose }) => {
           </IconButton>
         </Grid>
       </DialogTitle>
-      <Box component="form" pb={2} onSubmit={formik.handleSubmit}>
+      <Box component="form" pb={2} onSubmit={formik.handleSubmit} noValidate>
         <DialogContent>
           <AddSemesterSubjectsDropdown
             error={Boolean(formik.errors.subjects)}

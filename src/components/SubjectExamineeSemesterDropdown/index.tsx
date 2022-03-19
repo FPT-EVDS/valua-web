@@ -2,21 +2,21 @@
 import { Autocomplete, TextField } from '@mui/material';
 import Subject from 'models/subject.model';
 import React, { useEffect, useState } from 'react';
-import subjectExamineesServices from 'services/subjectExaminees.service';
+import examRoomServices from 'services/examRoom.service';
 
 interface Props {
   error?: boolean;
   value?: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'>;
   isEditable?: boolean;
   helperText?: string;
-  semesterId?: string;
+  shiftId?: string;
   onChange: (
     subjects: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'> | null,
   ) => void;
 }
 
 const SubjectExamineeSemesterDropdown = ({
-  semesterId,
+  shiftId,
   onChange,
   helperText,
   error,
@@ -25,30 +25,29 @@ const SubjectExamineeSemesterDropdown = ({
 }: Props) => {
   const [subjectOptions, setSubjectOptions] = useState<
     Array<{
-      totalExaminees: number;
-      totalUnassigned: number;
-      subject: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'>;
-      isReady: boolean;
+      numOfAvailable: number;
+      subject: Pick<
+        Subject,
+        'subjectId' | 'subjectName' | 'subjectCode' | 'numberOfExam'
+      >;
     }>
   >([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<{
-    totalExaminees: number;
-    totalUnassigned: number;
-    subject: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'>;
-    isReady: boolean;
+    numOfAvailable: number;
+    subject: Pick<
+      Subject,
+      'subjectId' | 'subjectName' | 'subjectCode' | 'numberOfExam'
+    >;
   }>();
 
   const fetchSubjects = async () => {
-    if (semesterId) {
-      const response = await subjectExamineesServices.searchBySemester({
-        semesterId,
-        isReady: 0,
-      });
-      if (response.data.subjects.length > 0) {
-        setSubjectOptions(response.data.subjects);
+    if (shiftId) {
+      const response = await examRoomServices.getAvailableShifts(shiftId);
+      if (response.data.availableSubjects.length > 0) {
+        setSubjectOptions(response.data.availableSubjects);
         setSelectedValue(
-          response.data.subjects.find(
+          response.data.availableSubjects.find(
             subject => subject.subject.subjectId === value?.subjectId,
           ),
         );
@@ -62,7 +61,7 @@ const SubjectExamineeSemesterDropdown = ({
     fetchSubjects().catch(() => {
       setIsLoading(false);
     });
-  }, [semesterId]);
+  }, [shiftId]);
 
   useEffect(() => {
     setSelectedValue(
@@ -82,7 +81,7 @@ const SubjectExamineeSemesterDropdown = ({
         option?.subject.subjectId === optionValue?.subject.subjectId
       }
       getOptionLabel={option =>
-        `${option.subject.subjectCode} - Unassigned: ${option.totalUnassigned}`
+        `${option.subject.subjectCode} - Available: ${option.numOfAvailable}`
       }
       onChange={(event, newValue) => {
         if (newValue) onChange(newValue.subject);
