@@ -274,7 +274,10 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                   <Box
                     display="flex"
                     alignItems="center"
-                    onClick={() => setCurrentStep(0)}
+                    onClick={() => {
+                      formik.resetForm();
+                      setCurrentStep(0);
+                    }}
                     sx={{ cursor: 'pointer' }}
                   >
                     <IconButton>
@@ -283,11 +286,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Typography>Back</Typography>
                   </Box>
                   <Typography variant="h6">Account information</Typography>
-                  <IconButton
-                    onClick={() => {
-                      handleCloseModal();
-                    }}
-                  >
+                  <IconButton onClick={handleCloseModal}>
                     <Close />
                   </IconButton>
                 </Grid>
