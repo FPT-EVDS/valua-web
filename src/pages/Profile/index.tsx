@@ -31,21 +31,7 @@ const ProfilePage = () => {
             <Grid item xs={12} md={9} lg={4}>
               <ChangePasswordDialog open={open} handleClose={handleClose} />
               <ProfileOverviewCard
-                title={user.fullName}
-                icon={
-                  <Avatar
-                    variant="square"
-                    sx={{
-                      borderRadius: '4px',
-                      alignSelf: 'stretch',
-                      height: '150px',
-                      width: '150px',
-                    }}
-                    src={String(user?.imageUrl)}
-                    alt={`${String(user?.fullName)} avatar`}
-                  />
-                }
-                role={user.role}
+                user={user}
                 actionButtons={<GroupButtons />}
               />
             </Grid>

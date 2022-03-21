@@ -98,7 +98,6 @@ const ChangePasswordDialog: React.FC<Props> = ({ open, handleClose }) => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                autoFocus
                 required
                 type="password"
                 name="currentPassword"

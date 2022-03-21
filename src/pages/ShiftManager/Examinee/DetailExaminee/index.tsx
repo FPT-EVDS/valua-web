@@ -124,7 +124,6 @@ const RemoveExamineeDialog = ({
               value={formik.values.removedReason}
               multiline
               rows={4}
-              autoFocus
               margin="dense"
               placeholder="Specify the remove reason here"
               helperText="Reason must be 8 - 50 chars long"

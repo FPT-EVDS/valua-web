@@ -120,7 +120,6 @@ const ToolDetailDialog: React.FC<Props> = ({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                autoFocus
                 required
                 name="toolCode"
                 margin="dense"
@@ -141,7 +140,6 @@ const ToolDetailDialog: React.FC<Props> = ({
             </Grid>
             <Grid item xs={12}>
               <TextField
-                autoFocus
                 required
                 name="toolName"
                 margin="dense"

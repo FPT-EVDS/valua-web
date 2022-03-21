@@ -162,7 +162,6 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
                   <TextField
                     {...params}
                     name="birthdate"
-                    autoFocus
                     margin="dense"
                     fullWidth
                     disabled={!isEditable}
@@ -184,7 +183,6 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
             <Grid item xs={12} md={4}>
               <TextField
                 name="phoneNumber"
-                autoFocus
                 margin="dense"
                 disabled={!isEditable}
                 label="Phone number"
@@ -228,7 +226,6 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
             <Grid item xs={12}>
               <TextField
                 name="address"
-                autoFocus
                 margin="dense"
                 label="Address"
                 fullWidth

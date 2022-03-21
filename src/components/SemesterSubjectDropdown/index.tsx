@@ -68,7 +68,6 @@ const SemesterSubjectsDropdown = ({
           {...params}
           label="Subject"
           name="subjects"
-          autoFocus
           margin="dense"
           error={error}
           helperText={error && helperText}

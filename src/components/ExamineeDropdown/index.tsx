@@ -82,7 +82,6 @@ const ExamineeDropdown = ({
           {...params}
           label="Available examinees"
           name="examinee"
-          autoFocus
           margin="dense"
           error={error}
           helperText={error && helperText}

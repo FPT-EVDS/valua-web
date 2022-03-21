@@ -129,7 +129,6 @@ const DetailExamRoomPage = () => {
                         <Grid item xs={12} lg={6}>
                           <TextField
                             label="Start time"
-                            autoFocus
                             margin="dense"
                             fullWidth
                             disabled
@@ -146,7 +145,6 @@ const DetailExamRoomPage = () => {
                         <Grid item xs={12} lg={6}>
                           <TextField
                             label="Finish time"
-                            autoFocus
                             margin="dense"
                             fullWidth
                             disabled

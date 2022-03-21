@@ -15,6 +15,7 @@ type Account = {
   createdDate: Date;
   companyId: string;
   classCode: string | null;
+  faceDataFileName: string | null;
 };
 
 export default Account;

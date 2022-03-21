@@ -92,8 +92,12 @@ const DetailAccountPage = () => {
       {!isLoading ? (
         <>
           {account?.isActive ? (
-            <>
-              <Button variant="text">Upload picture</Button>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              sx={{ width: '100%' }}
+            >
               <Button
                 variant="text"
                 sx={{ color: grey[700] }}
@@ -108,7 +112,7 @@ const DetailAccountPage = () => {
               >
                 Disable account
               </Button>
-            </>
+            </Box>
           ) : (
             <Box
               display="flex"

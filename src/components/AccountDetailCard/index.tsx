@@ -133,7 +133,6 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                autoFocus
                 name="companyId"
                 required
                 margin="dense"
@@ -165,7 +164,6 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
-                autoFocus
                 required
                 name="fullName"
                 margin="dense"
@@ -216,7 +214,6 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
             <Grid item xs={12}>
               <TextField
                 name="email"
-                autoFocus
                 required
                 margin="dense"
                 label="Email"
@@ -252,7 +249,6 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                     {...params}
                     name="birthdate"
                     required
-                    autoFocus
                     margin="dense"
                     fullWidth
                     disabled={!isEditable}
@@ -274,7 +270,6 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
             <Grid item xs={12} md={6}>
               <TextField
                 name="phoneNumber"
-                autoFocus
                 required
                 margin="dense"
                 label="Phone number"
@@ -305,7 +300,6 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
             <Grid item xs={12}>
               <TextField
                 name="address"
-                autoFocus
                 required
                 margin="dense"
                 disabled={!isEditable}
@@ -333,7 +327,6 @@ const AccountDetailCard = ({ account, isLoading }: Props) => {
                 <Grid item xs={12}>
                   <TextField
                     name="classCode"
-                    autoFocus
                     required
                     margin="dense"
                     label="Class"

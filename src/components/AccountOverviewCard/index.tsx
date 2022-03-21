@@ -43,6 +43,16 @@ const AccountOverviewCard = ({ account, actionButtons }: Props) => (
               {account?.isActive ? 'Active' : 'Inactive'}
             </Typography>
           </Box>
+          <Box color="text.secondary" marginBottom={1}>
+            Embedded:
+            <Typography
+              display="inline"
+              ml={0.5}
+              color={account?.faceDataFileName ? green[500] : red[500]}
+            >
+              {account?.faceDataFileName ? 'Yes' : 'No'}
+            </Typography>
+          </Box>
           <Typography gutterBottom color="text.secondary">
             Last Updated:{' '}
             {account?.lastModifiedDate &&

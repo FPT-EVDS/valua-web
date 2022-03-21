@@ -49,9 +49,7 @@ const ConfirmDialog = ({
       {!loading && (
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleAccept} autoFocus>
-            Confirm
-          </Button>
+          <Button onClick={handleAccept}>Confirm</Button>
         </DialogActions>
       )}
     </Dialog>
