@@ -12,7 +12,8 @@ interface ImageFile extends File {
 
 interface ImagesDropzoneProps {
   name: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  // eslint-disable-next-line react/require-default-props
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const ImagesDropzone = ({ name, onChange }: ImagesDropzoneProps) => {

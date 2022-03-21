@@ -1,12 +1,14 @@
-import { Box, Button, CircularProgress, Grid } from '@mui/material';
+import { Box, Button, CircularProgress, Grid, Stack } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import DetailAccountCard from 'components/AccountDetailCard';
+import AccountEmbeddingCard from 'components/AccountEmbeddingCard';
 import AccountOverviewCard from 'components/AccountOverviewCard';
 import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import NotFoundItem from 'components/NotFoundItem';
+import Role from 'enums/role.enum';
 import {
   activeAccount,
   disableAccount,
@@ -158,10 +160,15 @@ const DetailAccountPage = () => {
       {account ? (
         <Grid container mt={2} spacing={2}>
           <Grid item xs={12} md={9} lg={4}>
-            <AccountOverviewCard
-              account={account}
-              actionButtons={<GroupButtons />}
-            />
+            <Stack spacing={2}>
+              <AccountOverviewCard
+                account={account}
+                actionButtons={<GroupButtons />}
+              />
+              {account.isActive && account.role.roleName === Role.Examinee && (
+                <AccountEmbeddingCard />
+              )}
+            </Stack>
           </Grid>
           <Grid item xs={12} lg={8}>
             <DetailAccountCard account={account} isLoading={isLoading} />
