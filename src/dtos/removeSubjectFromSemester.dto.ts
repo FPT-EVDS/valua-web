@@ -1,4 +1,4 @@
 export interface RemoveSubjectFromSemesterDto {
-  semesterId: string;
+  subjectSemesterId: string;
   subjectId: string;
 }

@@ -14,7 +14,7 @@ import examRoomServices from 'services/examRoom.service';
 
 interface Props {
   shiftId: string;
-  subjectId: string;
+  subjectSemesterId: string;
   error?: boolean;
   helperText?: string;
   value: Examinee | null;
@@ -24,7 +24,7 @@ interface Props {
 
 const ExamineeDropdown = ({
   shiftId,
-  subjectId,
+  subjectSemesterId,
   value,
   isEditable,
   onChange,
@@ -37,7 +37,7 @@ const ExamineeDropdown = ({
   const fetchAvailableExaminees = async () => {
     const response = await examRoomServices.getAvailableExaminees({
       shiftId,
-      subjectId,
+      subjectSemesterId,
     });
     const { examinees } = response.data;
     if (value) setExamineeOptions([value, ...examinees]);

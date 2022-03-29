@@ -81,7 +81,7 @@ const ExamRoomDetailCard = ({
     examRoomId: examRoom.examRoomId,
     room: examRoom.room,
     staff: examRoom.staff,
-    subject: examRoom.subject,
+    subject: examRoom.subjectSemester.subject,
   };
   const formik = useFormik({
     initialValues,

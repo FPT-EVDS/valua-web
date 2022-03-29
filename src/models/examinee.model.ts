@@ -13,6 +13,6 @@ export default interface Examinee {
     | 'imageUrl'
     | 'phoneNumber'
   >;
-  removeReason: string | null;
+  removedReason: string | null;
   status: ExamineeStatus;
 }

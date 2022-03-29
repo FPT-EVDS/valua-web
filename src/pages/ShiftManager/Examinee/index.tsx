@@ -45,7 +45,8 @@ const ExamineePage = () => {
   } = useAppSelector(state => state.subjectExaminee);
   const rows: GridRowModel[] = examineeSubjects.map(examineeSubject => ({
     ...examineeSubject,
-    id: examineeSubject.subject.subjectId,
+    ...examineeSubject.subject.subject,
+    id: examineeSubject.subject.subjectSemesterId,
   }));
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
@@ -134,7 +135,10 @@ const ExamineePage = () => {
       minWidth: 130,
       type: 'actions',
       getActions: params => {
-        const subject = params.getValue(params.id, 'subject') as Subject;
+        const subject = params.getValue(params.id, 'subject') as {
+          subject: Pick<Subject, 'subjectId' | 'subjectCode' | 'subjectName'>;
+          subjectSemesterId: string;
+        };
         return [
           <Button
             variant="text"
@@ -142,7 +146,7 @@ const ExamineePage = () => {
               history.push(
                 `${url}/subject?semesterId=${String(
                   selectedSemester?.semesterId,
-                )}&subjectId=${subject.subjectId}`,
+                )}&subjectSemesterId=${subject.subjectSemesterId}`,
               )
             }
           >

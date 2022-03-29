@@ -2,7 +2,8 @@ import ExamRoomStatus from 'enums/examRoomStatus.enum';
 
 import Account from './account.model';
 import Room from './room.model';
-import Subject from './subject.model';
+import Semester from './semester.model';
+import SubjectSemester from './subjectSemester.model';
 
 export default interface ExamRoom {
   examRoomId: string;
@@ -17,6 +18,7 @@ export default interface ExamRoom {
     | 'companyId'
   >;
   room: Pick<Room, 'roomId' | 'seatCount' | 'roomName' | 'floor' | 'status'>;
-  subject: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'>;
+  subjectSemester: SubjectSemester &
+    Pick<Semester, 'semesterId' | 'semesterName'>;
   status: ExamRoomStatus;
 }

@@ -51,7 +51,7 @@ const AddExamineeSeatDialog: React.FC<Props> = ({
         const result = await dispatch(addAttendance(payload));
         const attendance = unwrapResult(result);
         showSuccessMessage(
-          `${attendance.examinee.fullName} has been successfully added to this exam room`,
+          `${attendance.subjectExaminee.examinee.fullName} has been successfully added to this exam room`,
         );
         formik.resetForm();
         setCurrentExaminee(null);
@@ -99,7 +99,7 @@ const AddExamineeSeatDialog: React.FC<Props> = ({
               value={currentExaminee}
               onChange={handleChangeExaminee}
               shiftId={String(examRoom.shift.shiftId)}
-              subjectId={examRoom.subject.subjectId}
+              subjectSemesterId={examRoom.subjectSemester.subjectSemesterId}
             />
           )}
         </DialogContent>

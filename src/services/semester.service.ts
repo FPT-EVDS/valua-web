@@ -88,8 +88,8 @@ const semesterServices = {
   removeSubject: (
     payload: RemoveSubjectFromSemesterDto,
   ): Promise<AxiosResponse<Semester>> => {
-    const { semesterId, subjectId } = payload;
-    const url = `/semesters/${semesterId}/removeSubjects`;
+    const { subjectSemesterId, subjectId } = payload;
+    const url = `/semesters/${subjectSemesterId}/remove`;
     return axiosClient.patch(url, { subjectId });
   },
   getSemesterOverview: (): Promise<AxiosResponse<SemesterOverviewDto>> => {

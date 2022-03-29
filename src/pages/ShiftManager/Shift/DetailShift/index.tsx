@@ -48,6 +48,7 @@ const DetailShiftPage = () => {
   } = useAppSelector(state => state.examRoom);
   const rows: GridRowModel[] = examRooms.map(examRoom => ({
     ...examRoom,
+    subject: examRoom.subjectSemester.subject,
     id: examRoom.examRoomId,
   }));
   const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);

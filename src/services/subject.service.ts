@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios';
+import AvailableSubjects from 'dtos/availableSubjects.dto';
 import DisableSubjectDto from 'dtos/disableSubject.dto';
 import SearchByNameDto from 'dtos/searchByName.dto';
 import SubjectDto from 'dtos/subject.dto';
@@ -65,13 +66,13 @@ const subjectServices = {
     });
   },
   getAvailableSubjects: (
-    semesterID: string,
-  ): Promise<AxiosResponse<Subject[]>> => {
+    semesterId: string,
+  ): Promise<AxiosResponse<AvailableSubjects>> => {
     const url = `/subjects/available`;
     return axiosClient.get(url, {
       params: {
         value: true,
-        semesterID,
+        semesterId,
       },
     });
   },

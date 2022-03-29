@@ -33,8 +33,8 @@ const AddSemesterSubjectsDropdown = ({
   const fetchSubjects = async () => {
     if (semesterId) {
       const response = await subjectServices.getAvailableSubjects(semesterId);
-      if (response.data.length > 0) {
-        setSubjectOptions(response.data);
+      if (response.data.subjects.length > 0) {
+        setSubjectOptions(response.data.subjects);
         dispatch(enableAddSubject());
       } else dispatch(disableAddSubject());
     }

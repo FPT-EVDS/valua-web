@@ -19,7 +19,8 @@ interface Props {
 
 const transformAttendancesToRows = (attendances: Attendance[]) =>
   attendances.map(attendance => ({
-    ...attendance,
+    ...attendance.subjectExaminee,
+    position: attendance.position,
     id: attendance.attendanceId,
   }));
 
@@ -39,10 +40,10 @@ const ExamSeatTable = ({ data, hideActions, onActionButtonClick }: Props) => {
         );
         unwrapResult(result);
         setRows(prev =>
-          prev.filter(item => item.attendanceId !== attendance.attendanceId),
+          prev.filter(item => item.id !== attendance.attendanceId),
         );
         showSuccessMessage(
-          `${attendance.examinee.fullName} has been successfully removed`,
+          `${attendance.subjectExaminee.examinee.fullName} has been successfully removed`,
         );
       } catch (error) {
         showErrorMessage(error);
@@ -57,7 +58,6 @@ const ExamSeatTable = ({ data, hideActions, onActionButtonClick }: Props) => {
   const columns: Array<GridColDef | GridActionsColDef> = [
     { field: 'attendanceId', hide: true },
     { field: 'examinee', hide: true },
-    { field: 'index', hide: true },
     {
       field: 'position',
       sortable: false,

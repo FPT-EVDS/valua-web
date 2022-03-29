@@ -83,7 +83,7 @@ const GetAvailableExamRoomsCard = ({
         const result = await dispatch(
           getAvailableExaminees({
             shiftId: String(shift.shiftId),
-            subjectId: selectedSubject.subjectId,
+            subjectSemesterId: selectedSubject.subjectId,
           }),
         );
         // reset state
