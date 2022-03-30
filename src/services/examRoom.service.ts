@@ -5,6 +5,7 @@ import AvailableRoomsDto from 'dtos/availableRooms.dto';
 import AvailableShiftDto from 'dtos/availableShift.dto';
 import AvailableStaffDto from 'dtos/availableStaff.dto';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
+import CreateExamRoomResultDto from 'dtos/createExamRoomResult.dto';
 import DisableExamRoom from 'dtos/disableExamRoom.dto';
 import ExamRoomsDto from 'dtos/examRooms.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
@@ -43,7 +44,7 @@ const examRoomServices = {
   getAvailableExaminees: (
     payload: GetAvailableExamineesDto,
   ): Promise<AxiosResponse<AvailableExamineesDto>> => {
-    const url = '/examRooms/available/subject';
+    const url = '/examRooms/assign/subject';
     return axiosClient.post(url, payload);
   },
   getAvailableStaff: (
@@ -54,7 +55,7 @@ const examRoomServices = {
   },
   createExamRoom: (
     payload: CreateExamRoomDto[],
-  ): Promise<AxiosResponse<ExamRoom>> => {
+  ): Promise<AxiosResponse<CreateExamRoomResultDto>> => {
     const url = '/examRooms';
     return axiosClient.post(url, payload);
   },

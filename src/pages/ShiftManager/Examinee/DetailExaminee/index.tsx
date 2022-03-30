@@ -232,7 +232,7 @@ const DetailExamineePage = () => {
         ...examinee.examinee,
         id: examinee.examinee.appUserId,
         status: examinee.status,
-        subjectExamineeId: examinee.subjectExamineeID,
+        subjectExamineeId: examinee.subjectExamineeId,
       }))
     : [];
 

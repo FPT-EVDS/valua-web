@@ -1,36 +1,26 @@
-import { Info } from '@mui/icons-material';
-import {
-  Alert,
-  Button,
-  Grid,
-  Stack,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Alert, Button, Grid, Stack, Tooltip, Typography } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import AddRoomDialog from 'components/AddRoomDialog';
 import AvailableRoomTable from 'components/AvailableRoomTable';
 import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
-import CustomTooltip from 'components/CustomTooltip';
 import ExamineeTable from 'components/ExamineeTable';
 import ExamineeTransferListDialog from 'components/ExamineeTransferListDialog';
 import GetAvailableExamRoomsCard from 'components/GetAvailableExamRoomsCard';
 import LoadingIndicator from 'components/LoadingIndicator';
 import Attendance from 'dtos/attendance.dto';
-import AvailableRoomsDto from 'dtos/availableRooms.dto';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
-import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
+import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import {
   createExamRoom,
-  updateExaminees,
+  getAvailableExaminees,
+  updateDropdown,
+  updateExamRoom,
+  updateTotalExaminees,
 } from 'features/examRoom/addExamRoomSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
-import Examinee from 'models/examinee.model';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import examRoomServices from 'services/examRoom.service';
-import { chunk } from 'utils';
 
 interface ParamProps {
   id: string;
@@ -40,100 +30,63 @@ const AddExamRoomPage = () => {
   const { id } = useParams<ParamProps>();
   const dispatch = useAppDispatch();
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
-  const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [examRooms, setExamRooms] = useState<AvailableRoomsDto | null>(null);
-  const [listExamineesByRoom, setListExamineesByRoom] = useState<
-    Examinee[][] | null
-  >(null);
+  const [isOpenAddRoom, setIsOpenAddRoom] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const {
-    isLoading,
-    defaultExamRoomSize,
-    currentSubject,
-    shift,
-    removedExaminees,
-    examinees,
-  } = useAppSelector(state => state.addExamRoom);
+  const { isLoading, examRooms, currentSubject, shouldUpdateDropdown } =
+    useAppSelector(state => state.addExamRoom);
 
   const handleError = () => {
-    setExamRooms(null);
+    dispatch(updateExamRoom(null));
     setSelectedIndex(-1);
-    setListExamineesByRoom(null);
   };
 
-  const handleGetAvailableRooms = async (payload: GetAvailableExamRoomsDto) => {
-    const response = await examRoomServices.getAvailableExamRooms(payload);
-    setExamRooms(response.data);
+  const handleGetAvailableRooms = async (payload: GetAvailableExamineesDto) => {
+    const result = await dispatch(getAvailableExaminees(payload));
+    unwrapResult(result);
     setSelectedIndex(-1);
-    const { totalRooms } = response.data;
-    if (examinees) {
-      const examineePerRoom = Math.ceil(examinees.totalExaminees / totalRooms);
-      setListExamineesByRoom(chunk(examinees.examinees, examineePerRoom));
-    }
   };
 
   const handleChangeRoom = (value: number) => {
     setSelectedIndex(value);
-    if (examinees && examRooms) {
-      const examineePerRoom = Math.ceil(
-        examinees.totalExaminees / examRooms.totalRooms,
-      );
-      setListExamineesByRoom(chunk(examinees.examinees, examineePerRoom));
-    }
   };
 
   const handleCreateExamRoom = async () => {
-    if (listExamineesByRoom && examRooms && currentSubject && shift) {
-      const filteredRemovedExamineesList = listExamineesByRoom[
-        selectedIndex
-      ].filter(value => !removedExaminees.includes(value));
-      const appUserIdList = new Set(
-        filteredRemovedExamineesList.map(value => value.examinee.appUserId),
-      );
-      const attendances: Attendance[] = filteredRemovedExamineesList.map(
-        (value, index) => ({
-          examinee: {
-            appUserId: value.examinee.appUserId,
+    if (examRooms && currentSubject) {
+      const examRoom = examRooms.examRooms[selectedIndex];
+      const lastPosition = examRoom.room.lastPosition
+        ? parseInt(String(examRoom.room.lastPosition), 10)
+        : 0;
+      const attendances: Attendance[] = examRoom.attendances.map(
+        (attendance, index) => ({
+          position: lastPosition + index + 1,
+          subjectExaminee: {
+            subjectExamineeId: attendance.subjectExaminee.subjectExamineeId,
           },
-          position: index + 1,
         }),
       );
       const payload: CreateExamRoomDto = {
-        attendances,
+        room: {
+          roomId: examRoom.room.roomId,
+        },
         shift: {
           shiftId: id,
         },
-        room: {
-          roomId: examRooms.availableRooms[selectedIndex].roomId,
+        subjectSemester: {
+          subjectSemesterId: currentSubject.subjectSemesterId,
         },
-        subject: {
-          subjectId: currentSubject?.subjectId,
-        },
+        attendances,
       };
       try {
         const result = await dispatch(createExamRoom([payload]));
-        unwrapResult(result);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const filteredExaminees = examinees!.examinees.filter(
-          examinee => !appUserIdList.has(examinee.examinee.appUserId),
-        );
-        const filteredExamRooms =
-          filteredExaminees.length > 0
-            ? examRooms.availableRooms.filter(
-                (examRoom, index) => index !== selectedIndex,
-              )
-            : [];
+        const examRoomResult = unwrapResult(result);
         dispatch(
-          updateExaminees({
-            examinees: filteredExaminees,
-            totalExaminees: filteredExaminees?.length || 0,
-          }),
+          updateTotalExaminees(
+            examRooms.totalExaminees -
+              examRoomResult.result[0].attendances.length,
+          ),
         );
-        setExamRooms({
-          availableRooms: filteredExamRooms,
-          totalRooms: filteredExamRooms.length,
-        });
+        dispatch(updateDropdown(true));
         setSelectedIndex(-1);
         showSuccessMessage('Created exam room successfully');
       } catch (error) {
@@ -143,55 +96,62 @@ const AddExamRoomPage = () => {
   };
 
   const handleCreateAllExamRoom = async () => {
-    if (examinees && examRooms && currentSubject) {
-      const examineePerRoom = Math.ceil(
-        examinees.totalExaminees / examRooms.totalRooms,
-      );
-      const listExamineesPerRoom = chunk(examinees.examinees, examineePerRoom);
-      const payload: CreateExamRoomDto[] = listExamineesPerRoom.map(
-        (value, index) => {
-          const attendances: Attendance[] = value.map(
-            (examinee, examineeIndex) => ({
-              examinee: {
-                appUserId: examinee.examinee.appUserId,
-              },
-              position: examineeIndex + 1,
-            }),
-          );
-          return {
-            attendances,
+    if (examRooms && currentSubject) {
+      const examRoomList = examRooms.examRooms;
+      const payload: CreateExamRoomDto[] = [];
+      examRoomList.forEach(examRoom => {
+        const lastPosition = examRoom.room.lastPosition
+          ? parseInt(String(examRoom.room.lastPosition), 10)
+          : 0;
+        const attendances: Attendance[] = examRoom.attendances.map(
+          // eslint-disable-next-line sonarjs/no-identical-functions
+          (attendance, index) => ({
+            position: lastPosition + index + 1,
+            subjectExaminee: {
+              subjectExamineeId: attendance.subjectExaminee.subjectExamineeId,
+            },
+          }),
+        );
+        if (attendances.length > 0) {
+          const dto: CreateExamRoomDto = {
+            room: {
+              roomId: examRoom.room.roomId,
+            },
             shift: {
               shiftId: id,
             },
-            room: {
-              roomId: examRooms.availableRooms[index].roomId,
+            subjectSemester: {
+              subjectSemesterId: currentSubject.subjectSemesterId,
             },
-            subject: {
-              subjectId: currentSubject?.subjectId,
-            },
+            attendances,
           };
-        },
-      );
+          payload.push(dto);
+        }
+      });
       try {
         const result = await dispatch(createExamRoom(payload));
-        unwrapResult(result);
-        dispatch(
-          updateExaminees({
-            examinees: [],
-            totalExaminees: 0,
-          }),
-        );
-        setExamRooms({
-          availableRooms: [],
-          totalRooms: 0,
+        const examRoomResult = unwrapResult(result);
+        let addedAttendances = 0;
+        examRoomResult.result.forEach(examRoom => {
+          addedAttendances += examRoom.attendances.length;
         });
+        dispatch(
+          updateTotalExaminees(examRooms.totalExaminees - addedAttendances),
+        );
+        dispatch(updateDropdown(true));
         setSelectedIndex(-1);
-        showSuccessMessage('Created exam room successfully');
+        showSuccessMessage(
+          `Created ${examRoomResult.result.length} exam room(s) successfully`,
+        );
       } catch (error) {
         showErrorMessage(error);
       }
     }
   };
+
+  useEffect(() => {
+    dispatch(updateExamRoom(null));
+  }, []);
 
   return (
     <div>
@@ -209,8 +169,13 @@ const AddExamRoomPage = () => {
             />
             {!isLoading ? (
               examRooms &&
-              examRooms.availableRooms.length > 0 && (
+              examRooms.examRooms.length > 0 && (
                 <>
+                  <AddRoomDialog
+                    shiftId={id}
+                    open={isOpenAddRoom}
+                    handleClose={() => setIsOpenAddRoom(false)}
+                  />
                   <Stack spacing={2}>
                     <Stack direction="row" justifyContent="space-between">
                       <Typography
@@ -220,28 +185,38 @@ const AddExamRoomPage = () => {
                       >
                         Room list
                       </Typography>
-                      <Tooltip title="Auto assign examinees to room">
-                        <Button
-                          variant="contained"
-                          onClick={handleCreateAllExamRoom}
-                          size="small"
-                        >
-                          Create all
-                        </Button>
-                      </Tooltip>
+                      <Button
+                        variant="contained"
+                        onClick={handleCreateAllExamRoom}
+                        size="small"
+                      >
+                        Create all
+                      </Button>
                     </Stack>
-                    {examinees && examinees.totalExaminees > 0 && (
+                    {examRooms.totalExaminees > 0 && (
                       <Alert severity="error">
-                        {`There are ${examinees.totalExaminees} examinees left unassigned`}
+                        {`There are ${examRooms.totalExaminees} examinees left unassigned`}
                       </Alert>
                     )}
                   </Stack>
-                  <AvailableRoomTable
-                    data={examRooms?.availableRooms}
-                    selectedIndex={selectedIndex}
-                    handleSelect={handleChangeRoom}
-                    handleCreateExamRoom={handleCreateExamRoom}
-                  />
+                  <Stack spacing={2}>
+                    <AvailableRoomTable
+                      data={examRooms.examRooms}
+                      selectedIndex={selectedIndex}
+                      handleSelect={handleChangeRoom}
+                      handleCreateExamRoom={handleCreateExamRoom}
+                    />
+                    <Button
+                      variant="text"
+                      sx={{ width: 100 }}
+                      disableRipple
+                      disableTouchRipple
+                      disableFocusRipple
+                      onClick={() => setIsOpenAddRoom(true)}
+                    >
+                      Add room
+                    </Button>
+                  </Stack>
                 </>
               )
             ) : (
@@ -252,31 +227,18 @@ const AddExamRoomPage = () => {
         <Grid item xs={12} lg={8}>
           {!isLoading &&
             selectedIndex > -1 &&
-            examRooms?.availableRooms[selectedIndex] &&
-            listExamineesByRoom && (
+            examRooms &&
+            examRooms.examRooms[selectedIndex] && (
               <>
                 <ExamineeTransferListDialog
                   handleClose={() => setIsOpen(false)}
-                  listExamineeByRoom={listExamineesByRoom}
-                  roomName={examRooms.availableRooms[selectedIndex].roomName}
-                  handleListExamineeByRoom={setListExamineesByRoom}
+                  room={examRooms.examRooms[selectedIndex].room}
                   selectedIndex={selectedIndex}
                   open={isOpen}
                 />
                 <ExamineeTable
-                  title={examRooms.availableRooms[selectedIndex].roomName}
-                  data={listExamineesByRoom[selectedIndex]}
-                  leftActions={
-                    listExamineesByRoom[selectedIndex].length !==
-                      defaultExamRoomSize && (
-                      <CustomTooltip
-                        title={`Recommend room size is ${defaultExamRoomSize}`}
-                        color={theme.palette.warning.main}
-                      >
-                        <Info color="warning" />
-                      </CustomTooltip>
-                    )
-                  }
+                  room={examRooms.examRooms[selectedIndex].room}
+                  data={examRooms.examRooms[selectedIndex].attendances}
                   onActionButtonClick={() => setIsOpen(true)}
                 />
               </>

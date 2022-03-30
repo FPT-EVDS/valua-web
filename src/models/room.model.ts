@@ -1,4 +1,5 @@
 export default interface Room {
+  [x: string]: unknown;
   roomId: string;
   seatCount: number;
   roomName: string;

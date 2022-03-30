@@ -11,67 +11,60 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { useAppSelector } from 'app/hooks';
-import Examinee from 'models/examinee.model';
+import SubjectExaminee from 'models/subjectExaminee.model';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
-  listExamineeByRoom: Examinee[][];
   selectedIndex: number;
   roomName: string;
-  handleSelected: (examinee: Examinee[]) => void;
+  handleSelected: (examinee: SubjectExaminee[]) => void;
 }
 
 interface TransferListProps {
   title: React.ReactNode;
-  items: Examinee[];
+  items: SubjectExaminee[];
 }
 
-function not(a: Examinee[], b: Examinee[]) {
+function not(a: SubjectExaminee[], b: SubjectExaminee[]) {
   return a.filter(value => !b.includes(value));
 }
 
-function intersection(a: Examinee[], b: Examinee[]) {
+function intersection(a: SubjectExaminee[], b: SubjectExaminee[]) {
   return a.filter(value => b.includes(value));
 }
 
-function union(a: Examinee[], b: Examinee[]) {
+function union(a: SubjectExaminee[], b: SubjectExaminee[]) {
   return [...a, ...not(b, a)];
 }
 
 const ExamineeTransferList = ({
-  listExamineeByRoom,
   selectedIndex,
   roomName,
   handleSelected,
 }: Props) => {
-  const removedExaminees = useAppSelector(
-    state => state.addExamRoom.removedExaminees,
+  const { removedExaminees, examRooms } = useAppSelector(
+    state => state.addExamRoom,
   );
-  const [checked, setChecked] = useState<Examinee[]>([]);
-  const [left, setLeft] = useState<Examinee[]>([]);
-  const [right, setRight] = useState<Examinee[]>([]);
+  const [checked, setChecked] = useState<SubjectExaminee[]>([]);
+  const [left, setLeft] = useState<SubjectExaminee[]>([]);
+  const [right, setRight] = useState<SubjectExaminee[]>([]);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
 
   useEffect(() => {
-    setRight(
-      listExamineeByRoom[selectedIndex].filter(
-        value => !removedExaminees.includes(value),
-      ),
-    );
-    handleSelected(listExamineeByRoom[selectedIndex]);
-    setLeft([
-      ...listExamineeByRoom
-        .filter((value, index) => index !== selectedIndex)
-        .flat()
-        .filter(value => !listExamineeByRoom[selectedIndex].includes(value)),
-      ...removedExaminees,
-    ]);
+    if (examRooms) {
+      const examinees = examRooms.examRooms[selectedIndex].attendances.map(
+        attendance => attendance.subjectExaminee,
+      );
+      setRight(examinees);
+      handleSelected(examinees);
+    }
+    setLeft(removedExaminees);
     setChecked([]);
-  }, [listExamineeByRoom, selectedIndex]);
+  }, [examRooms, selectedIndex]);
 
-  const handleToggle = (value: Examinee) => () => {
+  const handleToggle = (value: SubjectExaminee) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
 
@@ -84,10 +77,10 @@ const ExamineeTransferList = ({
     setChecked(newChecked);
   };
 
-  const numberOfChecked = (items: Examinee[]) =>
+  const numberOfChecked = (items: SubjectExaminee[]) =>
     intersection(checked, items).length;
 
-  const handleToggleAll = (items: Examinee[]) => () => {
+  const handleToggleAll = (items: SubjectExaminee[]) => () => {
     if (numberOfChecked(items) === items.length) {
       setChecked(not(checked, items));
     } else {
@@ -112,18 +105,20 @@ const ExamineeTransferList = ({
   const TransferList = ({ items, title }: TransferListProps) => {
     const [isSearch, setIsSearch] = useState<boolean>(false);
     const [searchValue, setSearchValue] = useState('');
-    const [filteredItems, setFilteredItems] = useState<Examinee[]>(items);
+    const [filteredItems, setFilteredItems] =
+      useState<SubjectExaminee[]>(items);
 
     const handleIsSearch = () => {
       setIsSearch(prev => !prev);
     };
 
     useEffect(() => {
+      const search = searchValue.toLowerCase();
       const searchList = items.filter(
         ({ examinee: { companyId, email, fullName } }) =>
-          companyId.includes(searchValue) ||
-          email.includes(searchValue) ||
-          fullName.includes(searchValue),
+          companyId.toLowerCase().includes(search) ||
+          email.toLowerCase().includes(search) ||
+          fullName.toLowerCase().includes(search),
       );
       setFilteredItems(searchList);
     }, [searchValue]);
@@ -190,11 +185,11 @@ const ExamineeTransferList = ({
             role="list"
           >
             {filteredItems.map(value => {
-              const labelId = `transfer-list-all-item-${value.subjectExamineeID}-label`;
+              const labelId = `transfer-list-all-item-${value.subjectExamineeId}-label`;
 
               return (
                 <ListItem
-                  key={value.subjectExamineeID}
+                  key={value.subjectExamineeId}
                   role="listitem"
                   button
                   onClick={handleToggle(value)}

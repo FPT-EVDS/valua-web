@@ -34,23 +34,25 @@ const ExamineeDropdown = ({
   const [examineeOptions, setExamineeOptions] = useState<Examinee[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchAvailableExaminees = async () => {
-    const response = await examRoomServices.getAvailableExaminees({
-      shiftId,
-      subjectSemesterId,
-    });
-    const { examinees } = response.data;
-    if (value) setExamineeOptions([value, ...examinees]);
-    else setExamineeOptions(examinees);
-    setIsLoading(false);
-  };
+  // FIXME: comment for fixing later
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetchAvailableExaminees().catch(() => {
-      setIsLoading(false);
-    });
-  }, []);
+  // const fetchAvailableExaminees = async () => {
+  //   const response = await examRoomServices.getAvailableExaminees({
+  //     shiftId,
+  //     subjectSemesterId,
+  //   });
+  //   const { examinees } = response.data;
+  //   if (value) setExamineeOptions([value, ...examinees]);
+  //   else setExamineeOptions(examinees);
+  //   setIsLoading(false);
+  // };
+
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   fetchAvailableExaminees().catch(() => {
+  //     setIsLoading(false);
+  //   });
+  // }, []);
 
   return (
     <Autocomplete

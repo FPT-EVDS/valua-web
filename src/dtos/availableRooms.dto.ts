@@ -1,9 +1,11 @@
 import Room from 'models/room.model';
 
+interface OccupiedRoom extends Room {
+  lastPosition: number;
+}
+
 export default interface AvailableRoomsDto {
-  availableRooms: Pick<
-    Room,
-    'roomId' | 'seatCount' | 'roomName' | 'floor' | 'status'
-  >[];
+  occupiedRooms: Array<OccupiedRoom>;
+  emptyRooms: Array<Room>;
   totalRooms: number;
 }

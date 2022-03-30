@@ -6,8 +6,6 @@ import {
   CardContent,
   CardHeader,
   Grid,
-  InputAdornment,
-  TextField,
   Typography,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -15,7 +13,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { AxiosError } from 'axios';
 import SubjectExamineeSemesterDropdown from 'components/SubjectExamineeSemesterDropdown';
 import { addExamRoomSchema } from 'configs/validations';
-import GetAvailableExamRoomsDto from 'dtos/getAvailableRooms.dto';
+import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import {
   getAvailableExaminees,
   getShift,
@@ -23,12 +21,13 @@ import {
 } from 'features/examRoom/addExamRoomSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
+import Semester from 'models/semester.model';
 import Subject from 'models/subject.model';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
   shiftId: string;
-  handleSubmit: (payload: GetAvailableExamRoomsDto) => Promise<void>;
+  handleSubmit: (payload: GetAvailableExamineesDto) => Promise<void>;
   handleError: () => void;
 }
 
@@ -39,9 +38,7 @@ const GetAvailableExamRoomsCard = ({
 }: Props) => {
   const dispatch = useAppDispatch();
   const { showErrorMessage } = useCustomSnackbar();
-  const { shift, defaultExamRoomSize, examinees } = useAppSelector(
-    state => state.addExamRoom,
-  );
+  const { shift } = useAppSelector(state => state.addExamRoom);
   const [isLoading, setIsLoading] = useState(false);
   const [isDisable, setIsDisable] = useState(true);
 
@@ -53,14 +50,14 @@ const GetAvailableExamRoomsCard = ({
   const formik = useFormik({
     initialValues: {
       shiftId,
-      subjectId: '',
+      subjectSemesterId: '',
       numOfRooms: 1,
     },
     validationSchema: addExamRoomSchema,
-    onSubmit: async ({ shiftId: id, numOfRooms }) => {
+    onSubmit: async ({ shiftId: id, subjectSemesterId }) => {
       setIsLoading(true);
       try {
-        await handleSubmit({ shiftId: id, numOfRooms });
+        await handleSubmit({ shiftId: id, subjectSemesterId });
         setIsLoading(false);
       } catch (error) {
         handleError();
@@ -71,19 +68,23 @@ const GetAvailableExamRoomsCard = ({
   });
 
   const handleChangeSubject = async (
-    selectedSubject: Pick<
-      Subject,
-      'subjectId' | 'subjectName' | 'subjectCode'
-    > | null,
+    selectedSubject: {
+      semester: Pick<Semester, 'semesterId' | 'semesterName'>;
+      subject: Subject;
+      subjectSemesterId: string;
+    } | null,
   ) => {
-    await formik.setFieldValue('subjectId', selectedSubject?.subjectId);
+    await formik.setFieldValue(
+      'subjectSemesterId',
+      selectedSubject?.subjectSemesterId,
+    );
     dispatch(updateCurrentSubject(selectedSubject));
     try {
       if (shift && selectedSubject) {
         const result = await dispatch(
           getAvailableExaminees({
             shiftId: String(shift.shiftId),
-            subjectSemesterId: selectedSubject.subjectId,
+            subjectSemesterId: selectedSubject.subjectSemesterId,
           }),
         );
         // reset state
@@ -119,43 +120,9 @@ const GetAvailableExamRoomsCard = ({
             <Grid item xs={12}>
               <SubjectExamineeSemesterDropdown
                 shiftId={String(shift?.shiftId)}
-                helperText={formik.errors.subjectId}
-                error={Boolean(formik.errors.subjectId)}
+                helperText={formik.errors.subjectSemesterId}
+                error={Boolean(formik.errors.subjectSemesterId)}
                 onChange={handleChangeSubject}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                name="numOfRooms"
-                margin="dense"
-                label="Estimate room amount"
-                type="number"
-                fullWidth
-                value={formik.values.numOfRooms}
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                InputProps={{
-                  inputProps: {
-                    min: 1,
-                  },
-                  endAdornment: (
-                    <InputAdornment position="end">rooms</InputAdornment>
-                  ),
-                }}
-                error={
-                  formik.touched.numOfRooms && Boolean(formik.errors.numOfRooms)
-                }
-                helperText={
-                  formik.touched.numOfRooms && Boolean(formik.errors.numOfRooms)
-                    ? formik.errors.numOfRooms
-                    : examinees &&
-                      `Recommend room amount is ${Math.ceil(
-                        examinees?.totalExaminees / defaultExamRoomSize,
-                      )}`
-                }
-                onChange={formik.handleChange}
               />
             </Grid>
           </Grid>
@@ -165,11 +132,13 @@ const GetAvailableExamRoomsCard = ({
             variant="contained"
             type="submit"
             disabled={
-              isDisable || isLoading || examinees?.examinees.length === 0
+              isDisable ||
+              isLoading ||
+              formik.values.subjectSemesterId.length === 0
             }
             loading={isLoading}
           >
-            Get available rooms
+            Assign examinee
           </LoadingButton>
         </CardActions>
       </Box>
