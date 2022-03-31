@@ -35,7 +35,7 @@ const ExamineeDetailCard = ({ examineeSubject }: Props) => (
             <TextField
               label="Semester"
               fullWidth
-              value={examineeSubject.semester.semesterName}
+              value={examineeSubject.subjectSemester.semester.semesterName}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -45,7 +45,7 @@ const ExamineeDetailCard = ({ examineeSubject }: Props) => (
             <TextField
               label="Subject"
               fullWidth
-              value={`${examineeSubject.subject.subjectCode} - ${examineeSubject.subject.subjectName}`}
+              value={`${examineeSubject.subjectSemester.subject.subjectCode} - ${examineeSubject.subjectSemester.subject.subjectName}`}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -55,7 +55,7 @@ const ExamineeDetailCard = ({ examineeSubject }: Props) => (
             <TextField
               label="Number of exams"
               fullWidth
-              value={examineeSubject.subject.numberOfExam}
+              value={examineeSubject.subjectSemester.subject.numberOfExam}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">exams</InputAdornment>

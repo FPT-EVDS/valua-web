@@ -144,9 +144,7 @@ const ExamineePage = () => {
             variant="text"
             onClick={() =>
               history.push(
-                `${url}/subject?semesterId=${String(
-                  selectedSemester?.semesterId,
-                )}&subjectSemesterId=${subject.subjectSemesterId}`,
+                `${url}/subject?subjectSemesterId=${subject.subjectSemesterId}`,
               )
             }
           >

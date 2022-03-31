@@ -66,7 +66,7 @@ const DetailExamRoomPage = () => {
       .then(result => fetchDetailShift(String(result.shift.shiftId)))
       .catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [examRoomId]);
 
   const handleDeleteExamRoom = async (roomId: string) => {
     try {

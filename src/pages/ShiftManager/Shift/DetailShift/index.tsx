@@ -100,8 +100,7 @@ const DetailShiftPage = () => {
       fetchShift(id).catch(error => {
         showErrorMessage(error);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id]);
 
   const handleDeleteShift = async (shiftId: string) => {
     try {
