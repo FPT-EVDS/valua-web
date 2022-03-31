@@ -82,10 +82,18 @@ export const examRoomsSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(assignStaff.fulfilled, (state, action) => {
-        const index = state.current.examRooms.findIndex(
-          item => item.examRoomId === action.payload.examRoomId,
-        );
-        if (index > -1) state.current.examRooms[index] = action.payload;
+        const { payload } = action;
+        state.current.examRooms = state.current.examRooms.map(examRoom => {
+          if (examRoom.room.roomId === payload.room.roomId) {
+            return {
+              ...examRoom,
+              room: payload.room,
+              staff: payload.staff,
+              status: payload.status,
+            };
+          }
+          return examRoom;
+        });
         state.isLoading = false;
         state.error = '';
       })

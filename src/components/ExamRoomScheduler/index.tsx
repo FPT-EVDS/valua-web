@@ -123,7 +123,7 @@ const ExamRoomScheduler = ({ height = 550, shifts, onCellClick }: Props) => {
           e.cancel = true;
           const { shiftId } = e.appointmentData as AppoinmentData;
           if (shiftId) {
-            history.push(`/shift-manager/shift/${shiftId}`);
+            history.push(`/shift-manager/shifts/${shiftId}`);
           }
         }}
         onCellClick={onCellClick}
