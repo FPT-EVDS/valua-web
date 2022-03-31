@@ -3,6 +3,9 @@ import ValidationMessage from 'enums/validationMessage';
 import Role from 'models/role.model';
 import { date, number, object, string } from 'yup';
 
+const phoneRegExp =
+  /^((\\+[1-9]{1,4}[ \\-]*)|(\\(\d{2,3}\\)[ \\-]*)|(\d{2,4})[ \\-]*)*?\d{3,4}?[ \\-]*\d{3,4}?$/;
+
 const accountSchema = object({
   address: string()
     .defined('Address is required')
@@ -32,6 +35,7 @@ const accountSchema = object({
   gender: number().integer().defined('Gender is required').oneOf([0, 1]),
   phoneNumber: string()
     .defined('Phone number is required')
+    .matches(phoneRegExp, 'Phone number is not valid')
     .length(10, ValidationMessage.PHONE_LENGTH),
   userRole: object().shape({
     roleID: number(),

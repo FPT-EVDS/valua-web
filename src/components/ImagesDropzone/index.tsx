@@ -138,7 +138,9 @@ const ImagesDropzone = ({ name, onChange }: ImagesDropzoneProps) => {
                   variant="subtitle1"
                   sx={{ width: 300, userSelect: 'none' }}
                 >
-                  Drag and drop image files (Max 5 files)
+                  Drag and drop images for face data file (Max 5 files).
+                  <br />
+                  Accepted files is .png, .jpg, .jpeg
                 </Typography>
               </Box>
             </Grid>

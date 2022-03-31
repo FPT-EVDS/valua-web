@@ -1,5 +1,12 @@
-import { Box, Button, CircularProgress, Grid, Stack } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  Grid,
+  Stack,
+} from '@mui/material';
+import { blue, grey } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import DetailAccountCard from 'components/AccountDetailCard';
@@ -36,6 +43,7 @@ const DetailAccountPage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
+  const [open, setOpen] = useState(false);
 
   const fetchAccount = async (appUserId: string) => {
     const actionResult = await dispatch(getAccount(appUserId));
@@ -47,12 +55,9 @@ const DetailAccountPage = () => {
       const result = await dispatch(disableAccount(accountId));
       unwrapResult(result);
       showSuccessMessage('Disable account successfully');
-      setConfirmDialogProps(prevState => ({
-        ...prevState,
-        open: false,
-      }));
     } catch (error) {
       showErrorMessage(error);
+    } finally {
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -77,6 +82,11 @@ const DetailAccountPage = () => {
       showSuccessMessage('Reset password successfully');
     } catch (error) {
       showErrorMessage(error);
+    } finally {
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
     }
   };
 
@@ -86,6 +96,15 @@ const DetailAccountPage = () => {
       title: `Do you want to disable ${String(account?.fullName)} ?`,
       open: true,
       handleAccept: () => handleDisableAccount(accountId),
+    }));
+  };
+
+  const showResetPasswordConfirmation = (accountId: string) => {
+    setConfirmDialogProps(prevState => ({
+      ...prevState,
+      title: `Are you sure ?`,
+      open: true,
+      handleAccept: () => handleResetPassword(accountId),
     }));
   };
 
@@ -100,10 +119,19 @@ const DetailAccountPage = () => {
               alignItems="center"
               sx={{ width: '100%' }}
             >
+              {account.role.roleName === Role.Examinee && (
+                <Button
+                  variant="text"
+                  sx={{ color: blue[500] }}
+                  onClick={() => setOpen(true)}
+                >
+                  Embed face
+                </Button>
+              )}
               <Button
                 variant="text"
                 sx={{ color: grey[700] }}
-                onClick={() => handleResetPassword(id)}
+                onClick={() => showResetPasswordConfirmation(id)}
               >
                 Reset password
               </Button>
@@ -148,7 +176,7 @@ const DetailAccountPage = () => {
   useEffect(() => {
     fetchAccount(id).catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id]);
 
   return (
     <div>
@@ -159,15 +187,21 @@ const DetailAccountPage = () => {
       />
       {account ? (
         <Grid container mt={2} spacing={2}>
+          {account.isActive && account.role.roleName === Role.Examinee && (
+            <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
+              <AccountEmbeddingCard
+                onSubmitSuccess={() => {
+                  setOpen(false);
+                }}
+              />
+            </Dialog>
+          )}
           <Grid item xs={12} md={9} lg={4}>
             <Stack spacing={2}>
               <AccountOverviewCard
                 account={account}
                 actionButtons={<GroupButtons />}
               />
-              {account.isActive && account.role.roleName === Role.Examinee && (
-                <AccountEmbeddingCard />
-              )}
             </Stack>
           </Grid>
           <Grid item xs={12} lg={8}>

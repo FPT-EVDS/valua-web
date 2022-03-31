@@ -1,5 +1,6 @@
 import { AddPhotoAlternate } from '@mui/icons-material';
 import { Avatar, IconButton } from '@mui/material';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React, { useRef, useState } from 'react';
 
 interface Props {
@@ -9,14 +10,16 @@ interface Props {
 
 const AvatarFilePicker = ({ name, onChange }: Props) => {
   const [image, setImageUrl] = useState<string | null>(null);
+  const { showErrorMessage } = useCustomSnackbar();
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newImage = event.target?.files?.[0];
-
-    if (newImage) {
+    if (newImage && newImage.type.startsWith('image/')) {
       setImageUrl(URL.createObjectURL(newImage));
       onChange(event);
+    } else {
+      showErrorMessage('Invalid file type');
     }
   };
 

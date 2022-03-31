@@ -16,7 +16,12 @@ import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import React from 'react';
 
-const AccountEmbeddingCard = () => {
+interface Props {
+  // eslint-disable-next-line react/require-default-props
+  onSubmitSuccess?: () => void;
+}
+
+const AccountEmbeddingCard = ({ onSubmitSuccess }: Props) => {
   const dispatch = useAppDispatch();
   const { showSuccessMessage, showErrorMessage } = useCustomSnackbar();
   const { account, isLoading } = useAppSelector(state => state.detailAccount);
@@ -42,6 +47,9 @@ const AccountEmbeddingCard = () => {
           const message = unwrapResult(result);
           showSuccessMessage(message);
           formik.resetForm();
+          if (onSubmitSuccess) {
+            onSubmitSuccess();
+          }
         } catch (error) {
           showErrorMessage(error);
         }
