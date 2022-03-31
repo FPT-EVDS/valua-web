@@ -17,6 +17,7 @@ import ExamRoomDetailCard from 'components/ExamRoomDetailCard';
 import ExamSeatTable from 'components/ExamSeatTable';
 import { notAllowedEditExamRoomStatuses } from 'configs/constants/shiftConfig.status';
 import { format } from 'date-fns';
+import ShiftStatus from 'enums/shiftStatus.enum';
 import {
   deleteExamRoom,
   getDetailExamRoom,
@@ -92,6 +93,16 @@ const DetailExamRoomPage = () => {
       open: true,
       handleAccept: () => handleDeleteExamRoom(roomId),
     }));
+  };
+
+  const handleHideActions = () => {
+    if (shift) {
+      if (shift?.status === ShiftStatus.Staffing) {
+        return false;
+      }
+      return notAllowedEditExamRoomStatuses.has(shift.status);
+    }
+    return true;
   };
 
   return (
@@ -173,7 +184,7 @@ const DetailExamRoomPage = () => {
             <Grid item xs={12} lg={8}>
               <ExamSeatTable
                 data={examRoom.attendances}
-                hideActions={notAllowedEditExamRoomStatuses.has(shift.status)}
+                hideActions={handleHideActions()}
                 onActionButtonClick={() => setOpen(true)}
               />
             </Grid>

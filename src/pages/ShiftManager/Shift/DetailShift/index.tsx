@@ -17,8 +17,12 @@ import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
 import NotFoundItem from 'components/NotFoundItem';
 import ShiftDetailCard from 'components/ShiftDetailCard';
-import { notAllowEditShiftStatuses } from 'configs/constants/shiftConfig.status';
+import {
+  notAllowedEditExamRoomStatuses,
+  notAllowEditShiftStatuses,
+} from 'configs/constants/shiftConfig.status';
 import ExamRoomStatus from 'enums/examRoomStatus.enum';
+import ShiftStatus from 'enums/shiftStatus.enum';
 import { deleteExamRoom, getExamRooms } from 'features/examRoom/examRoomSlice';
 import { deleteShift, getShift } from 'features/shift/detailShiftSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
@@ -308,7 +312,12 @@ const DetailShiftPage = () => {
         ];
         if (staff) deleteItems.shift();
         if (status === ExamRoomStatus.Disabled) deleteItems.pop();
-        if (shift?.status && notAllowEditShiftStatuses.has(shift.status)) {
+        if (shift?.status === ShiftStatus.Staffing) {
+          deleteItems.splice(2, 1);
+        } else if (
+          shift?.status &&
+          notAllowedEditExamRoomStatuses.has(shift.status)
+        ) {
           deleteItems.splice(1, 2);
         }
         return deleteItems;

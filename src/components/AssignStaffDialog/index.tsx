@@ -19,7 +19,7 @@ import { assignStaff } from 'features/examRoom/examRoomSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Account from 'models/account.model';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
   shiftId: string;
@@ -61,6 +61,7 @@ const AssignStaffDialog: React.FC<Props> = ({
         unwrapResult(result);
         showSuccessMessage('Assign staff successfully');
         formik.resetForm();
+        setCurrentStaff(null);
         handleClose();
       } catch (error) {
         showErrorMessage(error);
@@ -82,6 +83,14 @@ const AssignStaffDialog: React.FC<Props> = ({
     setCurrentStaff(staff);
     await formik.setFieldValue('staffId', staff?.appUserId);
   };
+
+  const updateExamRoomId = async () => {
+    await formik.setFieldValue('examRoomId', examRoomId);
+  };
+
+  useEffect(() => {
+    updateExamRoomId().catch(error => showErrorMessage(error));
+  }, [examRoomId]);
 
   return (
     <Dialog
