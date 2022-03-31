@@ -42,8 +42,8 @@ const AddExamineeSeatDialog: React.FC<Props> = ({
       examRoom: {
         examRoomId,
       },
-      examinee: {
-        appUserId: '',
+      subjectExaminee: {
+        subjectExamineeId: '',
       },
     },
     onSubmit: async (payload: AddAttendanceDto) => {
@@ -65,8 +65,8 @@ const AddExamineeSeatDialog: React.FC<Props> = ({
   const handleChangeExaminee = async (examinee: Examinee | null) => {
     setCurrentExaminee(examinee);
     await formik.setFieldValue(
-      'examinee.appUserId',
-      examinee?.examinee.appUserId,
+      'subjectExaminee.subjectExamineeId',
+      examinee?.subjectExamineeId,
     );
   };
 

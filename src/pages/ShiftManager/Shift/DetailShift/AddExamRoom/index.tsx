@@ -13,7 +13,7 @@ import CreateExamRoomDto from 'dtos/createExamRoom.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import {
   createExamRoom,
-  getAvailableExaminees,
+  getAssignedExamRooms,
   updateDropdown,
   updateExamRoom,
   updateTotalExaminees,
@@ -42,7 +42,7 @@ const AddExamRoomPage = () => {
   };
 
   const handleGetAvailableRooms = async (payload: GetAvailableExamineesDto) => {
-    const result = await dispatch(getAvailableExaminees(payload));
+    const result = await dispatch(getAssignedExamRooms(payload));
     unwrapResult(result);
     setSelectedIndex(-1);
   };

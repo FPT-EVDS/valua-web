@@ -29,13 +29,15 @@ const AddRoomDropdown = ({
     const response = await examRoomServices.getAvailableExamRooms({
       shiftId,
     });
-    const roomIds = examRooms?.examRooms.map(examRoom => examRoom.room.roomId);
-    const { emptyRooms, occupiedRooms } = response.data;
-    setRoomOptions(
-      [...emptyRooms, ...occupiedRooms].filter(
-        room => !roomIds?.includes(room.roomId),
-      ),
-    );
+    if (examRooms) {
+      const roomIds = examRooms.examRooms.map(examRoom => examRoom.room.roomId);
+      const { emptyRooms, occupiedRooms } = response.data;
+      setRoomOptions(
+        [...emptyRooms, ...occupiedRooms].filter(
+          room => !roomIds?.includes(room.roomId),
+        ),
+      );
+    }
     setIsLoading(false);
   };
 

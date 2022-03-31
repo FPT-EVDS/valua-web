@@ -2,6 +2,8 @@ import Account from './account.model';
 
 export default interface Attendance {
   attendanceId: string;
+  startTime: Date | null;
+  finishTime: Date | null;
   subjectExaminee: {
     subjectExamineeId: string;
     examinee: Pick<

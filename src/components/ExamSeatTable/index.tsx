@@ -1,9 +1,12 @@
-import { Add } from '@mui/icons-material';
-import { Button } from '@mui/material';
+/* eslint-disable prefer-destructuring */
+import { Add, FiberManualRecord } from '@mui/icons-material';
+import { Box, Button, Typography } from '@mui/material';
+import { green, indigo, red } from '@mui/material/colors';
 import { GridActionsColDef, GridColDef } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import EVDSDataGrid from 'components/EVDSDataGrid';
+import ShiftStatus from 'enums/shiftStatus.enum';
 import { removeAttendance } from 'features/examRoom/detailExamRoomSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Account from 'models/account.model';
@@ -20,6 +23,8 @@ interface Props {
 const transformAttendancesToRows = (attendances: Attendance[]) =>
   attendances.map(attendance => ({
     ...attendance.subjectExaminee,
+    startTime: attendance.startTime,
+    finishTime: attendance.finishTime,
     position: attendance.position,
     id: attendance.attendanceId,
   }));
@@ -28,23 +33,17 @@ const ExamSeatTable = ({ data, hideActions, onActionButtonClick }: Props) => {
   const DEFAULT_PAGE_SIZE = 10;
   const dispatch = useAppDispatch();
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
-  const examRoom = useAppSelector(state => state.detailExamRoom.examRoom);
+  const { examRoom, shift } = useAppSelector(state => state.detailExamRoom);
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(transformAttendancesToRows(data));
 
-  const handleRemoveExaminee = async (attendance: Attendance) => {
+  const handleRemoveExaminee = async (attendanceId: string) => {
     if (examRoom) {
       try {
-        const result = await dispatch(
-          removeAttendance(attendance.attendanceId),
-        );
+        const result = await dispatch(removeAttendance(attendanceId));
         unwrapResult(result);
-        setRows(prev =>
-          prev.filter(item => item.id !== attendance.attendanceId),
-        );
-        showSuccessMessage(
-          `${attendance.subjectExaminee.examinee.fullName} has been successfully removed`,
-        );
+        setRows(prev => prev.filter(item => item.id !== attendanceId));
+        showSuccessMessage(`Examinee has been successfully removed`);
       } catch (error) {
         showErrorMessage(error);
       }
@@ -58,6 +57,7 @@ const ExamSeatTable = ({ data, hideActions, onActionButtonClick }: Props) => {
   const columns: Array<GridColDef | GridActionsColDef> = [
     { field: 'attendanceId', hide: true },
     { field: 'examinee', hide: true },
+    { field: 'finishTime', hide: true },
     {
       field: 'position',
       sortable: false,
@@ -96,25 +96,59 @@ const ExamSeatTable = ({ data, hideActions, onActionButtonClick }: Props) => {
       },
     },
     {
+      field: 'startTime',
+      headerName: 'Status',
+      flex: 0.1,
+      hide: shift?.status !== ShiftStatus.Finished,
+      minWidth: 130,
+      renderCell: ({ getValue, id }) => {
+        const startTime = getValue(id, 'startTime');
+        const finishTime = getValue(id, 'finishTime');
+        const status = startTime ? (finishTime ? 2 : 1) : 0;
+        let message = 'Unattended';
+        let color: string = red[500];
+        switch (status) {
+          case 1:
+            color = green[500];
+            message = 'Attendend';
+            break;
+
+          case 2:
+            color = indigo[500];
+            message = 'Finished';
+            break;
+
+          default:
+            break;
+        }
+        return (
+          <Box display="flex" alignItems="center">
+            <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
+            <Typography variant="subtitle1" color={color}>
+              {message}
+            </Typography>
+          </Box>
+        );
+      },
+    },
+    {
       field: 'actions',
       headerName: 'Actions',
       flex: 0.1,
       minWidth: 130,
       type: 'actions',
       hide: hideActions,
-      getActions: ({ row }) => {
-        const attendance = row as Attendance;
-        return rows.length > 1
+      getActions: ({ id }) =>
+        rows.length > 1
           ? [
               <Button
                 variant="text"
-                onClick={() => handleRemoveExaminee(attendance)}
+                onClick={() => handleRemoveExaminee(String(id))}
               >
                 Remove
               </Button>,
             ]
-          : [];
-      },
+          : [],
     },
   ];
 

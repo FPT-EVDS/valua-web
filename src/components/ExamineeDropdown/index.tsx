@@ -34,25 +34,23 @@ const ExamineeDropdown = ({
   const [examineeOptions, setExamineeOptions] = useState<Examinee[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // FIXME: comment for fixing later
+  const fetchAvailableExaminees = async () => {
+    const response = await examRoomServices.getAvailableExaminees({
+      shiftId,
+      subjectSemesterId,
+    });
+    const { examinees } = response.data;
+    if (value) setExamineeOptions([value, ...examinees]);
+    else setExamineeOptions(examinees);
+    setIsLoading(false);
+  };
 
-  // const fetchAvailableExaminees = async () => {
-  //   const response = await examRoomServices.getAvailableExaminees({
-  //     shiftId,
-  //     subjectSemesterId,
-  //   });
-  //   const { examinees } = response.data;
-  //   if (value) setExamineeOptions([value, ...examinees]);
-  //   else setExamineeOptions(examinees);
-  //   setIsLoading(false);
-  // };
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   fetchAvailableExaminees().catch(() => {
-  //     setIsLoading(false);
-  //   });
-  // }, []);
+  useEffect(() => {
+    setIsLoading(true);
+    fetchAvailableExaminees().catch(() => {
+      setIsLoading(false);
+    });
+  }, []);
 
   return (
     <Autocomplete
@@ -60,13 +58,13 @@ const ExamineeDropdown = ({
       loading={isLoading}
       options={examineeOptions}
       isOptionEqualToValue={(option, optionValue) =>
-        option.subjectExamineeID === optionValue.subjectExamineeID
+        option.subjectExamineeId === optionValue.subjectExamineeId
       }
       value={value}
       getOptionLabel={props => props.examinee.fullName}
       onChange={(event, newValue) => onChange(newValue)}
       renderOption={(props, option) => (
-        <ListItem {...props} key={option.subjectExamineeID}>
+        <ListItem {...props} key={option.subjectExamineeId}>
           <ListItemAvatar>
             <Avatar
               src={String(option.examinee.imageUrl)}

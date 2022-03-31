@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios';
+import AssignedExamRooms from 'dtos/assignedExamRooms';
 import AssignStaffToExamRoomDto from 'dtos/assignStaffToExamRoom.dto';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import AvailableRoomsDto from 'dtos/availableRooms.dto';
@@ -41,10 +42,16 @@ const examRoomServices = {
     const url = '/examRooms/available/room';
     return axiosClient.post(url, payload);
   },
+  getAssignedExamRooms: (
+    payload: GetAvailableExamineesDto,
+  ): Promise<AxiosResponse<AssignedExamRooms>> => {
+    const url = '/examRooms/assign/subject';
+    return axiosClient.post(url, payload);
+  },
   getAvailableExaminees: (
     payload: GetAvailableExamineesDto,
   ): Promise<AxiosResponse<AvailableExamineesDto>> => {
-    const url = '/examRooms/assign/subject';
+    const url = '/examRooms/available/subject';
     return axiosClient.post(url, payload);
   },
   getAvailableStaff: (

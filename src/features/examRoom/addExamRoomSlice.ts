@@ -5,7 +5,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import AvailableExamineesDto from 'dtos/availableExaminees.dto';
+import AssignedExamRooms from 'dtos/assignedExamRooms';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import Room from 'models/room.model';
@@ -26,7 +26,7 @@ interface ExamRoomState {
     subjectSemesterId: string;
   } | null;
   shouldUpdateDropdown: boolean;
-  examRooms: AvailableExamineesDto | null;
+  examRooms: AssignedExamRooms | null;
   removedExaminees: SubjectExaminee[];
 }
 
@@ -67,11 +67,11 @@ export const createExamRoom = createAsyncThunk(
   },
 );
 
-export const getAvailableExaminees = createAsyncThunk(
-  'addExamRoom/getAvailableExaminees',
+export const getAssignedExamRooms = createAsyncThunk(
+  'addExamRoom/getAssignedExamRooms',
   async (payload: GetAvailableExamineesDto, { rejectWithValue }) => {
     try {
-      const response = await examRoomServices.getAvailableExaminees(payload);
+      const response = await examRoomServices.getAssignedExamRooms(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -101,7 +101,7 @@ export const addExamRoomSlice = createSlice({
     },
     updateExamRoom: (
       state,
-      action: PayloadAction<AvailableExamineesDto | null>,
+      action: PayloadAction<AssignedExamRooms | null>,
     ) => {
       state.examRooms = action.payload;
     },
@@ -190,7 +190,7 @@ export const addExamRoomSlice = createSlice({
         state.isLoading = false;
         state.error = '';
       })
-      .addCase(getAvailableExaminees.fulfilled, (state, action) => {
+      .addCase(getAssignedExamRooms.fulfilled, (state, action) => {
         state.removedExaminees = [];
         state.examRooms = action.payload;
         state.isLoading = false;
@@ -200,7 +200,7 @@ export const addExamRoomSlice = createSlice({
         isAnyOf(
           getShift.rejected,
           createExamRoom.rejected,
-          getAvailableExaminees.rejected,
+          getAssignedExamRooms.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -211,7 +211,7 @@ export const addExamRoomSlice = createSlice({
         isAnyOf(
           getShift.pending,
           createExamRoom.pending,
-          getAvailableExaminees.pending,
+          getAssignedExamRooms.pending,
         ),
         state => {
           state.isLoading = true;

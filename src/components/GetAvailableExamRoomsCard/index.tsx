@@ -15,7 +15,7 @@ import SubjectExamineeSemesterDropdown from 'components/SubjectExamineeSemesterD
 import { addExamRoomSchema } from 'configs/validations';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
 import {
-  getAvailableExaminees,
+  getAssignedExamRooms,
   getShift,
   updateCurrentSubject,
 } from 'features/examRoom/addExamRoomSlice';
@@ -82,7 +82,7 @@ const GetAvailableExamRoomsCard = ({
     try {
       if (shift && selectedSubject) {
         const result = await dispatch(
-          getAvailableExaminees({
+          getAssignedExamRooms({
             shiftId: String(shift.shiftId),
             subjectSemesterId: selectedSubject.subjectSemesterId,
           }),
