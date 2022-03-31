@@ -41,7 +41,7 @@ export const getUserProfile = createAsyncThunk(
 
 export const updateUserProfile = createAsyncThunk(
   'authentication/profile',
-  async (payload: User, { rejectWithValue }) => {
+  async (payload: FormData, { rejectWithValue }) => {
     try {
       const response = await authServices.updateUserProfile(payload);
       return response.data;

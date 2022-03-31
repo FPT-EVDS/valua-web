@@ -24,6 +24,7 @@ import { detailExamRoomSchema } from 'configs/validations';
 import { format } from 'date-fns';
 import UpdateExamRoomDto from 'dtos/updateExamRoom.dto';
 import ExamRoomStatus from 'enums/examRoomStatus.enum';
+import ShiftStatus from 'enums/shiftStatus.enum';
 import { updateExamRoom } from 'features/examRoom/detailExamRoomSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
@@ -176,7 +177,7 @@ const ExamRoomDetailCard = ({
             </Grid>
             <Grid item xs={12}>
               <RoomDropdown
-                isEditable={isEditable}
+                isEditable={isEditable && shift.status !== ShiftStatus.Ready}
                 onChange={handleChangeRoom}
                 shiftId={String(examRoom.shift.shiftId)}
                 value={formik.values.room}

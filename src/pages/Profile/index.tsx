@@ -1,25 +1,87 @@
-import { Avatar, Button, Grid } from '@mui/material';
-import { useAppSelector } from 'app/hooks';
+import { Button, Grid } from '@mui/material';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import ChangePasswordDialog from 'components/ChangePasswordDialog';
+import LoadingIndicator from 'components/LoadingIndicator';
 import ProfileDetailCard from 'components/ProfileDetailCard';
 import ProfileOverviewCard from 'components/ProfileOverviewCard';
-import React, { useState } from 'react';
+import { updateUserProfile } from 'features/auth/authSlice';
+import useCustomSnackbar from 'hooks/useCustomSnackbar';
+import React, { useRef, useState } from 'react';
 
 const ProfilePage = () => {
+  const dispatch = useAppDispatch();
   const { user, isLoading } = useAppSelector(state => state.auth);
   const [open, setOpen] = useState(false);
+  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
   const handleOpen = () => setOpen(true);
+
   const handleClose = () => setOpen(false);
+
+  const handleOnChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newImage = event.target?.files?.[0];
+    if (newImage && newImage.type.startsWith('image/') && user) {
+      try {
+        const { fullName, gender, birthdate, address, phoneNumber } = user;
+        const formData = new FormData();
+        const accountDataBlob = new Blob(
+          [
+            JSON.stringify({
+              fullName,
+              gender,
+              birthdate,
+              address,
+              phoneNumber,
+            }),
+          ],
+          {
+            type: 'application/json',
+          },
+        );
+        formData.append('account', accountDataBlob);
+        formData.append('profilePicture', newImage as unknown as Blob);
+        const result = await dispatch(updateUserProfile(formData));
+        unwrapResult(result);
+        showSuccessMessage('Update profile successfully');
+      } catch (error) {
+        showErrorMessage(error);
+      }
+    } else {
+      showErrorMessage('Invalid file type');
+    }
+  };
 
   const GroupButtons = () => (
     <>
-      <Button variant="text" color="primary">
-        Upload image
-      </Button>
-      <Button variant="text" color="primary" onClick={handleOpen}>
-        Update password
-      </Button>
+      {isLoading ? (
+        <LoadingIndicator />
+      ) : (
+        <>
+          <Button
+            component="label"
+            htmlFor="upload-image-button"
+            variant="text"
+            color="primary"
+          >
+            <input
+              title="image"
+              ref={inputFileRef}
+              name="image"
+              accept="image/*"
+              type="file"
+              style={{ display: 'none' }}
+              id="upload-image-button"
+              onChange={handleOnChange}
+            />
+            Upload image
+          </Button>
+          <Button variant="text" color="primary" onClick={handleOpen}>
+            Update password
+          </Button>
+        </>
+      )}
     </>
   );
 

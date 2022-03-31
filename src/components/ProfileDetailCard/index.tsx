@@ -36,16 +36,34 @@ const ProfileDetailCard = ({ user, isLoading }: Props) => {
   const [isEditable, setIsEditable] = useState(
     String(query.get('edit')) === 'true',
   );
-  const initialValues: User = { ...user };
+  const initialValues: User = {
+    ...user,
+    gender: user.gender === 'Female' ? '1' : '0',
+  };
   const formik = useFormik({
     initialValues,
     validationSchema: appUserSchema,
-    onSubmit: async (payload: User) => {
+    onSubmit: async ({
+      fullName,
+      gender,
+      birthdate,
+      address,
+      phoneNumber,
+    }: User) => {
       try {
-        const data = {
-          ...payload,
+        const payload = {
+          fullName,
+          gender,
+          birthdate,
+          address,
+          phoneNumber,
         };
-        const result = await dispatch(updateUserProfile(data));
+        const formData = new FormData();
+        const accountDataBlob = new Blob([JSON.stringify(payload)], {
+          type: 'application/json',
+        });
+        formData.append('account', accountDataBlob);
+        const result = await dispatch(updateUserProfile(formData));
         unwrapResult(result);
         showSuccessMessage('Update profile successfully');
       } catch (error) {
