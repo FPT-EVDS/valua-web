@@ -82,7 +82,7 @@ const examRoomServices = {
     const url = `/examRooms/${examRoomId}`;
     return axiosClient.put(url, {
       staff: {
-        appUserId: staff.appUserId,
+        appUserId: staff?.appUserId,
       },
       room: {
         roomId: room.roomId,

@@ -63,7 +63,7 @@ export const detailShiftSlice = createSlice({
       .addCase(removeExaminee.fulfilled, (state, action) => {
         const index = state.examineeSubject?.examinees.findIndex(
           examinee =>
-            examinee.subjectExamineeId === action.meta.arg.subjectExamineeId,
+            examinee.subjectExamineeId === action.payload.subjectExamineeId,
         );
         if (index && index > -1 && state.examineeSubject) {
           state.examineeSubject.examinees[index] = action.payload;

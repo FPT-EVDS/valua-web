@@ -34,7 +34,7 @@ import DetailExamRoom from 'models/detailExamRoom.model';
 import Room from 'models/room.model';
 import Shift from 'models/shift.model';
 import Subject from 'models/subject.model';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
   examRoom: DetailExamRoom;
@@ -127,6 +127,17 @@ const ExamRoomDetailCard = ({
     await formik.setFieldValue('staff', staff);
   };
 
+  const resetForm = async () => {
+    await formik.setFieldValue('examRoomId', examRoom.examRoomId);
+    await handleChangeStaff(examRoom.staff);
+    await handleChangeRoom(examRoom.room);
+    await handleChangeSubject(examRoom.subjectSemester.subject);
+  };
+
+  useEffect(() => {
+    resetForm().catch(error => showErrorMessage(error));
+  }, [examRoom, shift]);
+
   return (
     <Card sx={{ minWidth: 275 }} elevation={2}>
       <CardHeader
@@ -172,7 +183,7 @@ const ExamRoomDetailCard = ({
                 shiftId={String(examRoom.shift.shiftId)}
                 value={formik.values.staff}
                 error={Boolean(formik.errors.staff)}
-                helperText={formik.errors.staff?.appUserId}
+                helperText={formik.errors.staff}
               />
             </Grid>
             <Grid item xs={12}>

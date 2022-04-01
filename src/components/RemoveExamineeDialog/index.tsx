@@ -70,7 +70,7 @@ const RemoveExamineeDialog = ({
 
   const refreshSubjectExamineeId = async () => {
     await formik.setFieldValue('subjectExamineeId', subjectExamineeId);
-    if (initialValue) {
+    if (initialValue && initialValue.length > 0) {
       await formik.setFieldValue('removedReason', initialValue);
       setHideActions(true);
     } else {
@@ -81,7 +81,7 @@ const RemoveExamineeDialog = ({
 
   useEffect(() => {
     refreshSubjectExamineeId().catch(error => showErrorMessage(error));
-  }, [subjectExamineeId]);
+  }, [subjectExamineeId, initialValue]);
 
   return (
     <div>
@@ -105,6 +105,7 @@ const RemoveExamineeDialog = ({
           <DialogContent>
             <TextField
               name="removedReason"
+              disabled={hideActions}
               value={formik.values.removedReason}
               multiline
               rows={4}
