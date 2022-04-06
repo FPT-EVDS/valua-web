@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { CloudUpload } from '@mui/icons-material';
@@ -12,17 +13,22 @@ interface ImageFile extends File {
 
 interface ImagesDropzoneProps {
   name: string;
-  // eslint-disable-next-line react/require-default-props
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDropFiles?: (files: File[]) => void;
 }
 
-const ImagesDropzone = ({ name, onChange }: ImagesDropzoneProps) => {
+const ImagesDropzone = ({
+  name,
+  onChange,
+  handleDropFiles,
+}: ImagesDropzoneProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hasUploadFiles, setHasUploadFiles] = useState(false);
   const [files, setFiles] = useState<ImageFile[]>([]);
   const theme = useTheme();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (handleDropFiles) handleDropFiles(acceptedFiles);
     setFiles(
       acceptedFiles.map(file =>
         Object.assign(file, {
@@ -111,7 +117,7 @@ const ImagesDropzone = ({ name, onChange }: ImagesDropzoneProps) => {
           <input {...getInputProps({ name, onChange })} />
           {files.length > 0 ? (
             <>
-              {files.map((file, index) => (
+              {files.map(file => (
                 <Grid item lg={2} md={3} sm={4} xs={6} key={file.name}>
                   <Stack
                     justifyContent="center"

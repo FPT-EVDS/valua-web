@@ -27,7 +27,7 @@ const AccountEmbeddingCard = ({ onSubmitSuccess }: Props) => {
   const { account, isLoading } = useAppSelector(state => state.detailAccount);
   const formik = useFormik({
     initialValues: {
-      imageFiles: null as FileList | null,
+      imageFiles: null as File[] | null,
     },
     onSubmit: async () => {
       if (account) {
@@ -61,8 +61,16 @@ const AccountEmbeddingCard = ({ onSubmitSuccess }: Props) => {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     if (event.target.files) {
-      await formik.setFieldValue('imageFiles', event.target.files);
+      const imageFiles: File[] = [];
+      for (let i = 0; i < event.target.files.length; i += 1) {
+        imageFiles.push(event.target.files[i]);
+      }
+      await formik.setFieldValue('imageFiles', imageFiles);
     }
+  };
+
+  const handleDropFiles = async (imageFiles: File[]) => {
+    await formik.setFieldValue('imageFiles', imageFiles);
   };
 
   return (
@@ -79,7 +87,11 @@ const AccountEmbeddingCard = ({ onSubmitSuccess }: Props) => {
         }
       />
       <CardContent>
-        <ImagesDropzone name="imageFiles" onChange={handleUploadFileList} />
+        <ImagesDropzone
+          name="imageFiles"
+          onChange={handleUploadFileList}
+          handleDropFiles={handleDropFiles}
+        />
       </CardContent>
       <CardActions sx={{ justifyContent: 'space-between' }}>
         <Box

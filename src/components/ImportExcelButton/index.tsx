@@ -294,10 +294,12 @@ const ImportExcelButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <DropzoneDialog
-        isDialogOpen={isOpen}
-        handleClose={() => setIsOpen(false)}
-      />
+      {isOpen && (
+        <DropzoneDialog
+          isDialogOpen={isOpen}
+          handleClose={() => setIsOpen(false)}
+        />
+      )}
       <Button
         sx={{
           backgroundColor: '#47B881',
