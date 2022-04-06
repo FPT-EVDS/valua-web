@@ -12,7 +12,10 @@ import {
 import { useAppDispatch } from 'app/hooks';
 import ExamineeTransferList from 'components/ExamineeTransferList';
 import SlideTransition from 'components/SlideTransition';
-import { updateRoomExaminees } from 'features/examRoom/addExamRoomSlice';
+import {
+  addRemovedExaminees,
+  updateRoomExaminees,
+} from 'features/examRoom/addExamRoomSlice';
 import Room from 'models/room.model';
 import SubjectExaminee from 'models/subjectExaminee.model';
 import React, { useState } from 'react';
@@ -31,13 +34,21 @@ const ExamineeTransferListDialog: React.FC<Props> = ({
   room,
 }) => {
   const [selected, setSelected] = useState<SubjectExaminee[] | null>(null);
+  const [unselected, setUnselected] = useState<SubjectExaminee[] | null>(null);
   const dispatch = useAppDispatch();
 
   const handleSelected = (examinee: SubjectExaminee[]) => {
     setSelected(examinee);
   };
 
+  const handleUnselected = (examinee: SubjectExaminee[]) => {
+    setUnselected(examinee);
+  };
+
   const handleSubmit = () => {
+    if (unselected) {
+      dispatch(addRemovedExaminees({ examinees: unselected }));
+    }
     if (selected) {
       dispatch(
         updateRoomExaminees({ examinees: selected, roomId: room.roomId }),
@@ -73,6 +84,7 @@ const ExamineeTransferListDialog: React.FC<Props> = ({
           roomName={room.roomName}
           selectedIndex={selectedIndex}
           handleSelected={handleSelected}
+          handleUnselected={handleUnselected}
         />
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>

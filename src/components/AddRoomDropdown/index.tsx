@@ -59,13 +59,19 @@ const AddRoomDropdown = ({
         option.roomId === optionValue.roomId
       }
       groupBy={option => (option.lastPosition ? 'Occupied' : 'Empty')}
-      getOptionLabel={option => `${option.roomName} - Floor ${option.floor}`}
+      getOptionLabel={option => {
+        const availableSeats = option.lastPosition
+          ? option.seatCount - parseInt(String(option.lastPosition), 10)
+          : option.seatCount;
+        return `${option.roomName} - Floor ${option.floor} - Available: ${availableSeats}`;
+      }}
       onChange={(event, newValue) => onChange(newValue)}
       disabled={!isEditable}
       renderInput={params => (
         <TextField
           {...params}
-          label="Exam room"
+          required
+          label="Room"
           name="examRoom"
           margin="dense"
           fullWidth

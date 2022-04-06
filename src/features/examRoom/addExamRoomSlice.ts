@@ -126,6 +126,12 @@ export const addExamRoomSlice = createSlice({
         action.payload.examinee,
       ];
     },
+    addRemovedExaminees: (
+      state,
+      action: PayloadAction<{ examinees: SubjectExaminee[] }>,
+    ) => {
+      state.removedExaminees = action.payload.examinees;
+    },
     updateRoomExaminees: (
       state,
       action: PayloadAction<{ examinees: SubjectExaminee[]; roomId: string }>,
@@ -223,6 +229,7 @@ export const addExamRoomSlice = createSlice({
 
 export const {
   addRemovedExaminee,
+  addRemovedExaminees,
   addExamRooms,
   updateCurrentSubject,
   updateTotalExaminees,

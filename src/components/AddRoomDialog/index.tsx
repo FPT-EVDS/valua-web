@@ -64,6 +64,7 @@ const AddRoomDialog: React.FC<Props> = ({ shiftId, open, handleClose }) => {
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>
         <LoadingButton
+          disabled={rooms === null || rooms?.length === 0}
           variant="contained"
           sx={{ width: 150 }}
           loading={isLoading}

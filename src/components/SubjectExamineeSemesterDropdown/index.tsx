@@ -16,7 +16,7 @@ interface Props {
   };
   isEditable?: boolean;
   helperText?: string;
-  shiftId?: string;
+  shiftId?: string | null;
   onChange: (
     subjects: {
       semester: Pick<Semester, 'semesterId' | 'semesterName'>;
@@ -101,6 +101,7 @@ const SubjectExamineeSemesterDropdown = ({
 
   return (
     <Autocomplete
+      disableClearable
       loading={isLoading}
       disabled={!isEditable}
       options={subjectOptions}
@@ -118,6 +119,7 @@ const SubjectExamineeSemesterDropdown = ({
       renderInput={params => (
         <TextField
           {...params}
+          required
           label="Subject"
           name="subjects"
           margin="dense"

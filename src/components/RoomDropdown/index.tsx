@@ -65,7 +65,7 @@ const RoomDropdown = ({
       renderInput={params => (
         <TextField
           {...params}
-          label="Exam room"
+          label="Room"
           name="examRoom"
           margin="dense"
           fullWidth

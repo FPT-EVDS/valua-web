@@ -18,6 +18,7 @@ interface Props {
   selectedIndex: number;
   roomName: string;
   handleSelected: (examinee: SubjectExaminee[]) => void;
+  handleUnselected: (examinee: SubjectExaminee[]) => void;
 }
 
 interface TransferListProps {
@@ -41,6 +42,7 @@ const ExamineeTransferList = ({
   selectedIndex,
   roomName,
   handleSelected,
+  handleUnselected,
 }: Props) => {
   const { removedExaminees, examRooms } = useAppSelector(
     state => state.addExamRoom,
@@ -61,6 +63,7 @@ const ExamineeTransferList = ({
       handleSelected(examinees);
     }
     setLeft(removedExaminees);
+    handleUnselected(removedExaminees);
     setChecked([]);
   }, [examRooms, selectedIndex]);
 
@@ -92,11 +95,13 @@ const ExamineeTransferList = ({
     setRight([...right, ...leftChecked]);
     handleSelected([...right, ...leftChecked]);
     setLeft(not(left, leftChecked));
+    handleUnselected(not(left, leftChecked));
     setChecked(not(checked, leftChecked));
   };
 
   const handleCheckedLeft = () => {
     setLeft([...left, ...rightChecked]);
+    handleUnselected([...left, ...rightChecked]);
     setRight(not(right, rightChecked));
     handleSelected(not(right, rightChecked));
     setChecked(not(checked, rightChecked));

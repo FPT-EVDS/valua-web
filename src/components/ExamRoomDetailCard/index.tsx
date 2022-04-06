@@ -88,6 +88,13 @@ const ExamRoomDetailCard = ({
     initialValues,
     validationSchema: detailExamRoomSchema,
     onSubmit: async (payload: UpdateExamRoomDto) => {
+      if (shift.status === ShiftStatus.Ready && payload.staff === null) {
+        formik.setFieldError(
+          'staff',
+          'Reserved staff is required in ready shift',
+        );
+        return;
+      }
       try {
         const result = await dispatch(updateExamRoom(payload));
         unwrapResult(result);
@@ -173,7 +180,7 @@ const ExamRoomDetailCard = ({
                 semesterId={shift.semester.semesterId}
                 onChange={handleChangeSubject}
                 error={Boolean(formik.errors.subject)}
-                helperText={formik.errors.subject?.subjectId}
+                helperText={String(formik.errors.subject)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -193,7 +200,7 @@ const ExamRoomDetailCard = ({
                 shiftId={String(examRoom.shift.shiftId)}
                 value={formik.values.room}
                 error={Boolean(formik.errors.room)}
-                helperText={formik.errors.room?.roomId}
+                helperText={String(formik.errors.room)}
               />
             </Grid>
             <Grid item xs={12}>
