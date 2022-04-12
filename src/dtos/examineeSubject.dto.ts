@@ -6,7 +6,10 @@ export default interface ExamineeSubject extends PagingDto {
   subjects: Array<{
     totalExaminees: number;
     totalUnassigned: number;
-    subject: Pick<Subject, 'subjectId' | 'subjectCode' | 'subjectName'>;
+    subject: {
+      subject: Pick<Subject, 'subjectId' | 'subjectCode' | 'subjectName'>;
+      subjectSemesterId: string;
+    };
     isReady: boolean;
   }>;
 }

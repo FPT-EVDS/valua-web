@@ -115,7 +115,7 @@ export const semesterSlice = createSlice({
     builder
       .addCase(addSemester.fulfilled, (state, action) => {
         if (state.current.currentPage === 0)
-          state.current.semesters.unshift({ ...action.payload, subjects: [] });
+          state.current.semesters.unshift({ ...action.payload });
         state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;

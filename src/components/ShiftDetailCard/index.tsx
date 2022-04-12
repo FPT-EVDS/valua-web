@@ -193,7 +193,6 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
                   <TextField
                     {...params}
                     name="beginTime"
-                    autoFocus
                     margin="dense"
                     fullWidth
                     disabled={!isEditable}
@@ -223,7 +222,6 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
                   <TextField
                     {...params}
                     name="finishTime"
-                    autoFocus
                     margin="dense"
                     fullWidth
                     disabled={!isEditable}

@@ -1,18 +1,15 @@
 import Semester from 'models/semester.model';
-import Subject from 'models/subject.model';
 import SubjectExaminee from 'models/subjectExaminee.model';
+import SubjectSemester from 'models/subjectSemester.model';
 
 import PagingDto from './paging.dto';
-import SearchParams from './searchParams.dto';
 
-export default interface DetailSubjectExamineeDto
-  extends SearchParams,
-    PagingDto {
+interface DetailSubjectExamineeSubjectSemester extends SubjectSemester {
+  semester: Semester;
+}
+
+export default interface DetailSubjectExamineeDto extends PagingDto {
   totalUnassignedExaminees: number;
-  subject: Pick<
-    Subject,
-    'subjectId' | 'subjectCode' | 'subjectName' | 'numberOfExam'
-  >;
-  semester: Pick<Semester, 'semesterId' | 'semesterName'>;
+  subjectSemester: DetailSubjectExamineeSubjectSemester;
   examinees: Array<SubjectExaminee>;
 }

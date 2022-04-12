@@ -1,6 +1,6 @@
-import Account from 'models/account.model';
-
 export default interface Attendance {
-  examinee: Pick<Account, 'appUserId'>;
+  subjectExaminee: {
+    subjectExamineeId: string;
+  };
   position: number;
 }

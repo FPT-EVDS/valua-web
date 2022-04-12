@@ -37,8 +37,11 @@ const SemesterSubjectsDropdown = ({
   const fetchSubjects = async () => {
     if (semesterId) {
       const response = await semesterServices.getSemester(semesterId);
-      if (response.data.subjects.length > 0) {
-        setSubjectOptions(response.data.subjects);
+      if (response.data.subjectSemesters.length > 0) {
+        const subjects = response.data.subjectSemesters.map(
+          subjectSemester => subjectSemester.subject,
+        );
+        setSubjectOptions(subjects);
         dispatch(enableAddSubject());
       } else dispatch(disableAddSubject());
     }
@@ -68,7 +71,6 @@ const SemesterSubjectsDropdown = ({
           {...params}
           label="Subject"
           name="subjects"
-          autoFocus
           margin="dense"
           error={error}
           helperText={error && helperText}

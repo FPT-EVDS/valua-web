@@ -9,55 +9,52 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useAppDispatch } from 'app/hooks';
 import ExamineeTransferList from 'components/ExamineeTransferList';
 import SlideTransition from 'components/SlideTransition';
-import { updateRemovedExaminees } from 'features/examRoom/addExamRoomSlice';
-import Examinee from 'models/examinee.model';
+import {
+  addRemovedExaminees,
+  updateRoomExaminees,
+} from 'features/examRoom/addExamRoomSlice';
+import Room from 'models/room.model';
+import SubjectExaminee from 'models/subjectExaminee.model';
 import React, { useState } from 'react';
 
 interface Props {
   open: boolean;
   handleClose: () => void;
-  listExamineeByRoom: Examinee[][];
   selectedIndex: number;
-  roomName: string;
-  handleListExamineeByRoom: React.Dispatch<
-    React.SetStateAction<Examinee[][] | null>
-  >;
+  room: Room;
 }
 
 const ExamineeTransferListDialog: React.FC<Props> = ({
   open,
   handleClose,
-  listExamineeByRoom,
   selectedIndex,
-  roomName,
-  handleListExamineeByRoom,
+  room,
 }) => {
-  const [selected, setSelected] = useState<Examinee[] | null>(null);
+  const [selected, setSelected] = useState<SubjectExaminee[] | null>(null);
+  const [unselected, setUnselected] = useState<SubjectExaminee[] | null>(null);
   const dispatch = useAppDispatch();
-  const removedExaminees = useAppSelector(
-    state => state.addExamRoom.removedExaminees,
-  );
 
-  const handleSelected = (examinee: Examinee[]) => {
+  const handleSelected = (examinee: SubjectExaminee[]) => {
     setSelected(examinee);
   };
 
+  const handleUnselected = (examinee: SubjectExaminee[]) => {
+    setUnselected(examinee);
+  };
+
   const handleSubmit = () => {
-    handleListExamineeByRoom(prev => {
-      const prevState = prev;
-      if (prevState && selected) {
-        prevState[selectedIndex] = selected;
-      }
-      return prevState;
-    });
-    const removedItems = removedExaminees.filter(
-      item => !selected?.includes(item),
-    );
-    dispatch(updateRemovedExaminees(removedItems));
-    handleClose();
+    if (unselected) {
+      dispatch(addRemovedExaminees({ examinees: unselected }));
+    }
+    if (selected) {
+      dispatch(
+        updateRoomExaminees({ examinees: selected, roomId: room.roomId }),
+      );
+      handleClose();
+    }
   };
 
   return (
@@ -76,7 +73,7 @@ const ExamineeTransferListDialog: React.FC<Props> = ({
           alignItems="center"
         >
           <IconButton sx={{ visibility: 'hidden' }} />
-          <Typography variant="h6">Add examinee to {roomName}</Typography>
+          <Typography variant="h6">Add examinee to {room.roomName}</Typography>
           <IconButton onClick={handleClose}>
             <Close />
           </IconButton>
@@ -84,10 +81,10 @@ const ExamineeTransferListDialog: React.FC<Props> = ({
       </DialogTitle>
       <DialogContent>
         <ExamineeTransferList
-          roomName={roomName}
-          listExamineeByRoom={listExamineeByRoom}
+          roomName={room.roomName}
           selectedIndex={selectedIndex}
           handleSelected={handleSelected}
+          handleUnselected={handleUnselected}
         />
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center' }}>

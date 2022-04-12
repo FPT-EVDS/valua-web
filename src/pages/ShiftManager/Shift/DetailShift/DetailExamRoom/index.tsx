@@ -17,6 +17,7 @@ import ExamRoomDetailCard from 'components/ExamRoomDetailCard';
 import ExamSeatTable from 'components/ExamSeatTable';
 import { notAllowedEditExamRoomStatuses } from 'configs/constants/shiftConfig.status';
 import { format } from 'date-fns';
+import ShiftStatus from 'enums/shiftStatus.enum';
 import {
   deleteExamRoom,
   getDetailExamRoom,
@@ -65,7 +66,7 @@ const DetailExamRoomPage = () => {
       .then(result => fetchDetailShift(String(result.shift.shiftId)))
       .catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [examRoomId]);
 
   const handleDeleteExamRoom = async (roomId: string) => {
     try {
@@ -92,6 +93,16 @@ const DetailExamRoomPage = () => {
       open: true,
       handleAccept: () => handleDeleteExamRoom(roomId),
     }));
+  };
+
+  const handleHideActions = () => {
+    if (shift) {
+      if (shift?.status === ShiftStatus.Staffing) {
+        return false;
+      }
+      return notAllowedEditExamRoomStatuses.has(shift.status);
+    }
+    return true;
   };
 
   return (
@@ -129,7 +140,6 @@ const DetailExamRoomPage = () => {
                         <Grid item xs={12} lg={6}>
                           <TextField
                             label="Start time"
-                            autoFocus
                             margin="dense"
                             fullWidth
                             disabled
@@ -146,7 +156,6 @@ const DetailExamRoomPage = () => {
                         <Grid item xs={12} lg={6}>
                           <TextField
                             label="Finish time"
-                            autoFocus
                             margin="dense"
                             fullWidth
                             disabled
@@ -175,7 +184,7 @@ const DetailExamRoomPage = () => {
             <Grid item xs={12} lg={8}>
               <ExamSeatTable
                 data={examRoom.attendances}
-                hideActions={notAllowedEditExamRoomStatuses.has(shift.status)}
+                hideActions={handleHideActions()}
                 onActionButtonClick={() => setOpen(true)}
               />
             </Grid>

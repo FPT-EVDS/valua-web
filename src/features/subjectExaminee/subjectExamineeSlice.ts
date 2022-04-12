@@ -101,9 +101,11 @@ export const subjectExamineeSlice = createSlice({
       .addCase(addExaminees.fulfilled, (state, action) => {
         const { subjects } = state.current;
         action.payload.forEach(subject => {
+          // FIXME: FIX OBJECT
           const index = subjects.findIndex(
             currentSubject =>
-              currentSubject.subject.subjectId === subject.subject.subjectId,
+              currentSubject.subject.subject.subjectId ===
+              subject.subject.subjectId,
           );
           if (index > -1) {
             subjects[index].totalExaminees += subject.addedExamineeNumber;

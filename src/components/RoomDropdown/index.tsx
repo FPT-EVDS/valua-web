@@ -35,14 +35,12 @@ const RoomDropdown = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchRooms = async () => {
-    // FIXME: Hard code
     const response = await examRoomServices.getAvailableExamRooms({
       shiftId,
-      numOfRooms: 100,
     });
-    const { availableRooms } = response.data;
-    if (value) setRoomOptions([value, ...availableRooms]);
-    else setRoomOptions(availableRooms);
+    const { emptyRooms } = response.data;
+    if (value) setRoomOptions([value, ...emptyRooms]);
+    else setRoomOptions([...emptyRooms]);
     setIsLoading(false);
   };
 
@@ -67,7 +65,7 @@ const RoomDropdown = ({
       renderInput={params => (
         <TextField
           {...params}
-          label="Exam room"
+          label="Room"
           name="examRoom"
           margin="dense"
           fullWidth

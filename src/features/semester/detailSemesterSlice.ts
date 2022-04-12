@@ -9,14 +9,14 @@ import AddSubjectToSemesterDto from 'dtos/addSubjectToSemester.dto';
 import { RemoveSubjectFromSemesterDto } from 'dtos/removeSubjectFromSemester.dto';
 import SemesterDto from 'dtos/semester.dto';
 import Semester from 'models/semester.model';
-import Subject from 'models/subject.model';
+import SubjectSemester from 'models/subjectSemester.model';
 import semesterServices from 'services/semester.service';
 
 interface DetailSemesterState {
   isLoading: boolean;
   error: string;
   semester: Semester | null;
-  semesterSubjects: Array<Subject>;
+  subjectSemesters: Array<SubjectSemester>;
   canAddSubjects: boolean;
 }
 
@@ -103,7 +103,7 @@ const initialState: DetailSemesterState = {
   isLoading: false,
   error: '',
   semester: null,
-  semesterSubjects: [],
+  subjectSemesters: [],
   canAddSubjects: false,
 };
 
@@ -114,13 +114,15 @@ export const detailRoomSlice = createSlice({
     searchSemesterSubjects: (state, action: PayloadAction<string>) => {
       if (state.semester) {
         const searchValue = action.payload.toLowerCase();
-        state.semesterSubjects = state.semester.subjects.filter(subject => {
-          const { subjectCode, subjectName } = subject;
-          return (
-            subjectCode.toLowerCase().includes(searchValue) ||
-            subjectName.toLowerCase().includes(searchValue)
-          );
-        });
+        state.subjectSemesters = state.semester.subjectSemesters.filter(
+          subjectSemester => {
+            const { subjectCode, subjectName } = subjectSemester.subject;
+            return (
+              subjectCode.toLowerCase().includes(searchValue) ||
+              subjectName.toLowerCase().includes(searchValue)
+            );
+          },
+        );
       }
     },
     enableAddSubject: state => {
@@ -145,7 +147,7 @@ export const detailRoomSlice = createSlice({
         ),
         (state, action) => {
           state.semester = action.payload;
-          state.semesterSubjects = action.payload.subjects;
+          state.subjectSemesters = action.payload.subjectSemesters;
           state.error = '';
           state.isLoading = false;
         },

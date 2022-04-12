@@ -9,21 +9,18 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import User from 'models/user.model';
 import React from 'react';
 
 interface Props {
-  title: string;
-  role: string;
-  icon: React.ReactNode;
+  user: User;
   actionButtons: React.ReactNode;
   // eslint-disable-next-line react/require-default-props
   isSingleAction?: boolean;
 }
 
 const ProfileOverviewCard: React.FC<Props> = ({
-  title,
-  role,
-  icon,
+  user: { fullName, role, companyId, imageUrl },
   actionButtons,
   isSingleAction = false,
 }: Props) => (
@@ -36,8 +33,14 @@ const ProfileOverviewCard: React.FC<Props> = ({
             variant="h5"
             gutterBottom
           >
-            {title}
+            {fullName}
           </Typography>
+          <Box color="text.secondary" marginBottom={1}>
+            Company ID:
+            <Typography display="inline" ml={0.5}>
+              {companyId}
+            </Typography>
+          </Box>
           <Box color="text.secondary" marginBottom={1}>
             Role:
             <Typography display="inline" ml={0.5}>
@@ -53,9 +56,9 @@ const ProfileOverviewCard: React.FC<Props> = ({
             height: '150px',
             width: '150px',
           }}
-        >
-          {icon}
-        </Avatar>
+          src={imageUrl ?? undefined}
+          alt={`${fullName} avatar`}
+        />
       </Stack>
     </CardContent>
     <>

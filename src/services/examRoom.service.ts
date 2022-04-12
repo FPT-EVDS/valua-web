@@ -1,10 +1,12 @@
 import { AxiosResponse } from 'axios';
+import AssignedExamRooms from 'dtos/assignedExamRooms';
 import AssignStaffToExamRoomDto from 'dtos/assignStaffToExamRoom.dto';
 import AvailableExamineesDto from 'dtos/availableExaminees.dto';
 import AvailableRoomsDto from 'dtos/availableRooms.dto';
 import AvailableShiftDto from 'dtos/availableShift.dto';
 import AvailableStaffDto from 'dtos/availableStaff.dto';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
+import CreateExamRoomResultDto from 'dtos/createExamRoomResult.dto';
 import DisableExamRoom from 'dtos/disableExamRoom.dto';
 import ExamRoomsDto from 'dtos/examRooms.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
@@ -40,6 +42,12 @@ const examRoomServices = {
     const url = '/examRooms/available/room';
     return axiosClient.post(url, payload);
   },
+  getAssignedExamRooms: (
+    payload: GetAvailableExamineesDto,
+  ): Promise<AxiosResponse<AssignedExamRooms>> => {
+    const url = '/examRooms/assign/subject';
+    return axiosClient.post(url, payload);
+  },
   getAvailableExaminees: (
     payload: GetAvailableExamineesDto,
   ): Promise<AxiosResponse<AvailableExamineesDto>> => {
@@ -54,7 +62,7 @@ const examRoomServices = {
   },
   createExamRoom: (
     payload: CreateExamRoomDto[],
-  ): Promise<AxiosResponse<ExamRoom>> => {
+  ): Promise<AxiosResponse<CreateExamRoomResultDto>> => {
     const url = '/examRooms';
     return axiosClient.post(url, payload);
   },
@@ -74,7 +82,7 @@ const examRoomServices = {
     const url = `/examRooms/${examRoomId}`;
     return axiosClient.put(url, {
       staff: {
-        appUserId: staff.appUserId,
+        appUserId: staff?.appUserId,
       },
       room: {
         roomId: room.roomId,

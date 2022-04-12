@@ -41,7 +41,6 @@ const SubjectDropdown = ({ value, isEditable, onChange }: Props) => {
           {...params}
           label="Subject"
           name="subject"
-          autoFocus
           margin="dense"
           fullWidth
           disabled={!isEditable}

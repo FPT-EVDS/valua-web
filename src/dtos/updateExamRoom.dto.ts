@@ -12,7 +12,7 @@ export default interface UpdateExamRoomDto {
     | 'phoneNumber'
     | 'imageUrl'
     | 'companyId'
-  >;
+  > | null;
   room: Pick<Room, 'roomId' | 'seatCount' | 'roomName' | 'floor' | 'status'>;
   subject: Pick<Subject, 'subjectId' | 'subjectName' | 'subjectCode'>;
 }

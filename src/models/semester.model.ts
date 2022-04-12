@@ -1,10 +1,10 @@
-import Subject from './subject.model';
+import SubjectSemester from './subjectSemester.model';
 
 export default interface Semester {
   semesterId: string;
   semesterName: string;
   numOfSubjects: number;
-  subjects: Subject[];
+  subjectSemesters: SubjectSemester[];
   beginDate: Date;
   endDate: Date;
   isActive: boolean;

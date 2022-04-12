@@ -3,7 +3,7 @@ import ExamineeStatus from 'enums/examineeStatus.enum';
 import Account from './account.model';
 
 export default interface Examinee {
-  subjectExamineeID: string;
+  subjectExamineeId: string;
   examinee: Pick<
     Account,
     | 'appUserId'
@@ -13,6 +13,6 @@ export default interface Examinee {
     | 'imageUrl'
     | 'phoneNumber'
   >;
-  removeReason: string | null;
+  removedReason: string | null;
   status: ExamineeStatus;
 }

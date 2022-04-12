@@ -112,7 +112,6 @@ const SemesterDetailDialog: React.FC<Props> = ({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                autoFocus
                 required
                 name="semesterName"
                 margin="dense"
@@ -144,7 +143,6 @@ const SemesterDetailDialog: React.FC<Props> = ({
                     {...params}
                     required
                     name="beginDate"
-                    autoFocus
                     margin="dense"
                     fullWidth
                     variant="outlined"
@@ -173,7 +171,6 @@ const SemesterDetailDialog: React.FC<Props> = ({
                     {...params}
                     required
                     name="endDate"
-                    autoFocus
                     margin="dense"
                     fullWidth
                     variant="outlined"

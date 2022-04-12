@@ -42,7 +42,7 @@ const DetailSemesterPage = () => {
   const [open, setOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
-  const { semester, semesterSubjects, isLoading } = useAppSelector(
+  const { semester, subjectSemesters, isLoading } = useAppSelector(
     state => state.detailSemester,
   );
   const [confirmDialogProps, setConfirmDialogProps] =
@@ -60,17 +60,20 @@ const DetailSemesterPage = () => {
     unwrapResult(actionResult);
   };
 
-  const rows: GridRowModel[] = semesterSubjects.map(subject => ({
-    ...subject,
-    id: subject.subjectId,
+  const rows: GridRowModel[] = subjectSemesters.map(subjectSemester => ({
+    ...subjectSemester.subject,
+    id: subjectSemester.subjectSemesterId,
   }));
 
-  const handleDeleteSubject = async (subjectId: string) => {
+  const handleDeleteSubject = async (
+    subjectSemesterId: string,
+    subjectId: string,
+  ) => {
     try {
       if (semester) {
         const result = await dispatch(
           removeSubjectFromSemester({
-            semesterId: semester.semesterId,
+            subjectSemesterId,
             subjectId,
           }),
         );
@@ -128,6 +131,7 @@ const DetailSemesterPage = () => {
   };
 
   const showDeleteSubjectConfirmation = (
+    subjectSemester: string,
     subjectCode: string,
     subjectId: string,
   ) => {
@@ -135,7 +139,7 @@ const DetailSemesterPage = () => {
       ...prevState,
       open: true,
       title: `Do you want to remove ${subjectCode} ?`,
-      handleAccept: () => handleDeleteSubject(subjectId),
+      handleAccept: () => handleDeleteSubject(subjectSemester, subjectId),
     }));
   };
 
@@ -149,7 +153,7 @@ const DetailSemesterPage = () => {
     },
     { field: 'subjectName', headerName: 'Name', flex: 0.1, minWidth: 130 },
     {
-      field: 'isActive',
+      field: 'active',
       headerName: 'Status',
       minWidth: 130,
       renderCell: params => {
@@ -179,7 +183,11 @@ const DetailSemesterPage = () => {
             label="Delete"
             icon={<Delete />}
             onClick={() => {
-              showDeleteSubjectConfirmation(subjectCode, subjectId);
+              showDeleteSubjectConfirmation(
+                String(rowId),
+                subjectCode,
+                subjectId,
+              );
             }}
           />,
         ];

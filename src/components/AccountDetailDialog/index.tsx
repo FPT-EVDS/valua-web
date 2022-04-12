@@ -29,16 +29,18 @@ import examineeIcon from 'assets/images/examinee.png';
 import shiftManagerIcon from 'assets/images/shift-manager.png';
 import staffIcon from 'assets/images/staff.png';
 import AvatarFilePicker from 'components/AvatarFilePicker';
+import ImagesDropzone from 'components/ImagesDropzone';
 import SlideTransition from 'components/SlideTransition';
 import genders from 'configs/constants/genders.constant';
 import accountRoles from 'configs/constants/roles.constant';
 import { accountSchema } from 'configs/validations';
+import { sub } from 'date-fns';
 import AppUserDto from 'dtos/appUser.dto';
 import { addAccount } from 'features/account/accountsSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Role from 'models/role.model';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
   open: boolean;
@@ -110,7 +112,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
     initialValues: {
       appUserId: null,
       address: '',
-      birthdate: new Date(),
+      birthdate: sub(new Date(), { years: 7 }),
       email: '',
       fullName: '',
       gender: 0,
@@ -120,6 +122,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
       companyId: '',
       classCode: '',
       image: null,
+      imageFiles: null as FileList | null,
     },
     validationSchema: accountSchema,
     onSubmit: async (payload: AppUserDto) => {
@@ -129,13 +132,19 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
           imageUrl: payload.imageUrl?.length === 0 ? null : payload.imageUrl,
           classCode: payload.classCode?.length === 0 ? null : payload.classCode,
         };
-        const { image } = formik.values;
+        const { image, imageFiles } = formik.values;
         const formData = new FormData();
         const accountDataBlob = new Blob([JSON.stringify(accountData)], {
           type: 'application/json',
         });
         formData.append('account', accountDataBlob);
         if (image) formData.append('image', image as unknown as Blob);
+        if (imageFiles) {
+          // eslint-disable-next-line unicorn/no-for-loop
+          for (let i = 0; i < imageFiles.length; i += 1) {
+            formData.append('imageFiles', imageFiles[i]);
+          }
+        }
         const result = await dispatch(addAccount(formData));
         unwrapResult(result);
         showSuccessMessage('Create account successfully');
@@ -149,6 +158,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
   });
 
   const handleCloseModal = () => {
+    setCurrentStep(0);
     formik.resetForm();
     handleClose();
   };
@@ -168,6 +178,14 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
   ) => {
     if (event.target.files) {
       await formik.setFieldValue('image', event.target.files[0]);
+    }
+  };
+
+  const handleImagesChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (event.target.files) {
+      await formik.setFieldValue('imageFiles', event.target.files);
     }
   };
 
@@ -256,7 +274,10 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                   <Box
                     display="flex"
                     alignItems="center"
-                    onClick={() => setCurrentStep(0)}
+                    onClick={() => {
+                      formik.resetForm();
+                      setCurrentStep(0);
+                    }}
                     sx={{ cursor: 'pointer' }}
                   >
                     <IconButton>
@@ -265,12 +286,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     <Typography>Back</Typography>
                   </Box>
                   <Typography variant="h6">Account information</Typography>
-                  <IconButton
-                    onClick={() => {
-                      handleCloseModal();
-                      setCurrentStep(0);
-                    }}
-                  >
+                  <IconButton onClick={handleCloseModal}>
                     <Close />
                   </IconButton>
                 </Grid>
@@ -278,6 +294,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
               <Box
                 component="form"
                 encType="multipart/form-data"
+                noValidate
                 onSubmit={formik.handleSubmit}
                 pb={2}
               >
@@ -301,7 +318,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                       <TextField
                         name="companyId"
                         required
-                        autoFocus
                         margin="dense"
                         label={
                           formik.values.userRole.roleID === 3
@@ -333,7 +349,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField
-                        autoFocus
                         required
                         name="fullName"
                         margin="dense"
@@ -390,7 +405,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                       <TextField
                         name="email"
                         required
-                        autoFocus
                         margin="dense"
                         label="Email"
                         type="email"
@@ -427,7 +441,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                             {...params}
                             name="birthdate"
                             required
-                            autoFocus
                             margin="dense"
                             fullWidth
                             error={
@@ -450,7 +463,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                       <TextField
                         name="phoneNumber"
                         required
-                        autoFocus
                         margin="dense"
                         label="Phone number"
                         value={formik.values.phoneNumber}
@@ -481,7 +493,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                       <TextField
                         name="address"
                         required
-                        autoFocus
                         margin="dense"
                         label="Address"
                         fullWidth
@@ -512,7 +523,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                         <Grid item xs={12}>
                           <TextField
                             name="classCode"
-                            autoFocus
                             required
                             margin="dense"
                             label="Class"
@@ -531,6 +541,12 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                               formik.touched.classCode &&
                               formik.errors.classCode
                             }
+                          />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <ImagesDropzone
+                            name="imageFiles"
+                            onChange={handleImagesChange}
                           />
                         </Grid>
                       </>

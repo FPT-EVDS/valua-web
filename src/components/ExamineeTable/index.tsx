@@ -1,47 +1,55 @@
 /* eslint-disable react/require-default-props */
-import { Add } from '@mui/icons-material';
-import { Button } from '@mui/material';
+import { Add, Info } from '@mui/icons-material';
+import { Alert, Button, useTheme } from '@mui/material';
 import { GridActionsColDef, GridColDef } from '@mui/x-data-grid';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useAppDispatch } from 'app/hooks';
+import CustomTooltip from 'components/CustomTooltip';
 import EVDSDataGrid from 'components/EVDSDataGrid';
-import { updateRemovedExaminees } from 'features/examRoom/addExamRoomSlice';
-import Account from 'models/account.model';
-import Examinee from 'models/examinee.model';
+import { addRemovedExaminee } from 'features/examRoom/addExamRoomSlice';
+import Room from 'models/room.model';
+import SubjectExaminee from 'models/subjectExaminee.model';
 import React, { useEffect, useState } from 'react';
 
 interface Props {
-  data: Examinee[];
-  title: string;
-  leftActions?: React.ReactNode;
+  room: Room;
+  data: Array<{
+    attendanceId: string | null;
+    subjectExaminee: SubjectExaminee;
+    position: number;
+    startTime: Date | null;
+    finishTime: Date | null;
+  }>;
   onActionButtonClick?: () => void;
 }
 
-const transformAttendancesToRows = (examinees: Examinee[]) =>
-  examinees.map((examinee, index) => ({
-    ...examinee,
+const transformAttendancesToRows = (
+  attendances: Array<{
+    attendanceId: string | null;
+    subjectExaminee: SubjectExaminee;
+    position: number;
+    startTime: Date | null;
+    finishTime: Date | null;
+  }>,
+) =>
+  attendances.map((attendance, index) => ({
+    ...attendance,
     index,
-    id: examinee.subjectExamineeID,
+    id: attendance.subjectExaminee.subjectExamineeId,
   }));
 
-const ExamineeTable = ({
-  title,
-  data,
-  leftActions,
-  onActionButtonClick,
-}: Props) => {
+const ExamineeTable = ({ room, data, onActionButtonClick }: Props) => {
   const DEFAULT_PAGE_SIZE = 10;
-  const removedItems = useAppSelector(
-    state => state.addExamRoom.removedExaminees,
-  );
+  const theme = useTheme();
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(transformAttendancesToRows(data));
 
-  const handleRemoveExaminee = (examinee: Examinee) => {
-    dispatch(updateRemovedExaminees([...removedItems, examinee]));
+  const handleRemoveExaminee = (examinee: SubjectExaminee) => {
+    dispatch(addRemovedExaminee({ examinee, roomId: room.roomId }));
     setRows(prev =>
       prev.filter(
-        item => item.subjectExamineeID !== examinee.subjectExamineeID,
+        item =>
+          item.subjectExaminee.subjectExamineeId !== examinee.subjectExamineeId,
       ),
     );
   };
@@ -51,8 +59,7 @@ const ExamineeTable = ({
   }, [data]);
 
   const columns: Array<GridColDef | GridActionsColDef> = [
-    { field: 'subjectExamineeID', hide: true },
-    { field: 'examinee', hide: true },
+    { field: 'subjectExaminee', hide: true },
     { field: 'index', hide: true },
     {
       field: 'position',
@@ -64,6 +71,9 @@ const ExamineeTable = ({
       minWidth: 30,
       valueFormatter: ({ api, id }) => {
         const index = parseInt(api.getCellValue(id, 'index'), 10);
+        if (room.lastPosition) {
+          return parseInt(String(room.lastPosition), 10) + index + 1;
+        }
         return index + 1;
       },
     },
@@ -77,8 +87,11 @@ const ExamineeTable = ({
       minWidth: 100,
       flex: 0.1,
       valueFormatter: ({ api, id }) => {
-        const account = api.getCellValue(id, 'examinee') as Account;
-        return account.companyId;
+        const account = api.getCellValue(
+          id,
+          'subjectExaminee',
+        ) as SubjectExaminee;
+        return account.examinee.companyId;
       },
     },
     {
@@ -91,8 +104,11 @@ const ExamineeTable = ({
       minWidth: 180,
       flex: 0.1,
       valueFormatter: ({ api, id }) => {
-        const account = api.getCellValue(id, 'examinee') as Account;
-        return account.fullName;
+        const account = api.getCellValue(
+          id,
+          'subjectExaminee',
+        ) as SubjectExaminee;
+        return account.examinee.fullName;
       },
     },
     {
@@ -102,7 +118,7 @@ const ExamineeTable = ({
       minWidth: 130,
       type: 'actions',
       getActions: ({ row }) => {
-        const examinee = row as Examinee;
+        const examinee = row.subjectExaminee as SubjectExaminee;
         return [
           <Button variant="text" onClick={() => handleRemoveExaminee(examinee)}>
             Remove
@@ -122,19 +138,37 @@ const ExamineeTable = ({
     </Button>
   );
 
+  const generateAlert = () => {
+    let currentRoomSize = rows.length;
+    if (room.lastPosition) {
+      currentRoomSize += parseInt(String(room.lastPosition), 10) + 1;
+    }
+    return (
+      room.seatCount < currentRoomSize && (
+        <CustomTooltip
+          sx={{ mt: 0.75 }}
+          title={`Recommend room size is ${room.seatCount}`}
+          color={theme.palette.warning.main}
+        >
+          <Info color="warning" />
+        </CustomTooltip>
+      )
+    );
+  };
+
   return (
     <EVDSDataGrid
-      title={title}
+      title={room.roomName}
+      leftActions={generateAlert()}
       columns={columns}
       isLoading={false}
-      leftActions={leftActions}
       rows={rows}
       addButton={<AddButton />}
       pagination
       hasSearch={false}
       rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
       pageSize={DEFAULT_PAGE_SIZE}
-      rowCount={data.length}
+      rowCount={rows.length}
       page={page}
       onPageChange={newPage => setPage(newPage)}
     />

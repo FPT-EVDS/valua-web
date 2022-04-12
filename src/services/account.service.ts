@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios';
+import { Form } from 'devextreme-react/data-grid';
 import AccountOverviewDto from 'dtos/accountOverview.dto';
 import AccountsDto from 'dtos/accounts.dto';
 import AppUserDto from 'dtos/appUser.dto';
@@ -28,6 +29,17 @@ const accountServices = {
   updateAccount: (payload: AppUserDto): Promise<AxiosResponse<Account>> => {
     const url = `/accounts/${String(payload.appUserId)}`;
     return axiosClient.put(url, payload);
+  },
+  updateAccountEmbedding: (
+    appUserId: string,
+    payload: FormData,
+  ): Promise<AxiosResponse<string>> => {
+    const url = `/accounts/embed/${String(appUserId)}`;
+    return axiosClient.put(url, payload, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
   disableAccount: (id: string): Promise<AxiosResponse<AppUserDtoStatus>> => {
     const url = `/accounts/${id}`;

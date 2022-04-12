@@ -1,5 +1,5 @@
 /* eslint-disable prefer-destructuring */
-import { Close, FiberManualRecord } from '@mui/icons-material';
+import { FiberManualRecord } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -7,15 +7,8 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
-  IconButton,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import { green, orange, red } from '@mui/material/colors';
@@ -25,7 +18,7 @@ import {
   GridRowModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { unwrapResult } from '@reduxjs/toolkit';
+import { current, unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import EVDSDataGrid from 'components/EVDSDataGrid';
@@ -33,129 +26,13 @@ import ExamineeDetailCard from 'components/ExamineeDetailCard';
 import ExamineePieChart, {
   ExamineePieChartProps,
 } from 'components/ExamineePieChart';
+import RemoveExamineeDialog from 'components/RemoveExamineeDialog';
 import StringAvatar from 'components/StringAvatar';
-import { removeExamineeSchema } from 'configs/validations';
-import RemoveExamineeDto from 'dtos/removeExaminee.dto';
 import ExamineeStatus from 'enums/examineeStatus.enum';
-import {
-  getExamineeSubjectDetail,
-  removeExaminee,
-} from 'features/subjectExaminee/detailExamineeSubjectSlice';
-import { useFormik } from 'formik';
+import { getExamineeSubjectDetail } from 'features/subjectExaminee/detailExamineeSubjectSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import useQuery from 'hooks/useQuery';
 import React, { useEffect, useState } from 'react';
-
-interface RemoveExamineeDialogProps {
-  subjectExamineeId: string | null;
-  title: string | null;
-  open: boolean;
-  handleClose: () => void;
-}
-
-const RemoveExamineeDialog = ({
-  subjectExamineeId,
-  open,
-  handleClose,
-  title,
-}: RemoveExamineeDialogProps) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
-  const dispatch = useAppDispatch();
-  const formik = useFormik({
-    initialValues: {
-      removedReason: '',
-      subjectExamineeId: subjectExamineeId || '',
-    },
-    validationSchema: removeExamineeSchema,
-    onSubmit: async (payload: RemoveExamineeDto) => {
-      setIsLoading(true);
-      if (subjectExamineeId) {
-        try {
-          const result = await dispatch(removeExaminee(payload));
-          unwrapResult(result);
-          showSuccessMessage('Remove examinee success');
-        } catch (error) {
-          showErrorMessage('Can not remove this examinee');
-        } finally {
-          setIsLoading(false);
-          formik.resetForm();
-          handleClose();
-        }
-      }
-    },
-  });
-
-  const handleCloseModal = () => {
-    formik.resetForm();
-    handleClose();
-  };
-
-  useEffect(() => {
-    const refreshSubjectExamineeId = async (): Promise<void> => {
-      await formik.setFieldValue('subjectExamineeId', subjectExamineeId);
-    };
-    // eslint-disable-next-line no-void
-    void refreshSubjectExamineeId();
-  }, [subjectExamineeId]);
-
-  return (
-    <div>
-      <Dialog open={open} onClose={handleCloseModal} fullWidth>
-        <Box component="form" onSubmit={formik.handleSubmit} noValidate>
-          <DialogTitle sx={{ m: 0, p: 2 }}>
-            {title || 'Confirm remove'}
-            <IconButton
-              aria-label="close"
-              onClick={handleClose}
-              sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: theme => theme.palette.grey[500],
-              }}
-            >
-              <Close />
-            </IconButton>
-          </DialogTitle>
-          <DialogContent>
-            <TextField
-              name="removedReason"
-              value={formik.values.removedReason}
-              multiline
-              rows={4}
-              autoFocus
-              margin="dense"
-              placeholder="Specify the remove reason here"
-              helperText="Reason must be 8 - 50 chars long"
-              type="email"
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              onChange={formik.handleChange}
-              variant="outlined"
-              error={
-                formik.touched.removedReason &&
-                Boolean(formik.errors.removedReason)
-              }
-            />
-          </DialogContent>
-          <DialogActions>
-            {isLoading ? (
-              <CircularProgress />
-            ) : (
-              <>
-                <Button onClick={handleCloseModal}>Cancel</Button>
-                <Button type="submit">Confirm</Button>
-              </>
-            )}
-          </DialogActions>
-        </Box>
-      </Dialog>
-    </div>
-  );
-};
 
 const DetailExamineePage = () => {
   const DEFAULT_PAGE_SIZE = 20;
@@ -165,14 +42,14 @@ const DetailExamineePage = () => {
     state => state.detailSubjectExaminee,
   );
   const query = useQuery();
-  const semesterId = query.get('semesterId');
-  const subjectId = query.get('subjectId');
+  const subjectSemesterId = query.get('subjectSemesterId');
   const [searchValue, setSearchValue] = useState('');
   const [page, setPage] = useState(0);
   const [chartData, setChartData] = useState<ExamineePieChartProps | null>(
     null,
   );
   const [title, setTitle] = useState<null | string>(null);
+  const [initialValue, setInitialValue] = useState<string | null>();
   const [subjectExamineeId, setSubjectExamineeId] = useState<null | string>(
     null,
   );
@@ -193,11 +70,10 @@ const DetailExamineePage = () => {
       const { field, sort } = sortModel[0];
       sortParam = `${field},${String(sort)}`;
     }
-    if (semesterId && subjectId)
+    if (subjectSemesterId)
       dispatch(
         getExamineeSubjectDetail({
-          semesterId,
-          subjectId,
+          subjectSemesterId,
           search: searchValue,
           page,
           sort: sortParam,
@@ -231,15 +107,37 @@ const DetailExamineePage = () => {
   const rows: GridRowModel[] = examineeSubject
     ? examineeSubject.examinees.map(examinee => ({
         ...examinee.examinee,
+        removedReason: examinee.removedReason,
         id: examinee.examinee.appUserId,
         status: examinee.status,
-        subjectExamineeId: examinee.subjectExamineeID,
+        subjectExamineeId: examinee.subjectExamineeId,
       }))
     : [];
+
+  const handleRemoveExaminee = (
+    companyId: string,
+    currentSubjectExamineeId: string,
+  ) => {
+    handleClickOpen();
+    setTitle(`Remove ${companyId} from list ?`);
+    setInitialValue(null);
+    setSubjectExamineeId(currentSubjectExamineeId);
+  };
+
+  const handleViewReason = (
+    currentSubjectExamineeId: string,
+    reason: string | null,
+  ) => {
+    handleClickOpen();
+    setTitle(`Removed reason`);
+    setInitialValue(reason);
+    setSubjectExamineeId(currentSubjectExamineeId);
+  };
 
   const columns: Array<GridColDef | GridActionsColDef> = [
     { field: 'appUserId', hide: true },
     { field: 'subjectExamineeId', hide: true },
+    { field: 'removedReason', hide: true },
     {
       field: 'imageUrl',
       headerName: '',
@@ -315,24 +213,30 @@ const DetailExamineePage = () => {
       flex: 0.1,
       getActions: ({ getValue, id }) => {
         const status = getValue(id, 'status') as ExamineeStatus;
+        const reason = getValue(id, 'removedReason') as string | null;
+        const companyId = String(getValue(id, 'companyId'));
+        const rowSubjectExamineeId = String(getValue(id, 'subjectExamineeId'));
         return status !== ExamineeStatus.Removed
           ? [
               <Button
                 variant="text"
                 onClick={() => {
-                  handleClickOpen();
-                  setTitle(
-                    `Remove ${String(getValue(id, 'companyId'))} from list ?`,
-                  );
-                  setSubjectExamineeId(
-                    String(getValue(id, 'subjectExamineeId')),
-                  );
+                  handleRemoveExaminee(companyId, rowSubjectExamineeId);
                 }}
               >
                 Remove
               </Button>,
             ]
-          : [];
+          : [
+              <Button
+                variant="text"
+                onClick={() => {
+                  handleViewReason(rowSubjectExamineeId, reason);
+                }}
+              >
+                View reason
+              </Button>,
+            ];
       },
     },
   ];
@@ -348,6 +252,7 @@ const DetailExamineePage = () => {
   return (
     <div>
       <RemoveExamineeDialog
+        initialValue={initialValue}
         subjectExamineeId={subjectExamineeId}
         title={title}
         open={open}

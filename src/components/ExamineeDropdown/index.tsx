@@ -14,7 +14,7 @@ import examRoomServices from 'services/examRoom.service';
 
 interface Props {
   shiftId: string;
-  subjectId: string;
+  subjectSemesterId: string;
   error?: boolean;
   helperText?: string;
   value: Examinee | null;
@@ -24,7 +24,7 @@ interface Props {
 
 const ExamineeDropdown = ({
   shiftId,
-  subjectId,
+  subjectSemesterId,
   value,
   isEditable,
   onChange,
@@ -37,7 +37,7 @@ const ExamineeDropdown = ({
   const fetchAvailableExaminees = async () => {
     const response = await examRoomServices.getAvailableExaminees({
       shiftId,
-      subjectId,
+      subjectSemesterId,
     });
     const { examinees } = response.data;
     if (value) setExamineeOptions([value, ...examinees]);
@@ -58,13 +58,13 @@ const ExamineeDropdown = ({
       loading={isLoading}
       options={examineeOptions}
       isOptionEqualToValue={(option, optionValue) =>
-        option.subjectExamineeID === optionValue.subjectExamineeID
+        option.subjectExamineeId === optionValue.subjectExamineeId
       }
       value={value}
       getOptionLabel={props => props.examinee.fullName}
       onChange={(event, newValue) => onChange(newValue)}
       renderOption={(props, option) => (
-        <ListItem {...props} key={option.subjectExamineeID}>
+        <ListItem {...props} key={option.subjectExamineeId}>
           <ListItemAvatar>
             <Avatar
               src={String(option.examinee.imageUrl)}
@@ -82,7 +82,6 @@ const ExamineeDropdown = ({
           {...params}
           label="Available examinees"
           name="examinee"
-          autoFocus
           margin="dense"
           error={error}
           helperText={error && helperText}

@@ -1,12 +1,21 @@
-import { Box, Button, CircularProgress, Grid } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  Grid,
+  Stack,
+} from '@mui/material';
+import { blue, grey } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import DetailAccountCard from 'components/AccountDetailCard';
+import AccountEmbeddingCard from 'components/AccountEmbeddingCard';
 import AccountOverviewCard from 'components/AccountOverviewCard';
 import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import NotFoundItem from 'components/NotFoundItem';
+import Role from 'enums/role.enum';
 import {
   activeAccount,
   disableAccount,
@@ -34,6 +43,7 @@ const DetailAccountPage = () => {
         setConfirmDialogProps(prevState => ({ ...prevState, open: false })),
       handleAccept: () => null,
     });
+  const [open, setOpen] = useState(false);
 
   const fetchAccount = async (appUserId: string) => {
     const actionResult = await dispatch(getAccount(appUserId));
@@ -45,12 +55,9 @@ const DetailAccountPage = () => {
       const result = await dispatch(disableAccount(accountId));
       unwrapResult(result);
       showSuccessMessage('Disable account successfully');
-      setConfirmDialogProps(prevState => ({
-        ...prevState,
-        open: false,
-      }));
     } catch (error) {
       showErrorMessage(error);
+    } finally {
       setConfirmDialogProps(prevState => ({
         ...prevState,
         open: false,
@@ -75,6 +82,11 @@ const DetailAccountPage = () => {
       showSuccessMessage('Reset password successfully');
     } catch (error) {
       showErrorMessage(error);
+    } finally {
+      setConfirmDialogProps(prevState => ({
+        ...prevState,
+        open: false,
+      }));
     }
   };
 
@@ -87,17 +99,39 @@ const DetailAccountPage = () => {
     }));
   };
 
+  const showResetPasswordConfirmation = (accountId: string) => {
+    setConfirmDialogProps(prevState => ({
+      ...prevState,
+      title: `Are you sure ?`,
+      open: true,
+      handleAccept: () => handleResetPassword(accountId),
+    }));
+  };
+
   const GroupButtons = () => (
     <>
       {!isLoading ? (
         <>
           {account?.isActive ? (
-            <>
-              <Button variant="text">Upload picture</Button>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              sx={{ width: '100%' }}
+            >
+              {account.role.roleName === Role.Examinee && (
+                <Button
+                  variant="text"
+                  sx={{ color: blue[500] }}
+                  onClick={() => setOpen(true)}
+                >
+                  Embed face
+                </Button>
+              )}
               <Button
                 variant="text"
                 sx={{ color: grey[700] }}
-                onClick={() => handleResetPassword(id)}
+                onClick={() => showResetPasswordConfirmation(id)}
               >
                 Reset password
               </Button>
@@ -108,7 +142,7 @@ const DetailAccountPage = () => {
               >
                 Disable account
               </Button>
-            </>
+            </Box>
           ) : (
             <Box
               display="flex"
@@ -142,7 +176,7 @@ const DetailAccountPage = () => {
   useEffect(() => {
     fetchAccount(id).catch(error => showErrorMessage(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id]);
 
   return (
     <div>
@@ -153,11 +187,22 @@ const DetailAccountPage = () => {
       />
       {account ? (
         <Grid container mt={2} spacing={2}>
+          {account.isActive && account.role.roleName === Role.Examinee && (
+            <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
+              <AccountEmbeddingCard
+                onSubmitSuccess={() => {
+                  setOpen(false);
+                }}
+              />
+            </Dialog>
+          )}
           <Grid item xs={12} md={9} lg={4}>
-            <AccountOverviewCard
-              account={account}
-              actionButtons={<GroupButtons />}
-            />
+            <Stack spacing={2}>
+              <AccountOverviewCard
+                account={account}
+                actionButtons={<GroupButtons />}
+              />
+            </Stack>
           </Grid>
           <Grid item xs={12} lg={8}>
             <DetailAccountCard account={account} isLoading={isLoading} />

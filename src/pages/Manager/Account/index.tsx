@@ -140,17 +140,11 @@ const AccountPage = () => {
       sortable: false,
       filterable: false,
       renderCell: params => {
-        const imageUrl = String(params.getValue(params.id, 'imageUrl'));
+        const imageUrl = params.getValue(params.id, 'imageUrl') as
+          | string
+          | null;
         const fullName = String(params.getValue(params.id, 'fullName'));
-        return (
-          <>
-            {imageUrl ? (
-              <Avatar alt={fullName} src={imageUrl} />
-            ) : (
-              <StringAvatar name={fullName} sx={{ justifyContent: 'center' }} />
-            )}
-          </>
-        );
+        return <Avatar alt={fullName} src={imageUrl ?? undefined} />;
       },
       align: 'center',
       headerName: '',

@@ -42,6 +42,7 @@ const ShiftDetailDialog: React.FC<Props> = ({
 }) => {
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
+  const formatter = 'dd/MM/yyyy';
   const { isLoading, shift: shiftSchedule } = useAppSelector(
     state => state.shift,
   );
@@ -192,13 +193,23 @@ const ShiftDetailDialog: React.FC<Props> = ({
                     error:
                       formik.touched.semester &&
                       Boolean(formik.errors.semester),
-                    helperText:
-                      formik.touched.semester && formik.errors.semester,
+                    helperText: formik.touched.semester
+                      ? formik.errors.semester
+                      : semester &&
+                        `Duration: ${format(
+                          new Date(semester.beginDate),
+                          formatter,
+                        )} -
+                          ${format(new Date(semester.endDate), formatter)}
+                        `,
                     InputLabelProps: {
                       shrink: true,
                     },
                     label: 'Semester',
                     name: 'semester',
+                  }}
+                  payload={{
+                    beginDate: format(new Date(), 'yyyy-MM-dd'),
                   }}
                 />
                 <DateTimePicker

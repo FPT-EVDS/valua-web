@@ -83,12 +83,12 @@ const ReportPage = () => {
       field: 'examRoom',
       sortable: false,
       filterable: false,
-      headerName: 'Exam room',
-      flex: 0.1,
-      minWidth: 220,
+      headerName: 'Room name',
+      flex: 0.05,
+      minWidth: 110,
       valueFormatter: (params: GridValueFormatterParams) => {
         const examRoom = params.value as ExamRoom;
-        return examRoom.examRoomName;
+        return examRoom.room.roomName;
       },
     },
     {

@@ -1,10 +1,7 @@
-import { number, object, string } from 'yup';
+import { object, string } from 'yup';
 
 const addExamRoomSchema = object({
-  subjectId: string().defined('A subject must be selected'),
-  numOfRooms: number()
-    .defined('Number of rooms must be defined')
-    .min(1, min => `Minimum amount of rooms for this subject is ${min.min}`),
+  subjectSemesterId: string().defined('An available subject is required'),
 });
 
 export default addExamRoomSchema;

@@ -5,12 +5,14 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import AvailableExamineesDto from 'dtos/availableExaminees.dto';
+import AssignedExamRooms from 'dtos/assignedExamRooms';
 import CreateExamRoomDto from 'dtos/createExamRoom.dto';
 import GetAvailableExamineesDto from 'dtos/getAvailableExaminees.dto';
-import Examinee from 'models/examinee.model';
+import Room from 'models/room.model';
+import Semester from 'models/semester.model';
 import Shift from 'models/shift.model';
 import Subject from 'models/subject.model';
+import SubjectExaminee from 'models/subjectExaminee.model';
 import examRoomServices from 'services/examRoom.service';
 import shiftServices from 'services/shift.service';
 
@@ -18,13 +20,14 @@ interface ExamRoomState {
   isLoading: boolean;
   error: string;
   shift: Shift | null;
-  currentSubject: Pick<
-    Subject,
-    'subjectId' | 'subjectName' | 'subjectCode'
-  > | null;
-  defaultExamRoomSize: number;
-  examinees: AvailableExamineesDto | null;
-  removedExaminees: Examinee[];
+  currentSubject: {
+    semester: Pick<Semester, 'semesterId' | 'semesterName'>;
+    subject: Subject;
+    subjectSemesterId: string;
+  } | null;
+  shouldUpdateDropdown: boolean;
+  examRooms: AssignedExamRooms | null;
+  removedExaminees: SubjectExaminee[];
 }
 
 // Define the initial state using that type
@@ -33,8 +36,8 @@ const initialState: ExamRoomState = {
   currentSubject: null,
   isLoading: false,
   error: '',
-  defaultExamRoomSize: 20,
-  examinees: null,
+  examRooms: null,
+  shouldUpdateDropdown: false,
   removedExaminees: [],
 };
 
@@ -64,11 +67,11 @@ export const createExamRoom = createAsyncThunk(
   },
 );
 
-export const getAvailableExaminees = createAsyncThunk(
-  'addExamRoom/getAvailableExaminees',
+export const getAssignedExamRooms = createAsyncThunk(
+  'addExamRoom/getAssignedExamRooms',
   async (payload: GetAvailableExamineesDto, { rejectWithValue }) => {
     try {
-      const response = await examRoomServices.getAvailableExaminees(payload);
+      const response = await examRoomServices.getAssignedExamRooms(payload);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -81,18 +84,94 @@ export const addExamRoomSlice = createSlice({
   name: 'addExamRoom',
   initialState,
   reducers: {
-    updateRemovedExaminees: (state, action: PayloadAction<Examinee[]>) => {
-      state.removedExaminees = action.payload;
+    updateDropdown: (state, action: PayloadAction<boolean>) => {
+      state.shouldUpdateDropdown = action.payload;
     },
-    updateExaminees: (state, action: PayloadAction<AvailableExamineesDto>) => {
-      state.examinees = action.payload;
+    addExamRooms: (state, action: PayloadAction<Room[]>) => {
+      if (state.examRooms) {
+        const addedExamRooms = action.payload.map(room => ({
+          room,
+          attendances: [],
+        }));
+        state.examRooms.examRooms = [
+          ...state.examRooms.examRooms,
+          ...addedExamRooms,
+        ];
+      }
+    },
+    updateExamRoom: (
+      state,
+      action: PayloadAction<AssignedExamRooms | null>,
+    ) => {
+      state.examRooms = action.payload;
+    },
+    addRemovedExaminee: (
+      state,
+      action: PayloadAction<{ examinee: SubjectExaminee; roomId: string }>,
+    ) => {
+      if (state.examRooms) {
+        const roomIndex = state.examRooms.examRooms.findIndex(
+          examRoom => examRoom.room.roomId === action.payload.roomId,
+        );
+        const examRoom = state.examRooms.examRooms[roomIndex];
+        examRoom.attendances = examRoom.attendances.filter(
+          attendance =>
+            attendance.subjectExaminee.subjectExamineeId !==
+            action.payload.examinee.subjectExamineeId,
+        );
+        state.examRooms.examRooms[roomIndex] = examRoom;
+      }
+      state.removedExaminees = [
+        ...state.removedExaminees,
+        action.payload.examinee,
+      ];
+    },
+    addRemovedExaminees: (
+      state,
+      action: PayloadAction<{ examinees: SubjectExaminee[] }>,
+    ) => {
+      state.removedExaminees = action.payload.examinees;
+    },
+    updateRoomExaminees: (
+      state,
+      action: PayloadAction<{ examinees: SubjectExaminee[]; roomId: string }>,
+    ) => {
+      if (state.examRooms) {
+        const roomIndex = state.examRooms.examRooms.findIndex(
+          examRoom => examRoom.room.roomId === action.payload.roomId,
+        );
+        const examRoom = state.examRooms.examRooms[roomIndex];
+        const newAttendances = action.payload.examinees.map(
+          (examinee, index) => ({
+            attendanceId: null,
+            subjectExaminee: examinee,
+            position: index,
+            startTime: null,
+            finishTime: null,
+          }),
+        );
+        examRoom.attendances = newAttendances;
+        state.examRooms.examRooms[roomIndex] = examRoom;
+      }
+      const addedExamineeIds = new Set(
+        action.payload.examinees.map(examinee => examinee.subjectExamineeId),
+      );
+      state.removedExaminees = state.removedExaminees.filter(
+        examinee => !addedExamineeIds.has(examinee.subjectExamineeId),
+      );
+    },
+    updateTotalExaminees: (state, action: PayloadAction<number>) => {
+      if (state.examRooms) {
+        state.examRooms.totalExaminees = action.payload;
+      }
     },
     updateCurrentSubject: (
       state,
-      action: PayloadAction<Pick<
-        Subject,
-        'subjectId' | 'subjectName' | 'subjectCode'
-      > | null>,
+      action: PayloadAction<{
+        semester: Pick<Semester, 'semesterId' | 'semesterName'>;
+        subject: Subject;
+        subjectSemesterId: string;
+      } | null>,
     ) => {
       state.currentSubject = action.payload;
     },
@@ -104,13 +183,22 @@ export const addExamRoomSlice = createSlice({
         state.isLoading = false;
         state.error = '';
       })
-      .addCase(createExamRoom.fulfilled, state => {
-        state.removedExaminees = [];
+      .addCase(createExamRoom.fulfilled, (state, action) => {
+        if (state.examRooms) {
+          const addedExamRooms = new Set(
+            action.payload.result.map(examRoom => examRoom.room.roomId),
+          );
+          const examRooms = state.examRooms.examRooms.filter(
+            examRoom => !addedExamRooms.has(examRoom.room.roomId),
+          );
+          state.examRooms.examRooms = examRooms;
+        }
         state.isLoading = false;
         state.error = '';
       })
-      .addCase(getAvailableExaminees.fulfilled, (state, action) => {
-        state.examinees = action.payload;
+      .addCase(getAssignedExamRooms.fulfilled, (state, action) => {
+        state.removedExaminees = [];
+        state.examRooms = action.payload;
         state.isLoading = false;
         state.error = '';
       })
@@ -118,7 +206,7 @@ export const addExamRoomSlice = createSlice({
         isAnyOf(
           getShift.rejected,
           createExamRoom.rejected,
-          getAvailableExaminees.rejected,
+          getAssignedExamRooms.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -129,7 +217,7 @@ export const addExamRoomSlice = createSlice({
         isAnyOf(
           getShift.pending,
           createExamRoom.pending,
-          getAvailableExaminees.pending,
+          getAssignedExamRooms.pending,
         ),
         state => {
           state.isLoading = true;
@@ -139,7 +227,15 @@ export const addExamRoomSlice = createSlice({
   },
 });
 
-export const { updateRemovedExaminees, updateCurrentSubject, updateExaminees } =
-  addExamRoomSlice.actions;
+export const {
+  addRemovedExaminee,
+  addRemovedExaminees,
+  addExamRooms,
+  updateCurrentSubject,
+  updateTotalExaminees,
+  updateRoomExaminees,
+  updateExamRoom,
+  updateDropdown,
+} = addExamRoomSlice.actions;
 
 export default addExamRoomSlice.reducer;

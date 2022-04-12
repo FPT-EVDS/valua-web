@@ -35,13 +35,7 @@ const shiftServices = {
   },
   disableShift: (id: string): Promise<AxiosResponse<DisableShiftDto>> => {
     const url = `/shifts/${id}`;
-    return axiosClient.patch(url, [
-      {
-        op: 'replace',
-        path: '/status',
-        value: 0,
-      },
-    ]);
+    return axiosClient.patch(url, {}, { params: { opt: 'remove' } });
   },
   getShiftCalendar: (
     id: string,

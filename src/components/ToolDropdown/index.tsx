@@ -88,7 +88,6 @@ const ToolDropdown = ({
           {...params}
           label="Tool"
           name="tools"
-          autoFocus
           margin="dense"
           error={error}
           helperText={error && helperText}

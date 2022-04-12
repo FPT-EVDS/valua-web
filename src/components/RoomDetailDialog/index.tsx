@@ -109,7 +109,6 @@ const RoomDetailDialog: React.FC<Props> = ({
             <Grid item xs={12}>
               <TextField
                 required
-                autoFocus
                 name="roomName"
                 margin="dense"
                 label="Name"
@@ -130,7 +129,6 @@ const RoomDetailDialog: React.FC<Props> = ({
               <TextField
                 required
                 name="seatCount"
-                autoFocus
                 margin="dense"
                 label="Seat count"
                 type="number"
@@ -168,7 +166,6 @@ const RoomDetailDialog: React.FC<Props> = ({
             <Grid item xs={12}>
               <TextField
                 name="description"
-                autoFocus
                 multiline
                 margin="dense"
                 label="Description"

@@ -36,6 +36,25 @@ export const updateAccount = createAsyncThunk(
   },
 );
 
+export const updateAccountEmbedding = createAsyncThunk(
+  'detailAccount/updateEmbedding',
+  async (
+    { appUserId, formData }: { appUserId: string; formData: FormData },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await accountServices.updateAccountEmbedding(
+        appUserId,
+        formData,
+      );
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 export const disableAccount = createAsyncThunk(
   'detailAccount/disable',
   async (appUserId: string, { rejectWithValue }) => {
@@ -88,10 +107,13 @@ export const detailAccountSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(resetPassword.fulfilled, state => {
-        state.error = '';
-        state.isLoading = false;
-      })
+      .addMatcher(
+        isAnyOf(resetPassword.fulfilled, updateAccountEmbedding.fulfilled),
+        state => {
+          state.error = '';
+          state.isLoading = false;
+        },
+      )
       .addMatcher(
         isAnyOf(disableAccount.fulfilled, activeAccount.fulfilled),
         (state, action) => {
@@ -115,6 +137,7 @@ export const detailAccountSlice = createSlice({
           activeAccount.pending,
           getAccount.pending,
           updateAccount.pending,
+          updateAccountEmbedding.pending,
         ),
         state => {
           state.isLoading = true;
@@ -128,6 +151,7 @@ export const detailAccountSlice = createSlice({
           activeAccount.rejected,
           getAccount.rejected,
           updateAccount.rejected,
+          updateAccountEmbedding.rejected,
         ),
         (state, action) => {
           state.isLoading = false;

@@ -24,6 +24,7 @@ import { detailExamRoomSchema } from 'configs/validations';
 import { format } from 'date-fns';
 import UpdateExamRoomDto from 'dtos/updateExamRoom.dto';
 import ExamRoomStatus from 'enums/examRoomStatus.enum';
+import ShiftStatus from 'enums/shiftStatus.enum';
 import { updateExamRoom } from 'features/examRoom/detailExamRoomSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
@@ -33,7 +34,7 @@ import DetailExamRoom from 'models/detailExamRoom.model';
 import Room from 'models/room.model';
 import Shift from 'models/shift.model';
 import Subject from 'models/subject.model';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Props {
   examRoom: DetailExamRoom;
@@ -81,12 +82,19 @@ const ExamRoomDetailCard = ({
     examRoomId: examRoom.examRoomId,
     room: examRoom.room,
     staff: examRoom.staff,
-    subject: examRoom.subject,
+    subject: examRoom.subjectSemester.subject,
   };
   const formik = useFormik({
     initialValues,
     validationSchema: detailExamRoomSchema,
     onSubmit: async (payload: UpdateExamRoomDto) => {
+      if (shift.status === ShiftStatus.Ready && payload.staff === null) {
+        formik.setFieldError(
+          'staff',
+          'Reserved staff is required in ready shift',
+        );
+        return;
+      }
       try {
         const result = await dispatch(updateExamRoom(payload));
         unwrapResult(result);
@@ -126,6 +134,17 @@ const ExamRoomDetailCard = ({
     await formik.setFieldValue('staff', staff);
   };
 
+  const resetForm = async () => {
+    await formik.setFieldValue('examRoomId', examRoom.examRoomId);
+    await handleChangeStaff(examRoom.staff);
+    await handleChangeRoom(examRoom.room);
+    await handleChangeSubject(examRoom.subjectSemester.subject);
+  };
+
+  useEffect(() => {
+    resetForm().catch(error => showErrorMessage(error));
+  }, [examRoom, shift]);
+
   return (
     <Card sx={{ minWidth: 275 }} elevation={2}>
       <CardHeader
@@ -161,7 +180,7 @@ const ExamRoomDetailCard = ({
                 semesterId={shift.semester.semesterId}
                 onChange={handleChangeSubject}
                 error={Boolean(formik.errors.subject)}
-                helperText={formik.errors.subject?.subjectId}
+                helperText={String(formik.errors.subject)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -171,17 +190,17 @@ const ExamRoomDetailCard = ({
                 shiftId={String(examRoom.shift.shiftId)}
                 value={formik.values.staff}
                 error={Boolean(formik.errors.staff)}
-                helperText={formik.errors.staff?.appUserId}
+                helperText={formik.errors.staff}
               />
             </Grid>
             <Grid item xs={12}>
               <RoomDropdown
-                isEditable={isEditable}
+                isEditable={isEditable && shift.status !== ShiftStatus.Ready}
                 onChange={handleChangeRoom}
                 shiftId={String(examRoom.shift.shiftId)}
                 value={formik.values.room}
                 error={Boolean(formik.errors.room)}
-                helperText={formik.errors.room?.roomId}
+                helperText={String(formik.errors.room)}
               />
             </Grid>
             <Grid item xs={12}>

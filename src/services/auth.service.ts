@@ -21,9 +21,13 @@ const authServices = {
     const url = '/authentication/profile';
     return axiosClient.get(url);
   },
-  updateUserProfile: (payload: User): Promise<AxiosResponse<User>> => {
+  updateUserProfile: (payload: FormData): Promise<AxiosResponse<User>> => {
     const url = '/authentication/profile';
-    return axiosClient.put(url, payload);
+    return axiosClient.put(url, payload, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
   changePassword: (
     payload: ChangePasswordDto,

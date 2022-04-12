@@ -38,9 +38,8 @@ const AvatarProfileMenu = ({ user, path, logoutCallback }: Props) => {
     <>
       <IconButton size="large" onClick={handleMenu}>
         <Avatar
-          src={String(user?.imageUrl)}
+          src={user?.imageUrl ?? undefined}
           alt={String(user?.fullName)}
-          sx={{ bgcolor: '#1890ff' }}
         />
       </IconButton>
       <Menu
