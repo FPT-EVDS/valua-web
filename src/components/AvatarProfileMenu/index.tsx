@@ -1,4 +1,4 @@
-import { AccountCircle, Logout } from '@mui/icons-material';
+import { AccountCircle, Logout, Settings } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -10,6 +10,7 @@ import {
   MenuItem,
   Typography,
 } from '@mui/material';
+import SettingDialog from 'components/SettingDialog';
 import AppConstants from 'enums/app';
 import User from 'models/user.model';
 import React, { useState } from 'react';
@@ -24,6 +25,7 @@ interface Props {
 
 const AvatarProfileMenu = ({ user, path, logoutCallback }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [open, setOpen] = useState(false);
   const history = useHistory();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>): void => {
@@ -42,6 +44,7 @@ const AvatarProfileMenu = ({ user, path, logoutCallback }: Props) => {
           alt={String(user?.fullName)}
         />
       </IconButton>
+      <SettingDialog open={open} handleClose={() => setOpen(false)} />
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -90,6 +93,12 @@ const AvatarProfileMenu = ({ user, path, logoutCallback }: Props) => {
             <AccountCircle fontSize="small" />
           </ListItemIcon>
           <ListItemText>My profile</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => setOpen(true)}>
+          <ListItemIcon>
+            <Settings fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Settings</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={async () => {
