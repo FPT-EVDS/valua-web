@@ -52,6 +52,7 @@ const ExamRoomDetailCard = ({
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const query = useQuery();
+  const dateFormat = 'dd/MM/yyyy HH:mm';
   const [isEditable, setIsEditable] = useState(
     String(query.get('edit')) === 'true',
   );
@@ -213,13 +214,25 @@ const ExamRoomDetailCard = ({
                 helperText={String(formik.errors.room)}
               />
             </Grid>
+            {examRoom.startTime && (
+              <Grid item xs={12}>
+                <Typography color="text.secondary">
+                  Start time: {format(new Date(examRoom.startTime), dateFormat)}
+                </Typography>
+              </Grid>
+            )}
+            {examRoom.finishTime && (
+              <Grid item xs={12}>
+                <Typography color="text.secondary">
+                  Finish time:{' '}
+                  {format(new Date(examRoom.finishTime), dateFormat)}
+                </Typography>
+              </Grid>
+            )}
             <Grid item xs={12}>
               <Typography color="text.secondary">
                 Last updated date:{' '}
-                {format(
-                  new Date(examRoom.lastModifiedDate),
-                  'dd/MM/yyyy HH:mm',
-                )}
+                {format(new Date(examRoom.lastModifiedDate), dateFormat)}
               </Typography>
             </Grid>
             <Grid item xs={12}>

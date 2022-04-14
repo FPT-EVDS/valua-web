@@ -21,4 +21,6 @@ export default interface ExamRoom {
   subjectSemester: SubjectSemester &
     Pick<Semester, 'semesterId' | 'semesterName'>;
   status: ExamRoomStatus;
+  startTime: Date;
+  finishTime: Date;
 }
