@@ -9,27 +9,43 @@ const configSchema = object({
     then: object({
       hoursOfMaxDuration: number()
         .defined(ValidationMessage.REQUIRED_NUMBER)
-        .min(0, ValidationMessage.NUMBER_LARGER_THAN_ZERO)
+        .min(0, ValidationMessage.NON_NEGATIVE_NUMBER)
         .integer(),
       minutesBeforeForceFinish: number()
         .defined(ValidationMessage.REQUIRED_NUMBER)
-        .min(0, ValidationMessage.NUMBER_LARGER_THAN_ZERO)
+        .min(0, ValidationMessage.NON_NEGATIVE_NUMBER)
         .integer(),
       hoursToSendLockShiftWarningBeforeStart: number()
         .defined(ValidationMessage.REQUIRED_NUMBER)
-        .min(0, ValidationMessage.NUMBER_LARGER_THAN_ZERO)
+        .min(0, ValidationMessage.NON_NEGATIVE_NUMBER)
         .integer(),
       hoursBeforeShiftStarts: number()
         .defined(ValidationMessage.REQUIRED_NUMBER)
-        .min(0, ValidationMessage.NUMBER_LARGER_THAN_ZERO)
+        .min(0, ValidationMessage.NON_NEGATIVE_NUMBER)
         .integer(),
       minutesOfMinDuration: number()
         .defined(ValidationMessage.REQUIRED_NUMBER)
-        .min(0, ValidationMessage.NUMBER_LARGER_THAN_ZERO)
+        .min(0, ValidationMessage.NON_NEGATIVE_NUMBER)
         .integer(),
     }),
-    // TODO: schema for manager setting
-    otherwise: object(),
+    otherwise: object({
+      examRoomConfig: object({
+        reservedStaffCode: string().defined('Reserved staff code is required'),
+      }),
+      aiConfig: object({
+        AIThreshold: number()
+          .defined(ValidationMessage.REQUIRED_NUMBER)
+          .min(0, min => `Min threshold is ${String(min.value)}`)
+          .max(1, max => `Max threshold is ${String(max.value)}`),
+      }),
+      roomConfig: object({
+        floor: object().test(
+          'notEmptyObject',
+          'Floor options is required',
+          (item: { [index: number]: string }) => Object.keys(item).length > 0,
+        ),
+      }),
+    }),
   }),
 });
 

@@ -19,7 +19,7 @@ import Role from 'enums/role.enum';
 import { updateConfig } from 'features/config/configSlice';
 import { FormikErrors, useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
-import { ShiftManagerConfig } from 'models/config.model';
+import { ManagerConfig, ShiftManagerConfig } from 'models/config.model';
 import React from 'react';
 
 import ManagerSetting from './ManagerSetting';
@@ -93,7 +93,16 @@ const SettingDialog: React.FC<Props> = ({ open, handleClose }) => {
                 handleChange={formik.handleChange}
               />
             ) : (
-              <ManagerSetting />
+              <ManagerSetting
+                values={formik.values.config as ManagerConfig}
+                errors={
+                  formik.errors.config as
+                    | FormikErrors<ManagerConfig>
+                    | undefined
+                }
+                handleChange={formik.handleChange}
+                handleChangeFieldValues={formik.setFieldValue}
+              />
             )
           ) : isLoading ? (
             <LoadingIndicator />
