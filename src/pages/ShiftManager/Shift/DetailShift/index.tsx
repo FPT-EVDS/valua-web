@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 import { Add, FiberManualRecord } from '@mui/icons-material';
 import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material';
-import { green, grey, orange, red } from '@mui/material/colors';
+import { blue, green, grey, indigo, orange, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
   GridActionsColDef,
@@ -252,6 +252,16 @@ const DetailShiftPage = () => {
           case ExamRoomStatus.Ready:
             color = green[500];
             statusText = 'Ready';
+            break;
+
+          case ExamRoomStatus.Started:
+            color = blue[500];
+            statusText = 'Started';
+            break;
+
+          case ExamRoomStatus.Finished:
+            color = indigo[500];
+            statusText = 'Finished';
             break;
 
           default:

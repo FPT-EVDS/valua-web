@@ -40,7 +40,7 @@ import { addAccount } from 'features/account/accountsSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Role from 'models/role.model';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 interface Props {
   open: boolean;
@@ -187,6 +187,10 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
     if (event.target.files) {
       await formik.setFieldValue('imageFiles', event.target.files);
     }
+  };
+
+  const handleDropFiles = async (imageFiles: File[]) => {
+    await formik.setFieldValue('imageFiles', imageFiles);
   };
 
   return (
@@ -547,6 +551,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                           <ImagesDropzone
                             name="imageFiles"
                             onChange={handleImagesChange}
+                            handleDropFiles={handleDropFiles}
                           />
                         </Grid>
                       </>

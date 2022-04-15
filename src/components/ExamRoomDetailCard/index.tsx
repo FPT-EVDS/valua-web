@@ -13,7 +13,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { green, orange, red } from '@mui/material/colors';
+import { blue, green, indigo, orange, red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import RoomDropdown from 'components/RoomDropdown';
@@ -72,6 +72,16 @@ const ExamRoomDetailCard = ({
     case ExamRoomStatus.Ready:
       statusColor = green[500];
       statusText = 'Ready';
+      break;
+
+    case ExamRoomStatus.Started:
+      statusColor = blue[500];
+      statusText = 'Started';
+      break;
+
+    case ExamRoomStatus.Finished:
+      statusColor = indigo[500];
+      statusText = 'Finished';
       break;
 
     default:

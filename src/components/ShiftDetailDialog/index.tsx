@@ -119,16 +119,7 @@ const ShiftDetailDialog: React.FC<Props> = ({
   }, [semester]);
 
   useEffect(() => {
-    if (shiftSchedule.data) {
-      const startOfWeek = new Date(shiftSchedule.data.week.split(' - ')[0]);
-      // If change day or change semester, fetch shift overview
-      if (
-        !isEqual(startOfWeek, currentDate) ||
-        shiftSchedule.data.currentSemester.semesterId !== semester?.semesterId
-      ) {
-        fetchShifts();
-      }
-    } else fetchShifts();
+    fetchShifts();
   }, [semester, currentDate]);
 
   const handleCellDoubleClick = async (props: WeekView.TimeTableCellProps) => {
@@ -193,15 +184,15 @@ const ShiftDetailDialog: React.FC<Props> = ({
                     error:
                       formik.touched.semester &&
                       Boolean(formik.errors.semester),
-                    helperText: formik.touched.semester
-                      ? formik.errors.semester
-                      : semester &&
+                    helperText:
+                      formik.errors.semester ??
+                      (semester &&
                         `Duration: ${format(
                           new Date(semester.beginDate),
                           formatter,
                         )} -
                           ${format(new Date(semester.endDate), formatter)}
-                        `,
+                        `),
                     InputLabelProps: {
                       shrink: true,
                     },

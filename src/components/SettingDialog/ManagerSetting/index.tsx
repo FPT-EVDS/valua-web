@@ -104,14 +104,14 @@ const ManagerSetting = ({
       <Grid item xs={12} mb={2}>
         <Typography gutterBottom>A.I Threshold</Typography>
         <Slider
-          id="config.aiConfig.AIThreshold"
           name="config.aiConfig.AIThreshold"
-          valueLabelDisplay="auto"
+          valueLabelDisplay="on"
           step={0.05}
           marks
           min={0}
+          value={values.aiConfig.AIThreshold}
           max={1}
-          onChangeCommitted={async (_e, value) => {
+          onChange={async (_e, value) => {
             await handleChangeFieldValues('config.aiConfig.AIThreshold', value);
           }}
         />

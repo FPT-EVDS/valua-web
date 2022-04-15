@@ -15,12 +15,14 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import SlideTransition from 'components/SlideTransition';
 import { semesterSchema } from 'configs/validations';
-import { add } from 'date-fns';
+import { add, format } from 'date-fns';
 import SemesterDto from 'dtos/semester.dto';
 import { addSemester, updateSemester } from 'features/semester/semestersSlice';
 import { useFormik } from 'formik';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
-import React from 'react';
+import Semester from 'models/semester.model';
+import React, { useEffect, useState } from 'react';
+import semesterServices from 'services/semester.service';
 
 interface Props {
   open: boolean;
@@ -41,6 +43,7 @@ const SemesterDetailDialog: React.FC<Props> = ({
   },
   isUpdate,
 }) => {
+  const [latestSemester, setLatestSemester] = useState<Semester | null>(null);
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.semesters.isLoading);
@@ -72,6 +75,24 @@ const SemesterDetailDialog: React.FC<Props> = ({
   const handleChangeEndDate = async (selectedDate: Date | null) => {
     await formik.setFieldValue('endDate', selectedDate);
   };
+
+  const fetchLatestSemesters = () => {
+    semesterServices
+      .searchSemestersByName({
+        sort: 'endDate,desc',
+        status: 1,
+      })
+      .then(response => {
+        const { semesters } = response.data;
+        if (semesters.length > 0) setLatestSemester(semesters[0]);
+        return semesters;
+      })
+      .catch(error => showErrorMessage(error));
+  };
+
+  useEffect(() => {
+    fetchLatestSemesters();
+  }, []);
 
   return (
     <Dialog
@@ -127,7 +148,14 @@ const SemesterDetailDialog: React.FC<Props> = ({
                   Boolean(formik.errors.semesterName)
                 }
                 helperText={
-                  formik.touched.semesterName && formik.errors.semesterName
+                  formik.touched.semesterName
+                    ? formik.errors.semesterName
+                    : latestSemester
+                    ? `* Last semester will end in ${format(
+                        new Date(latestSemester.endDate),
+                        'dd/MM/yyyy',
+                      )}`
+                    : ''
                 }
                 onChange={formik.handleChange}
               />
