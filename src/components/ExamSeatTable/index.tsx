@@ -36,6 +36,7 @@ const ExamSeatTable = ({ data, hideActions, onActionButtonClick }: Props) => {
   const { examRoom, shift } = useAppSelector(state => state.detailExamRoom);
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(transformAttendancesToRows(data));
+  const [search, setSearch] = useState('');
 
   const handleRemoveExaminee = async (attendanceId: string) => {
     if (examRoom) {
@@ -50,9 +51,25 @@ const ExamSeatTable = ({ data, hideActions, onActionButtonClick }: Props) => {
     }
   };
 
+  const handleSearch = (searchValue: string) => {
+    setSearch(searchValue);
+  };
+
   useEffect(() => {
     setRows(transformAttendancesToRows(data));
   }, [data]);
+
+  useEffect(() => {
+    const attendances = transformAttendancesToRows(data);
+    const searchValue = search.toLowerCase();
+    const filteredValues = attendances.filter(
+      ({ examinee: { companyId, fullName, email } }) =>
+        companyId.toLowerCase().includes(searchValue) ||
+        fullName.toLowerCase().includes(searchValue) ||
+        email.includes(searchValue),
+    );
+    setRows(filteredValues);
+  }, [search]);
 
   const columns: Array<GridColDef | GridActionsColDef> = [
     { field: 'attendanceId', hide: true },
@@ -170,10 +187,11 @@ const ExamSeatTable = ({ data, hideActions, onActionButtonClick }: Props) => {
       rows={rows}
       addButton={!hideActions && <AddButton />}
       pagination
-      hasSearch={false}
+      hasSearch
+      handleSearch={handleSearch}
       rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
       pageSize={DEFAULT_PAGE_SIZE}
-      rowCount={data.length}
+      rowCount={rows.length}
       page={page}
       onPageChange={newPage => setPage(newPage)}
     />

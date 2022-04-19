@@ -43,6 +43,7 @@ const ExamineeTable = ({ room, data, onActionButtonClick }: Props) => {
   const dispatch = useAppDispatch();
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState(transformAttendancesToRows(data));
+  const [search, setSearch] = useState('');
 
   const handleRemoveExaminee = (examinee: SubjectExaminee) => {
     dispatch(addRemovedExaminee({ examinee, roomId: room.roomId }));
@@ -54,9 +55,29 @@ const ExamineeTable = ({ room, data, onActionButtonClick }: Props) => {
     );
   };
 
+  const handleSearch = (searchValue: string) => {
+    setSearch(searchValue);
+  };
+
   useEffect(() => {
     setRows(transformAttendancesToRows(data));
   }, [data]);
+
+  useEffect(() => {
+    const attendances = transformAttendancesToRows(data);
+    const searchValue = search.toLowerCase();
+    const filteredValues = attendances.filter(
+      ({
+        subjectExaminee: {
+          examinee: { companyId, fullName, email },
+        },
+      }) =>
+        companyId.toLowerCase().includes(searchValue) ||
+        fullName.toLowerCase().includes(searchValue) ||
+        email.includes(searchValue),
+    );
+    setRows(filteredValues);
+  }, [search]);
 
   const columns: Array<GridColDef | GridActionsColDef> = [
     { field: 'subjectExaminee', hide: true },
@@ -162,10 +183,11 @@ const ExamineeTable = ({ room, data, onActionButtonClick }: Props) => {
       leftActions={generateAlert()}
       columns={columns}
       isLoading={false}
+      hasSearch
+      handleSearch={handleSearch}
       rows={rows}
       addButton={<AddButton />}
       pagination
-      hasSearch={false}
       rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
       pageSize={DEFAULT_PAGE_SIZE}
       rowCount={rows.length}

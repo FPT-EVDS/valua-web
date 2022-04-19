@@ -146,18 +146,10 @@ const DetailExamineePage = () => {
       renderCell: params => {
         const imageUrl = String(params.getValue(params.id, 'imageUrl'));
         const fullName = String(params.getValue(params.id, 'fullName'));
-        return (
-          <>
-            {imageUrl ? (
-              <Avatar alt={fullName} src={imageUrl} />
-            ) : (
-              <StringAvatar name={fullName} sx={{ justifyContent: 'center' }} />
-            )}
-          </>
-        );
+        return <Avatar alt={fullName} src={imageUrl} />;
       },
     },
-    { field: 'companyId', headerName: 'ID', flex: 0.06, minWidth: 80 },
+    { field: 'companyId', headerName: 'ID', flex: 0.06, minWidth: 100 },
     { field: 'fullName', headerName: 'Full name', flex: 0.1, minWidth: 200 },
     {
       field: 'phoneNumber',

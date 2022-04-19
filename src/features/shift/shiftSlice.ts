@@ -5,6 +5,7 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import AutoAssignShiftDto from 'dtos/autoAssignShift.dto';
 import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftDashboardDto from 'dtos/shiftDashboard.dto';
@@ -115,6 +116,19 @@ export const lockShifts = createAsyncThunk(
   },
 );
 
+export const autoAssignShifts = createAsyncThunk(
+  'shifts/auto',
+  async (payload: AutoAssignShiftDto, { rejectWithValue }) => {
+    try {
+      const response = await shiftServices.autoAssignShift(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: ShiftsState = {
   isLoading: false,
@@ -184,6 +198,11 @@ export const shiftSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(autoAssignShifts.fulfilled, (state, action) => {
+        // TODO: Update shifts here
+        state.error = '';
+        state.isLoading = false;
+      })
       .addCase(lockShifts.fulfilled, (state, action) => {
         action.payload.lockedShifts.forEach(lockShift => {
           const index = state.current.shifts.findIndex(
@@ -212,6 +231,7 @@ export const shiftSlice = createSlice({
           getShifts.rejected,
           startStaffing.rejected,
           lockShifts.rejected,
+          autoAssignShifts.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -224,6 +244,7 @@ export const shiftSlice = createSlice({
           addShift.pending,
           updateShift.pending,
           deleteShift.pending,
+          autoAssignShifts.pending,
         ),
         state => {
           state.isLoading = true;

@@ -9,10 +9,6 @@ const ActiveStatus = [
     value: Status.isDisable,
     label: 'Inactive',
   },
-  {
-    value: Status.isReady,
-    label: 'Ready',
-  },
 ];
 
 export default ActiveStatus;

@@ -1,5 +1,11 @@
 /* eslint-disable prefer-destructuring */
-import { Add, FiberManualRecord, Lock, PlayArrow } from '@mui/icons-material';
+import {
+  Add,
+  AutoFixHigh,
+  FiberManualRecord,
+  Lock,
+  PlayArrow,
+} from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -19,6 +25,7 @@ import {
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import AutoAssignDialog from 'components/AutoAssignDialog';
 import ButtonMenu, { ButtonMenuItemProps } from 'components/ButtonMenu';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
@@ -53,6 +60,7 @@ const ShiftPage = () => {
   const [open, setOpen] = useState(false);
   const [openStaffing, setOpenStaffing] = useState(false);
   const [openLock, setOpenLock] = useState(false);
+  const [openAuto, setOpenAuto] = useState(false);
   const [page, setPage] = useState(0);
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
@@ -205,6 +213,13 @@ const ShiftPage = () => {
         },
       },
       {
+        label: 'Auto assign shifts',
+        icon: <AutoFixHigh />,
+        handleItemClick: () => {
+          setOpenAuto(true);
+        },
+      },
+      {
         label: 'Start staffing',
         icon: <PlayArrow />,
         handleItemClick: () => {
@@ -303,6 +318,10 @@ const ShiftPage = () => {
       <LockShiftsDialog
         open={openLock}
         handleClose={() => setOpenLock(false)}
+      />
+      <AutoAssignDialog
+        open={openAuto}
+        handleClose={() => setOpenAuto(false)}
       />
       <EVDSDataGrid
         pagination
