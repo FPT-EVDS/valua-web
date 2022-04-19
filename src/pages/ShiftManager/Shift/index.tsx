@@ -99,7 +99,7 @@ const ShiftPage = () => {
 
   useEffect(() => {
     fetchShift();
-  }, [page, sortModel, dropdownSemesterValue]);
+  }, [page, sortModel, dropdownSemesterValue, history.location]);
 
   const handleDeleteShift = async (shiftId: string) => {
     try {

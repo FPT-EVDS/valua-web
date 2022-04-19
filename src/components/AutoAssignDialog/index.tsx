@@ -21,7 +21,7 @@ import SemesterDropdown from 'components/SemesterDropdown';
 import SlideTransition from 'components/SlideTransition';
 import SubjectSemesterDropdown from 'components/SubjectSemesterDropdown';
 import { autoAssignShiftsSchema } from 'configs/validations';
-import { add, format } from 'date-fns';
+import { add, format, isAfter } from 'date-fns';
 import AutoAssignShiftDto from 'dtos/autoAssignShift.dto';
 import { autoAssignShifts } from 'features/shift/shiftSlice';
 import { useFormik } from 'formik';
@@ -44,7 +44,7 @@ const AutoAssignDialog: React.FC<Props> = ({ open, handleClose }) => {
   const formik = useFormik({
     initialValues: {
       semester,
-      fromDate: format(add(new Date(), { days: 1, hours: 1 }), 'yyyy/MM/dd'),
+      fromDate: add(new Date(), { days: 2 }),
       durationInDays: '10',
       subjectSemesters: [] as Array<SubjectSemester>,
     },
@@ -85,7 +85,9 @@ const AutoAssignDialog: React.FC<Props> = ({ open, handleClose }) => {
     if (shiftSemester) {
       setSemester(shiftSemester);
       await formik.setFieldValue('semester', _selectedSemester);
-      await handleChangeFromDate(shiftSemester.beginDate);
+      await (isAfter(new Date(shiftSemester.beginDate), new Date())
+        ? handleChangeFromDate(shiftSemester.beginDate)
+        : handleChangeFromDate(add(new Date(), { days: 2 })));
       await formik.setFieldValue(
         'subjectSemesters',
         [] as Array<SubjectSemester>,
@@ -118,7 +120,7 @@ const AutoAssignDialog: React.FC<Props> = ({ open, handleClose }) => {
           alignItems="center"
         >
           <IconButton sx={{ visibility: 'hidden' }} />
-          <Typography variant="h6">Auto assign shift(s)</Typography>
+          <Typography variant="h6">Auto assign shifts</Typography>
           <IconButton onClick={handleClose}>
             <Close />
           </IconButton>

@@ -29,12 +29,12 @@ const SubjectSemesterDropdown = ({
       semesterId,
     });
     const { subjects } = response.data;
-    const options = subjects.map(
-      ({ subject: { subject, subjectSemesterId } }) => ({
+    const options = subjects
+      .filter(subject => subject.totalUnassigned > 0)
+      .map(({ subject: { subject, subjectSemesterId } }) => ({
         subject,
         subjectSemesterId,
-      }),
-    );
+      }));
     setSubjectOptions(options);
     if (subjects.length > 0) {
       onChange(options);
@@ -54,7 +54,7 @@ const SubjectSemesterDropdown = ({
       multiple
       filterSelectedOptions
       disableCloseOnSelect
-      limitTags={5}
+      limitTags={8}
       loading={isLoading}
       options={subjectOptions}
       isOptionEqualToValue={(option, optionValue) =>

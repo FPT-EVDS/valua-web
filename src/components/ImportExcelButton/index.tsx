@@ -71,7 +71,7 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
   }, []);
 
   const handleValidation = ({ name, size, type }: File) => {
-    const filenamePattern = /\w+_\w+_\w+/g;
+    const filenamePattern = /\w+_\w+/g;
     const isDuplicated = files.some(
       file => file.name === name && file.size === size && file.type === type,
     );
@@ -209,9 +209,9 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
                   <AlertTitle>Before you upload:</AlertTitle>
                   Please upload spreadsheet files and the file must be named
                   with the following patterns:
-                  {` <semester name>_<subject code>_<class code> \n`}
+                  {` <semester name>_<subject code> \n`}
                   <Box mt={1}>
-                    Example: <b>FALL2021_PRF192_SE1407.xsl</b>
+                    Example: <b>FALL2021_PRF192.xsl</b>
                   </Box>
                 </Alert>
               )}

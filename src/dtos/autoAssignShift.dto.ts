@@ -3,7 +3,7 @@ import SubjectSemester from 'models/subjectSemester.model';
 
 export default interface AutoAssignShiftDto {
   semester: Pick<Semester, 'semesterId'> | null;
-  fromDate: string;
+  fromDate: Date | string;
   durationInDays: string;
   subjectSemesters: Array<Pick<SubjectSemester, 'subjectSemesterId'>>;
 }
