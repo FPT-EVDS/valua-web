@@ -43,7 +43,15 @@ const SettingDialog: React.FC<Props> = ({ open, handleClose }) => {
     onSubmit: async payload => {
       if (payload.config) {
         try {
-          const result = await dispatch(updateConfig(payload.config));
+          let bodyData = payload.config;
+          if (payload.role === Role.Manager) {
+            const data = bodyData as ManagerConfig;
+            bodyData = {
+              ...bodyData,
+              aiConfig: { AIThreshold: String(data.aiConfig.AIThreshold) },
+            };
+          }
+          const result = await dispatch(updateConfig(bodyData));
           unwrapResult(result);
           showSuccessMessage('Update settings successfully');
         } catch (error) {
