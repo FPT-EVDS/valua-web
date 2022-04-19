@@ -12,7 +12,9 @@ const accountSchema = object({
     .max(
       150,
       value => `Maximum length of address field is ${value.max} characters`,
-    ),
+    )
+    .strict()
+    .trim('Address is required'),
   birthdate: date()
     .typeError('Invalid date')
     .defined('Please pick a date')
@@ -30,7 +32,9 @@ const accountSchema = object({
     .matches(
       /[ A-Za-z]{3,50}/,
       'Full name must be letter only with length of 3 - 50 characters',
-    ),
+    )
+    .strict()
+    .trim('Full name is required'),
   gender: number().integer().defined('Gender is required').oneOf([0, 1]),
   phoneNumber: string()
     .defined('Phone number is required')
@@ -47,7 +51,9 @@ const accountSchema = object({
       .max(
         10,
         value => `Maximum length of class field is ${value.max} characters`,
-      ),
+      )
+      .strict()
+      .trim('Class is required'),
     otherwise: string().nullable().notRequired(),
   }),
   companyId: string().when('userRole', {
@@ -58,14 +64,18 @@ const accountSchema = object({
         10,
         value =>
           `Maximum length of student id field is ${value.max} characters`,
-      ),
+      )
+      .strict()
+      .trim('StudentID is required'),
     otherwise: string()
       .required('CompanyID is required')
       .max(
         10,
         value =>
           `Maximum length of company id field is ${value.max} characters`,
-      ),
+      )
+      .strict()
+      .trim('CompanyID is required'),
   }),
 });
 

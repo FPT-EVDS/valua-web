@@ -4,11 +4,13 @@ import { number, object, string } from 'yup';
 const roomSchema = object({
   roomName: string()
     .defined('Name is required')
-    .max(255, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`),
-  description: string().max(
-    255,
-    value => `${ValidationMessage.MAX_LENGTH} ${value.max}`,
-  ),
+    .max(255, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`)
+    .strict()
+    .trim('Name is required'),
+  description: string()
+    .max(255, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`)
+    .strict()
+    .trim('Description is required'),
   floor: number()
     .typeError('Floor is required')
     .defined('Floor is required')

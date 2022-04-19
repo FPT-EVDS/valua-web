@@ -1,6 +1,6 @@
 import Role from 'enums/role.enum';
 import ValidationMessage from 'enums/validationMessage';
-import { number, object, string } from 'yup';
+import { BaseSchema, number, object, ref, string } from 'yup';
 
 const configSchema = object({
   role: string(),
@@ -18,14 +18,25 @@ const configSchema = object({
       hoursToSendLockShiftWarningBeforeStart: number()
         .defined(ValidationMessage.REQUIRED_NUMBER)
         .min(0, ValidationMessage.NON_NEGATIVE_NUMBER)
-        .integer(),
+        .integer()
+        .when(
+          'hoursBeforeShiftStarts',
+          (hoursBeforeShiftStarts: number, schema: BaseSchema) =>
+            schema.test({
+              test: (hoursToSendLockShiftWarningBeforeStart: number) =>
+                hoursToSendLockShiftWarningBeforeStart <=
+                hoursBeforeShiftStarts,
+              message:
+                'The time to send lock shift warning must not be after the time a shift starts',
+            }),
+        ),
       hoursBeforeShiftStarts: number()
         .defined(ValidationMessage.REQUIRED_NUMBER)
         .min(0, ValidationMessage.NON_NEGATIVE_NUMBER)
         .integer(),
       minutesOfMinDuration: number()
         .defined(ValidationMessage.REQUIRED_NUMBER)
-        .min(0, ValidationMessage.NON_NEGATIVE_NUMBER)
+        .min(15, 'Min minutes is 15')
         .integer(),
     }),
     otherwise: object({

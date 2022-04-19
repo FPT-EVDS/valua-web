@@ -70,7 +70,7 @@ const ShiftManagerSetting = ({ values, handleChange, errors }: Props) => (
         value={values.hoursOfMaxDuration}
         InputProps={{
           endAdornment: <InputAdornment position="end">hour</InputAdornment>,
-          inputProps: { min: 0 },
+          inputProps: { min: 1 },
         }}
         InputLabelProps={{
           shrink: true,
@@ -134,7 +134,7 @@ const ShiftManagerSetting = ({ values, handleChange, errors }: Props) => (
         value={values.minutesOfMinDuration}
         InputProps={{
           endAdornment: <InputAdornment position="end">minute</InputAdornment>,
-          inputProps: { min: 0 },
+          inputProps: { min: 15 },
         }}
         InputLabelProps={{
           shrink: true,

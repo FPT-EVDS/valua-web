@@ -4,7 +4,9 @@ import { date, object, ref, string } from 'yup';
 const semesterSchema = object({
   semesterName: string()
     .defined('Semester name is required')
-    .max(255, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`),
+    .max(255, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`)
+    .strict()
+    .trim('Semester name is required'),
   beginDate: date()
     .typeError('Invalid date')
     .defined('Begin date is required')
