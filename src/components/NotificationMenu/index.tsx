@@ -91,10 +91,14 @@ const NotificationMenu = () => {
   };
 
   const handleNotificationTap = (notification: Notification) => {
+    let toRoute = notification.route;
+    if (toRoute[toRoute.length - 1] === '/') {
+      toRoute = toRoute.slice(0, -1);
+    }
     if (user?.role === Role.ShiftManager) {
-      history.push(`/shift-manager${notification.route}`);
+      history.push(`/shift-manager${toRoute}`);
     } else {
-      history.push(`/manager${notification.route}`);
+      history.push(`/manager${toRoute}`);
     }
   };
 
