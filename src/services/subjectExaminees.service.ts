@@ -58,6 +58,16 @@ const subjectExamineesServices = {
       },
     });
   },
+  getAllSubjects: (
+    semesterId: string,
+  ): Promise<AxiosResponse<ExamineeSubject>> => {
+    const url = '/subjectExaminees/all';
+    return axiosClient.get(url, {
+      params: {
+        semesterId,
+      },
+    });
+  },
   removeExamineeFromSubject: ({
     subjectExamineeId,
     removedReason,

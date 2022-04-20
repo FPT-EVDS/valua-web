@@ -25,9 +25,7 @@ const SubjectSemesterDropdown = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchSubjects = async () => {
-    const response = await subjectExamineesServices.searchBySemester({
-      semesterId,
-    });
+    const response = await subjectExamineesServices.getAllSubjects(semesterId);
     const { subjects } = response.data;
     const options = subjects
       .filter(subject => subject.totalUnassigned > 0)

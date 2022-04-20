@@ -60,7 +60,14 @@ const LockShiftsDialog: React.FC<Props> = ({ open, handleClose }) => {
   const fetchShiftsForLocking = () => {
     shiftServices
       .getShiftsToLock()
-      .then(response => setShifts(response.data.readyShifts))
+      .then(response => {
+        const { readyShifts } = response.data;
+        if (readyShifts.length > 0) {
+          const shiftsId = readyShifts.map(shift => String(shift.shiftId));
+          setChecked(shiftsId);
+        }
+        return setShifts(readyShifts);
+      })
       .catch(error => showErrorMessage(error))
       .finally(() => setIsLoading(false))
       .catch(error => showErrorMessage(error));
@@ -125,6 +132,7 @@ const LockShiftsDialog: React.FC<Props> = ({ open, handleClose }) => {
                 <ListItem key={labelId}>
                   <ListItemIcon>
                     <Checkbox
+                      defaultChecked
                       edge="start"
                       tabIndex={-1}
                       disableRipple
