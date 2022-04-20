@@ -361,6 +361,7 @@ const DetailShiftPage = () => {
           <Grid item xs={12} lg={9}>
             <EVDSDataGrid
               pagination
+              paginationMode="server"
               rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
               pageSize={DEFAULT_PAGE_SIZE}
               sortingMode="server"

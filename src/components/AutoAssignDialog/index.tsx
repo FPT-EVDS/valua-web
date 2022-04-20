@@ -63,8 +63,8 @@ const AutoAssignDialog: React.FC<Props> = ({ open, handleClose }) => {
             ),
           };
           const result = await dispatch(autoAssignShifts(submittedPayload));
-          unwrapResult(result);
-          showSuccessMessage('Create shifts successfully');
+          const message = unwrapResult(result);
+          showSuccessMessage(message);
           formik.resetForm();
           handleClose();
         } catch (error) {

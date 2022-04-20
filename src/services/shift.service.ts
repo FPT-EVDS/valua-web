@@ -72,7 +72,7 @@ const shiftServices = {
   },
   autoAssignShift: (
     payload: AutoAssignShiftDto,
-  ): Promise<AxiosResponse<Shift[]>> => {
+  ): Promise<AxiosResponse<string>> => {
     const url = '/shifts/autoAssign';
     return axiosClient.post(url, payload);
   },
