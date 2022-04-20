@@ -25,6 +25,7 @@ import EVDSDataGrid from 'components/EVDSDataGrid';
 import StringAvatar from 'components/StringAvatar';
 import activeStatus from 'configs/constants/activeStatus.constant';
 import accountRoles from 'configs/constants/roles.constant';
+import Role from 'enums/role.enum';
 import Status from 'enums/status.enum';
 import {
   activeAccount,
@@ -202,23 +203,10 @@ const AccountPage = () => {
       headerName: 'Actions',
       type: 'actions',
       getActions: params => {
+        const role = params.getValue(params.id, 'role');
         const appUserId = String(params.getValue(params.id, 'appUserId'));
         const status = params.getValue(params.id, 'isActive');
-        if (!status)
-          return [
-            <GridActionsCellItem
-              label="View detail"
-              showInMenu
-              onClick={() => history.push(`${url}/${appUserId}`)}
-            />,
-            <GridActionsCellItem
-              label="Enable"
-              sx={{ color: green[500] }}
-              showInMenu
-              onClick={() => handleActiveAccount(appUserId)}
-            />,
-          ];
-        return [
+        const menu = [
           <GridActionsCellItem
             label="View detail"
             showInMenu
@@ -236,6 +224,25 @@ const AccountPage = () => {
             onClick={() => showDeleteConfirmation(params)}
           />,
         ];
+        if (!status) {
+          return [
+            <GridActionsCellItem
+              label="View detail"
+              showInMenu
+              onClick={() => history.push(`${url}/${appUserId}`)}
+            />,
+            <GridActionsCellItem
+              label="Enable"
+              sx={{ color: green[500] }}
+              showInMenu
+              onClick={() => handleActiveAccount(appUserId)}
+            />,
+          ];
+        }
+        if (role === Role.ShiftManager) {
+          menu.pop();
+        }
+        return menu;
       },
     },
   ];

@@ -12,7 +12,7 @@ import {
   Grid,
   Typography,
 } from '@mui/material';
-import { blue, green, red, teal } from '@mui/material/colors';
+import { blue, green, indigo, red, teal } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AccountBarChart from 'components/AccountBarChart';
@@ -167,7 +167,7 @@ const ManagerDashboardPage = () => {
         </Grid>
         <Grid item xl={3} lg={4} md={6} xs={12}>
           <DashboardCard
-            color={green[600]}
+            color={indigo[500]}
             subtitle="Total rooms"
             isLoading={room.isLoading}
             title={room.data ? String(room.data?.totalRooms) : ''}

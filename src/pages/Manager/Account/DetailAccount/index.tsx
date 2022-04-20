@@ -135,13 +135,15 @@ const DetailAccountPage = () => {
               >
                 Reset password
               </Button>
-              <Button
-                variant="text"
-                color="error"
-                onClick={() => showDeleteConfirmation(id)}
-              >
-                Disable account
-              </Button>
+              {account.role.roleName !== Role.ShiftManager && (
+                <Button
+                  variant="text"
+                  color="error"
+                  onClick={() => showDeleteConfirmation(id)}
+                >
+                  Disable account
+                </Button>
+              )}
             </Box>
           ) : (
             <Box

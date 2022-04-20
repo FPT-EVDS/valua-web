@@ -191,7 +191,7 @@ const ShiftPage = () => {
             onClick={() => history.push(`${url}/${shiftId}?edit=true`)}
           />,
           <GridActionsCellItem
-            label="Delete"
+            label="Disable"
             showInMenu
             sx={{ color: red[500] }}
             onClick={() => showDeleteConfirmation(params)}
