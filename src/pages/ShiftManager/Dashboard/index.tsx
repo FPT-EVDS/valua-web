@@ -114,7 +114,9 @@ const DashboardPage = () => {
             subtitle="Total examinees"
             isLoading={subjectExaminee.isLoading}
             title={
-              subjectExaminee.data ? subjectExaminee.data.total.toString() : ''
+              subjectExaminee.data
+                ? subjectExaminee.data.totalExaminees.toString()
+                : ''
             }
             icon={<Groups />}
           >

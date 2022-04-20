@@ -2,8 +2,13 @@ import Semester from 'models/semester.model';
 
 export default interface SubjectExamineesDashboardDto {
   currentSemester: Pick<Semester, 'semesterId' | 'semesterName'>;
-  total: number;
+  totalExaminees: number;
+  totalAssignments: number;
+  totalStaffs: number;
   assigned: number;
   unassigned: number;
+  totalTeachers: number;
+  totalSeats: number;
   exempted: number;
+  totalRooms: number;
 }
