@@ -212,7 +212,7 @@ export const shiftSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
-      .addCase(autoAssignShifts.fulfilled, (state, action) => {
+      .addCase(autoAssignShifts.fulfilled, state => {
         // TODO: Update shifts here
         state.error = '';
         state.isLoading = false;

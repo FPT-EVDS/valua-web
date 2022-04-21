@@ -1,22 +1,6 @@
 /* eslint-disable prefer-destructuring */
-import {
-  AccountCircle,
-  Add,
-  Class,
-  FiberManualRecord,
-  LocationOn,
-} from '@mui/icons-material';
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Grid,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Add, FiberManualRecord } from '@mui/icons-material';
+import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { blue, green, grey, indigo, orange, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
