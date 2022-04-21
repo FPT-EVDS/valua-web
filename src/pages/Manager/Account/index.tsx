@@ -22,7 +22,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AccountDetailDialog from 'components/AccountDetailDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
-import StringAvatar from 'components/StringAvatar';
+import ImportAccountButton from 'components/ImportAccountButton';
 import activeStatus from 'configs/constants/activeStatus.constant';
 import accountRoles from 'configs/constants/roles.constant';
 import Role from 'enums/role.enum';
@@ -248,13 +248,16 @@ const AccountPage = () => {
   ];
 
   const AddButton = () => (
-    <Button
-      variant="contained"
-      startIcon={<PersonAdd />}
-      onClick={() => setOpen(true)}
-    >
-      Create account
-    </Button>
+    <Stack spacing={1} direction="row">
+      <ImportAccountButton />
+      <Button
+        variant="contained"
+        startIcon={<PersonAdd />}
+        onClick={() => setOpen(true)}
+      >
+        Create account
+      </Button>
+    </Stack>
   );
 
   const handleSearch = async (inputValue: string) => {
