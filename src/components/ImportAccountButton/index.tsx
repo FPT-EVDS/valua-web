@@ -170,7 +170,6 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
   return (
     <Dialog
       open={isDialogOpen}
-      onClose={handleCloseModal}
       fullWidth
       maxWidth={activeStep === 0 ? 'sm' : 'md'}
       TransitionComponent={SlideTransition}

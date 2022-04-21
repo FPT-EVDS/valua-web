@@ -140,7 +140,6 @@ const ShiftDetailDialog: React.FC<Props> = ({
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
       fullWidth
       maxWidth="xl"
       TransitionComponent={SlideTransition}

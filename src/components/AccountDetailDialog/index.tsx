@@ -159,7 +159,6 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
   return (
     <Dialog
       open={open}
-      onClose={handleCloseModal}
       fullWidth
       maxWidth={currentStep === 0 ? 'sm' : 'md'}
       TransitionComponent={SlideTransition}

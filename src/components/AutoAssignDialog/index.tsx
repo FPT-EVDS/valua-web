@@ -106,12 +106,7 @@ const AutoAssignDialog: React.FC<Props> = ({ open, handleClose }) => {
   }, [semester]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      fullWidth
-      TransitionComponent={SlideTransition}
-    >
+    <Dialog open={open} fullWidth TransitionComponent={SlideTransition}>
       <DialogTitle>
         <Grid
           container
