@@ -1,4 +1,4 @@
-import { Alert, Button, Grid, Stack, Tooltip, Typography } from '@mui/material';
+import { Alert, Button, Grid, Stack, Typography } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AddRoomDialog from 'components/AddRoomDialog';
@@ -33,8 +33,9 @@ const AddExamRoomPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenAddRoom, setIsOpenAddRoom] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const { isLoading, examRooms, currentSubject, shouldUpdateDropdown } =
-    useAppSelector(state => state.addExamRoom);
+  const { isLoading, examRooms, currentSubject } = useAppSelector(
+    state => state.addExamRoom,
+  );
 
   const handleError = () => {
     dispatch(updateExamRoom(null));

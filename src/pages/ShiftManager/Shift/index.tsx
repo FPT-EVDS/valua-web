@@ -1,9 +1,10 @@
 /* eslint-disable prefer-destructuring */
 import {
   Add,
-  AutoFixHigh,
+  EventAvailable,
   FiberManualRecord,
   Lock,
+  People,
   PlayArrow,
 } from '@mui/icons-material';
 import {
@@ -38,7 +39,11 @@ import ShiftConfig, {
 } from 'configs/constants/shiftConfig.status';
 import { format } from 'date-fns';
 import ShiftStatus from 'enums/shiftStatus.enum';
-import { deleteShift, getShifts } from 'features/shift/shiftSlice';
+import {
+  autoAssignStaffs,
+  deleteShift,
+  getShifts,
+} from 'features/shift/shiftSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
 import React, { useEffect, useState } from 'react';
@@ -148,6 +153,20 @@ const ShiftPage = () => {
         format(new Date(String(value)), 'dd/MM/yyyy HH:mm'),
     },
     {
+      field: 'numOfTotalRooms',
+      headerName: 'Total rooms',
+      flex: 0.1,
+      sortable: false,
+      minWidth: 70,
+    },
+    {
+      field: 'numOfTotalExaminees',
+      headerName: 'Total examinees',
+      flex: 0.1,
+      sortable: false,
+      minWidth: 70,
+    },
+    {
       field: 'status',
       headerName: 'Status',
       flex: 0.1,
@@ -203,6 +222,22 @@ const ShiftPage = () => {
     },
   ];
 
+  const handleAutoAssignStaff = async () => {
+    if (selectedSemester) {
+      try {
+        const result = await dispatch(
+          autoAssignStaffs(selectedSemester?.semesterId),
+        );
+        const { numOfAssignedRooms } = unwrapResult(result);
+        showSuccessMessage(
+          `Assigned staffs for ${numOfAssignedRooms} room(s) successfully`,
+        );
+      } catch (error) {
+        showErrorMessage(error);
+      }
+    }
+  };
+
   const AddButton = () => {
     const items: ButtonMenuItemProps[] = [
       {
@@ -214,9 +249,16 @@ const ShiftPage = () => {
       },
       {
         label: 'Auto assign shifts',
-        icon: <AutoFixHigh />,
+        icon: <EventAvailable />,
         handleItemClick: () => {
           setOpenAuto(true);
+        },
+      },
+      {
+        label: 'Auto assign staffs',
+        icon: <People />,
+        handleItemClick: async () => {
+          await handleAutoAssignStaff();
         },
       },
       {

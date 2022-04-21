@@ -20,6 +20,7 @@ export default interface ExamRoom {
   room: Pick<Room, 'roomId' | 'seatCount' | 'roomName' | 'floor' | 'status'>;
   subjectSemester: SubjectSemester &
     Pick<Semester, 'semesterId' | 'semesterName'>;
+  numOfTotalExaminees: number;
   status: ExamRoomStatus;
   startTime: Date;
   finishTime: Date;

@@ -20,4 +20,12 @@ export default interface Shift {
   status: ShiftStatus;
   createdDate: Date;
   lastModifiedDate: Date;
+  numOfAbsent: number | null;
+  numOfNotReadyExamRooms: number | null;
+  numOfTotalExamRooms: number | null;
+  numOfTotalExaminees: number;
+  numOfTotalLockedAttendances: number | null;
+  numOfTotalReports: number | null;
+  numOfTotalRooms: number;
+  numOfTotalSubjects: number;
 }

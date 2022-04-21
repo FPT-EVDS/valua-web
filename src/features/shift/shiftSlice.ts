@@ -12,6 +12,7 @@ import ShiftDashboardDto from 'dtos/shiftDashboard.dto';
 import ShiftOverviewParams from 'dtos/shiftOverviewParams.dto';
 import ShiftsDto from 'dtos/shifts.dto';
 import Shift from 'models/shift.model';
+import examRoomServices from 'services/examRoom.service';
 import shiftServices from 'services/shift.service';
 
 interface ShiftsState {
@@ -129,6 +130,19 @@ export const autoAssignShifts = createAsyncThunk(
   },
 );
 
+export const autoAssignStaffs = createAsyncThunk(
+  'shifts/autoAssignStaffs',
+  async (semesterId: string, { rejectWithValue }) => {
+    try {
+      const response = await examRoomServices.autoAssignStaffs(semesterId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: ShiftsState = {
   isLoading: false,
@@ -203,6 +217,10 @@ export const shiftSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(autoAssignStaffs.fulfilled, state => {
+        state.error = '';
+        state.isLoading = false;
+      })
       .addCase(lockShifts.fulfilled, (state, action) => {
         action.payload.lockedShifts.forEach(lockShift => {
           const index = state.current.shifts.findIndex(
@@ -232,6 +250,7 @@ export const shiftSlice = createSlice({
           startStaffing.rejected,
           lockShifts.rejected,
           autoAssignShifts.rejected,
+          autoAssignStaffs.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -245,6 +264,7 @@ export const shiftSlice = createSlice({
           updateShift.pending,
           deleteShift.pending,
           autoAssignShifts.pending,
+          autoAssignStaffs.pending,
         ),
         state => {
           state.isLoading = true;

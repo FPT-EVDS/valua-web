@@ -110,6 +110,12 @@ const examRoomServices = {
     const url = `/examRooms/available/shift/${shiftId}`;
     return axiosClient.get(url);
   },
+  autoAssignStaffs: (
+    semesterId: string,
+  ): Promise<AxiosResponse<{ numOfAssignedRooms: number }>> => {
+    const url = `/examRooms/autoAssign/${semesterId}`;
+    return axiosClient.post(url);
+  },
 };
 
 export default examRoomServices;

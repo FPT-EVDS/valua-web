@@ -9,7 +9,6 @@ import {
 } from '@mui/icons-material';
 import { DatePicker, LoadingButton } from '@mui/lab';
 import {
-  Avatar,
   Box,
   Dialog,
   DialogActions,
@@ -26,9 +25,9 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import examineeIcon from 'assets/images/examinee.png';
-import shiftManagerIcon from 'assets/images/shift-manager.png';
 import staffIcon from 'assets/images/staff.png';
 import AvatarFilePicker from 'components/AvatarFilePicker';
+import AvatarWithText, { AvatarWithTextProps } from 'components/AvatarWithText';
 import ImagesDropzone from 'components/ImagesDropzone';
 import SlideTransition from 'components/SlideTransition';
 import genders from 'configs/constants/genders.constant';
@@ -47,52 +46,16 @@ interface Props {
   handleClose: () => void;
 }
 
-interface AvatarWithTextProps {
-  src: string;
-  color: string;
-  title: string;
+interface RoleAvatarWithTextProps extends AvatarWithTextProps {
   role: Role;
-  // eslint-disable-next-line react/require-default-props
-  handleClick?: () => void;
 }
 
-const AvatarWithText = ({
-  src,
-  color,
-  title,
-  handleClick,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ...props
-}: AvatarWithTextProps) => (
-  <Box
-    display="flex"
-    alignItems="center"
-    justifyContent="center"
-    flexDirection="column"
-    onClick={handleClick}
-    sx={{ cursor: 'pointer' }}
-  >
-    <Avatar
-      src={src}
-      alt={title}
-      sx={{ width: 96, height: 96, bgcolor: color, marginBottom: 2 }}
-    />
-    <Typography>{title}</Typography>
-  </Box>
-);
-
-const rolesProps: AvatarWithTextProps[] = [
+const rolesProps: RoleAvatarWithTextProps[] = [
   {
     src: staffIcon,
     color: '#13C2C2',
     title: 'Staff',
     role: accountRoles[1],
-  },
-  {
-    src: shiftManagerIcon,
-    color: '#FADB14',
-    title: 'Shift Manager',
-    role: accountRoles[0],
   },
   {
     src: examineeIcon,
@@ -238,7 +201,7 @@ const AccountDetailDialog: React.FC<Props> = ({ open, handleClose }) => {
                 >
                   <Grid container spacing={2}>
                     {rolesProps.map(props => (
-                      <Grid item sm={4} xs={12} key={props.title}>
+                      <Grid item sm={6} xs={12} key={props.title}>
                         <AvatarWithText
                           {...props}
                           handleClick={async () => {

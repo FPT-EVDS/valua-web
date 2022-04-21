@@ -1,6 +1,22 @@
 /* eslint-disable prefer-destructuring */
-import { Add, FiberManualRecord } from '@mui/icons-material';
-import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material';
+import {
+  AccountCircle,
+  Add,
+  Class,
+  FiberManualRecord,
+  LocationOn,
+} from '@mui/icons-material';
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { blue, green, grey, indigo, orange, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
@@ -52,6 +68,7 @@ const DetailShiftPage = () => {
   } = useAppSelector(state => state.examRoom);
   const rows: GridRowModel[] = examRooms.map(examRoom => ({
     ...examRoom,
+    capacity: `${examRoom.numOfTotalExaminees} / ${examRoom.room.seatCount}`,
     subject: examRoom.subjectSemester.subject,
     id: examRoom.examRoomId,
   }));
@@ -181,25 +198,31 @@ const DetailShiftPage = () => {
       field: 'examRoomName',
       sortable: false,
       filterable: false,
-      headerName: 'Room name',
+      headerName: 'Exam room name',
       minWidth: 180,
-      flex: 0.1,
+      flex: 0.06,
     },
     {
       field: 'subject',
       sortable: false,
       filterable: false,
       headerName: 'Subject',
-      minWidth: 100,
-      flex: 0.1,
+      minWidth: 80,
       valueFormatter: ({ value }) => (value as unknown as Subject).subjectCode,
+    },
+    {
+      field: 'capacity',
+      sortable: false,
+      filterable: false,
+      headerName: 'Capacity',
+      minWidth: 100,
     },
     {
       field: 'room',
       sortable: false,
       filterable: false,
       headerName: 'Room',
-      flex: 0.1,
+      flex: 0.05,
       valueFormatter: ({ value }) => (value as unknown as Room).roomName,
     },
     {
@@ -207,7 +230,7 @@ const DetailShiftPage = () => {
       sortable: false,
       filterable: false,
       headerName: 'Staff',
-      flex: 0.1,
+      flex: 0.07,
       minWidth: 120,
       renderCell: ({ getValue, id: rowId, field }) => {
         const staff = getValue(rowId, field) as Account | null;
@@ -232,8 +255,7 @@ const DetailShiftPage = () => {
     {
       field: 'status',
       headerName: 'Status',
-      flex: 0.1,
-      minWidth: 90,
+      minWidth: 120,
       renderCell: ({ getValue, id: rowId, field }) => {
         const status = getValue(rowId, field);
         let color = grey[500].toString();
