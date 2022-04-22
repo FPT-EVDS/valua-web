@@ -33,6 +33,7 @@ const accountSchema = object({
       /[ A-Za-z]{3,50}/,
       'Full name must be letter only with length of 3 - 50 characters',
     )
+    .max(50, 'Max length is 50')
     .strict()
     .trim('Full name is required'),
   gender: number().integer().defined('Gender is required').oneOf([0, 1]),

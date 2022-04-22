@@ -10,6 +10,7 @@ import {
   DialogTitle,
   Grid,
   IconButton,
+  InputAdornment,
   TextField,
 } from '@mui/material';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -37,7 +38,7 @@ const SubjectDetailDialog: React.FC<Props> = ({
   handleClose,
   initialValues = {
     subjectId: null,
-    numberOfExam: 1,
+    duration: 10,
     subjectCode: '',
     subjectName: '',
     tools: [],
@@ -175,24 +176,27 @@ const SubjectDetailDialog: React.FC<Props> = ({
             <Grid item xs={12}>
               <TextField
                 required
-                name="numberOfExam"
+                name="duration"
                 type="number"
                 margin="dense"
-                label="Number of exams"
+                label="Duration"
                 fullWidth
                 disabled={!isActive}
                 variant="outlined"
-                value={formik.values.numberOfExam}
+                value={formik.values.duration}
                 InputLabelProps={{
                   shrink: true,
                 }}
+                InputProps={{
+                  inputProps: { min: 10, max: 270 },
+                  endAdornment: (
+                    <InputAdornment position="end">minutes</InputAdornment>
+                  ),
+                }}
                 error={
-                  formik.touched.numberOfExam &&
-                  Boolean(formik.errors.numberOfExam)
+                  formik.touched.duration && Boolean(formik.errors.duration)
                 }
-                helperText={
-                  formik.touched.numberOfExam && formik.errors.numberOfExam
-                }
+                helperText={formik.touched.duration && formik.errors.duration}
                 onChange={formik.handleChange}
               />
             </Grid>

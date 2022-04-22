@@ -9,7 +9,7 @@ export default interface ExamineeSubject extends PagingDto {
     subject: {
       subject: Pick<
         Subject,
-        'subjectId' | 'subjectCode' | 'subjectName' | 'numberOfExam'
+        'subjectId' | 'subjectCode' | 'subjectName' | 'duration'
       >;
       subjectSemesterId: string;
     };

@@ -162,7 +162,7 @@ const ExamSeatTable = ({ data, hideActions, onActionButtonClick }: Props) => {
                 variant="text"
                 onClick={() => handleRemoveExaminee(String(id))}
               >
-                Remove
+                Unassign
               </Button>,
             ]
           : [],

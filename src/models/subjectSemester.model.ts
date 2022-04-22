@@ -4,6 +4,6 @@ export default interface SubjectSemester {
   subjectSemesterId: string;
   subject: Pick<
     Subject,
-    'subjectId' | 'subjectName' | 'subjectCode' | 'numberOfExam'
+    'subjectId' | 'subjectName' | 'subjectCode' | 'duration'
   >;
 }

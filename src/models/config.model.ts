@@ -8,6 +8,11 @@ export interface ShiftManagerConfig extends Config {
   hoursToSendLockShiftWarningBeforeStart: number;
   hoursBeforeShiftStarts: number;
   minutesOfMinDuration: number;
+  maxSlotPerExaminee: number;
+  minutesPerSlot: number;
+  minutesBetweenShifts: number;
+  start: number;
+  end: number;
 }
 
 export interface ManagerConfig extends Config {

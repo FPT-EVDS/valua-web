@@ -98,6 +98,7 @@ const SettingDialog: React.FC<Props> = ({ open, handleClose }) => {
                     | FormikErrors<ShiftManagerConfig>
                     | undefined
                 }
+                handleChangeFieldValues={formik.setFieldValue}
                 handleChange={formik.handleChange}
               />
             ) : (

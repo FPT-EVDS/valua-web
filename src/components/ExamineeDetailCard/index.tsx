@@ -53,12 +53,12 @@ const ExamineeDetailCard = ({ examineeSubject }: Props) => (
           </Grid>
           <Grid item xs={12}>
             <TextField
-              label="Number of exams"
+              label="Duration"
               fullWidth
-              value={examineeSubject.subjectSemester.subject.numberOfExam}
+              value={examineeSubject.subjectSemester.subject.duration}
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="end">exams</InputAdornment>
+                  <InputAdornment position="end">minutes</InputAdornment>
                 ),
               }}
               InputLabelProps={{

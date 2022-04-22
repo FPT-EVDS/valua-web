@@ -174,7 +174,11 @@ export const shiftSlice = createSlice({
       })
       .addCase(addShift.fulfilled, (state, action) => {
         if (state.current.currentPage === 0)
-          state.current.shifts.unshift(action.payload);
+          state.current.shifts.unshift({
+            ...action.payload,
+            numOfTotalRooms: 0,
+            numOfTotalExaminees: 0,
+          });
         state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;
