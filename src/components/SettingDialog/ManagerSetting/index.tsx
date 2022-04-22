@@ -102,7 +102,9 @@ const ManagerSetting = ({
         <Divider textAlign="center">A.I setting</Divider>
       </Root>
       <Grid item xs={12} mb={2}>
-        <Typography gutterBottom>A.I Threshold</Typography>
+        <Typography gutterBottom>
+          AI confidence for face verification
+        </Typography>
         <Slider
           name="config.aiConfig.AIThreshold"
           valueLabelDisplay="on"

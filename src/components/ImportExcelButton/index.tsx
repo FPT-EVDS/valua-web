@@ -1,3 +1,4 @@
+/* eslint-disable no-secrets/no-secrets */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import {
   Check,
@@ -18,6 +19,7 @@ import {
   DialogTitle,
   Grid,
   IconButton,
+  Link,
   Step,
   StepButton,
   Stepper,
@@ -210,7 +212,10 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
                   with the following patterns:
                   {` <semester name>_<subject code> \n`}
                   <Box mt={1}>
-                    Example: <b>FALL2021_PRF192.xsl</b>
+                    Example:{' '}
+                    <Link href="https://firebasestorage.googleapis.com/v0/b/evds-project-11d88.appspot.com/o/template%2FFALL2021_PRF192.xlsx?alt=media&token=10fff466-0739-414f-9dd1-eac7bdeb5f4d">
+                      <b>FALL2021_PRF192.xslx</b>
+                    </Link>
                   </Box>
                 </Alert>
               )}

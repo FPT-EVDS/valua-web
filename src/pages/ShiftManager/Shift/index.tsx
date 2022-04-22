@@ -3,6 +3,7 @@ import {
   Add,
   EventAvailable,
   FiberManualRecord,
+  FileDownload,
   Lock,
   People,
   PlayArrow,
@@ -10,6 +11,7 @@ import {
 import {
   Box,
   Button,
+  darken,
   MenuItem,
   Stack,
   TextField,
@@ -26,6 +28,7 @@ import {
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { AxiosError } from 'axios';
 import AutoAssignDialog from 'components/AutoAssignDialog';
 import ButtonMenu, { ButtonMenuItemProps } from 'components/ButtonMenu';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
@@ -44,10 +47,12 @@ import {
   deleteShift,
   getShifts,
 } from 'features/shift/shiftSlice';
+import saveAs from 'file-saver';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import shiftServices from 'services/shift.service';
 
 const ShiftPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
@@ -238,6 +243,21 @@ const ShiftPage = () => {
     }
   };
 
+  const handleSaveFile = async (shiftId: string) => {
+    try {
+      const response = await shiftServices.downloadShifts(shiftId);
+      const fileExtension = '.xls';
+      const fileName = `${String(
+        selectedSemester?.semesterName,
+      )}${fileExtension}`;
+      saveAs(response.data, fileName);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      const message = await (axiosError.response?.data as Blob).text();
+      showErrorMessage(message);
+    }
+  };
+
   const AddButton = () => {
     const items: ButtonMenuItemProps[] = [
       {
@@ -278,6 +298,22 @@ const ShiftPage = () => {
     ];
     return (
       <Stack direction="row" spacing={2} alignItems="center">
+        <Button
+          variant="contained"
+          sx={{
+            minWidth: 120,
+            backgroundColor: '#47B881',
+            ':hover': { backgroundColor: darken('#47B881', 0.05) },
+          }}
+          startIcon={<FileDownload />}
+          onClick={async () => {
+            if (selectedSemester) {
+              await handleSaveFile(selectedSemester.semesterId);
+            }
+          }}
+        >
+          Download shifts
+        </Button>
         <ButtonMenu items={items} />
       </Stack>
     );

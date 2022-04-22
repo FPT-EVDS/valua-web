@@ -1,3 +1,4 @@
+/* eslint-disable no-secrets/no-secrets */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import {
   Check,
@@ -18,6 +19,7 @@ import {
   DialogTitle,
   Grid,
   IconButton,
+  Link,
   Step,
   StepButton,
   Stepper,
@@ -209,9 +211,18 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
                   <AlertTitle>Before you upload:</AlertTitle>
                   Please upload spreadsheet files and the file must be named
                   with the following patterns:
-                  {` <role_name>_<number> \n`}
+                  {` <role_name>_<folder_image> \n`}
                   <Box mt={1}>
-                    Example: <b>Staff_0.xsl</b>
+                    Example:{' '}
+                    <Link href="https://firebasestorage.googleapis.com/v0/b/evds-project-11d88.appspot.com/o/template%2Fexaminee_K14.xlsx?alt=media&token=c6958c1a-2cce-406a-87a2-5195c3ee0a4c">
+                      <b>Examinee_K14.xslx</b>
+                    </Link>
+                    <Link
+                      sx={{ ml: 1 }}
+                      href="https://firebasestorage.googleapis.com/v0/b/evds-project-11d88.appspot.com/o/template%2Fstaff.xlsx?alt=media&token=30e5ab68-6874-4d7b-b98e-6050d8f716a0"
+                    >
+                      <b>Staff.xslx</b>
+                    </Link>
                   </Box>
                 </Alert>
               )}

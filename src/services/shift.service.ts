@@ -76,6 +76,15 @@ const shiftServices = {
     const url = '/shifts/autoAssign';
     return axiosClient.post(url, payload);
   },
+  downloadShifts: (semesterId: string): Promise<AxiosResponse> => {
+    const url = `/shifts/download/${semesterId}`;
+    return axiosClient.get(url, {
+      responseType: 'blob',
+      headers: {
+        Accept: '*/*',
+      },
+    });
+  },
 };
 
 export default shiftServices;
