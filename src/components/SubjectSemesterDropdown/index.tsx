@@ -58,7 +58,6 @@ const SubjectSemesterDropdown = ({
       isOptionEqualToValue={(option, optionValue) =>
         option?.subjectSemesterId === optionValue?.subjectSemesterId
       }
-      filterOptions={options => options}
       value={value}
       getOptionLabel={({ subject }) => subject.subjectCode}
       onChange={(event, newValue) => onChange(newValue)}
