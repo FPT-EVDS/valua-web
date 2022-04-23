@@ -44,7 +44,7 @@ const convertDateToMinutes = (date: Date): number => {
 const convertMinutesToDate = (minutes: number): Date => {
   const minutesValue = minutes % 60;
   const hours = (minutes - minutesValue) / 60;
-  return new Date(0, 0, 0, hours, minutes);
+  return new Date(0, 0, 0, hours, minutesValue);
 };
 
 const formatTime = (date: Date) => format(date, 'HH:mm');

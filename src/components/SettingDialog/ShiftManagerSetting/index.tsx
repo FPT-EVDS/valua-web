@@ -254,6 +254,8 @@ const ShiftManagerSetting = ({
       <Grid item xs={12}>
         <TimePicker
           label="Start time"
+          inputFormat="HH:mm"
+          mask="__:__"
           value={convertMinutesToDate(values.start)}
           onChange={handleChangeStartWorkingDate}
           minTime={new Date(0, 0, 0, 7) as unknown as number}
@@ -277,6 +279,8 @@ const ShiftManagerSetting = ({
       <Grid item xs={12}>
         <TimePicker
           label="End time"
+          inputFormat="HH:mm"
+          mask="__:__"
           value={convertMinutesToDate(values.end)}
           onChange={handleChangeEndWorkingDate}
           minTime={new Date(values.start) as unknown as number}
