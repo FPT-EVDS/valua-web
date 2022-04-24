@@ -148,14 +148,13 @@ const SemesterDetailDialog: React.FC<Props> = ({
                   Boolean(formik.errors.semesterName)
                 }
                 helperText={
-                  formik.touched.semesterName
+                  formik.errors.semesterName
                     ? formik.errors.semesterName
-                    : latestSemester
-                    ? `* Last semester will end in ${format(
+                    : latestSemester &&
+                      `* Last semester will end in ${format(
                         new Date(latestSemester.endDate),
                         'dd/MM/yyyy',
                       )}`
-                    : ''
                 }
                 onChange={formik.handleChange}
               />

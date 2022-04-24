@@ -2,8 +2,7 @@ import { object, string } from 'yup';
 
 const resolveReportSchema = object({
   solution: string()
-    .defined('Solution is required')
-    .strict()
+    .required('Solution is required')
     .trim('Solution is required'),
 });
 

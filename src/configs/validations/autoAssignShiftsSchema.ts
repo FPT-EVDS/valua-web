@@ -2,7 +2,7 @@ import { differenceInHours } from 'date-fns';
 import { array, date, number, object } from 'yup';
 
 const autoAssignShiftsSchema = object({
-  semester: object().defined('Semester is required'),
+  semester: object().required('Semester is required'),
   fromDate: date().test(
     'fromDate',
     'From date must be at least 24 hours after now',
@@ -10,7 +10,7 @@ const autoAssignShiftsSchema = object({
   ),
   durationInDays: number(),
   subjectSemesters: array()
-    .defined('A subject must be seleted')
+    .required('A subject must be seleted')
     .min(1, 'A subject must be seleted'),
 });
 

@@ -4,11 +4,11 @@ import { date, DateSchema, object, ref, string } from 'yup';
 const shiftSchema = object({
   beginTime: date()
     .typeError('Invalid time')
-    .defined('Begin time is required')
+    .required('Begin time is required')
     .min(new Date(), 'Begin time must larger than current time'),
   finishTime: date()
     .typeError('Invalid time')
-    .defined('Finish time is required')
+    .required('Finish time is required')
     .min(ref('beginTime'), "Finish time can't be before begin time")
     .when(
       'beginTime',

@@ -2,15 +2,14 @@ import { object, string } from 'yup';
 
 const toolSchema = object({
   toolName: string()
-    .defined('Name is required')
-    .max(50, 'Maximum length of tool name field is 3 - 50 characters')
-    .strict()
+    .required('Name is required')
+    .min(1, 'Length of tool name field is 1 - 30 characters')
+    .max(30, 'Length of tool name field is 1 - 30 characters')
     .trim('Name is required'),
   toolCode: string()
-    .defined('Tool code is required')
-    .min(3, 'Tool code must have length of 3 - 50 characters')
-    .max(50, 'Tool code must have length of 3 - 50 characters')
-    .strict()
+    .required('Tool code is required')
+    .min(1, 'Tool code must have length of 1 - 10 characters')
+    .max(10, 'Tool code must have length of 1 - 10 characters')
     .trim('Tool code is required'),
 });
 

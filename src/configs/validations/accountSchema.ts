@@ -8,16 +8,15 @@ const phoneRegExp =
 
 const accountSchema = object({
   address: string()
-    .defined('Address is required')
+    .required('Address is required')
     .max(
       150,
       value => `Maximum length of address field is ${value.max} characters`,
     )
-    .strict()
     .trim('Address is required'),
   birthdate: date()
     .typeError('Invalid date')
-    .defined('Please pick a date')
+    .required('Please pick a date')
     .test(
       'birthdate',
       'Age must be greater than or equal to 7 years old',
@@ -25,20 +24,19 @@ const accountSchema = object({
         differenceInYears(new Date(), new Date(String(birthdate))) >= 7,
     ),
   email: string()
-    .defined('Email is required')
+    .required('Email is required')
     .email('Please enter a valid email'),
   fullName: string()
-    .defined('Full name is required')
+    .required('Full name is required')
     .matches(
       /[ A-Za-z]{3,50}/,
       'Full name must be letter only with length of 3 - 50 characters',
     )
     .max(50, 'Max length is 50')
-    .strict()
     .trim('Full name is required'),
-  gender: number().integer().defined('Gender is required').oneOf([0, 1]),
+  gender: number().integer().required('Gender is required').oneOf([0, 1]),
   phoneNumber: string()
-    .defined('Phone number is required')
+    .required('Phone number is required')
     .matches(phoneRegExp, 'Phone number is not valid')
     .length(10, ValidationMessage.PHONE_LENGTH),
   userRole: object().shape({
@@ -53,7 +51,6 @@ const accountSchema = object({
         10,
         value => `Maximum length of class field is ${value.max} characters`,
       )
-      .strict()
       .trim('Class is required'),
     otherwise: string().nullable().notRequired(),
   }),
@@ -66,7 +63,6 @@ const accountSchema = object({
         value =>
           `Maximum length of student id field is ${value.max} characters`,
       )
-      .strict()
       .trim('StudentID is required'),
     otherwise: string()
       .required('CompanyID is required')
@@ -75,7 +71,6 @@ const accountSchema = object({
         value =>
           `Maximum length of company id field is ${value.max} characters`,
       )
-      .strict()
       .trim('CompanyID is required'),
   }),
 });
