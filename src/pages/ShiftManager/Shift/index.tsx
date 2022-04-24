@@ -134,7 +134,7 @@ const ShiftPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to disable this shift`,
+      title: `Do you want to delete this shift`,
       handleAccept: () => handleDeleteShift(shiftId),
     }));
   };
