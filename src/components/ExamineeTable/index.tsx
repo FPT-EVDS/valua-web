@@ -143,7 +143,7 @@ const ExamineeTable = ({ room, data, onActionButtonClick }: Props) => {
         const examinee = row.subjectExaminee as SubjectExaminee;
         return [
           <Button variant="text" onClick={() => handleRemoveExaminee(examinee)}>
-            Remove
+            Unassign
           </Button>,
         ];
       },
