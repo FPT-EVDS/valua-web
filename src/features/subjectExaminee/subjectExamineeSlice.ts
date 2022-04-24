@@ -6,7 +6,7 @@ import {
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import ExamineeSubject from 'dtos/examineeSubject.dto';
-import SearchParams from 'dtos/searchParams.dto';
+import SearchByNameDto from 'dtos/searchByName.dto';
 import SubjectExamineesDto from 'dtos/subjectExaminees.dto';
 import Semester from 'models/semester.model';
 import subjectExamineesServices from 'services/subjectExaminees.service';
@@ -21,7 +21,7 @@ interface SubjectsState {
 export const searchSubjectBySemester = createAsyncThunk(
   'subjectExaminee/searchBySemester',
   async (
-    payload: SearchParams & { semesterId: string },
+    payload: SearchByNameDto & { semesterId: string; isReady?: number },
     { rejectWithValue },
   ) => {
     try {

@@ -4,7 +4,7 @@ import DetailSubjectExamineeDto from 'dtos/detailSubjectExaminee';
 import ExamineeSubject from 'dtos/examineeSubject.dto';
 import ImportExcelDto from 'dtos/importExcel.dto';
 import RemoveSubjectExamineeDto from 'dtos/removeExaminee.dto';
-import SearchParams from 'dtos/searchParams.dto';
+import SearchByNameDto from 'dtos/searchByName.dto';
 import { SearchSubjectExamineeParams } from 'dtos/searchSubjectExamineeParams.dto';
 import SubjectExamineesDashboardDto from 'dtos/subjectExamineeDashboard.dto';
 import SubjectExamineesDto from 'dtos/subjectExaminees.dto';
@@ -43,7 +43,7 @@ const subjectExamineesServices = {
     });
   },
   searchBySemester: (
-    payload: SearchParams & { semesterId: string; isReady?: number },
+    payload: SearchByNameDto & { semesterId: string; isReady?: number },
   ): Promise<AxiosResponse<ExamineeSubject>> => {
     const url = '/subjectExaminees';
     return axiosClient.get(url, { params: { ...payload } });

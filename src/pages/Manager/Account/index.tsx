@@ -263,7 +263,12 @@ const AccountPage = () => {
   const handleSearch = async (inputValue: string) => {
     setSearchValue(inputValue);
     const result = await dispatch(
-      searchAccount({ search: inputValue, page: 0 }),
+      searchAccount({
+        search: inputValue,
+        page: 0,
+        role: filterRole,
+        status: filterStatus as unknown as Status,
+      }),
     );
     unwrapResult(result);
   };

@@ -9,7 +9,9 @@ interface DetailSubjectExamineeSubjectSemester extends SubjectSemester {
 }
 
 export default interface DetailSubjectExamineeDto extends PagingDto {
-  totalUnassignedExaminees: number;
+  totalUnassigned: number;
+  totalExempted: number;
+  totalAssigned: number;
   subjectSemester: DetailSubjectExamineeSubjectSemester;
   examinees: Array<SubjectExaminee>;
 }
