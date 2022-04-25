@@ -63,7 +63,6 @@ const ToolDropdown = ({
       isOptionEqualToValue={(option, optionValue) =>
         option?.toolId === optionValue?.toolId
       }
-      filterOptions={options => options}
       getOptionLabel={option => `${option.toolName}`}
       onInputChange={(event, newInputValue) => {
         updateValue(newInputValue);

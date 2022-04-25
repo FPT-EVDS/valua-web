@@ -102,7 +102,7 @@ const DetailAccountPage = () => {
   const showResetPasswordConfirmation = (accountId: string) => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
-      title: `Are you sure ?`,
+      title: `Are you sure you want to reset this account password ?`,
       open: true,
       handleAccept: () => handleResetPassword(accountId),
     }));
@@ -135,13 +135,15 @@ const DetailAccountPage = () => {
               >
                 Reset password
               </Button>
-              <Button
-                variant="text"
-                color="error"
-                onClick={() => showDeleteConfirmation(id)}
-              >
-                Disable account
-              </Button>
+              {account.role.roleName !== Role.ShiftManager && (
+                <Button
+                  variant="text"
+                  color="error"
+                  onClick={() => showDeleteConfirmation(id)}
+                >
+                  Disable account
+                </Button>
+              )}
             </Box>
           ) : (
             <Box

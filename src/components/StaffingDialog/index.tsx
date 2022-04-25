@@ -50,7 +50,6 @@ const StaffingDialog: React.FC<Props> = ({ open, handleClose }) => {
   const handleToggle = (value: string) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
-
     if (currentIndex === -1) {
       newChecked.push(value);
     } else {
@@ -63,7 +62,14 @@ const StaffingDialog: React.FC<Props> = ({ open, handleClose }) => {
   const fetchShiftsForStaffing = () => {
     shiftServices
       .getShiftsForStaffing()
-      .then(response => setShifts(response.data.shiftsToStart))
+      .then(response => {
+        const { shiftsToStart } = response.data;
+        if (shiftsToStart.length > 0) {
+          const shiftsId = shiftsToStart.map(shift => String(shift.shiftId));
+          setChecked(shiftsId);
+        }
+        return setShifts(shiftsToStart);
+      })
       .catch(error => showErrorMessage(error))
       .finally(() => setIsLoading(false))
       .catch(error => showErrorMessage(error));
@@ -130,6 +136,7 @@ const StaffingDialog: React.FC<Props> = ({ open, handleClose }) => {
                 <ListItem key={labelId}>
                   <ListItemIcon>
                     <Checkbox
+                      defaultChecked
                       edge="start"
                       tabIndex={-1}
                       disableRipple

@@ -22,9 +22,10 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AccountDetailDialog from 'components/AccountDetailDialog';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
-import StringAvatar from 'components/StringAvatar';
+import ImportAccountButton from 'components/ImportAccountButton';
 import activeStatus from 'configs/constants/activeStatus.constant';
 import accountRoles from 'configs/constants/roles.constant';
+import Role from 'enums/role.enum';
 import Status from 'enums/status.enum';
 import {
   activeAccount,
@@ -202,23 +203,10 @@ const AccountPage = () => {
       headerName: 'Actions',
       type: 'actions',
       getActions: params => {
+        const role = params.getValue(params.id, 'role');
         const appUserId = String(params.getValue(params.id, 'appUserId'));
         const status = params.getValue(params.id, 'isActive');
-        if (!status)
-          return [
-            <GridActionsCellItem
-              label="View detail"
-              showInMenu
-              onClick={() => history.push(`${url}/${appUserId}`)}
-            />,
-            <GridActionsCellItem
-              label="Enable"
-              sx={{ color: green[500] }}
-              showInMenu
-              onClick={() => handleActiveAccount(appUserId)}
-            />,
-          ];
-        return [
+        const menu = [
           <GridActionsCellItem
             label="View detail"
             showInMenu
@@ -236,24 +224,51 @@ const AccountPage = () => {
             onClick={() => showDeleteConfirmation(params)}
           />,
         ];
+        if (!status) {
+          return [
+            <GridActionsCellItem
+              label="View detail"
+              showInMenu
+              onClick={() => history.push(`${url}/${appUserId}`)}
+            />,
+            <GridActionsCellItem
+              label="Enable"
+              sx={{ color: green[500] }}
+              showInMenu
+              onClick={() => handleActiveAccount(appUserId)}
+            />,
+          ];
+        }
+        if (role === Role.ShiftManager) {
+          menu.pop();
+        }
+        return menu;
       },
     },
   ];
 
   const AddButton = () => (
-    <Button
-      variant="contained"
-      startIcon={<PersonAdd />}
-      onClick={() => setOpen(true)}
-    >
-      Create account
-    </Button>
+    <Stack spacing={1} direction="row">
+      <ImportAccountButton />
+      <Button
+        variant="contained"
+        startIcon={<PersonAdd />}
+        onClick={() => setOpen(true)}
+      >
+        Create account
+      </Button>
+    </Stack>
   );
 
   const handleSearch = async (inputValue: string) => {
     setSearchValue(inputValue);
     const result = await dispatch(
-      searchAccount({ search: inputValue, page: 0 }),
+      searchAccount({
+        search: inputValue,
+        page: 0,
+        role: filterRole,
+        status: filterStatus as unknown as Status,
+      }),
     );
     unwrapResult(result);
   };

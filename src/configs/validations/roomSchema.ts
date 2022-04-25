@@ -3,18 +3,18 @@ import { number, object, string } from 'yup';
 
 const roomSchema = object({
   roomName: string()
-    .defined('Name is required')
-    .max(255, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`),
-  description: string().max(
-    255,
-    value => `${ValidationMessage.MAX_LENGTH} ${value.max}`,
-  ),
+    .required('Name is required')
+    .max(255, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`)
+    .trim('Name is required'),
+  description: string()
+    .max(255, value => `${ValidationMessage.MAX_LENGTH} ${value.max}`)
+    .trim('Description is required'),
   floor: number()
     .typeError('Floor is required')
-    .defined('Floor is required')
+    .required('Floor is required')
     .min(0, value => `Minimum floor is ${value.min}`),
   seatCount: number()
-    .defined('Seat count is required')
+    .required('Seat count is required')
     .positive('Seat count must be a positive number'),
 });
 

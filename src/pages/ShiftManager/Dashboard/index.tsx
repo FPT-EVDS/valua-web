@@ -3,8 +3,11 @@ import {
   ChevronRight,
   EventOutlined,
   Groups,
+  Info,
+  Inventory,
 } from '@mui/icons-material';
 import {
+  Avatar,
   Box,
   Card,
   CardContent,
@@ -13,9 +16,10 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { blue, green, red, teal } from '@mui/material/colors';
+import { blue, green, indigo, red, teal } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import CustomTooltip from 'components/CustomTooltip';
 import DashboardCard from 'components/DashboardCard';
 import ExamRoomScheduler from 'components/ExamRoomScheduler';
 import LoadingIndicator from 'components/LoadingIndicator';
@@ -111,10 +115,12 @@ const DashboardPage = () => {
           {/* Examinee card */}
           <DashboardCard
             color={teal[500]}
-            subtitle="Total examinees"
+            subtitle="Total assignments"
             isLoading={subjectExaminee.isLoading}
             title={
-              subjectExaminee.data ? subjectExaminee.data.total.toString() : ''
+              subjectExaminee.data
+                ? subjectExaminee.data.totalAssignments.toString()
+                : ''
             }
             icon={<Groups />}
           >
@@ -153,6 +159,105 @@ const DashboardPage = () => {
               </Typography>
             </Typography>
           </DashboardCard>
+        </Grid>
+        <Grid item xl={3} lg={4} md={6} xs={12}>
+          {/* Resources card */}
+          <Card sx={{ height: '100%' }}>
+            <CardContent>
+              {!subjectExaminee.isLoading ? (
+                <>
+                  <Grid
+                    container
+                    spacing={3}
+                    marginBottom={1}
+                    justifyContent="space-between"
+                  >
+                    <Grid item>
+                      <Typography
+                        color="textSecondary"
+                        gutterBottom
+                        variant="overline"
+                        fontWeight={700}
+                      >
+                        Resources
+                      </Typography>
+                      <Stack spacing={0.25}>
+                        <Typography
+                          display="inline"
+                          variant="caption"
+                          fontSize={13}
+                        >
+                          Total rooms: {subjectExaminee.data?.totalRooms}
+                        </Typography>
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Typography
+                            display="inline"
+                            variant="caption"
+                            fontSize={13}
+                          >
+                            Total supervisors:{' '}
+                            {parseInt(
+                              String(subjectExaminee.data?.totalStaffs),
+                              10,
+                            ) +
+                              parseInt(
+                                String(subjectExaminee.data?.totalTeachers),
+                                10,
+                              )}
+                          </Typography>
+                          <CustomTooltip
+                            title={`${String(
+                              subjectExaminee.data?.totalTeachers,
+                            )} teachers , ${String(
+                              subjectExaminee.data?.totalStaffs,
+                            )} staffs`}
+                          >
+                            <Info sx={{ fontSize: 13 }} color="info" />
+                          </CustomTooltip>
+                        </Stack>
+                        <Stack spacing={0.25}>
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            alignItems="center"
+                          >
+                            <Typography
+                              display="inline"
+                              variant="caption"
+                              fontSize={13}
+                            >
+                              Total examinees:{' '}
+                              {subjectExaminee.data?.totalExaminees}
+                            </Typography>
+                            <CustomTooltip
+                              title={`${String(
+                                subjectExaminee.data?.totalSeats,
+                              )} seats max`}
+                            >
+                              <Info sx={{ fontSize: 13 }} color="info" />
+                            </CustomTooltip>
+                          </Stack>
+                        </Stack>
+                      </Stack>
+                    </Grid>
+                    <Grid item>
+                      <Avatar
+                        sx={{
+                          backgroundColor: indigo[500],
+                          height: 56,
+                          width: 56,
+                        }}
+                      >
+                        <Inventory />
+                      </Avatar>
+                    </Grid>
+                  </Grid>
+                </>
+              ) : (
+                <LoadingIndicator />
+              )}
+            </CardContent>
+          </Card>
         </Grid>
         <Grid item xs={12}>
           <Card elevation={2}>

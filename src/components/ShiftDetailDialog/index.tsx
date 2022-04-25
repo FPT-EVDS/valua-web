@@ -21,7 +21,7 @@ import SemesterDropdown from 'components/SemesterDropdown';
 import ShiftScheduler from 'components/ShiftScheduler';
 import SlideTransition from 'components/SlideTransition';
 import { shiftSchema } from 'configs/validations';
-import { add, format, isEqual } from 'date-fns';
+import { add, format, isAfter, isEqual } from 'date-fns';
 import ShiftDto from 'dtos/shift.dto';
 import { addShift, getShiftOverview } from 'features/shift/shiftSlice';
 import { useFormik } from 'formik';
@@ -85,10 +85,15 @@ const ShiftDetailDialog: React.FC<Props> = ({
     if (shiftSemester) {
       setSemester(shiftSemester);
       await formik.setFieldValue('semester', _selectedSemester);
-      await handleChangeBeginTime(shiftSemester.beginDate);
-      await handleChangeFinishTime(
-        add(new Date(shiftSemester.beginDate), { hours: 1 }),
-      );
+      if (isAfter(new Date(shiftSemester.beginDate), new Date())) {
+        await handleChangeBeginTime(shiftSemester.beginDate);
+        await handleChangeFinishTime(
+          add(new Date(shiftSemester.beginDate), { hours: 1 }),
+        );
+      } else {
+        await handleChangeBeginTime(add(new Date(), { days: 1 }));
+        await handleChangeFinishTime(add(new Date(), { days: 1, hours: 1 }));
+      }
     }
   };
 
@@ -119,16 +124,7 @@ const ShiftDetailDialog: React.FC<Props> = ({
   }, [semester]);
 
   useEffect(() => {
-    if (shiftSchedule.data) {
-      const startOfWeek = new Date(shiftSchedule.data.week.split(' - ')[0]);
-      // If change day or change semester, fetch shift overview
-      if (
-        !isEqual(startOfWeek, currentDate) ||
-        shiftSchedule.data.currentSemester.semesterId !== semester?.semesterId
-      ) {
-        fetchShifts();
-      }
-    } else fetchShifts();
+    fetchShifts();
   }, [semester, currentDate]);
 
   const handleCellDoubleClick = async (props: WeekView.TimeTableCellProps) => {
@@ -144,7 +140,6 @@ const ShiftDetailDialog: React.FC<Props> = ({
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
       fullWidth
       maxWidth="xl"
       TransitionComponent={SlideTransition}
@@ -193,15 +188,15 @@ const ShiftDetailDialog: React.FC<Props> = ({
                     error:
                       formik.touched.semester &&
                       Boolean(formik.errors.semester),
-                    helperText: formik.touched.semester
-                      ? formik.errors.semester
-                      : semester &&
+                    helperText:
+                      formik.errors.semester ??
+                      (semester &&
                         `Duration: ${format(
                           new Date(semester.beginDate),
                           formatter,
                         )} -
                           ${format(new Date(semester.endDate), formatter)}
-                        `,
+                        `),
                     InputLabelProps: {
                       shrink: true,
                     },

@@ -2,6 +2,7 @@
 import {
   Autocomplete,
   Avatar,
+  createFilterOptions,
   InputAdornment,
   ListItem,
   ListItemAvatar,
@@ -38,6 +39,21 @@ interface Props {
     > | null,
   ) => void;
 }
+
+const filterOptions = createFilterOptions({
+  ignoreCase: true,
+  stringify: (
+    option: Pick<
+      Account,
+      | 'appUserId'
+      | 'email'
+      | 'fullName'
+      | 'phoneNumber'
+      | 'imageUrl'
+      | 'companyId'
+    >,
+  ) => `${option.fullName} ${option.email}`,
+});
 
 const StaffDropdown = ({
   shiftId,
@@ -84,6 +100,7 @@ const StaffDropdown = ({
         option.appUserId === optionValue.appUserId
       }
       value={value}
+      filterOptions={filterOptions}
       getOptionLabel={props => props.fullName}
       onChange={(event, newValue) => onChange(newValue)}
       renderOption={(props, option) => (

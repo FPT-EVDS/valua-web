@@ -28,7 +28,7 @@ interface ResourceProps {
   text: string;
 }
 
-const ExamRoomScheduler = ({ height = 550, shifts, onCellClick }: Props) => {
+const ExamRoomScheduler = ({ height = 1200, shifts, onCellClick }: Props) => {
   const history = useHistory();
   const groups = ['day'];
   // "2022/02/07 - 2022/02/13" => should convert to start and end week

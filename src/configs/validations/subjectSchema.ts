@@ -2,16 +2,18 @@ import { number, object, string } from 'yup';
 
 const subjectSchema = object({
   subjectName: string()
-    .defined('Name is required')
-    .max(50, 'Maximum length of subject name field is 3 - 50 characters'),
+    .required('Name is required')
+    .max(50, 'Maximum length of subject name field is 3 - 50 characters')
+    .trim('Subject name is required'),
   subjectCode: string()
-    .defined('Subject code is required')
+    .required('Subject code is required')
     .min(3, 'Subject code must have length of 3 - 50 characters')
-    .max(50, 'Subject code must have length of 3 - 50 characters'),
-  numberOfExam: number()
-    .defined('Number of exam is required')
-    .min(1, 'Number of exam must be between 1 - 3')
-    .max(3, 'Number of exam must be between 1 - 3'),
+    .max(50, 'Subject code must have length of 3 - 50 characters')
+    .trim('Subject code is required'),
+  duration: number()
+    .required('Duration is required')
+    .min(10, 'Min duration is 10 minutes')
+    .max(270, 'Max duration is 4h30 hours'),
 });
 
 export default subjectSchema;

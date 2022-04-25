@@ -5,12 +5,14 @@ import {
   PayloadAction,
 } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import AutoAssignShiftDto from 'dtos/autoAssignShift.dto';
 import SearchShiftParamsDto from 'dtos/searchShiftParams.dto';
 import ShiftDto from 'dtos/shift.dto';
 import ShiftDashboardDto from 'dtos/shiftDashboard.dto';
 import ShiftOverviewParams from 'dtos/shiftOverviewParams.dto';
 import ShiftsDto from 'dtos/shifts.dto';
 import Shift from 'models/shift.model';
+import examRoomServices from 'services/examRoom.service';
 import shiftServices from 'services/shift.service';
 
 interface ShiftsState {
@@ -115,6 +117,32 @@ export const lockShifts = createAsyncThunk(
   },
 );
 
+export const autoAssignShifts = createAsyncThunk(
+  'shifts/auto',
+  async (payload: AutoAssignShiftDto, { rejectWithValue }) => {
+    try {
+      const response = await shiftServices.autoAssignShift(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
+export const autoAssignStaffs = createAsyncThunk(
+  'shifts/autoAssignStaffs',
+  async (semesterId: string, { rejectWithValue }) => {
+    try {
+      const response = await examRoomServices.autoAssignStaffs(semesterId);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: ShiftsState = {
   isLoading: false,
@@ -146,7 +174,11 @@ export const shiftSlice = createSlice({
       })
       .addCase(addShift.fulfilled, (state, action) => {
         if (state.current.currentPage === 0)
-          state.current.shifts.unshift(action.payload);
+          state.current.shifts.unshift({
+            ...action.payload,
+            numOfTotalRooms: 0,
+            numOfTotalExaminees: 0,
+          });
         state.current.totalItems += 1;
         state.error = '';
         state.isLoading = false;
@@ -184,6 +216,15 @@ export const shiftSlice = createSlice({
         state.error = '';
         state.isLoading = false;
       })
+      .addCase(autoAssignShifts.fulfilled, state => {
+        // TODO: Update shifts here
+        state.error = '';
+        state.isLoading = false;
+      })
+      .addCase(autoAssignStaffs.fulfilled, state => {
+        state.error = '';
+        state.isLoading = false;
+      })
       .addCase(lockShifts.fulfilled, (state, action) => {
         action.payload.lockedShifts.forEach(lockShift => {
           const index = state.current.shifts.findIndex(
@@ -212,6 +253,8 @@ export const shiftSlice = createSlice({
           getShifts.rejected,
           startStaffing.rejected,
           lockShifts.rejected,
+          autoAssignShifts.rejected,
+          autoAssignStaffs.rejected,
         ),
         (state, action: PayloadAction<string>) => {
           state.isLoading = false;
@@ -224,6 +267,8 @@ export const shiftSlice = createSlice({
           addShift.pending,
           updateShift.pending,
           deleteShift.pending,
+          autoAssignShifts.pending,
+          autoAssignStaffs.pending,
         ),
         state => {
           state.isLoading = true;

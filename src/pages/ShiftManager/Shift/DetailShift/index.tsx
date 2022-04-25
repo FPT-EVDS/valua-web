@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 import { Add, FiberManualRecord } from '@mui/icons-material';
 import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material';
-import { green, grey, orange, red } from '@mui/material/colors';
+import { blue, green, grey, indigo, orange, red } from '@mui/material/colors';
 import {
   GridActionsCellItem,
   GridActionsColDef,
@@ -52,6 +52,7 @@ const DetailShiftPage = () => {
   } = useAppSelector(state => state.examRoom);
   const rows: GridRowModel[] = examRooms.map(examRoom => ({
     ...examRoom,
+    capacity: `${examRoom.numOfTotalExaminees} / ${examRoom.room.seatCount}`,
     subject: examRoom.subjectSemester.subject,
     id: examRoom.examRoomId,
   }));
@@ -181,25 +182,31 @@ const DetailShiftPage = () => {
       field: 'examRoomName',
       sortable: false,
       filterable: false,
-      headerName: 'Room name',
+      headerName: 'Exam room name',
       minWidth: 180,
-      flex: 0.1,
+      flex: 0.06,
     },
     {
       field: 'subject',
       sortable: false,
       filterable: false,
       headerName: 'Subject',
-      minWidth: 100,
-      flex: 0.1,
+      minWidth: 80,
       valueFormatter: ({ value }) => (value as unknown as Subject).subjectCode,
+    },
+    {
+      field: 'capacity',
+      sortable: false,
+      filterable: false,
+      headerName: 'Capacity',
+      minWidth: 100,
     },
     {
       field: 'room',
       sortable: false,
       filterable: false,
       headerName: 'Room',
-      flex: 0.1,
+      flex: 0.05,
       valueFormatter: ({ value }) => (value as unknown as Room).roomName,
     },
     {
@@ -207,7 +214,7 @@ const DetailShiftPage = () => {
       sortable: false,
       filterable: false,
       headerName: 'Staff',
-      flex: 0.1,
+      flex: 0.07,
       minWidth: 120,
       renderCell: ({ getValue, id: rowId, field }) => {
         const staff = getValue(rowId, field) as Account | null;
@@ -232,8 +239,7 @@ const DetailShiftPage = () => {
     {
       field: 'status',
       headerName: 'Status',
-      flex: 0.1,
-      minWidth: 90,
+      minWidth: 120,
       renderCell: ({ getValue, id: rowId, field }) => {
         const status = getValue(rowId, field);
         let color = grey[500].toString();
@@ -252,6 +258,16 @@ const DetailShiftPage = () => {
           case ExamRoomStatus.Ready:
             color = green[500];
             statusText = 'Ready';
+            break;
+
+          case ExamRoomStatus.Started:
+            color = blue[500];
+            statusText = 'Started';
+            break;
+
+          case ExamRoomStatus.Finished:
+            color = indigo[500];
+            statusText = 'Finished';
             break;
 
           default:
@@ -351,6 +367,7 @@ const DetailShiftPage = () => {
           <Grid item xs={12} lg={9}>
             <EVDSDataGrid
               pagination
+              paginationMode="server"
               rowsPerPageOptions={[DEFAULT_PAGE_SIZE]}
               pageSize={DEFAULT_PAGE_SIZE}
               sortingMode="server"

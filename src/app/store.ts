@@ -2,6 +2,7 @@ import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import accountReducer from 'features/account/accountsSlice';
 import detailAccountReducer from 'features/account/detailAccountSlice';
 import authReducer from 'features/auth/authSlice';
+import configReducer from 'features/config/configSlice';
 import addExamRoomReducer from 'features/examRoom/addExamRoomSlice';
 import detailExamRoomReducer from 'features/examRoom/detailExamRoomSlice';
 import examRoomReducer from 'features/examRoom/examRoomSlice';
@@ -25,6 +26,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     account: accountReducer,
+    config: configReducer,
     detailAccount: detailAccountReducer,
     room: roomReducer,
     detailRoom: detailRoomReducer,

@@ -35,6 +35,25 @@ function debounce<T extends unknown[], U>(
   };
 }
 
+const convertDateToMinutes = (date: Date): number => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return hours * 60 + minutes;
+};
+
+const convertMinutesToDate = (minutes: number): Date => {
+  const minutesValue = minutes % 60;
+  const hours = (minutes - minutesValue) / 60;
+  return new Date(0, 0, 0, hours, minutesValue);
+};
+
 const formatTime = (date: Date) => format(date, 'HH:mm');
 
-export { chunk, debounce, formatTime, parseJwt };
+export {
+  chunk,
+  convertDateToMinutes,
+  convertMinutesToDate,
+  debounce,
+  formatTime,
+  parseJwt,
+};

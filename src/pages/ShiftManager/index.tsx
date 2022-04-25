@@ -17,11 +17,13 @@ import {
   Stack,
   Toolbar,
 } from '@mui/material';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { Client, IFrame, StompSubscription } from '@stomp/stompjs';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AvatarProfileMenu from 'components/AvatarProfileMenu';
 import CustomDrawer, { DrawerItem } from 'components/CustomDrawer';
 import NotificationMenu from 'components/NotificationMenu';
+import { getConfig } from 'features/config/configSlice';
 import { addNotification } from 'features/notification/notificationsSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Notification from 'models/notification.model';
@@ -115,11 +117,20 @@ const ShiftManagerDashboard = (): JSX.Element => {
     await client.deactivate();
   };
 
+  const handleGetConfig = async () => {
+    const result = await dispatch(getConfig());
+    unwrapResult(result);
+  };
+
   useEffect(() => {
     if (user && !client.active) {
       client.activate();
     }
   }, [user]);
+
+  useEffect(() => {
+    handleGetConfig().catch(error => showErrorMessage(error));
+  }, []);
 
   return (
     <Box sx={{ display: 'flex' }}>

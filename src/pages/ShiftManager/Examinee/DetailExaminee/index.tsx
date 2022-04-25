@@ -18,7 +18,7 @@ import {
   GridRowModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { current, unwrapResult } from '@reduxjs/toolkit';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import BackToPreviousPageButton from 'components/BackToPreviousPageButton';
 import EVDSDataGrid from 'components/EVDSDataGrid';
@@ -27,7 +27,6 @@ import ExamineePieChart, {
   ExamineePieChartProps,
 } from 'components/ExamineePieChart';
 import RemoveExamineeDialog from 'components/RemoveExamineeDialog';
-import StringAvatar from 'components/StringAvatar';
 import ExamineeStatus from 'enums/examineeStatus.enum';
 import { getExamineeSubjectDetail } from 'features/subjectExaminee/detailExamineeSubjectSlice';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
@@ -82,16 +81,12 @@ const DetailExamineePage = () => {
         .then(result => {
           const subjectExaminees = unwrapResult(result);
           if (chartData === null || shouldRefresh) {
-            const { totalUnassignedExaminees, examinees, totalItems } =
+            const { totalAssigned, totalExempted, totalUnassigned } =
               subjectExaminees;
-            const totalAssigned = examinees.filter(
-              value => value.status === ExamineeStatus.Assigned,
-            ).length;
             setChartData({
               totalAssigned,
-              totalRemoved:
-                totalItems - totalUnassignedExaminees - totalAssigned,
-              totalUnassigned: totalUnassignedExaminees,
+              totalRemoved: totalExempted,
+              totalUnassigned,
             });
           }
           return subjectExaminees;
@@ -146,18 +141,10 @@ const DetailExamineePage = () => {
       renderCell: params => {
         const imageUrl = String(params.getValue(params.id, 'imageUrl'));
         const fullName = String(params.getValue(params.id, 'fullName'));
-        return (
-          <>
-            {imageUrl ? (
-              <Avatar alt={fullName} src={imageUrl} />
-            ) : (
-              <StringAvatar name={fullName} sx={{ justifyContent: 'center' }} />
-            )}
-          </>
-        );
+        return <Avatar alt={fullName} src={imageUrl} />;
       },
     },
-    { field: 'companyId', headerName: 'ID', flex: 0.06, minWidth: 80 },
+    { field: 'companyId', headerName: 'ID', flex: 0.06, minWidth: 100 },
     { field: 'fullName', headerName: 'Full name', flex: 0.1, minWidth: 200 },
     {
       field: 'phoneNumber',

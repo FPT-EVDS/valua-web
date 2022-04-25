@@ -81,6 +81,19 @@ export const activeAccount = createAsyncThunk(
   },
 );
 
+export const importAccounts = createAsyncThunk(
+  'accounts/import',
+  async (payload: FormData, { rejectWithValue }) => {
+    try {
+      const response = await accountServices.import(payload);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
+
 // Define the initial state using that type
 const initialState: AccountState = {
   isLoading: false,
@@ -104,6 +117,10 @@ export const accountSlice = createSlice({
           state.current.accounts.unshift(action.payload);
         state.error = '';
         state.current.totalItems += 1;
+        state.isLoading = false;
+      })
+      .addCase(importAccounts.fulfilled, (state, action) => {
+        state.error = '';
         state.isLoading = false;
       })
       .addMatcher(

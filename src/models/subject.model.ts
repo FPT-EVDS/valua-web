@@ -6,7 +6,7 @@ export default interface Subject {
   subjectCode: string;
   tools: Tool[];
   isActive: boolean;
-  numberOfExam: number;
+  duration: number;
   createdDate: string;
   lastModifiedDate: string;
 }

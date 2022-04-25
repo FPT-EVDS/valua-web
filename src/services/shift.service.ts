@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios';
+import AutoAssignShiftDto from 'dtos/autoAssignShift.dto';
 import DisableShiftDto from 'dtos/disableShift.dto';
 import LockedShiftsDto from 'dtos/lockedShifts.dto';
 import ReadyShiftsDto from 'dtos/readyShifts.dto';
@@ -68,6 +69,21 @@ const shiftServices = {
   getShiftsToLock: (): Promise<AxiosResponse<ReadyShiftsDto>> => {
     const url = '/shifts/lock';
     return axiosClient.get(url);
+  },
+  autoAssignShift: (
+    payload: AutoAssignShiftDto,
+  ): Promise<AxiosResponse<string>> => {
+    const url = '/shifts/autoAssign';
+    return axiosClient.post(url, payload);
+  },
+  downloadShifts: (semesterId: string): Promise<AxiosResponse> => {
+    const url = `/shifts/download/${semesterId}`;
+    return axiosClient.get(url, {
+      responseType: 'blob',
+      headers: {
+        Accept: '*/*',
+      },
+    });
   },
 };
 

@@ -1,5 +1,12 @@
 import { FiberManualRecord } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { green, red } from '@mui/material/colors';
 import {
   GridActionsColDef,
@@ -49,6 +56,8 @@ const ExamineePage = () => {
     id: examineeSubject.subject.subjectSemesterId,
   }));
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [search, setSearch] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
 
   const fetchExamineeSubject = () => {
     let sortParam = '';
@@ -61,6 +70,9 @@ const ExamineePage = () => {
         searchSubjectBySemester({
           page,
           sort: sortParam,
+          search,
+          isReady:
+            filterStatus.length > 0 ? parseInt(filterStatus, 10) : undefined,
           semesterId: selectedSemester.semesterId,
         }),
       )
@@ -165,6 +177,73 @@ const ExamineePage = () => {
     dispatch(updateExamineeSemester(semester));
   };
 
+  const handleSearch = async (searchValue: string) => {
+    setSearch(searchValue);
+    if (selectedSemester) {
+      const result = await dispatch(
+        searchSubjectBySemester({
+          search: searchValue,
+          page: 0,
+          semesterId: selectedSemester.semesterId,
+        }),
+      );
+      unwrapResult(result);
+    }
+  };
+
+  const FilterItems = () => (
+    <Box>
+      <Stack>
+        <TextField
+          name="status"
+          select
+          value={filterStatus}
+          label="Status"
+          margin="dense"
+          size="small"
+          fullWidth
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          SelectProps={{
+            displayEmpty: true,
+          }}
+          onChange={event => setFilterStatus(event.target.value)}
+        >
+          <MenuItem key="all-status" value="">
+            All
+          </MenuItem>
+          <MenuItem key="all-status" value="1">
+            Ready
+          </MenuItem>
+          <MenuItem key="all-status" value="0">
+            Not ready
+          </MenuItem>
+        </TextField>
+      </Stack>
+      <Stack direction="row" sx={{ marginTop: 1 }} justifyContent="flex-end">
+        <Button
+          variant="text"
+          sx={{ marginRight: 1 }}
+          size="small"
+          onClick={() => {
+            setFilterStatus('');
+          }}
+        >
+          Reset
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => fetchExamineeSubject()}
+        >
+          Apply
+        </Button>
+      </Stack>
+    </Box>
+  );
+
   return (
     <div>
       <ConfirmDialog {...confirmDialogProps} loading={isLoading} />
@@ -189,7 +268,10 @@ const ExamineePage = () => {
         onSortModelChange={handleSortModelChange}
         rowCount={totalItems}
         isLoading={isLoading}
-        hasSearch={false}
+        hasSearch
+        handleSearch={handleSearch}
+        hasFilter
+        filterItems={<FilterItems />}
         title="Manage Examinee"
         columns={columns}
         page={page}

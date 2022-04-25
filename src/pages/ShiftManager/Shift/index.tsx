@@ -1,8 +1,17 @@
 /* eslint-disable prefer-destructuring */
-import { Add, FiberManualRecord, Lock, PlayArrow } from '@mui/icons-material';
+import {
+  Add,
+  EventAvailable,
+  FiberManualRecord,
+  FileDownload,
+  Lock,
+  People,
+  PlayArrow,
+} from '@mui/icons-material';
 import {
   Box,
   Button,
+  darken,
   MenuItem,
   Stack,
   TextField,
@@ -19,6 +28,8 @@ import {
 } from '@mui/x-data-grid';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { AxiosError } from 'axios';
+import AutoAssignDialog from 'components/AutoAssignDialog';
 import ButtonMenu, { ButtonMenuItemProps } from 'components/ButtonMenu';
 import ConfirmDialog, { ConfirmDialogProps } from 'components/ConfirmDialog';
 import EVDSDataGrid from 'components/EVDSDataGrid';
@@ -31,11 +42,17 @@ import ShiftConfig, {
 } from 'configs/constants/shiftConfig.status';
 import { format } from 'date-fns';
 import ShiftStatus from 'enums/shiftStatus.enum';
-import { deleteShift, getShifts } from 'features/shift/shiftSlice';
+import {
+  autoAssignStaffs,
+  deleteShift,
+  getShifts,
+} from 'features/shift/shiftSlice';
+import saveAs from 'file-saver';
 import useCustomSnackbar from 'hooks/useCustomSnackbar';
 import Semester from 'models/semester.model';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import shiftServices from 'services/shift.service';
 
 const ShiftPage = () => {
   const DEFAULT_PAGE_SIZE = 20;
@@ -53,6 +70,7 @@ const ShiftPage = () => {
   const [open, setOpen] = useState(false);
   const [openStaffing, setOpenStaffing] = useState(false);
   const [openLock, setOpenLock] = useState(false);
+  const [openAuto, setOpenAuto] = useState(false);
   const [page, setPage] = useState(0);
   const { showErrorMessage, showSuccessMessage } = useCustomSnackbar();
   const dispatch = useAppDispatch();
@@ -91,7 +109,7 @@ const ShiftPage = () => {
 
   useEffect(() => {
     fetchShift();
-  }, [page, sortModel, dropdownSemesterValue]);
+  }, [page, sortModel, dropdownSemesterValue, history.location]);
 
   const handleDeleteShift = async (shiftId: string) => {
     try {
@@ -116,7 +134,7 @@ const ShiftPage = () => {
     setConfirmDialogProps(prevState => ({
       ...prevState,
       open: true,
-      title: `Do you want to disable this shift`,
+      title: `Do you want to delete this shift`,
       handleAccept: () => handleDeleteShift(shiftId),
     }));
   };
@@ -138,6 +156,20 @@ const ShiftPage = () => {
       minWidth: 130,
       valueFormatter: ({ value }) =>
         format(new Date(String(value)), 'dd/MM/yyyy HH:mm'),
+    },
+    {
+      field: 'numOfTotalRooms',
+      headerName: 'Total rooms',
+      flex: 0.1,
+      sortable: false,
+      minWidth: 70,
+    },
+    {
+      field: 'numOfTotalExaminees',
+      headerName: 'Total examinees',
+      flex: 0.1,
+      sortable: false,
+      minWidth: 70,
     },
     {
       field: 'status',
@@ -195,6 +227,37 @@ const ShiftPage = () => {
     },
   ];
 
+  const handleAutoAssignStaff = async () => {
+    if (selectedSemester) {
+      try {
+        const result = await dispatch(
+          autoAssignStaffs(selectedSemester?.semesterId),
+        );
+        const { numOfAssignedRooms } = unwrapResult(result);
+        showSuccessMessage(
+          `Assigned staffs for ${numOfAssignedRooms} room(s) successfully`,
+        );
+      } catch (error) {
+        showErrorMessage(error);
+      }
+    }
+  };
+
+  const handleSaveFile = async (shiftId: string) => {
+    try {
+      const response = await shiftServices.downloadShifts(shiftId);
+      const fileExtension = '.xls';
+      const fileName = `${String(
+        selectedSemester?.semesterName,
+      )}${fileExtension}`;
+      saveAs(response.data, fileName);
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      const message = await (axiosError.response?.data as Blob).text();
+      showErrorMessage(message);
+    }
+  };
+
   const AddButton = () => {
     const items: ButtonMenuItemProps[] = [
       {
@@ -202,6 +265,20 @@ const ShiftPage = () => {
         icon: <Add />,
         handleItemClick: () => {
           setOpen(true);
+        },
+      },
+      {
+        label: 'Auto assign shifts',
+        icon: <EventAvailable />,
+        handleItemClick: () => {
+          setOpenAuto(true);
+        },
+      },
+      {
+        label: 'Auto assign staffs',
+        icon: <People />,
+        handleItemClick: async () => {
+          await handleAutoAssignStaff();
         },
       },
       {
@@ -221,6 +298,22 @@ const ShiftPage = () => {
     ];
     return (
       <Stack direction="row" spacing={2} alignItems="center">
+        <Button
+          variant="contained"
+          sx={{
+            minWidth: 120,
+            backgroundColor: '#47B881',
+            ':hover': { backgroundColor: darken('#47B881', 0.05) },
+          }}
+          startIcon={<FileDownload />}
+          onClick={async () => {
+            if (selectedSemester) {
+              await handleSaveFile(selectedSemester.semesterId);
+            }
+          }}
+        >
+          Download shifts
+        </Button>
         <ButtonMenu items={items} />
       </Stack>
     );
@@ -303,6 +396,10 @@ const ShiftPage = () => {
       <LockShiftsDialog
         open={openLock}
         handleClose={() => setOpenLock(false)}
+      />
+      <AutoAssignDialog
+        open={openAuto}
+        handleClose={() => setOpenAuto(false)}
       />
       <EVDSDataGrid
         pagination

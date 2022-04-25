@@ -242,6 +242,21 @@ const ShiftDetailCard = ({ shift, isLoading, handleDelete }: Props) => {
             </Grid>
             <Grid item xs={12}>
               <Typography color="text.secondary">
+                Total rooms: {shift.numOfTotalRooms}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography color="text.secondary">
+                Total examinees: {shift.numOfTotalExaminees}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography color="text.secondary">
+                Total subjects: {shift.numOfTotalSubjects}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography color="text.secondary">
                 Last updated date:{' '}
                 {format(new Date(shift.lastModifiedDate), 'dd/MM/yyyy HH:mm')}
               </Typography>

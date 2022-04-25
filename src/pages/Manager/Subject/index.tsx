@@ -74,7 +74,7 @@ const SubjectPage = () => {
     subjectId: null,
     subjectCode: '',
     subjectName: '',
-    numberOfExam: 1,
+    duration: 10,
     tools: [],
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
@@ -154,10 +154,10 @@ const SubjectPage = () => {
     },
     { field: 'subjectName', headerName: 'Name', flex: 0.1, minWidth: 130 },
     {
-      field: 'numberOfExam',
-      headerName: 'Number of exams',
+      field: 'duration',
+      headerName: 'Duration',
       flex: 0.05,
-      minWidth: 130,
+      minWidth: 100,
       headerAlign: 'center',
       align: 'center',
     },
