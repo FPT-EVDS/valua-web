@@ -99,7 +99,7 @@ const ShiftPage = () => {
         sort: sortParam,
         semesterId: dropdownSemesterValue
           ? dropdownSemesterValue.semesterId
-          : undefined,
+          : selectedSemester?.semesterId,
         status: filterStatus >= 0 ? filterStatus : undefined,
       }),
     )
@@ -411,7 +411,7 @@ const ShiftPage = () => {
                 size: 'small',
               }}
               isEditable
-              value={dropdownSemesterValue}
+              value={dropdownSemesterValue ?? selectedSemester}
               onChange={handleChangeSemester}
             />
           )

@@ -2,7 +2,7 @@
 import { Autocomplete, TextField, TextFieldProps } from '@mui/material';
 import SearchSemesterParamsDto from 'dtos/searchSemesterParams.dto';
 import Semester from 'models/semester.model';
-import React, { memo, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import semesterServices from 'services/semester.service';
 
 interface Props {
@@ -36,6 +36,11 @@ const SemesterDropdown = ({
     setSemesterOptions(semesters);
     if (value === null) {
       onChange(semesters[0]);
+    } else {
+      const selectedSemester = semesters.find(
+        semester => semester.semesterId === value.semesterId,
+      );
+      onChange(selectedSemester as Semester);
     }
     setIsLoading(false);
   };

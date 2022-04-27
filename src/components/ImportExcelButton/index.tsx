@@ -210,11 +210,11 @@ const DropzoneDialog = ({ isDialogOpen, handleClose }: DropzoneDialogProps) => {
                   <AlertTitle>Before you upload:</AlertTitle>
                   Please upload spreadsheet files and the file must be named
                   with the following patterns:
-                  {` <semester name>_<subject code>_<class code> \n`}
+                  {` <semester name>_<subject code>_<campus> \n`}
                   <Box mt={1}>
                     Example:{' '}
-                    <Link href="https://firebasestorage.googleapis.com/v0/b/evds-project-11d88.appspot.com/o/template%2FFALL2021_PRF192.xlsx?alt=media&token=10fff466-0739-414f-9dd1-eac7bdeb5f4d">
-                      <b>FALL2021_PRF192_SE1407.xslx</b>
+                    <Link href="https://firebasestorage.googleapis.com/v0/b/evds-project-11d88.appspot.com/o/template%2FFALL2021_PRF192_HCM.xlsx?alt=media&token=3ee929d5-ae2b-4d05-86ac-068a6b75c193">
+                      <b>FALL2021_PRF192_HCM.xslx</b>
                     </Link>
                   </Box>
                 </Alert>

@@ -173,7 +173,11 @@ export const shiftSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(addShift.fulfilled, (state, action) => {
-        if (state.current.currentPage === 0)
+        if (
+          state.current.currentPage === 0 &&
+          state.current.selectedSemester?.semesterId ===
+            action.payload.semester.semesterId
+        )
           state.current.shifts.unshift({
             ...action.payload,
             numOfTotalRooms: 0,
