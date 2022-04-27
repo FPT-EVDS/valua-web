@@ -132,7 +132,7 @@ const NotificationMenu = () => {
         PaperProps={{
           elevation: 0,
           sx: {
-            width: '300px',
+            width: '400px',
             filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
             overflow: 'inherit',
             '&:before': {
