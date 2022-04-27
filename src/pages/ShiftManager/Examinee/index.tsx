@@ -93,6 +93,7 @@ const ExamineePage = () => {
       field: 'subjectCode',
       headerName: 'Subject code',
       flex: 0.1,
+      sortable: false,
       minWidth: 130,
       renderCell: ({ row }) => (row.subject as Subject).subjectCode,
     },
@@ -101,6 +102,7 @@ const ExamineePage = () => {
       headerName: 'Subject name',
       flex: 0.1,
       minWidth: 130,
+      sortable: false,
       renderCell: ({ row }) => (row.subject as Subject).subjectName,
     },
     {
@@ -126,6 +128,7 @@ const ExamineePage = () => {
       headerName: 'Status',
       flex: 0.1,
       minWidth: 130,
+      sortable: false,
       renderCell: ({ getValue, id, field }) => {
         const isReady = getValue(id, field);
         const color = isReady ? green[500] : red[500];
