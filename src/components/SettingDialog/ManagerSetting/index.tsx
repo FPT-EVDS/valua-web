@@ -108,8 +108,7 @@ const ManagerSetting = ({
         <Slider
           name="config.aiConfig.AIThreshold"
           valueLabelDisplay="on"
-          step={0.05}
-          marks
+          step={0.01}
           min={0}
           value={values.aiConfig.AIThreshold}
           max={1}
