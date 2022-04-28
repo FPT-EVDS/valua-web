@@ -88,7 +88,7 @@ const AvailableRoomTable = ({
               </TableCell>
               <TableCell align="center">{row.room.seatCount}</TableCell>
               <TableCell align="center">
-                {selectedIndex === index &&
+                {selectedIndex === page * rowsPerPage + index &&
                   data[selectedIndex].attendances.length > 0 && (
                     <Button variant="text" onClick={handleCreateExamRoom}>
                       Create
