@@ -147,8 +147,8 @@ const ShiftScheduler = ({
           onCurrentDateChange={handleCurrentDateChange}
         />
         <WeekView
-          startDayHour={0}
-          endDayHour={24}
+          startDayHour={6}
+          endDayHour={23}
           cellDuration={60}
           timeTableCellComponent={props => (
             <WeekView.TimeTableCell

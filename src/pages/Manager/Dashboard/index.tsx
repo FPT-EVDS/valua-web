@@ -1,6 +1,7 @@
 import {
   Architecture,
   Class,
+  Info,
   LocationOn,
   SupervisorAccount,
 } from '@mui/icons-material';
@@ -11,11 +12,13 @@ import {
   CardHeader,
   Grid,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { blue, green, indigo, red, teal } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import AccountBarChart from 'components/AccountBarChart';
+import CustomTooltip from 'components/CustomTooltip';
 import DashboardCard from 'components/DashboardCard';
 import {
   getAccountOverview,
@@ -29,6 +32,7 @@ import React, { useEffect } from 'react';
 const ManagerDashboardPage = () => {
   const dispatch = useAppDispatch();
   const { showErrorMessage } = useCustomSnackbar();
+  const theme = useTheme();
   const dateFormat = 'dd/MM/yyyy';
   const { account, room, semester, tool } = useAppSelector(
     state => state.managerDashboard,
@@ -93,6 +97,13 @@ const ManagerDashboardPage = () => {
               >
                 {account.data?.totalExaminee}
               </Typography>
+              <CustomTooltip
+                sx={{ fontSize: 16, pt: 0.5, mt: 0.5, ml: -0.5 }}
+                title={`Total embedded: ${account.data?.totalEmbedded ?? 0}`}
+                color={theme.palette.info.main}
+              >
+                <Info color="info" />
+              </CustomTooltip>
               | Staffs:
               <Typography
                 display="inline"
