@@ -1,6 +1,5 @@
 import './styles.scss';
 
-import GoogleIcon from '@mui/icons-material/Google';
 import {
   Box,
   Button,
@@ -16,14 +15,15 @@ import { useAppDispatch } from 'app/hooks';
 import logo from 'assets/images/logo-under.png';
 import backgroundImage from 'assets/images/stacked-waves-haikei.png';
 import loginSchema from 'configs/validations/loginSchema';
-import LoginDto from 'dtos/login.dto';
 import AppConstants from 'enums/app';
-import Role from 'enums/role.enum';
-import { login } from 'features/auth/authSlice';
+import { login } from 'features/authentication/authenticationReducer';
 import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import authServices from 'services/auth.service';
+import LoginRequestDto from '../../dtos/authentication/loginRequest.dto';
+import RoleEnum from 'enums/role.enum';
+import { getStatusCodeFromResponse, useErrorStatus } from 'configs/handlers/ErrorHandler';
+import ErrorCodeEnum from '../../enums/errorCode.enum';
 
 interface HistoryState {
   error: Error;
@@ -32,31 +32,36 @@ interface HistoryState {
 const LoginPage = () => {
   const history = useHistory<HistoryState>();
   const [errorMessage, setErrorMessage] = useState('');
+  const { setErrorCode } = useErrorStatus();
   const dispatch = useAppDispatch();
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
+      signature: null
     },
     validationSchema: loginSchema,
-    onSubmit: async (payload: LoginDto) => {
+    onSubmit: async (payload: LoginRequestDto) => {
       try {
         const result = await dispatch(login(payload));
-        const user = unwrapResult(result);
+        const loginResponse = unwrapResult(result);
         const {
           token,
-          appUser: { role, refreshToken },
-        } = user;
-        if (role === Role.Manager || role === Role.ShiftManager) {
+          account,
+        } = loginResponse;
+
+        const role = account.users[0].roles[0].name;
+        if (role === RoleEnum.ADMIN) {
           localStorage.setItem(AppConstants.ACCESS_TOKEN, token);
-          localStorage.setItem(AppConstants.REFRESH_TOKEN, refreshToken);
-        }
-        if (role === Role.Manager) history.push('/manager');
-        else if (role === Role.ShiftManager) history.push('/shift-manager');
-        else throw new Error('Invalid role');
+          history.push('/manager');
+        } else throw new Error('Invalid role');
       } catch (error) {
-        if (error instanceof Error) setErrorMessage(error.message);
-        else setErrorMessage(error);
+        const statusCode = getStatusCodeFromResponse(error);
+        if (statusCode == ErrorCodeEnum.AUTHENTICATION_INCORRECT_USERNAME_OR_PASSWORD) {
+          setErrorMessage(error.message);
+        } else {
+          setErrorCode(statusCode);
+        }
       }
     },
   });
@@ -133,18 +138,6 @@ const LoginPage = () => {
                 sx={{ mt: 3, mb: 2 }}
               >
                 Log In
-              </Button>
-              <Divider light>OR</Divider>
-              <Button
-                href={authServices.loginWithGoogle()}
-                variant="contained"
-                fullWidth
-                color="google"
-                size="large"
-                sx={{ mt: 3, mb: 2 }}
-                startIcon={<GoogleIcon />}
-              >
-                Login with Google
               </Button>
             </Box>
           </Box>

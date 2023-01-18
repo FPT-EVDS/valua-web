@@ -21,9 +21,11 @@ import subjectReducer from 'features/subject/subjectsSlice';
 import detailSubjectExamineeReducer from 'features/subjectExaminee/detailExamineeSubjectSlice';
 import subjectExamineeReducer from 'features/subjectExaminee/subjectExamineeSlice';
 import toolsReducer from 'features/tool/toolsSlice';
+import authenticationReducer from '../features/authentication/authenticationReducer';
 
 export const store = configureStore({
   reducer: {
+    authentication: authenticationReducer,
     auth: authReducer,
     account: accountReducer,
     config: configReducer,
