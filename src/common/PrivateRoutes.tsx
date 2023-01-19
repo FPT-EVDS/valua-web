@@ -10,15 +10,14 @@ interface Props extends RouteProps {
 }
 
 const PrivateRoute = ({ requiredRole = null, ...routeProps }: Props) => {
-  const user = useAppSelector(state => state.auth.user);
+  const account = useAppSelector(state => state.authentication.account);
   const isLoggedIn = Boolean(localStorage.getItem(AppConstants.ACCESS_TOKEN));
   if (!isLoggedIn) return <Redirect to="/login" />;
-  if (user) {
-    const { role } = user;
+  if (account) {
+    const role = account.users[0].roles[0].name;
     if (role !== requiredRole) {
-      if (role === Role.ShiftManager) return <Redirect to="/shift-manager" />;
       if (role === Role.Manager) {
-        return <Redirect to="/manager" />;
+        return <Redirect to="/" />;
       }
     }
   }

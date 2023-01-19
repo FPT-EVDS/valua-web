@@ -10,20 +10,19 @@ import {
   MenuItem,
   Typography,
 } from '@mui/material';
-import SettingDialog from 'components/SettingDialog';
 import AppConstants from 'enums/app';
-import User from 'models/user.model';
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import Account from '../../models/authentication/authentication.account.model';
 
 interface Props {
-  user: User | null;
+  account: Account | null;
   path: string;
   // eslint-disable-next-line react/require-default-props
   logoutCallback?: () => Promise<void>;
 }
 
-const AvatarProfileMenu = ({ user, path, logoutCallback }: Props) => {
+const AvatarProfileMenu = ({ account, path, logoutCallback }: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const history = useHistory();
@@ -40,11 +39,10 @@ const AvatarProfileMenu = ({ user, path, logoutCallback }: Props) => {
     <>
       <IconButton size="large" onClick={handleMenu}>
         <Avatar
-          src={user?.imageUrl ?? undefined}
-          alt={String(user?.fullName)}
+          src={undefined}
+          alt={String(account?.phoneNumber)}
         />
       </IconButton>
-      <SettingDialog open={open} handleClose={() => setOpen(false)} />
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -81,10 +79,10 @@ const AvatarProfileMenu = ({ user, path, logoutCallback }: Props) => {
       >
         <Box sx={{ px: 2.5 }}>
           <Typography variant="subtitle1" noWrap>
-            {user?.fullName}
+            {account?.username}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user?.email}
+            {account?.email}
           </Typography>
         </Box>
         <Divider sx={{ my: 1 }} />

@@ -1,39 +1,23 @@
 import { AxiosResponse } from 'axios';
-import ChangePasswordDto from 'dtos/changePassword.dto';
-import LoginDto from 'dtos/login.dto';
-import LoginUser from 'dtos/loginUser.dto';
-import User from 'models/user.model';
 
 import axiosClient from './axiosClient';
+import LoginRequestDto from '../dtos/authentication/loginRequest.dto';
+import LoginResponseDto from '../dtos/authentication/loginResponse.dto';
+import { generateSignature } from '../utils/signatureUtil';
+import AppConstants from '../enums/app';
+import Account from '../models/authentication/authentication.account.model';
 
 const authServices = {
-  login: (payload: LoginDto): Promise<AxiosResponse<LoginUser>> => {
+  login: (payload: LoginRequestDto): Promise<AxiosResponse<LoginResponseDto>> => {
+    //throw ({ "errorCode": 12070, "errorMessage": "Incorrect username or password", "statusCode": 400 });
     const url = '/authentication/login';
+    const language = sessionStorage.getItem('lang')
+    payload.signature = generateSignature(payload.email, payload.password, language ? language : AppConstants.LANGUAGE_ENGLISH);
     return axiosClient.post(url, { ...payload });
   },
-  loginWithGoogle: () => {
-    const redirectUri = process.env.REACT_APP_REDIRECT_URI ?? '';
-    return `${String(
-      axiosClient.defaults.baseURL,
-    )}/oauth2/authorize/google?redirect_uri=${redirectUri}`;
-  },
-  getUserProfile: (): Promise<AxiosResponse<User>> => {
+  getUserProfile: (): Promise<AxiosResponse<Account>> => {
     const url = '/authentication/profile';
     return axiosClient.get(url);
-  },
-  updateUserProfile: (payload: FormData): Promise<AxiosResponse<User>> => {
-    const url = '/authentication/profile';
-    return axiosClient.put(url, payload, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  },
-  changePassword: (
-    payload: ChangePasswordDto,
-  ): Promise<AxiosResponse<string>> => {
-    const url = '/authentication/changePassword';
-    return axiosClient.post(url, payload);
   },
 };
 

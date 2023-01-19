@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import authServices from 'services/auth.service';
+import authenticationService from 'services/authentication.service';
 
 import { RootState } from '../../app/store';
 import Status from '../../enums/status.enum';
@@ -18,7 +18,7 @@ export const login = createAsyncThunk(
   'authentication/login',
   async (payload: LoginRequestDto, { rejectWithValue }) => {
     try {
-      const response = await authServices.login(payload);
+      const response = await authenticationService.login(payload);
       //return response.data;
       // BEGIN MOCK RESPONSE
       const authenticationResult: LoginResponseDto = {
@@ -70,7 +70,7 @@ export const getUserProfile = createAsyncThunk(
   'authentication/profile',
   async (_payload, { rejectWithValue }) => {
     try {
-      const response = await authServices.getUserProfile();
+      const response = await authenticationService.getUserProfile();
       return response.data;
     } catch (error) {
       console.log('Error while call profile: ' + error);

@@ -8,7 +8,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useAppDispatch } from 'app/hooks';
 import PrivateRoute from 'common/PrivateRoutes';
 import AppConstants from 'enums/app';
-import { getUserProfile } from 'features/auth/authSlice';
+import { getUserProfile } from 'features/authentication/authenticationReducer';
 import { SnackbarProvider } from 'notistack';
 import ManagerDashboard from 'pages/Manager';
 import NotFoundPage from 'pages/NotFound';
@@ -60,7 +60,7 @@ const App = (): JSX.Element => {
             <Switch>
               <PrivateRoute path="/" exact />
               <PrivateRoute
-                path="/manager"
+                path="/dashboard"
                 component={ManagerDashboard}
               />
               <Route path="/login" exact component={LoginPage} />

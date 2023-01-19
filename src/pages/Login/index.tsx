@@ -53,7 +53,7 @@ const LoginPage = () => {
         const role = account.users[0].roles[0].name;
         if (role === RoleEnum.ADMIN) {
           localStorage.setItem(AppConstants.ACCESS_TOKEN, token);
-          history.push('/manager');
+          history.push('/dashboard');
         } else throw new Error('Invalid role');
       } catch (error) {
         const statusCode = getStatusCodeFromResponse(error);
